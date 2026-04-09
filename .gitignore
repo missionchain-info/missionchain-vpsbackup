@@ -1,0 +1,36 @@
+# Node modules
+**/node_modules/
+**/.next/
+
+# Env files (contains secrets)
+.env
+**/.env
+**/.env.local
+**/.env.production
+
+# Build artifacts
+**/dist/
+**/build/
+**/.turbo/
+
+# Large archives
+*.tar.gz
+*.zip
+
+# DB files
+*.db
+*.sqlite
+
+# Logs
+logs/
+**/*.log
+
+# Docker volumes data
+data/postgres/
+data/redis/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large images (will add sophia-avatar separately)

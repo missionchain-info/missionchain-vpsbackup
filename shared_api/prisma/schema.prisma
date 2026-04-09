@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  username      String?  @unique
+  displayName   String?
+  avatar        String?
+  bio           String?
+  country       String?
+  role          Role     @default(USER)
+  tier          Int      @default(0)
+  kycStatus     KycStatus @default(NONE)
+  wallets       Wallet[]
+  sessions      Session[]
+  notifications Notification[]
+  contents      Content[]
+  challengeEntries ChallengeEntry[]
+  jobs          Job[]
+  credentials   NFTCredential[]
+  seedPurchases SeedParticipant[]
+  referralLinks ReferralLink[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  CREATOR
+  MODERATOR
+  KYC_REVIEWER
+  CONTENT_ADMIN
+  FINANCE_ADMIN
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Wallet {
+  id        String  @id @default(cuid())
+  address   String  @unique
+  isPrimary Boolean @default(false)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  title     String
+  message   String
+  metadata  Json?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  content      String?       @db.Text
+  translations Translation[]
+  updatedAt    DateTime      @updatedAt
+}
+
+model Translation {
+  id         String            @id @default(cuid())
+  documentId String
+  document   Document          @relation(fields: [documentId], references: [id])
+  locale     String
+  status     TranslationStatus @default(PENDING)
+  content    String?           @db.Text
+  updatedAt  DateTime          @updatedAt
+}
+
+enum TranslationStatus {
+  PENDING
+  TRANSLATED
+  APPROVED
+}
+
+model Content {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  type        ContentType
+  title       String
+  description String?       @db.Text
+  mediaUrl    String?
+  tags        String[]
+  likes       Int           @default(0)
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+}
+
+enum ContentType {
+  ARTICLE
+  PODCAST
+  VIDEO
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  FLAGGED
+  REMOVED
+}
+
+model SophiaWord {
+  id         String   @id @default(cuid())
+  date       DateTime @unique @db.Date
+  verse      String
+  reflection String   @db.Text
+  theme      String
+  audioUrl   String?
+  videoUrl   String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+model Challenge {
+  id          String           @id @default(cuid())
+  title       String
+  description String           @db.Text
+  category    String
+  prizePool   Decimal?         @db.Decimal(18,2)
+  startDate   DateTime
+  endDate     DateTime
+  status      String           @default("upcoming")
+  entries     ChallengeEntry[]
+  createdAt   DateTime         @default(now())
+}
+
+model ChallengeEntry {
+  id          String    @id @default(cuid())
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  mediaUrl    String
+  description String?
+  votes       Int       @default(0)
+  rank        Int?
+  submittedAt DateTime  @default(now())
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String   @db.Text
+  budget      Decimal? @db.Decimal(18,2)
+  category    String
+  status      String   @default("open")
+  createdAt   DateTime @default(now())
+}
+
+model NFTCredential {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  type      String
+  tokenId   String?
+  mintTxid  String?
+  mintedAt  DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model ModerationFlag {
+  id         String   @id @default(cuid())
+  contentId  String
+  reporterId String
+  reason     String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetId   String?
+  targetType String?
+  changes    Json?
+  createdAt  DateTime @default(now())
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model SeedParticipant {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  package   String
+  amount    Decimal  @db.Decimal(18,2)
+  micAmount Decimal  @db.Decimal(18,0)
+  txHash    String?
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+}
+
+model ReferralLink {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  code      String   @unique
+  clicks    Int      @default(0)
+  signups   Int      @default(0)
+  createdAt DateTime @default(now())
+}

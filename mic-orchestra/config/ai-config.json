@@ -1,0 +1,92 @@
+{
+  "providers": {
+    "anthropic": {
+      "name": "Anthropic (Claude)",
+      "role": "Builder & Synthesizer",
+      "description": "Proposes fixes, synthesizes debates, generates reports",
+      "models": {
+        "primary": "claude-sonnet-4-20250514",
+        "fallback": "claude-haiku-4-5-20251001",
+        "nlp": "claude-haiku-4-5-20251001",
+        "analysis": "claude-haiku-4-5-20251001",
+        "directive": "claude-sonnet-4-20250514"
+      },
+      "enabled": true,
+      "required": true,
+      "apiKeySet": true,
+      "apiKeyPreview": "sk-ant...9wAA"
+    },
+    "openai": {
+      "name": "OpenAI (Codex)",
+      "role": "Auditor #1 — Security",
+      "description": "Security-focused code audit, vulnerability scanning, Web3 risks",
+      "models": {
+        "primary": "o1",
+        "fallback": "gpt-4o"
+      },
+      "enabled": true,
+      "required": true,
+      "apiKeySet": true,
+      "apiKeyPreview": "sk-pro...2JgA"
+    },
+    "google": {
+      "name": "Google (Gemini)",
+      "role": "Auditor #2 — Architecture",
+      "description": "Architecture review, logic analysis, gas optimization, economic attacks",
+      "models": {
+        "primary": "gemini-2.5-flash",
+        "fallback": "gemini-2.0-flash"
+      },
+      "enabled": true,
+      "required": false,
+      "apiKeySet": true,
+      "apiKeyPreview": "AIzaSy...DvXA"
+    }
+  },
+  "orchestraFlow": {
+    "description": "3-Model Tribunal: Codex + Gemini audit independently → Claude synthesizes → Debate → Human decides",
+    "steps": [
+      {
+        "order": 1,
+        "provider": "openai",
+        "action": "audit",
+        "label": "Codex audits (security focus)"
+      },
+      {
+        "order": 2,
+        "provider": "google",
+        "action": "audit",
+        "label": "Gemini audits (architecture focus)"
+      },
+      {
+        "order": 3,
+        "provider": "anthropic",
+        "action": "respond",
+        "label": "Claude proposes fixes"
+      },
+      {
+        "order": 4,
+        "provider": "all",
+        "action": "debate",
+        "label": "3-way debate (max 3 rounds)"
+      },
+      {
+        "order": 5,
+        "provider": "anthropic",
+        "action": "synthesize",
+        "label": "Claude synthesizes → Report to Admin"
+      }
+    ]
+  },
+  "budget": {
+    "dailyBudget": 20,
+    "monthlyBudget": 300
+  },
+  "telegram": {
+    "primaryChatId": "480170050",
+    "botTokenSet": true,
+    "botTokenPreview": "863771...H-eE"
+  },
+  "version": "4.0",
+  "updatedAt": "2026-04-05T16:38:33.810Z"
+}

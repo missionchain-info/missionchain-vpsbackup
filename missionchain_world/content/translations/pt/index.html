@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mission Chain — Inspired by Faith. Built for People.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#06111F;--navy2:#0C1E35;--navy3:#142944;--navy4:#1E3A5A;
+  --gold:#C9A84C;--gold2:#DEB96A;--gold3:#F2DFA0;--gold4:#FBF3DC;
+  --wine:#3D0C1A;--wine2:#5C1428;--purple:#1A0840;--purple2:#2E1870;
+  --cream:#FAF7F0;--white:#FFFFFF;
+  --text:#18160F;--text2:#3A3525;--text3:#8A8070;
+  --border:#E8E2D4;--border2:#D0C8B8;
+  --r:14px;--rs:8px;
+}
+body.day{background:#06111F;}
+body.night{background:#EDE8F5;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;transition:background .35s;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:64px;display:flex;align-items:center;
+  padding:0 28px;gap:0;
+  background:rgba(6,17,31,0.97);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(201,168,76,0.14);
+}
+.nav-logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0;}
+.nav-logo img{height:36px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,0.28));}
+.nav-logo-text{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--gold);line-height:1;}
+.nav-logo-sub{font-size:9px;color:rgba(255,255,255,0.32);letter-spacing:.8px;text-transform:uppercase;margin-top:1px;}
+.nav-links{display:flex;margin-left:28px;flex:1;}
+.nav-a{
+  padding:0 12px;height:64px;display:flex;align-items:center;
+  font-size:12px;font-weight:500;color:rgba(255,255,255,0.45);
+  text-decoration:none;letter-spacing:.2px;transition:color .18s;
+  border-bottom:2px solid transparent;white-space:nowrap;
+}
+.nav-a:hover{color:rgba(255,255,255,0.85);}
+.nav-a.active,.nav-a.sophia-word-link{color:var(--gold);border-bottom-color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:9px;margin-left:auto;}
+.lang-sel{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.2);
+  border-radius:18px;padding:5px 10px;color:rgba(255,255,255,0.55);
+  font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;
+  -webkit-appearance:none;outline:none;
+}
+.lang-sel option{background:#0C1E35;color:white;}
+.mode-btn{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.18);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;transition:all .18s;
+}
+.mode-btn:hover{background:rgba(201,168,76,0.14);}
+.cta-btn{
+  padding:8px 18px;border-radius:18px;
+  background:var(--gold);color:var(--navy);
+  font-size:12px;font-weight:600;text-decoration:none;
+  transition:background .18s;white-space:nowrap;
+}
+.partner-btn{
+  background:transparent;color:var(--gold);
+  border:1.5px solid var(--gold);
+}
+.partner-btn:hover{background:rgba(201,168,76,0.12);}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;background:none;border:none;}
+.hamburger span{width:20px;height:2px;background:rgba(255,255,255,0.55);border-radius:1px;display:block;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:100px 32px 60px;text-align:center;
+  background:linear-gradient(165deg,var(--navy) 0%,var(--navy3) 55%,#1A1040 100%);
+}
+.hero-bg{position:absolute;inset:0;pointer-events:none;}
+.hero-star{position:absolute;border-radius:50%;background:rgba(201,168,76,.35);animation:tw var(--d,3s) ease-in-out infinite;animation-delay:var(--dl,0s);}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.85;transform:scale(1.2)}}
+.hero-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-55%);pointer-events:none;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:6px 14px;
+  font-size:11px;color:rgba(201,168,76,0.75);letter-spacing:.5px;text-transform:uppercase;
+  margin-bottom:24px;position:relative;z-index:2;
+}
+.hero-badge-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;}
+.hero-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(42px,7vw,90px);font-weight:600;line-height:1.04;
+  color:#FFF;position:relative;z-index:2;max-width:920px;
+}
+.hero-h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:clamp(14px,1.8vw,18px);color:rgba(255,255,255,0.5);max-width:640px;margin:20px auto 0;line-height:1.75;position:relative;z-index:2;}
+.hero-verse{margin-top:24px;font-family:'Cormorant Garamond',serif;font-size:14.5px;font-style:italic;color:rgba(201,168,76,0.6);position:relative;z-index:2;}
+.hero-btns{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;}
+.btn-p{padding:13px 30px;border-radius:28px;background:var(--gold);color:var(--navy);font-size:13.5px;font-weight:600;text-decoration:none;transition:all .2s;letter-spacing:.3px;}
+.btn-p:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-g{padding:13px 30px;border-radius:28px;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);font-size:13.5px;text-decoration:none;transition:all .2s;letter-spacing:.3px;}
+.btn-g:hover{border-color:var(--gold);color:var(--gold);}
+.scroll-line{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;width:1px;height:40px;background:linear-gradient(to bottom,transparent,rgba(201,168,76,0.5));animation:sp 2s ease-in-out infinite;}
+@keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ── STATS BAR ── */
+.stats{background:var(--navy2);border-top:1px solid rgba(201,168,76,0.1);border-bottom:1px solid rgba(201,168,76,0.1);padding:22px 32px;display:flex;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;padding:0 36px;border-right:1px solid rgba(255,255,255,0.07);}
+.stat:last-child{border-right:none;}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--gold);line-height:1;}
+.stat-l{font-size:10.5px;color:rgba(255,255,255,0.38);letter-spacing:.5px;text-transform:uppercase;margin-top:4px;}
+
+/* ── GENERIC SECTION ── */
+.sec{padding:80px 32px;}
+.sec.dark{background:var(--navy);}
+.sec.light{background:var(--cream);}
+.sec.white{background:#FFFFFF;}
+body.night .sec.light{background:#E4DDF2;}
+body.night .sec.white{background:#EDE8F5;}
+.con{max-width:1100px;margin:0 auto;}
+.sec-head{text-align:center;margin-bottom:52px;}
+.sec-label{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:10px;}
+.sec-num{width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;color:var(--gold);}
+.sec-h{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:600;line-height:1.12;margin-bottom:14px;}
+.sec.dark .sec-h{color:#FFF;}
+.sec.light .sec-h,.sec.white .sec-h{color:var(--text);}
+body.night .sec.light .sec-h,body.night .sec.white .sec-h{color:#1A0840;}
+.sec-p{font-size:15.5px;line-height:1.72;max-width:580px;margin:0 auto;}
+.sec.dark .sec-p{color:rgba(255,255,255,0.48);}
+.sec.light .sec-p,.sec.white .sec-p{color:var(--text3);}
+body.night .sec.light .sec-p,body.night .sec.white .sec-p{color:#5A4880;}
+
+/* ── LAYER DIAGRAM ── */
+.layer-wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+.layer-card{width:100%;padding:22px 28px;display:flex;align-items:center;gap:18px;text-align:left;transition:transform .2s;}
+.layer-card:hover{transform:translateY(-2px);}
+.layer-card.top{background:var(--navy);border-radius:var(--r) var(--r) 0 0;border:1px solid rgba(201,168,76,0.2);}
+.layer-card.bot{background:rgba(6,17,31,0.05);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);}
+body.night .layer-card.bot{background:rgba(100,60,180,0.05);border-color:#C8BCDF;}
+.l-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.l-icon.g{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);}
+.l-icon.d{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);}
+.l-title{font-size:14px;font-weight:600;color:var(--gold);margin-bottom:3px;}
+.layer-card.bot .l-title{color:var(--text2);}
+body.night .layer-card.bot .l-title{color:#1A0840;}
+.l-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.5;}
+.layer-card.bot .l-desc{color:var(--text3);}
+body.night .layer-card.bot .l-desc{color:#5A4880;}
+.l-lnk{margin-left:auto;font-size:11px;color:var(--gold);text-decoration:none;border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:4px 10px;transition:all .18s;flex-shrink:0;white-space:nowrap;}
+.l-lnk:hover{background:rgba(201,168,76,0.1);}
+.layer-arrow{width:30px;height:30px;margin:0 auto;background:var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;}
+body.night .layer-arrow{background:#C8BCDF;}
+
+/* ── CARDS ── */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.card{background:#FFF;border:1px solid var(--border);border-radius:var(--r);padding:26px 22px;transition:transform .2s,box-shadow .2s;}
+body.night .card{background:rgba(255,255,255,0.62);border-color:#C8BCDF;}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(10,22,40,0.07);}
+.sec.dark .card{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.07);}
+.sec.dark .card:hover{background:rgba(255,255,255,0.07);}
+.c-icon{width:42px;height:42px;border-radius:10px;background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:19px;}
+.c-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:7px;color:var(--text);}
+.sec.dark .c-title{color:#FFF;}
+body.night .c-title{color:#1A0840;}
+.c-body{font-size:13px;color:var(--text3);line-height:1.65;}
+.sec.dark .c-body{color:rgba(255,255,255,0.43);}
+body.night .c-body{color:#5A4880;}
+.c-tag{display:inline-block;margin-top:12px;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);border-top:1px solid rgba(201,168,76,0.18);padding-top:9px;width:100%;}
+
+/* ── MODULE 5: CONTENT ── */
+.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.media-card{border-radius:var(--r);overflow:hidden;border:1px solid var(--border);background:#FFF;transition:transform .2s;}
+body.night .media-card{background:rgba(255,255,255,0.65);border-color:#C8BCDF;}
+.media-card:hover{transform:translateY(-3px);}
+.media-thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative;}
+.media-thumb.podcast{background:linear-gradient(135deg,var(--navy2),var(--navy4));}
+.media-thumb.article{background:linear-gradient(135deg,#1A2E18,#2A4820);}
+.media-thumb.video{background:linear-gradient(135deg,#1A0828,#2E1448);}
+.play{width:46px;height:46px;border-radius:50%;background:rgba(201,168,76,0.88);display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:15px;cursor:pointer;transition:transform .18s;}
+.play:hover{transform:scale(1.1);}
+.media-meta{padding:16px 18px;}
+.media-tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:5px;}
+.media-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.3;}
+body.night .media-title{color:#1A0840;}
+.media-desc{font-size:12px;color:var(--text3);line-height:1.5;}
+body.night .media-desc{color:#5A4880;}
+.media-author{display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.m-ava{width:24px;height:24px;border-radius:50%;background:var(--gold3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--navy);}
+.m-name{font-size:11px;color:var(--text3);font-weight:500;}
+body.night .m-name{color:#5A4880;}
+
+/* ═══════════════════════════════════════════
+   MODULE 6 — SOPHIA WORD (HERO TREATMENT)
+═══════════════════════════════════════════ */
+.sw-section{
+  padding:0;position:relative;overflow:hidden;
+  background:linear-gradient(175deg,#0A0618 0%,#160830 40%,#0E1C38 75%,#06111F 100%);
+}
+.sw-top-border{height:4px;background:linear-gradient(90deg,transparent,var(--gold),rgba(201,168,76,0.4),transparent);}
+.sw-inner{padding:80px 32px 72px;}
+.sw-head{text-align:center;margin-bottom:60px;position:relative;z-index:2;}
+.sw-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);
+  border-radius:24px;padding:7px 18px;
+  font-size:11px;color:rgba(201,168,76,0.8);letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:20px;
+}
+.sw-eyebrow-cross{font-size:14px;color:var(--gold);}
+.sw-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,6vw,72px);font-weight:600;line-height:1.06;
+  color:#FFF;margin-bottom:6px;
+}
+.sw-title em{color:var(--gold);font-style:italic;}
+.sw-subtitle{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(16px,2vw,22px);font-style:italic;
+  color:rgba(255,255,255,0.45);margin-top:14px;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.6;
+}
+/* stars for SW section */
+.sw-stars{position:absolute;inset:0;pointer-events:none;z-index:0;}
+.sw-star{position:absolute;border-radius:50%;animation:tw var(--d,4s) ease-in-out infinite;animation-delay:var(--dl,0s);}
+
+/* Daily Reflection Card */
+.sw-daily{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,168,76,0.18);
+  border-radius:20px;padding:40px 44px;
+  position:relative;z-index:2;margin-bottom:40px;overflow:hidden;
+}
+.sw-daily::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,0.06),transparent 70%);
+  pointer-events:none;
+}
+.sw-daily-label{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(201,168,76,0.55);margin-bottom:20px;
+}
+.sw-daily-label span{width:16px;height:1px;background:rgba(201,168,76,0.35);display:inline-block;}
+.sw-verse-block{
+  border-left:3px solid var(--gold);
+  padding:18px 24px;
+  background:rgba(201,168,76,0.04);
+  border-radius:0 10px 10px 0;
+  margin-bottom:22px;
+}
+.sw-verse-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,2.5vw,26px);font-style:italic;
+  color:rgba(255,255,255,0.9);line-height:1.55;margin-bottom:8px;
+}
+.sw-verse-ref{font-size:12px;color:var(--gold);letter-spacing:.5px;font-weight:500;}
+.sw-reflection-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(20px,2.8vw,30px);font-weight:600;
+  color:#FFF;margin-bottom:14px;line-height:1.3;
+}
+.sw-reflection-body{
+  font-size:15px;color:rgba(255,255,255,0.55);line-height:1.8;
+  max-width:720px;
+}
+.sw-reflection-body strong{color:rgba(201,168,76,0.9);}
+.sw-daily-footer{
+  display:flex;align-items:center;gap:16px;margin-top:24px;padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;
+}
+.sw-sophia-badge{
+  display:flex;align-items:center;gap:8px;
+  font-size:11.5px;color:rgba(255,255,255,0.4);
+}
+.sw-sophia-ava{
+  width:26px;height:26px;border-radius:50%;
+  border:1.5px solid var(--gold);overflow:hidden;background:var(--navy2);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--gold);font-weight:600;
+}
+.sw-formats{display:flex;gap:8px;margin-left:auto;}
+.sw-fmt-btn{
+  padding:5px 12px;border-radius:14px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  font-size:11px;color:rgba(255,255,255,0.5);
+  cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;
+}
+.sw-fmt-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.07);}
+.sw-discuss-btn{
+  padding:8px 20px;border-radius:18px;
+  background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);
+  color:var(--gold);font-size:12px;cursor:pointer;
+  transition:all .18s;font-family:'Inter',sans-serif;
+}
+.sw-discuss-btn:hover{background:rgba(201,168,76,0.2);}
+
+/* SOPHIA WORD Theme Grid */
+.sw-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:2;margin-bottom:40px;}
+.sw-theme-card{
+  border-radius:14px;padding:22px 18px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);
+  cursor:pointer;transition:all .22s;
+  position:relative;overflow:hidden;
+}
+.sw-theme-card::before{
+  content:'';position:absolute;inset:0;border-radius:14px;
+  opacity:0;transition:opacity .22s;
+}
+.sw-theme-card:hover{transform:translateY(-3px);border-color:rgba(201,168,76,0.2);}
+.sw-theme-card:hover::before{opacity:1;}
+.sw-theme-card.ai::before{background:linear-gradient(135deg,rgba(80,40,200,0.08),transparent);}
+.sw-theme-card.blockchain::before{background:linear-gradient(135deg,rgba(20,80,160,0.08),transparent);}
+.sw-theme-card.create::before{background:linear-gradient(135deg,rgba(160,100,20,0.08),transparent);}
+.sw-theme-card.economy::before{background:linear-gradient(135deg,rgba(20,120,60,0.08),transparent);}
+.sw-theme-card.community::before{background:linear-gradient(135deg,rgba(160,20,80,0.08),transparent);}
+.sw-theme-card.humanity::before{background:linear-gradient(135deg,rgba(140,40,160,0.08),transparent);}
+.sw-theme-card.tech::before{background:linear-gradient(135deg,rgba(20,100,140,0.08),transparent);}
+.sw-theme-card.future::before{background:linear-gradient(135deg,rgba(80,160,60,0.08),transparent);}
+.sw-theme-icon{font-size:26px;margin-bottom:10px;position:relative;z-index:1;}
+.sw-theme-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#FFF;margin-bottom:5px;position:relative;z-index:1;line-height:1.3;}
+.sw-theme-verse{font-size:10.5px;color:rgba(201,168,76,0.55);position:relative;z-index:1;line-height:1.4;}
+.sw-theme-preview{font-size:11.5px;color:rgba(255,255,255,0.35);margin-top:8px;line-height:1.45;position:relative;z-index:1;}
+
+/* SOPHIA WORD Formats */
+.sw-fmts-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  position:relative;z-index:2;
+}
+.sw-fmt-card{
+  border-radius:14px;padding:24px 20px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);text-align:center;
+}
+.sw-fmt-icon{font-size:28px;margin-bottom:10px;}
+.sw-fmt-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:#FFF;margin-bottom:5px;}
+.sw-fmt-desc{font-size:11.5px;color:rgba(255,255,255,0.38);line-height:1.55;}
+
+.sw-bottom-border{height:4px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),var(--gold),transparent);}
+
+/* ── CHALLENGE ── */
+.ch-hero{
+  background:linear-gradient(135deg,var(--navy2),var(--navy4));
+  border-radius:18px;padding:40px;display:flex;align-items:center;gap:32px;margin-bottom:28px;
+  border:1px solid rgba(201,168,76,0.12);position:relative;overflow:hidden;
+}
+.ch-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.09),transparent 70%);}
+.ch-badge{width:64px;height:64px;border-radius:50%;background:rgba(201,168,76,0.1);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.ch-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(201,168,76,0.65);margin-bottom:5px;}
+.ch-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:#FFF;margin-bottom:7px;}
+.ch-desc{font-size:13.5px;color:rgba(255,255,255,0.48);line-height:1.6;}
+.ch-cta{margin-left:auto;flex-shrink:0;padding:11px 22px;border-radius:22px;background:var(--gold);color:var(--navy);font-size:12.5px;font-weight:600;text-decoration:none;transition:background .18s;}
+.ch-cta:hover{background:var(--gold2);}
+.ch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.ch-card{border-radius:var(--r);border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);padding:18px;cursor:pointer;transition:all .2s;}
+.ch-card:hover{background:rgba(255,255,255,0.07);transform:translateY(-2px);}
+.ch-emoji{font-size:26px;margin-bottom:8px;}
+.ch-name{font-family:'Cormorant Garamond',serif;font-size:15.5px;font-weight:600;color:#FFF;margin-bottom:3px;}
+.ch-entries{font-size:11px;color:rgba(255,255,255,0.33);}
+.ch-prize{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);font-size:10.5px;color:var(--gold);}
+.lb{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r);padding:22px;margin-top:22px;}
+.lb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.lb-t{font-family:'Cormorant Garamond',serif;font-size:17px;color:#FFF;}
+.lb-all{font-size:11px;color:var(--gold);text-decoration:none;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rk{width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--gold);flex-shrink:0;}
+.lb-rk.top{background:var(--gold);color:var(--navy);}
+.lb-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--navy);}
+.lb-nm{font-size:13px;color:rgba(255,255,255,0.78);flex:1;}
+.lb-sc{font-size:11.5px;color:var(--gold);font-weight:500;}
+
+/* ── TALENT ── */
+.talent-card{background:#FFF;border:1px solid var(--border);border-radius:18px;padding:28px;display:flex;gap:28px;align-items:flex-start;margin-bottom:22px;}
+body.night .talent-card{background:rgba(255,255,255,0.65);border-color:#C8BCDF;}
+.t-ava{width:72px;height:72px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:var(--navy);background:var(--gold3);flex-shrink:0;}
+.t-info{flex:1;}
+.t-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px;}
+body.night .t-name{color:#1A0840;}
+.t-role{font-size:12.5px;color:var(--text3);margin-bottom:10px;}
+body.night .t-role{color:#5A4880;}
+.t-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.ttag{padding:3px 9px;border-radius:10px;font-size:10.5px;font-weight:500;}
+.ttag-g{background:rgba(201,168,76,0.1);color:rgba(140,100,20,0.9);border:1px solid rgba(201,168,76,0.22);}
+body.night .ttag-g{color:rgba(110,70,5,1);}
+.ttag-n{background:rgba(20,41,68,0.07);color:var(--navy3);border:1px solid rgba(20,41,68,0.1);}
+body.night .ttag-n{background:rgba(100,60,180,0.09);color:rgba(80,40,140,.9);border-color:rgba(120,80,200,.18);}
+.t-stats{display:flex;gap:20px;}
+.ts-n{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);}
+body.night .ts-n{color:#1A0840;}
+.ts-l{font-size:10.5px;color:var(--text3);}
+body.night .ts-l{color:#5A4880;}
+.t-cred{margin-left:auto;text-align:center;flex-shrink:0;}
+.cred-badge{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--gold));display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 5px;}
+.cred-name{font-size:10.5px;font-weight:600;color:var(--gold);letter-spacing:.5px;text-transform:uppercase;}
+.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.port-item{aspect-ratio:4/3;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid var(--border);cursor:pointer;overflow:hidden;position:relative;transition:transform .18s;}
+.port-item:hover{transform:scale(1.02);}
+.port-item.mu{background:linear-gradient(135deg,#0E1E1A,#183028);}
+.port-item.ar{background:linear-gradient(135deg,#1A1408,#2E2410);}
+.port-item.vi{background:linear-gradient(135deg,#1A0E2A,#2E1850);}
+.port-item.de{background:linear-gradient(135deg,#1A0A14,#2E1020);}
+.port-item.fi{background:linear-gradient(135deg,#0A1828,#142840);}
+.port-item.po{background:linear-gradient(135deg,#101A0A,#182E10);}
+.port-ov{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .18s;display:flex;align-items:flex-end;padding:8px;}
+.port-item:hover .port-ov{background:rgba(0,0,0,0.38);}
+.port-lbl{font-size:9.5px;color:white;opacity:0;transition:opacity .18s;letter-spacing:.4px;}
+.port-item:hover .port-lbl{opacity:1;}
+
+/* ── MARKETPLACE ── */
+.mkt-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:28px;}
+body.night .mkt-tabs{border-color:#C8BCDF;}
+.mkt-tab{padding:11px 18px;font-size:12.5px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Inter',sans-serif;}
+body.night .mkt-tab{color:#5A4880;}
+.mkt-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.job-card{background:#FFF;border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;display:flex;align-items:center;gap:18px;margin-bottom:10px;transition:all .18s;cursor:pointer;}
+body.night .job-card{background:rgba(255,255,255,0.62);border-color:#C8BCDF;}
+.job-card:hover{border-color:var(--gold);transform:translateX(3px);}
+.job-co{width:42px;height:42px;border-radius:9px;background:var(--gold3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.job-info{flex:1;}
+.job-t{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:3px;}
+body.night .job-t{color:#1A0840;}
+.job-c{font-size:11.5px;color:var(--text3);}
+body.night .job-c{color:#5A4880;}
+.job-tags{display:flex;gap:5px;margin-top:7px;}
+.jtag{padding:2px 7px;border-radius:7px;font-size:10px;background:rgba(201,168,76,0.07);color:rgba(130,90,15,0.85);border:1px solid rgba(201,168,76,0.18);}
+body.night .jtag{background:rgba(120,80,200,0.07);color:rgba(80,40,140,.85);border-color:rgba(120,80,200,.18);}
+.job-r{text-align:right;flex-shrink:0;}
+.job-sal{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:3px;}
+body.night .job-sal{color:#1A0840;}
+.job-type{font-size:10.5px;color:var(--text3);}
+.job-apply{margin-top:7px;padding:5px 13px;border-radius:12px;background:var(--gold);color:var(--navy);font-size:11px;font-weight:600;border:none;cursor:pointer;transition:background .18s;font-family:'Inter',sans-serif;}
+.job-apply:hover{background:var(--gold2);}
+
+/* ── COMMUNITY ── */
+.hub-map{background:linear-gradient(135deg,var(--navy2),var(--navy4));border-radius:18px;padding:36px;border:1px solid rgba(201,168,76,0.1);margin-bottom:28px;text-align:center;}
+.hub-n{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;color:var(--gold);margin-bottom:5px;}
+.hub-l{font-size:12.5px;color:rgba(255,255,255,0.4);}
+.hub-dots{display:flex;justify-content:center;flex-wrap:wrap;margin:22px auto;max-width:440px;}
+.hub-dot{width:11px;height:11px;border-radius:50%;background:rgba(201,168,76,0.45);margin:3px;animation:hdot var(--d,2s) ease-in-out infinite;animation-delay:var(--dl,0s);}
+.hub-dot.on{background:var(--gold);width:13px;height:13px;}
+@keyframes hdot{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.grp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.grp-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r);padding:18px;transition:all .2s;cursor:pointer;}
+.grp-card:hover{background:rgba(255,255,255,0.07);transform:translateY(-2px);}
+.grp-emoji{font-size:22px;margin-bottom:8px;}
+.grp-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#FFF;margin-bottom:3px;}
+.grp-mem{font-size:11px;color:rgba(255,255,255,0.33);}
+.grp-join{margin-top:12px;padding:6px 14px;border-radius:12px;border:1px solid rgba(201,168,76,0.25);background:transparent;color:var(--gold);font-size:11px;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;}
+.grp-join:hover{background:rgba(201,168,76,0.1);}
+
+/* ── RECOGNITION ── */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:44px;}
+.tier-card{border-radius:18px;padding:32px 24px;text-align:center;border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;transition:transform .2s;}
+.tier-card:hover{transform:translateY(-4px);}
+.tier-card.builder{background:linear-gradient(135deg,rgba(30,50,80,0.75),rgba(20,40,68,0.75));}
+.tier-card.maker{background:linear-gradient(135deg,rgba(40,30,80,0.75),rgba(30,20,68,0.75));}
+.tier-card.luminary{background:linear-gradient(135deg,rgba(58,40,14,0.85),rgba(40,28,8,0.85));border-color:rgba(201,168,76,0.3);}
+.tier-glow{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:90px;height:90px;border-radius:50%;filter:blur(28px);opacity:.28;}
+.tier-card.builder .tier-glow{background:#4080FF;}
+.tier-card.maker .tier-glow{background:#8040FF;}
+.tier-card.luminary .tier-glow{background:var(--gold);}
+.tier-medal{font-size:40px;margin-bottom:14px;position:relative;z-index:1;}
+.tier-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#FFF;margin-bottom:7px;position:relative;z-index:1;}
+.tier-name.gd{color:var(--gold);}
+.tier-desc{font-size:12.5px;color:rgba(255,255,255,0.42);line-height:1.6;margin-bottom:14px;position:relative;z-index:1;}
+.tier-kpis{display:flex;flex-direction:column;gap:5px;position:relative;z-index:1;}
+.tier-kpi{font-size:11px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:5px;text-align:left;}
+.tier-kpi::before{content:'✓';color:var(--gold);font-size:9.5px;}
+.rec-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:var(--r);padding:24px;}
+.rf-item{text-align:center;padding:0 18px;}
+.rf-icon{font-size:26px;margin-bottom:6px;}
+.rf-label{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:.3px;}
+.rf-arr{color:rgba(201,168,76,0.35);font-size:18px;padding:0 2px;}
+
+/* ── FLOATING SOPHIA ── */
+.sophia-fab{position:fixed;bottom:26px;right:26px;z-index:2000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.sophia-win{position:fixed;bottom:96px;right:26px;z-index:1999;width:356px;border-radius:18px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4);display:none;flex-direction:column;}
+.sophia-win.open{display:flex;}
+body.night .sophia-win{background:#E8E0F5;}
+body.day .sophia-win{background:var(--cream);}
+.sw-header{background:var(--navy);padding:13px 16px;display:flex;align-items:center;gap:11px;}
+.sw-hava{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--gold);overflow:hidden;background:var(--navy2);flex-shrink:0;}
+.sw-hname{font-family:'Cormorant Garamond',serif;font-size:15.5px;color:var(--gold);}
+.sw-hsub{font-size:9.5px;color:rgba(255,255,255,0.32);letter-spacing:.4px;text-transform:uppercase;}
+.sw-close{margin-left:auto;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.07);border:none;cursor:pointer;color:rgba(255,255,255,0.45);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.sw-close:hover{background:rgba(255,255,255,0.14);}
+.sw-msgs{height:255px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px;}
+body.day .sw-msgs{background:var(--cream);}
+body.night .sw-msgs{background:#E8E0F5;}
+.sw-msgs::-webkit-scrollbar{width:2px;}
+.sw-msgs::-webkit-scrollbar-thumb{background:var(--border2);}
+.bbl-s{background:#FFF;border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:9px 13px;font-size:13.5px;font-family:'Cormorant Garamond',serif;line-height:1.6;color:var(--text);max-width:86%;}
+body.night .bbl-s{background:#F5F0FF;border-color:#C8BCE0;}
+.bbl-u{background:var(--navy);color:rgba(255,255,255,0.88);border-radius:12px 4px 12px 12px;padding:9px 13px;font-size:13px;line-height:1.6;max-width:86%;align-self:flex-end;}
+.sw-dots{background:#FFF;border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:10px 14px;display:flex;gap:4px;}
+body.night .sw-dots{background:#F5F0FF;border-color:#C8BCE0;}
+.sw-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:sdot 1.1s ease-in-out infinite;}
+.sw-dot:nth-child(2){animation-delay:.15s;}
+.sw-dot:nth-child(3){animation-delay:.3s;}
+@keyframes sdot{0%,80%,100%{transform:scale(.6);opacity:.3}40%{transform:scale(1);opacity:1}}
+.sw-inp-row{display:flex;gap:7px;padding:9px 11px;border-top:1px solid var(--border);}
+body.day .sw-inp-row{background:#FFF;}
+body.night .sw-inp-row{background:#F0E8FF;border-color:#C8BCE0;}
+.sw-inp{flex:1;border:1px solid var(--border2);border-radius:16px;padding:8px 13px;font-size:12.5px;background:var(--cream);color:var(--text);outline:none;font-family:'Inter',sans-serif;}
+body.night .sw-inp{background:#F5F0FF;border-color:#C8BCE0;color:#1A0840;}
+.sw-inp:focus{border-color:var(--gold);}
+.sw-inp::placeholder{color:var(--text3);}
+body.night .sw-inp::placeholder{color:#8070A0;}
+.sw-send{width:32px;height:32px;border-radius:50%;background:var(--navy);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
+.sw-send:hover{background:var(--navy3);}
+.sw-send-i{stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sophia-fab-btn{width:56px;height:56px;border-radius:50%;background:var(--navy2);border:2px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(10,22,40,0.4);transition:all .2s;position:relative;}
+.sophia-fab-btn:hover{transform:scale(1.07);box-shadow:0 6px 28px rgba(201,168,76,0.28);}
+.sophia-ping{position:absolute;top:-2px;right:-2px;width:13px;height:13px;border-radius:50%;background:#4ade80;border:2px solid var(--navy2);}
+.sophia-fab-lbl{background:var(--navy2);border:1px solid rgba(201,168,76,0.22);border-radius:18px;padding:5px 13px;font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap;letter-spacing:.3px;}
+
+/* ── FOOTER ── */
+.footer{background:var(--navy);border-top:1px solid rgba(201,168,76,0.08);padding:56px 32px 28px;}
+.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.f-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
+.f-logo-row img{height:30px;width:auto;filter:drop-shadow(0 0 4px rgba(201,168,76,0.22));}
+.f-logo-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold);}
+.f-tag{font-size:12.5px;color:rgba(255,255,255,0.38);line-height:1.6;margin-bottom:16px;max-width:260px;}
+.f-io{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:rgba(201,168,76,0.55);text-decoration:none;border:1px solid rgba(201,168,76,0.18);border-radius:7px;padding:5px 11px;transition:all .18s;}
+.f-io:hover{color:var(--gold);border-color:rgba(201,168,76,0.38);}
+.f-io-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;}
+.f-socials{display:flex;gap:8px;margin-top:14px;}
+.f-social{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:12px;text-decoration:none;color:rgba(255,255,255,0.38);transition:all .18s;}
+.f-social:hover{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.28);color:var(--gold);}
+.f-col-t{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.28);font-weight:600;margin-bottom:16px;}
+.f-link{display:block;font-size:12.5px;color:rgba(255,255,255,0.48);text-decoration:none;margin-bottom:9px;transition:color .18s;letter-spacing:.2px;}
+.f-link:hover{color:rgba(255,255,255,0.85);}
+.footer-btm{max-width:1100px;margin:24px auto 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.f-copy{font-size:11px;color:rgba(255,255,255,0.2);}
+.f-verse{font-family:'Cormorant Garamond',serif;font-size:12.5px;font-style:italic;color:rgba(201,168,76,0.4);}
+
+/* ── NIGHT MODE ── */
+body.night .stats{background:#2A2248;}
+body.night .hero{background:linear-gradient(165deg,#1A0840,#2E1870,#1A0A50);}
+body.night .sw-section{background:linear-gradient(175deg,#120420 0%,#1E0C3C 40%,#140E28 75%,#0E0A1C 100%);}
+
+/* ── TERMS & PRIVACY ── */
+.legal-panel{display:none;}
+.legal-panel.active{display:block;}
+.legal-item{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--rs);
+  padding:16px 20px;margin-bottom:12px;
+  border-left:3px solid var(--border2);transition:border-left-color .2s;
+}
+body.night .legal-item{background:rgba(255,255,255,0.6);border-color:#C8BCDF;}
+.legal-item:hover{border-left-color:var(--gold);}
+.legal-item-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:7px;}
+body.night .legal-item-title{color:#1A0840;}
+.legal-item-body{font-size:13px;color:var(--text3);line-height:1.72;}
+body.night .legal-item-body{color:#5A4880;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .g3,.media-grid,.grp-grid,.tiers{grid-template-columns:repeat(2,1fr);}
+  .g4,.ch-grid,.sw-themes{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px;}
+  .talent-card{flex-direction:column;}
+  .t-cred{margin-left:0;}
+  .ch-hero{flex-direction:column;text-align:center;}
+  .ch-cta{margin:0 auto;}
+  .sw-fmts-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .g3,.g2,.media-grid,.grp-grid,.tiers,.port-grid,.sw-fmts-row{grid-template-columns:1fr;}
+  .g4,.ch-grid,.sw-themes{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr;}
+  .stats{gap:12px;}
+  .stat{padding:0 12px;}
+  .hero{padding:80px 20px 50px;}
+  .sec{padding:60px 20px;}
+  .nav{padding:0 18px;}
+  .sw-inner{padding:60px 20px 56px;}
+  .sw-daily{padding:28px 24px;}
+  .sophia-win{width:calc(100vw - 48px);right:12px;}
+  .rec-flow{flex-direction:column;gap:10px;}
+  .rf-arr{transform:rotate(90deg);}
+  .layer-card{flex-direction:column;text-align:center;}
+  .l-lnk{margin:0 auto;}
+}
+</style>
+</head>
+<body class="day" id="body">
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#">
+    <img src="https://missionchain.io/mission-chain-logo-clear.png" alt="Mission Chain">
+    <div>
+      <div class="nav-logo-text">Mission Chain<span style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:400"> .world</span></div>
+      <div class="nav-logo-sub">Inspirado pela fé. Criado para as pessoas.</div>
+    </div>
+  </a>
+  <div class="nav-links" id="nav-links">
+    <a class="nav-a active" href="#content">Conteúdo</a>
+    
+    <a class="nav-a sophia-word-link" href="#sophia-word">✝<span translate='no'>SOPHIA WORD</span></a>
+    
+    <a class="nav-a" href="#challenge">Desafio</a>
+    
+    <a class="nav-a" href="#marketplace">Mercado</a>
+    
+    <a class="nav-a" href="#talent">de Talentos</a>
+    
+    <a class="nav-a" href="#community">Comunidade</a>
+    
+    <a class="nav-a" href="#recognition">Reconhecimento</a>
+    </div>
+  <div class="nav-right">
+    <select class="lang-sel" id="lang-sel" onchange="setLang(this.value)">
+      <option value="en">EN</option>
+      <option value="es">ES</option>
+      <option value="pt">PT</option>
+      <option value="ko">한국어</option>
+      <option value="vi">VI</option>
+    </select>
+    <div class="mode-btn" id="mode-btn" onclick="toggleMode()">☀</div>
+    <a class="cta-btn partner-btn" href="#" onclick="openPartner();return false;">✦ Seja nosso parceiro</a>
+  </div>
+  <button class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="top">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="hero-badge-dot"></span>Human Layer · missionchain.world · 2026</div>
+  <h1 class="hero-h1">Onde <em>a fé</em> encontra<br>a economia criativa</h1>
+  <p class="hero-sub" id="hero-sub">A plataforma para criadores, desenvolvedores e empreendedores cristãos aprenderem, criarem, trabalharem e crescerem em uma economia digital orientada por um propósito.</p>
+  <div class="hero-verse" id="hero-verse">&quot;Vocês são a luz do mundo. Uma cidade situada sobre uma colina não pode ficar escondida.&quot; — Mateus 5:14</div>
+  <div class="hero-btns">
+    <a class="btn-p" href="#content">Explorar a Plataforma</a>
+    <a class="btn-g" href="https://missionchain.io" target="_blank">Camada de Infraestrutura →</a>
+  </div>
+  <div class="scroll-line"></div>
+</section>
+
+<!-- ══════════ STATS ══════════ -->
+<div class="stats">
+  <div class="stat"><div class="stat-n">2,6 bilhões</div><div class="stat-l">Cristãos em todo o mundo</div></div>
+  <div class="stat"><div class="stat-n">Mais de 200 milhões</div><div class="stat-l">Criadores globais</div></div>
+  <div class="stat"><div class="stat-n">Mais de US$ 1,5 trilhão</div><div class="stat-l">Mercado potencial</div></div>
+  <div class="stat"><div class="stat-n">0</div><div class="stat-l">Concorrentes com propósito</div></div>
+</div>
+
+<!-- ══════════ LAYER DIAGRAM ══════════ -->
+<section class="sec light">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label">Arquitetura do ecossistema</div>
+      <h2 class="sec-h">Duas camadas. Uma missão.</h2>
+      <p class="sec-p">missionchain.world é a face humana. missionchain.io é o motor por trás.</p>
+    </div>
+    <div class="layer-wrap">
+      <div class="layer-card top">
+        <div class="l-icon g">🌱</div>
+        <div><div class="l-title">missionchain.world — Camada Humana</div><div class="l-desc">Comunidade · Conteúdo · Talento · Work Marketplace · <span translate='no'>SOPHIA WORD</span> · Desafio · Reconhecimento</div></div>
+        <span class="l-lnk">Você está aqui</span>
+      </div>
+      <div class="layer-arrow">⇅</div>
+      <div class="layer-card bot">
+        <div class="l-icon d">⚙️</div>
+        <div><div class="l-title">missionchain.io — Camada de Infraestrutura</div><div class="l-desc"><span translate='no'>MIC Token</span> · <span translate='no'><span translate='no'>MICE</span> Mining</span> · Governança DAO · NFT Credenciais · BSC Blockchain</div></div>
+        <a class="l-lnk" href="https://missionchain.io" target="_blank">Visite →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 5: CONTENT ══════════ -->
+<section class="sec white" id="content">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">5</span> Content Module</div>
+      <h2 class="sec-h">Mídia</h2>
+      <p class="sec-p">Histórias que geram confiança. Podcasts que inspiram. Artigos que capacitam. É aqui que sua jornada começa.</p>
+    </div>
+    <div class="media-grid">
+      <div class="media-card">
+        <div class="media-thumb podcast"><div class="play">▶</div></div>
+        <div class="media-meta">
+          <div class="media-tag">Podcast · Fé e Trabalho</div>
+          <div class="media-title">Chamados para Criar: Como a IA está Remodelando o Ministério</div>
+          <div class="media-desc">Explorando a interseção entre tecnologia e vocação no ecossistema da igreja moderna.</div>
+          <div class="media-author"><div class="m-ava">JL</div><span class="m-name">James Lee Harstad · 42 min</span></div>
+        </div>
+      </div>
+      <div class="media-card">
+        <div class="media-thumb article"><div style="font-size:34px;color:var(--gold);opacity:.6">✦</div></div>
+        <div class="media-meta">
+          <div class="media-tag">Artigo · Jornada do Criador</div>
+          <div class="media-title">De Lagos para o Mundo: Como a Música de Louvor Encontrou Seu Mercado</div>
+          <div class="media-desc">Um cineasta da Nigéria compartilha como credenciais comprovadas abriram portas globais.</div>
+          <div class="media-author"><div class="m-ava" style="background:#DDD6EE;">AE</div><span class="m-name">Aniekan Essien · 42 min de leitura</span></div>
+        </div>
+      </div>
+      <div class="media-card">
+        <div class="media-thumb video"><div class="play">▶</div></div>
+        <div class="media-meta">
+          <div class="media-tag">Vídeo · IA e Tecnologia</div>
+          <div class="media-title">Desenvolvendo o BSC: a arquitetura técnica do Mission Chain explicada</div>
+          <div class="media-desc">O CTO Nirmal Mukherjee explica o algoritmo Hindex e o design de contratos inteligentes.</div>
+          <div class="media-author"><div class="m-ava" style="background:#EED6D0;">NM</div><span class="m-name">Nirmal Mukherjee · 28 min</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="g3" style="margin-top:22px;">
+      <div class="card"><div class="c-icon">🎙</div><div class="c-title">Podcast</div><div class="c-body">Conversas aprofundadas com criadores cristãos, empreendedores e desenvolvedores de tecnologia em áreas orientadas por um propósito.</div><div class="c-tag">Fé e Trabalho · IA e Tecnologia · Jornada do Criador</div></div>
+      <div class="card"><div class="c-icon">✍️</div><div class="c-title">Artigos</div><div class="c-body">Análises aprofundadas, guias e histórias de criadores. Escritos por profissionais, não por algoritmos. Acompanhe os tópicos que importam.</div><div class="c-tag">Conhecimento · Inspiração · Comunidade</div></div>
+      <div class="card"><div class="c-icon">🎬</div><div class="c-title">Vídeos curtos</div><div class="c-body">Depoimentos de 60 segundos, destaques de criadores e vídeos tutoriais. Compartilhe com sua congregação. Use em atividades de divulgação.</div><div class="c-tag">Histórias · Tutoriais · Destaques</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 6: SOPHIA WORD ══════════ -->
+<section class="sw-section" id="sophia-word">
+  <div class="sw-top-border"></div>
+  <div class="sw-stars" id="sw-stars"></div>
+  <div class="sw-inner">
+    <div class="con">
+
+      <div class="sw-head">
+        <div class="sw-eyebrow"><span class="sw-eyebrow-cross">✝</span> <span translate='no'>SOPHIA WORD</span>e · Módulo 6</div>
+        <h2 class="sw-title">A Palavra<br>para <em>o Mundo de Hoje</em></h2>
+        <p class="sw-subtitle">Não são sermões. Não são palestras de teologia. A Palavra viva — encontrando a IA, o blockchain, a criatividade, a economia e a dignidade humana exatamente onde elas estão.</p>
+      </div>
+
+      <!-- Daily Reflection -->
+      <div class="sw-daily">
+        <div class="sw-daily-label"><span></span>Reflexão de hoje<span></span></div>
+        <div class="sw-verse-block">
+          <div class="sw-verse-text">“Pois somos obra de Deus, criados em Cristo Jesus para boas obras, as quais Deus preparou de antemão para que as praticássemos.”</div>
+          <div class="sw-verse-ref">Efésios 2:10 · NVI</div>
+        </div>
+        <div class="sw-reflection-title">Quando a IA cria — o que permanece exclusivamente humano?</div>
+        <div class="sw-reflection-body">
+          Paulo escreve que somos <strong>o poiema</strong> de Deus — a palavra grega que nos dá “poema”, “obra-prima”, “trabalho artesanal”. Você não é um produto de um algoritmo. Você é um ato deliberado da criatividade divina.<br><br>
+          Em 2026, à medida que a IA gera música, cria logotipos, escreve sermões e edita filmes — a questão não é se as máquinas podem criar. A questão é: <strong>o que significa que você foi criado propositalmente, com um propósito?</strong> Sua criatividade não está ameaçada pela IA. Ela está ancorada em algo a que a IA nunca terá acesso — um chamado, uma aliança, uma imago Dei.
+        </div>
+        <div class="sw-daily-footer">
+          <div class="sw-sophia-badge">
+            <div class="sw-sophia-ava">S</div>
+            SOPHIA
+            · Reflexão Diária · Revisado pela Equipe de Assessoria Espiritual
+          </div>
+          <div class="sw-formats">
+            <button class="sw-fmt-btn">🎧 Áudio</button>
+            <button class="sw-fmt-btn">🎬 Vídeo</button>
+            <button class="sw-discuss-btn">💬 Discutir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Grid -->
+      <div style="text-align:center;margin-bottom:24px;position:relative;z-index:2;">
+        <div class="sec-label" style="color:rgba(201,168,76,0.7);">Explore os temas — A Palavra encontra o mundo</div>
+      </div>
+      <div class="sw-themes" style="margin-bottom:40px;">
+        <div class="sw-theme-card ai"><div class="sw-theme-icon">🤖</div><div class="sw-theme-name">Escritura e IA</div><div class="sw-theme-verse">Gênesis 1:27 · Efésios 2:10</div><div class="sw-theme-preview">“Imago Deio na era da IA generativa — o que a IA nunca poderá criar.”</div></div>
+        <div class="sw-theme-card blockchain"><div class="sw-theme-icon">🔗</div><div class="sw-theme-name">Escritura e Blockchain</div><div class="sw-theme-verse">Hebreus 13:8 · Números 32:23</div><div class="sw-theme-preview">“Teologia da aliança e registros imutáveis na blockchain.”</div></div>
+        <div class="sw-theme-card create"><div class="sw-theme-icon">🎨</div><div class="sw-theme-name">Escritura e criatividade</div><div class="sw-theme-verse">Êxodo 31:3 · Colossenses 3:23</div><div class="sw-theme-preview">“Bezalel foi cheio do Espírito para criar arte. O artesanato é adoração.”</div></div>
+        <div class="sw-theme-card economy"><div class="sw-theme-icon">⚖️</div><div class="sw-theme-name">Escritura e Economia</div><div class="sw-theme-verse">Levítico 25 · Mateus 25:14</div><div class="sw-theme-preview">“O Ano do Jubileu e a tokenômica justa. A parábola do talento e o ROI.”</div></div>
+        <div class="sw-theme-card community"><div class="sw-theme-icon">🕊</div><div class="sw-theme-name">Escritura e Comunidade</div><div class="sw-theme-verse">Atos 2:44 · Romanos 12:4</div><div class="sw-theme-preview">“A igreja primitiva administrou a primeira DAO. Muitos membros, um só corpo.”</div></div>
+        <div class="sw-theme-card humanity"><div class="sw-theme-icon">🌍</div><div class="sw-theme-name">Escritura e dignidade humana</div><div class="sw-theme-verse">Salmo 139 · Miquéias 6:8</div><div class="sw-theme-preview">“O Sul Global não é um mercado — são portadores da imagem de Deus com chamados.”</div></div>
+        <div class="sw-theme-card tech"><div class="sw-theme-icon">⚡</div><div class="sw-theme-name">Escritura e Tecnologia</div><div class="sw-theme-verse">Gênesis 11 · Lucas 12:48</div><div class="sw-theme-preview">“Quando a tecnologia se torna Babel? A quem muito é dado...”</div></div>
+        <div class="sw-theme-card future"><div class="sw-theme-icon">✨</div><div class="sw-theme-name">Escritura e Futuro</div><div class="sw-theme-verse">Apocalipse 21 · Isaías 43:19</div><div class="sw-theme-preview">“&#x27;Fazendo novas todas as coisas&#x27; — e o que estamos construindo.”</div></div>
+      </div>
+
+      <!-- Formats -->
+      <div class="sw-fmts-row">
+        <div class="sw-fmt-card">
+          <div class="sw-fmt-icon">✍️</div>
+          <div class="sw-fmt-name">Reflexão Diária sobre o Texto</div>
+          <div class="sw-fmt-desc">300–500 palavras. Um versículo. Uma questão atual. Todas as manhãs — em 5 idiomas.</div>
+        </div>
+        <div class="sw-fmt-card">
+          <div class="sw-fmt-icon">🎧</div>
+          <div class="sw-fmt-name">Devocional em áudio</div>
+          <div class="sw-fmt-desc">5–10 min narrado por SOPHIA. Ouça enquanto trabalha, cria ou se desloca. Disponível offline.</div>
+        </div>
+        <div class="sw-fmt-card">
+          <div class="sw-fmt-icon">🎬</div>
+          <div class="sw-fmt-name">Reflexão em vídeo</div>
+          <div class="sw-fmt-desc">3–7 min. Criadores reais, histórias reais — como a Palavra moldou o trabalho deles nesta semana.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="sw-bottom-border"></div>
+</section>
+
+<!-- ══════════ MODULE 7: CHALLENGE ══════════ -->
+<section class="sec dark" id="challenge">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">7</span> Challenge Module</div>
+      <h2 class="sec-h">Motor de ativação</h2>
+      <p class="sec-p">Mostre seu talento. Construa seu portfólio. Torne-se um Luminary. Cada desafio é uma porta de entrada.</p>
+    </div>
+    <div class="ch-hero">
+      <div class="ch-badge">🏆</div>
+      <div>
+        <div class="ch-label">Desafio em destaque · 2º trimestre de 2026</div>
+        <div class="ch-title">Desafio Global de Música de Adoração</div>
+        <div class="ch-desc">Envie sua composição original de música de adoração. Julgada por líderes religiosos e profissionais do setor. Os vencedores ganham credenciais Maker NFT e recompensas MIC.</div>
+      </div>
+      <a class="ch-cta" href="#">Participe do Desafio</a>
+    </div>
+    <div class="ch-grid">
+      <div class="ch-card"><div class="ch-emoji">🎵</div><div class="ch-name">Música de Adoração</div><div class="ch-entries">247 inscrições · Aberto</div><div class="ch-prize">🥇 Maker NFT + Recompensa MIC</div></div>
+      <div class="ch-card"><div class="ch-emoji">🎨</div><div class="ch-name">Arte bíblica</div><div class="ch-entries">183 inscrições · Aberto</div><div class="ch-prize">🥇 Criador NFT + Destaque</div></div>
+      <div class="ch-card"><div class="ch-emoji">📖</div><div class="ch-name">Filme de Testemunho</div><div class="ch-entries">94 inscrições · Aberto</div><div class="ch-prize">🥇 CriadorNFTe + Distribuição</div></div>
+      <div class="ch-card"><div class="ch-emoji">🤖</div><div class="ch-name">Conteúdo de IA</div><div class="ch-entries">312 inscrições · Votação</div><div class="ch-prize">🥇 Emblema de Tecnologia + MIC</div></div>
+    </div>
+    <div class="lb">
+      <div class="lb-hdr"><div class="lb-t">Classificação atual</div><a class="lb-all" href="#">Ver tudo →</a></div>
+      <div class="lb-row"><div class="lb-rk top">1</div><div class="lb-av" style="background:#F2DFA0;">SM</div><div class="lb-nm">Sofia Mensah · Música de Adoração</div><div class="lb-sc">2.847 pontos</div></div>
+      <div class="lb-row"><div class="lb-rk top">2</div><div class="lb-av" style="background:#D0E8D0;">JK</div><div class="lb-nm">Joshua Kim · Arte bíblica</div><div class="lb-sc">2.614 pontos</div></div>
+      <div class="lb-row"><div class="lb-rk">3</div><div class="lb-av" style="background:#E8D0E8;">LP</div><div class="lb-nm">Lucia Pereira · Filme de Testemunho</div><div class="lb-sc">2.391 pontos</div></div>
+      <div class="lb-row"><div class="lb-rk">4</div><div class="lb-av" style="background:#D0D8E8;">DN</div><div class="lb-nm">David Nwankwo · Conteúdo de IA</div><div class="lb-sc">2.188 pontos</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 8: TALENT ══════════ -->
+<section class="sec light" id="talent">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label">8Talent &amp; Portfolio</div>
+      <h2 class="sec-h">Camada de Identidade</h2>
+      <p class="sec-p">Seu trabalho, suas credenciais e sua reputação — verificados na cadeia de blocos e de sua propriedade permanente.</p>
+    </div>
+    <div class="talent-card">
+      <div class="t-ava">SM</div>
+      <div class="t-info">
+        <div class="t-name">Sofia Mensah</div>
+        <div class="t-role">Produtora de Música de Adoração · Artista Visual · Lagos, Nigéria</div>
+        <div class="t-tags">
+          <span class="ttag ttag-g">Produção de música de louvor · Licenciamento</span>
+          
+          <span class="ttag ttag-n">de música · Missão · Aprendizado · Pós-graduação · 47 trabalhos concluídos</span>
+        </div>
+        <div class="t-stats">
+          <div><div class="ts-n">4,9</div><div class="ts-l">Avaliação</div></div>
+          <div><div class="ts-n">47</div><div class="ts-l">Trabalhos concluídos</div></div>
+          <div><div class="ts-n">2,8 mil</div><div class="ts-l">Pontos</div></div>
+          <div><div class="ts-n">12</div><div class="ts-l">Desafios</div></div>
+        </div>
+      </div>
+      <div class="t-cred"><div class="cred-badge">🌟</div><div class="cred-name">Luminary</div></div>
+    </div>
+    <div class="port-grid">
+      <div class="port-item mu"><span>🎵</span><div class="port-ov"><span class="port-lbl">EP de Adoração · 2025</span></div></div>
+      <div class="port-item ar"><span>🎨</span><div class="port-ov"><span class="port-lbl">Série de Murais da Igreja</span></div></div>
+      <div class="port-item vi"><span>🎬</span><div class="port-ov"><span class="port-lbl">Documentário de Testemunho</span></div></div>
+      <div class="port-item de"><span>✦</span><div class="port-ov"><span class="port-lbl">Pacote de identidade visual</span></div></div>
+      <div class="port-item fi"><span>📷</span><div class="port-ov"><span class="port-lbl">Fotografia Ministerial</span></div></div>
+      <div class="port-item po"><span>🎙</span><div class="port-ov"><span class="port-lbl">Produção de Podcast</span></div></div>
+    </div>
+    <div class="g3" style="margin-top:28px;">
+      <div class="card"><div class="c-icon">👤</div><div class="c-title">Perfil do criador</div><div class="c-body">Crie um perfil rico e verificado. Habilidades, portfólio, histórico de desafios, avaliações e registro de contribuições — tudo em um só lugar.</div></div>
+      <div class="card"><div class="c-icon">📁</div><div class="c-title">Vitrine do Portfólio</div><div class="c-body">Envie seus melhores trabalhos nas áreas de música, arte, cinema e design. Compartilhe publicamente. Atraia clientes globais por meio do Mission Work.</div></div>
+      <div class="card"><div class="c-icon">🔗</div><div class="c-title">Credenciais na cadeia</div><div class="c-body">NFTs de Builder, Maker e Luminary conquistados por meio de contribuições verificadas. Portáteis, permanentes e reconhecidos globalmente.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 9: MARKETPLACE ══════════ -->
+<section class="sec white" id="marketplace">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">9</span> Work Marketplace</div>
+      <h2 class="sec-h">Motor econômico</h2>
+      <p class="sec-p">Trabalho real. Renda real. Impacto real. Conecte criadores cristãos com igrejas, ministérios e empresas em todo o mundo.</p>
+    </div>
+    <div class="mkt-tabs">
+      <button class="mkt-tab active" onclick="setTab(this)">Bolsa de empregos</button>
+      <button class="mkt-tab" onclick="setTab(this)">Serviços Freelance</button>
+      <button class="mkt-tab" onclick="setTab(this)">Mission Arts (Fase 2)</button>
+    </div>
+    <div class="job-card"><div class="job-co">⛪</div><div class="job-info"><div class="job-t">Produtor de Música de Louvor</div><div class="job-c">Igreja Redeemed · Lagos, Nigéria · Remoto</div><div class="job-tags"><span class="jtag">Produção musical WorshipBuilder+</span></div></div><div class="job-r"><div class="job-sal">500 MIC/mês</div><div class="job-type">Meio período · Remoto</div><button class="job-apply">Candidatar-se agora</button></div></div>
+    <div class="job-card"><div class="job-co">🎨</div><div class="job-info"><div class="job-t">Designer de Identidade Visual</div><div class="job-c">Kingdom Media Group · Seul · Remoto</div><div class="job-tags"><span class="jtag">Branding, Ilustração, Maker+</span></div></div><div class="job-r"><div class="job-sal">1.200MIC</div><div class="job-type">Projeto · Remoto</div><button class="job-apply">Candidatar-se agora</button></div></div>
+    <div class="job-card"><div class="job-co">🎬</div><div class="job-info"><div class="job-t">Editor de curtas-metragens — Série de Testemunhos</div><div class="job-c">Rede de Ministérios de São Paulo · Brasil</div><div class="job-tags"><span class="jtag">Edição de vídeo, Narrativa, Português</span></div></div><div class="job-r"><div class="job-sal">800 MIC</div><div class="job-type">Contrato · Híbrido</div><button class="job-apply">Inscreva-se agora</button></div></div>
+    <div class="g3" style="margin-top:28px;">
+      <div class="card"><div class="c-icon">🏢</div><div class="c-title">Para Igrejas e Ministérios</div><div class="c-body">Publique vagas, contrate talentos verificados e tenha acesso a uma equipe criativa sob demanda para as necessidades de conteúdo do seu ministério.</div><div class="c-tag">Acesse talentos confiáveis</div></div>
+      <div class="card"><div class="c-icon">🤝</div><div class="c-title">Para empresas</div><div class="c-body">Contrate a partir de um grupo de criadores com valores alinhados, habilidades comprovadas e histórico de sucesso. Publique projetos, patrocine conteúdo.</div><div class="c-tag">Contratação alinhada aos valores</div></div>
+      <div class="card"><div class="c-icon">🤖</div><div class="c-title"><span translate='no'>SOPHIA AI</span> Correspondência de vagas</div><div class="c-body">SOPHIA combina criadores com oportunidades com base em credenciais, qualidade do portfólio e histórico comprovado de entrega.</div><div class="c-tag">Inteligente · Justo · Transparente</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 10: COMMUNITY ══════════ -->
+<section class="sec dark" id="community">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">10</span> Community Network</div>
+      <h2 class="sec-h">Camada de Pertencimento</h2>
+      <p class="sec-p">Os Centros de Missão ancoram o digital no físico. Os grupos conectam o mundo. Juntos, vocês constroem algo que perdura.</p>
+    </div>
+    <div class="hub-map">
+      <div class="hub-n">3</div>
+      <div class="hub-l">Centros de Missão Ativos — África · Sudeste Asiático · América Latina</div>
+      <div class="hub-dots" id="hub-dots"></div>
+      <div class="hub-l">Cada ponto = um criador na rede</div>
+    </div>
+    <div class="grp-grid">
+      <div class="grp-card"><div class="grp-emoji">🎵</div><div class="grp-name">Criadores Cristãos</div><div class="grp-mem">2.847 membros · 143 ativos hoje</div><button class="grp-join">Junte-se ao grupo</button></div>
+      <div class="grp-card"><div class="grp-emoji">🤖</div><div class="grp-name">Criadores de Tecnologia e IA</div><div class="grp-mem">1.203 membros · 89 ativos hoje</div><button class="grp-join">Junte-se ao grupo</button></div>
+      <div class="grp-card"><div class="grp-emoji">🚀</div><div class="grp-name">Empreendedores</div><div class="grp-mem">876 membros · 61 ativos hoje</div><button class="grp-join">Participe do grupo</button></div>
+    </div>
+    <div class="g3" style="margin-top:22px;">
+      <div class="card"><div class="c-icon">🌍</div><div class="c-title">Centros de Missão</div><div class="c-body">Pontos físicos em cidades reais — igrejas, espaços criativos e organizações comunitárias. Presença local, rede global.</div></div>
+      <div class="card"><div class="c-icon">🎪</div><div class="c-title">Eventos e festivais</div><div class="c-body">Concertos de louvor, jam sessions artísticas, noites de filmes de testemunhos e festivais globais. Festival Social Missionário — trimestral, em todos os continentes.</div></div>
+      <div class="card"><div class="c-icon">🤝</div><div class="c-title">Networking</div><div class="c-body">Discussões, colaborações, mentorias e parcerias. Encontre seu pessoal. Monte sua equipe. Expanda sua missão.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 11: RECOGNITION ══════════ -->
+<section class="sec light" id="recognition">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">11</span> Recognition System</div>
+      <h2 class="sec-h">Conquiste seu lugar.<br>Não o compre.</h2>
+      <p class="sec-p">Credenciais conquistadas por meio de contribuições comprovadas. Autoridade conquistada por meio de serviço consistente. O MIC flui para aqueles que constroem.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier-card builder"><div class="tier-glow"></div><div class="tier-medal">🔨</div><div class="tier-name">Construtor</div><div class="tier-desc">A base. Aquele que constrói com as mãos e o coração, estabelece as bases para o que perdura.</div><div class="tier-kpis"><div class="tier-kpi">Conclua uma missão Aprenda a trilha</div><div class="tier-kpi">Conclua o primeiro trabalho verificado (4,0+)</div><div class="tier-kpi">Ativo no Mission Social</div><div class="tier-kpi">Revalidação anual</div></div></div>
+      <div class="tier-card maker"><div class="tier-glow"></div><div class="tier-medal">⚡</div><div class="tier-name">Criador</div><div class="tier-desc">Uma força em crescimento. Mantém a produção, multiplica o impacto e orienta outros na jornada.</div><div class="tier-kpis"><div class="tier-kpi">Construtor ativo há mais de 6 meses</div><div class="tier-kpi">Várias trilhas de Aprendizagem da Missão</div><div class="tier-kpi">Renda sustentável por meio do Trabalho de Missão</div><div class="tier-kpi">Participação na governança</div></div></div>
+      <div class="tier-card luminary"><div class="tier-glow"></div><div class="tier-medal">🌟</div><div class="tier-name gd">Luminar</div><div class="tier-desc">Aquele cuja luz guia os outros — visível de longe. A credencial mais rara no ecossistema.</div><div class="tier-kpis"><div class="tier-kpi">Histórico de contribuições excepcionais</div><div class="tier-kpi">Liderança em Hub ou Festival</div><div class="tier-kpi">Indicação por um Luminary existente</div><div class="tier-kpi">Mateus 5:14 — “cidade no alto”</div></div></div>
+    </div>
+    <div class="rec-flow">
+      <div class="rf-item"><div class="rf-icon">✍️</div><div class="rf-label">Conteúdo</div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">✝</div><div class="rf-label"><span translate='no'>SOPHIA WORD</span></div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">🏆</div><div class="rf-label">Desafio</div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">💼</div><div class="rf-label">Trabalho</div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">🌟</div><div class="rf-label">Reputação</div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">🏛</div><div class="rf-label">Governança</div></div><div class="rf-arr">→</div>
+      <div class="rf-item"><div class="rf-icon">🌍</div><div class="rf-label">Impacto</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODULE 17: TERMS & PRIVACY ══════════ -->
+<section class="sec white" id="terms">
+  <div class="con">
+    <div class="sec-head">
+      <div class="sec-label"><span class="sec-num">17</span>Legal</div>
+      <h2 class="sec-h">Termos e Privacidade</h2>
+      <p class="sec-p">Compromissos transparentes com nossa comunidade. Seus dados. Seus direitos. Nossas obrigações.</p>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="mkt-tabs" id="legal-tabs">
+      <button class="mkt-tab active" onclick="setLegalTab(0)">Termos de Serviço</button>
+      <button class="mkt-tab" onclick="setLegalTab(1)">Política de Privacidade</button>
+      <button class="mkt-tab" onclick="setLegalTab(2)">Diretrizes da Comunidade</button>
+      <button class="mkt-tab" onclick="setLegalTab(3)">MIC / Isenção de Responsabilidade do <span translate='no'>MICE</span></button>
+      <button class="mkt-tab" onclick="setLegalTab(4)">Dados e seus direitos</button>
+    </div>
+
+    <!-- Panel 0: Terms -->
+    <div class="legal-panel active" id="legal-0">
+      <div class="g2" style="gap:28px;align-items:start;">
+        <div>
+          <div style="margin-bottom:20px;">
+            <div class="c-tag" style="display:inline-block;margin-top:0;padding-top:0;border-top:none;margin-bottom:8px;">Versão 1.0 · Março de 2026</div>
+            <p style="font-size:14px;color:var(--text3);line-height:1.75;" id="tos-p1">Ao utilizar o missionchain.world, você concorda com estes Termos. A plataforma é oferecida para que criadores, desenvolvedores e empreendedores cristãos possam aprender, criar, trabalhar e crescer juntos em uma economia orientada por um propósito.</p>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">1. Elegibilidade e cadastro</div>
+            <div class="legal-item-body">Você deve ter 13 anos ou mais para se registrar. Você é responsável pela precisão das suas informações de registro (Nome completo, E-mail, País, Nome de usuário) e por manter sua senha segura. Uma conta por pessoa — contas múltiplas podem resultar em suspensão.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">2. Seu Conteúdo e Propriedade Intelectual</div>
+            <div class="legal-item-body">Você mantém a propriedade total de todo o trabalho criativo que enviar. Ao publicar no site missionchain.world, você concede ao <span translate='no'>Mission Chain Network</span> uma licença não exclusiva e isenta de royalties para exibir seu trabalho na plataforma. Você confirma que todo o conteúdo enviado é de sua autoria ou que possui os direitos para compartilhá-lo.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">3. Pagamentos e <span translate='no'>MIC Token</span></div>
+            <div class="legal-item-body">Todas as transações do marketplace são liquidadas em MIC (Mission Chain Token). O MIC é um token de utilidade — não um produto de investimento. A Mission Chain não garante o valor do MIC. Os pagamentos em custódia são mantidos por contrato inteligente e liberados após a confirmação da entrega.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">4. Condutas Proibidas</div>
+            <div class="legal-item-body">Você não pode usar a plataforma para: spam, recrutamento para marketing multinível, falsificação de identidade, discurso de ódio, assédio, solicitação de pagamentos fora da plataforma ou qualquer atividade que viole as leis aplicáveis. Violações podem resultar no encerramento imediato da conta.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">5. Rescisão</div>
+            <div class="legal-item-body">Mission Chain reserva-se o direito de suspender ou encerrar contas que violem estes Termos. Você pode excluir sua conta a qualquer momento — os dados fora da cadeia serão removidos em até 30 dias. Observação: os dados na cadeia (endereço da carteira, credenciais NFT, transações MIC) são registrados permanentemente na blockchain e não podem ser excluídos.</div>
+          </div>
+        </div>
+        <div>
+          <div class="legal-item" style="background:var(--gold4);border-color:rgba(201,168,76,0.3);">
+            <div class="legal-item-title" style="color:rgba(100,70,5,0.9);">✝ Nosso Compromisso</div>
+            <div class="legal-item-body" style="color:rgba(100,70,5,0.7);font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;">“Que o seu sim seja sim e o seu não seja não.” — Mateus 5:37<br><br>Estes Termos não são letras miúdas legais criadas para confundir. São nosso compromisso honesto com a comunidade que servimos. Nós os atualizaremos de forma transparente e notificaremos você com antecedência sobre quaisquer alterações significativas.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">6. Lei Aplicável</div>
+            <div class="legal-item-body">Estes Termos são regidos pelas leis aplicáveis na jurisdição de operação. As disputas serão resolvidas primeiro por meio de diálogo de boa-fé, depois por mediação, antes de qualquer processo judicial.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">7. Alterações aos Termos</div>
+            <div class="legal-item-body">Notificaremos todos os usuários por e-mail pelo menos 30 dias antes de qualquer alteração significativa nestes Termos entrar em vigor. O uso continuado da plataforma após as alterações constitui aceitação.</div>
+          </div>
+          <div style="margin-top:20px;padding:14px 18px;background:var(--cream);border:1px solid var(--border);border-radius:var(--rs);">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase;">Aceitar Termos</div>
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--text2);line-height:1.5;">
+              <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--gold);">
+            
+              Li e concordo com os Termos de Serviço, a Política de Privacidade e as Diretrizes da Comunidade do sitemissionchain.world
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 1: Privacy -->
+    <div class="legal-panel" id="legal-1">
+      <div class="g2" style="gap:28px;align-items:start;">
+        <div>
+          <div style="margin-bottom:20px;">
+            <div class="c-tag" style="display:inline-block;margin-top:0;padding-top:0;border-top:none;margin-bottom:8px;">Em conformidade com o GDPR · Versão 1.0 · Março de 2026</div>
+            <p style="font-size:14px;color:var(--text3);line-height:1.75;">Coletamos apenas o que precisamos. Armazenamos com segurança. Nunca vendemos. Você pode excluir — exceto o que está permanentemente no blockchain.</p>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">O que coletamos</div>
+            <div class="legal-item-body"><strong>Obrigatório no cadastro:</strong> Nome completo, e-mail, país, nome de usuário, senha (com hash bcrypt — nunca legível).<br><strong>Opcional / ao realizar uma ação:</strong> Foto de perfil, sexo, habilidades, arquivos do portfólio, endereço da carteira BEP-20 (quando você optar por vincular).<br><strong>Automaticamente:</strong> Dados da sessão (apagados após 24 horas), atividade na plataforma (trabalhos, desafios, contribuições).</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Como armazenamos</div>
+            <div class="legal-item-body">Dados pessoais: banco de dados PostgreSQL com criptografia AES-256 em repouso. Senhas: apenas hash bcrypt — não podemos ler sua senha. Arquivos: armazenamento de objetos Cloudflare R2 / S3 com CDN. Dados de sessão: Redis (na memória, expira automaticamente em 24h). Conversas no SOPHIA: apenas sessão — nunca armazenadas permanentemente.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">SOPHIA &amp; Dados de IA</div>
+            <div class="legal-item-body">SOPHIA As conversas são processadas em tempo real e nunca armazenadas permanentemente. O contexto da sessão é mantido no Redis por até 24 horas para garantir a continuidade da conversa e, em seguida, é excluído automaticamente. O SOPHIA não tem acesso às chaves privadas da sua carteira nem aos seus dados financeiros em nenhum momento.</div>
+          </div>
+        </div>
+        <div>
+          <div class="legal-item" style="border-left:3px solid var(--gold);">
+            <div class="legal-item-title">⚠ Importante: os dados da blockchain são permanentes</div>
+            <div class="legal-item-body">Seu endereço de carteira, credenciais dNFT (Builder/Maker/Luminary), transações de tokens dMIC e votos de governança DAO são registrados na blockchain <span translate='no'>BNB Smart Chain</span> (BSC). <strong>Esses dados são imutáveis e não podem ser excluídos por nós ou por você — nunca.</strong> Essa é a natureza da tecnologia de blockchain pública. Considere isso antes de vincular sua carteira.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Seus direitos sob o GDPR</div>
+            <div class="legal-item-body">
+              <strong>Acesso</strong>
+              — Solicite uma cópia de todos os dados que mantemos sobre você.<br>
+              
+              <strong>Correção</strong>
+              — Atualize qualquer informação pessoal incorreta.<br>
+              
+              <strong>Exclusão</strong>
+              — Solicite a exclusão de todos os dados fora da cadeia de blocos no prazo de 30 dias. Os dados na cadeia de blocos são permanentes e estão excluídos.<br>
+              
+              <strong>Portabilidade</strong>
+              — Exporte seus dados em um formato legível por máquina.<br>
+              
+              <strong>Objeção</strong>
+              — Opte por não participar do processamento de dados não essenciais.
+            </div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Nós nunca</div>
+            <div class="legal-item-body">Vendemos seus dados a terceiros. Compartilhamos suas informações pessoais com anunciantes. Usamos seus dados para treinar modelos de IA sem o seu consentimento explícito. Acessamos as chaves privadas da sua carteira. Armazenamos conversas dSOPHIAe permanentemente.</div>
+          </div>
+          <div style="margin-top:16px;text-align:center;">
+            <a href="mailto:privacy@missionchain.world" style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:20px;background:var(--gold);color:var(--navy);font-size:12.5px;font-weight:600;text-decoration:none;">📧 Enviar solicitação de dados</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Community Guidelines -->
+    <div class="legal-panel" id="legal-2">
+      <div style="margin-bottom:20px;">
+        <p style="font-size:14px;color:var(--text3);line-height:1.75;max-width:700px;">Esta comunidade foi construída com base na fé, na dignidade e em uma vocação compartilhada. Estas diretrizes existem não para restringir — mas para proteger o espaço que estamos construindo juntos.</p>
+      </div>
+      <div class="g2" style="gap:24px;align-items:start;">
+        <div>
+          <div class="legal-item" style="border-left:3px solid var(--green);">
+            <div class="legal-item-title" style="color:var(--green);">✓ Nós celebramos</div>
+            <div class="legal-item-body">Trabalho criativo genuíno · Feedback honesto e incentivo · Fé expressa com humildade · Perguntas feitas de boa fé · Diversidade de origens, tradições e idiomas · Colaboração além das fronteiras · Mentoria entre criadores</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Respeito e dignidade</div>
+            <div class="legal-item-body">Cada membro desta comunidade é portador da imagem de Deus (Salmo 139:14). As interações devem refletir essa dignidade. A discordância é bem-vinda. O desprezo, não. Discuta ideias — nunca ataque pessoas.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Fé e Teologia</div>
+            <div class="legal-item-body">Esta é uma comunidade de raízes cristãs que acolhe a todos. Compartilhar sua fé é bem-vindo. Impor-a, não. Debates doutrinários que dividem são desencorajados. O critério: esta conversa edifica ou destrói? (1 Coríntios 14:26)</div>
+          </div>
+        </div>
+        <div>
+          <div class="legal-item" style="border-left:3px solid var(--red);">
+            <div class="legal-item-title" style="color:var(--red);">✕ Não permitido</div>
+            <div class="legal-item-body">Discurso de ódio de qualquer tipo · Spam ou promoção não solicitada · Recrutamento para esquemas de MLM ou pirâmide · Falsificação de identidade de outros usuários · Solicitação de pagamento fora da plataforma · Compartilhamento de informações privadas de terceiros · Conteúdo que explore ou prejudique menores · Promoção de esquemas de tokens que não sejam da Mission-Chain</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Aplicação</div>
+            <div class="legal-item-body"><span translate='no'>SOPHIA AI</span> monitora o conteúdo da comunidade em tempo real e sinaliza possíveis violações. Moderadores humanos tomam todas as decisões finais. Processo: <strong>Advertência → Conteúdo removido → Suspensão temporária → Banimento permanente.</strong> Recursos podem ser enviados para moderation@missionchain.world dentro de 14 dias.</div>
+          </div>
+          <div class="legal-item" style="background:var(--gold4);border-color:rgba(201,168,76,0.3);">
+            <div class="legal-item-body" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(100,70,5,0.8);font-size:15px;">“Que tudo seja feito para a edificação.” — 1 Coríntios 14:26</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: MIC/MICE Disclaimer -->
+    <div class="legal-panel" id="legal-3">
+      <div style="padding:20px 24px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:var(--r);margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">⚠ Aviso Legal Importante — Leia</div>
+        <p style="font-size:13px;color:var(--text3);line-height:1.7;">MIC (Mission Chain Token) e <span translate='no'>MICE</span> (Licença do Nodo do Algoritmo de Missão) são instrumentos utilitários projetados para uso dentro do ecossistema Mission Chain. Eles não são produtos de investimento, não são títulos e não são instrumentos financeiros de qualquer tipo.</p>
+      </div>
+      <div class="g2" style="gap:24px;align-items:start;">
+        <div>
+          <div class="legal-item">
+            <div class="legal-item-title"><span translate='no'>MIC Token</span></div>
+            <div class="legal-item-body">MIC O Mission Chain é o token utilitário do ecossistema. Ele é obtido por meio de aprendizagem, trabalho, contribuição e participação no . O MIC é utilizado para: pagamentos no marketplace, staking de governança, taxas do ecossistema e distribuição de recompensas. <strong>O</strong> <strong>MIC não é um investimento. A Mission Chain não garante qualquer valor, retorno ou preço para o MIC.</strong> A posse do MIC não lhe dá direito a qualquer participação nos lucros, dividendos ou patrimônio líquido da empresa.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title"><span translate='no'>MICE</span> — Licença de Mineração</div>
+            <div class="legal-item-body"><span translate='no'>MICE</span> é uma licença de acesso à mineração com validade de 360 dias. Ela concede acesso proporcional à emissão diária de MIC por meio do Algoritmo Hindex. <strong><span translate='no'>MICE</span> não é um produto de investimento. Não garante qualquer rendimento, retorno ou lucro.</strong> As recompensas diárias variam de acordo com o total de licenças ativas e a fórmula de emissão do Hindex. O desempenho passado não indica resultados futuros. As licenças <span translate='no'>MICE</span> expiram automaticamente após 360 dias.</div>
+          </div>
+        </div>
+        <div>
+          <div class="legal-item">
+            <div class="legal-item-title">Sem aconselhamento financeiro</div>
+            <div class="legal-item-body">Nada no site missionchain.world constitui aconselhamento financeiro, de investimento, jurídico ou tributário. O site <span translate='no'>SOPHIA AI</span> nunca fornecerá aconselhamento de investimento nem fará previsões sobre os preços dos tokens. Antes de tomar qualquer decisão financeira, consulte um consultor financeiro qualificado em sua jurisdição.</div>
+          </div>
+          <div class="legal-item">
+            <div class="legal-item-title">Nota regulatória</div>
+            <div class="legal-item-body">O status regulatório dos tokens digitais varia de acordo com o país. É de sua responsabilidade garantir que sua participação no ecossistema Mission Chain esteja em conformidade com as leis de sua jurisdição. O <span translate='no'>Mission Chain Network</span> não faz declarações sobre a legalidade de seus produtos em nenhuma jurisdição específica.</div>
+          </div>
+          <div class="legal-item" style="background:var(--gold4);border-color:rgba(201,168,76,0.3);">
+            <div class="legal-item-body" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(100,70,5,0.8);font-size:15px;">“A Mission Chain não promete retornos financeiros. Ela oferece uma infraestrutura na qual as contribuições são verificadas na cadeia de blocos, o valor flui de acordo com regras matemáticas e os criadores podem participar de uma economia global e justa construída com um propósito.” — White Paper da Mission Chain v3.5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Data Rights -->
+    <div class="legal-panel" id="legal-4">
+      <div class="g3" style="gap:20px;margin-bottom:28px;">
+        <div class="card" style="text-align:center;">
+          <div class="c-icon" style="margin:0 auto 12px;">👁</div>
+          <div class="c-title">Acesso</div>
+          <div class="c-body">Solicite uma cópia completa de todos os dados pessoais que mantemos sobre você. Responderemos em até 30 dias.</div>
+          <a href="mailto:privacy@missionchain.world" style="display:inline-block;margin-top:12px;font-size:11.5px;color:var(--gold);">Enviar solicitação →</a>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="c-icon" style="margin:0 auto 12px;">✏️</div>
+          <div class="c-title">Correção</div>
+          <div class="c-body">Atualize qualquer informação pessoal incorreta nas configurações da sua conta ou entre em contato conosco diretamente.</div>
+          <a href="#" style="display:inline-block;margin-top:12px;font-size:11.5px;color:var(--gold);">Acesse as configurações →</a>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="c-icon" style="margin:0 auto 12px;">🗑</div>
+          <div class="c-title">Exclusão</div>
+          <div class="c-body">Exclua todos os dados fora da cadeia em até 30 dias. Observação: os dados na cadeia são permanentes devido ao design da blockchain.</div>
+          <a href="mailto:privacy@missionchain.world" style="display:inline-block;margin-top:12px;font-size:11.5px;color:var(--gold);">Solicitar exclusão →</a>
+        </div>
+      </div>
+      <div style="padding:18px 22px;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15);border-radius:var(--r);margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">⛓ O que não pode ser excluído — Dados da blockchain</div>
+        <p style="font-size:13px;color:var(--text3);line-height:1.7;">Os seguintes dados são registrados na blockchain e <strong>não podem ser excluídos por ninguém</strong> — incluindo Mission Chain — uma vez gravados: seu endereço de carteira, credenciais de Builder/Maker/Luminary NFT, todas as transações de tokens MIC e votos de governança DAO. Essa é uma propriedade fundamental da tecnologia de blockchain pública. Divulgamos isso de forma clara e completa antes de você vincular sua carteira.</p>
+      </div>
+      <div class="g2" style="gap:20px;">
+        <div class="legal-item">
+          <div class="legal-item-title">Portabilidade de dados</div>
+          <div class="legal-item-body">Você pode solicitar uma exportação dos dados da sua plataforma (perfil, histórico de contribuições, avaliações, histórico profissional) nos formatos JSON ou CSV. Os dados na cadeia de blocos estão publicamente acessíveis a qualquer momento por meio do explorador de cadeia de blocos BSC.</div>
+        </div>
+        <div class="legal-item">
+          <div class="legal-item-title">Contato e prazos de resposta</div>
+          <div class="legal-item-body">Solicitações de privacidade: <strong>privacy@missionchain.world</strong><br>Todas as solicitações são confirmadas em até 7 dias.<br>Exportação de dados: em até 14 dias.<br>Exclusão total: em até 30 dias.<br>Para questões urgentes de segurança: security@missionchain.world</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ FLOATING SOPHIA ══════════ -->
+<div class="sophia-fab">
+  <div class="sophia-win" id="sophia-win">
+    <div class="sw-header">
+      <div class="sw-hava"><img src="/images/sophia-avatar.png" alt="SOPHIA" style="width:34px;height:34px;border-radius:50%;object-fit:cover;"></div>
+      <div><div class="sw-hname">SOPHIA</div><div class="sw-hsub">Mission Chain · Consultor de IA</div></div>
+      <button class="sw-close" onclick="closeSophia()">✕</button>
+    </div>
+    <div class="sw-msgs" id="sophia-msgs">
+      <div class="bbl-s">Que a paz esteja com você. Sou o <strong>SOPHIA</strong> — o consultor de IA da Mission Chain.<br><br>Pergunte-me sobre MIC, <span translate='no'>MICE</span>, <span translate='no'>SOPHIA WORD</span>, governança DAO, a plataforma ou como começar como criador.</div>
+    </div>
+    <div class="sw-inp-row">
+      <input class="sw-inp" id="sophia-inp" type="text" placeholder="Ask SOPHIA…" maxlength="300" autocomplete="off">
+      <button class="sw-send" onclick="sendSophia()"><svg width="14" height="14" viewBox="0 0 16 16" class="sw-send-i"><path d="M14 2L7 9M14 2L9.5 14 7 9 2 6.5 14 2z"/></svg></button>
+    </div>
+  </div>
+  <div class="sophia-fab-lbl" id="sophia-lbl">Pergunte a SOPHIA →</div>
+  <div class="sophia-fab-btn" onclick="toggleSophia()">
+    <div class="sophia-ping"></div>
+    <img src="/images/sophia-avatar.png" alt="SOPHIA" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo-row">
+        <img src="https://missionchain.io/mission-chain-logo-clear.png" alt="Mission Chain" style="height:28px;">
+        <div class="f-logo-name">Mission Chain<span style="color:rgba(255,255,255,0.32);font-size:13px;font-weight:400"> .world</span></div>
+      </div>
+      <p class="f-tag">A camada humana do Mission Chain. Onde a fé encontra a economia dos criadores.</p>
+      <a class="f-io" href="https://missionchain.io" target="_blank"><span class="f-io-dot"></span>Infraestrutura:missionchain.io</a>
+      <div class="f-socials" style="margin-top:14px;">
+        <a class="f-social" href="https://t.me/missionchainofficial" target="_blank">✈</a>
+        
+        <a class="f-social" href="https://x.com/chain_mission" target="_blank">𝕏</a>
+        
+        <a class="f-social" href="https://www.youtube.com/@MissionChainChannel" target="_blank">▶</a>
+        
+        <a class="f-social" href="#">🎙</a>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-t">Plataforma</div>
+      <a class="f-link" href="#content">Conteúdo</a>
+      
+      <a class="f-link" href="#sophia-word">✝</a>
+      
+      <a class="f-link" href="#challenge">Desafio</a>
+      <a class="f-link" href="#sophia-word"><span translate='no'>SOPHIA WORD</span></a>
+      
+      <a class="f-link" href="#marketplace">Mercado</a>
+      
+      <a class="f-link" href="#talent">de Talentos</a>
+      
+      <a class="f-link" href="#community">Comunidade</a>
+      
+      <a class="f-link" href="#recognition">Reconhecimento</a>
+    </div>
+    <div>
+      <div class="f-col-t">Infraestrutura</div>
+      <a class="f-link" href="https://missionchain.io/White_Paper.html" target="_blank">White Paper</a>
+      
+      <a class="f-link" href="https://missionchain.io/Glossary_Brand_Terms.html" target="_blank">Glossário</a>
+      
+      <a class="f-link" href="https://missionchain.io" target="_blank">missionchain.io</a>
+      
+      <a class="f-link" href="#"><span translate='no'>MIC Token</span></a>
+      
+      <a class="f-link" href="#"><span translate='no'><span translate='no'>MICE</span> License</span>s</a>
+      
+      <a class="f-link" href="#">Mission DAO</a>
+    </div>
+    <div>
+      <div class="f-col-t">Comunidade</div>
+      <a class="f-link" href="https://t.me/missionchainofficial" target="_blank">Canal no Telegram</a>
+      
+      <a class="f-link" href="https://t.me/missionchainglobalcommunity" target="_blank">Comunidade Global</a>
+      
+      <a class="f-link" href="https://www.youtube.com/@MissionChainChannel" target="_blank">YouTube</a>
+      
+      <a class="f-link" href="#">Centros de Missão Rodada de Investimento Inicial</a>
+    </div>
+  </div>
+  <div class="footer-btm">
+    <div class="f-copy">© 2026 <span translate='no'>Mission Chain Network</span>. Inspirado pela fé. Construído para as pessoas.</div>
+    <div class="f-verse">&quot;Vocês são a luz do mundo.&quot; — Mateus 5:14</div>
+  </div>
+</footer>
+
+<script>
+// ── STARS ──
+(function(){
+  const bg=document.getElementById('hero-bg');
+  for(let i=0;i<60;i++){const s=document.createElement('div');s.className='hero-star';const sz=Math.random()*2.5+1;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:rgba(201,168,76,${Math.random()*.4+.1});--d:${Math.random()*3+2}s;--dl:${Math.random()*5}s;`;bg.appendChild(s);}
+  const sw=document.getElementById('sw-stars');
+  for(let i=0;i<40;i++){const s=document.createElement('div');s.className='sw-star';const sz=Math.random()*2+.8;const colors=['rgba(201,168,76,','rgba(160,100,220,','rgba(100,140,220,'];const col=colors[Math.floor(Math.random()*colors.length)];s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${col}${Math.random()*.5+.1});--d:${Math.random()*4+3}s;--dl:${Math.random()*6}s;`;sw.appendChild(s);}
+  const hd=document.getElementById('hub-dots');
+  for(let i=0;i<48;i++){const d=document.createElement('div');d.className='hub-dot'+(i<10?' on':'');d.style.cssText=`--d:${Math.random()*2+1.5}s;--dl:${Math.random()*3}s;`;hd.appendChild(d);}
+})();
+
+// ── MODE ──
+let mode='day';
+function toggleMode(){
+  mode=mode==='day'?'night':'day';
+  document.getElementById('body').className=mode;
+  document.getElementById('mode-btn').textContent=mode==='day'?'☀':'☾';
+  document.getElementById('hero-bg').style.display=mode==='night'?'none':'block';
+}
+
+// ── LANG ──
+const LANG={
+  en:{sub:"The platform for Christian creators, builders, and entrepreneurs to learn, create, work, and grow in a purpose-driven digital economy.",verse:'"You are the light of the world. A city on a hill cannot be hidden." — Matthew 5:14'},
+  es:{sub:"La plataforma para creadores, constructores y emprendedores cristianos para aprender, crear, trabajar y crecer en una economía digital con propósito.",verse:'"Vosotros sois la luz del mundo. Una ciudad asentada sobre un monte no puede esconderse." — Mateo 5:14'},
+  pt:{sub:"A plataforma para criadores, construtores e empreendedores cristãos para aprender, criar, trabalhar e crescer em uma economia digital orientada por propósito.",verse:'"Vós sois a luz do mundo. Não se pode esconder uma cidade edificada sobre um monte." — Mateus 5:14'},
+  ko:{sub:"기독교 창작자, 빌더, 기업가들이 목적 중심의 디지털 경제에서 배우고, 창조하고, 일하고, 성장할 수 있는 플랫폼입니다.",verse:'"너희는 세상의 빛이라. 산 위에 있는 동네가 숨겨지지 못할 것이요." — 마태복음 5:14'},
+  vi:{sub:"Nền tảng dành cho các creators, builders và entrepreneurs Cơ Đốc để học, sáng tạo, làm việc và phát triển trong một nền kinh tế số có mục đích.",verse:'"Các ngươi là ánh sáng của thế gian. Một thành xây trên núi thì không thể bị che khuất." — Ma-thi-ơ 5:14'}
+};
+function setLang(l){const c=LANG[l]||LANG.en;document.getElementById('hero-sub').textContent=c.sub;document.getElementById('hero-verse').textContent=c.verse;}
+
+// ── TABS ──
+function setTab(btn){document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+
+// ── LEGAL TABS ──
+function setLegalTab(idx){
+  document.querySelectorAll('.legal-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#legal-tabs .mkt-tab').forEach(t=>t.classList.remove('active'));
+  const p=document.getElementById('legal-'+idx);
+  if(p)p.classList.add('active');
+  const tabs=document.querySelectorAll('#legal-tabs .mkt-tab');
+  if(tabs[idx])tabs[idx].classList.add('active');
+}
+
+// ── NAV ACTIVE ──
+const secs=document.querySelectorAll('section[id],.sw-section');
+window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});document.querySelectorAll('.nav-a').forEach(a=>{const h=a.getAttribute('href');a.classList.toggle('active',h==='#'+cur&&!a.classList.contains('sophia-word-link'));if(cur==='sophia-word'&&a.classList.contains('sophia-word-link'))a.classList.add('active');});},{passive:true});
+
+// ── MOBILE ──
+function toggleMobile(){const nl=document.getElementById('nav-links');const d=nl.style.display;if(!d||d==='none'){nl.style.cssText='display:flex;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:rgba(6,17,31,0.98);padding:14px 22px 20px;border-bottom:1px solid rgba(201,168,76,0.1);z-index:999;';}else{nl.style.display='none';}}
+
+// ── SOPHIA CHATBOT ──
+let sophiaOpen=false,sophiaLoading=false,sophiaHistory=[];
+const SOPHIA_SYS=`You are SOPHIA — the AI advisor of Mission Chain Network and missionchain.world. missionchain.world is the human-layer platform for Christian creators, builders and entrepreneurs. You also curate SOPHIA WORD — daily reflections connecting scripture to AI, blockchain, creativity, economy, and human dignity. Be warm, wise, concise. Faith-aware, never exclusive. Never promise financial returns. Respond in the user's language. For SOPHIA WORD topics, draw on scripture naturally — Ephesians 2:10 (imago Dei & creativity), Hebrews 13:8 (immutability & blockchain), Acts 2 (community & DAO), Matthew 25 (talent parable & economy), Exodus 31 (craft as worship), Psalm 139 (human dignity), Leviticus 25 (Jubilee & fair economics).`;
+
+function openSophia(){sophiaOpen=true;document.getElementById('sophia-win').classList.add('open');document.getElementById('sophia-lbl').style.display='none';document.getElementById('sophia-inp').focus();}
+function closeSophia(){sophiaOpen=false;document.getElementById('sophia-win').classList.remove('open');document.getElementById('sophia-lbl').style.display='block';}
+function toggleSophia(){sophiaOpen?closeSophia():openSophia();}
+document.getElementById('sophia-inp').addEventListener('keydown',e=>{if(e.key==='Enter')sendSophia();});
+
+function addMsg(role,text){
+  const box=document.getElementById('sophia-msgs');
+  const d=document.createElement('div');
+  d.className=role==='sophia'?'bbl-s':'bbl-u';
+  d.innerHTML=text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+function showDots(){const box=document.getElementById('sophia-msgs');const d=document.createElement('div');d.id='sdots';d.className='sw-dots';d.innerHTML='<div class="sw-dot"></div><div class="sw-dot"></div><div class="sw-dot"></div>';box.appendChild(d);box.scrollTop=box.scrollHeight;}
+function removeDots(){const t=document.getElementById('sdots');if(t)t.remove();}
+
+async function sendSophia(){
+  if(sophiaLoading)return;
+  const inp=document.getElementById('sophia-inp');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';sophiaLoading=true;
+  addMsg('user',text);sophiaHistory.push({role:'user',content:text});
+  showDots();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-beta':'prompt-caching-2024-07-31'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,
+        system:[{type:'text',text:SOPHIA_SYS,cache_control:{type:'ephemeral'}}],
+        messages:sophiaHistory.slice(-12)})
+    });
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||"I'm having trouble connecting. Please try again.";
+    removeDots();addMsg('sophia',reply);
+    sophiaHistory.push({role:'assistant',content:reply});
+    if(sophiaHistory.length>20)sophiaHistory=sophiaHistory.slice(-20);
+  }catch(e){removeDots();addMsg('sophia',"Connection issue. Please try again.");}
+  sophiaLoading=false;inp.focus();
+}
+</script>
+<!-- ══════════ PARTNER MODAL ══════════ -->
+<div id="partner-overlay" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(4,10,20,0.93);overflow-y:auto;backdrop-filter:blur(8px);">
+  <div style="min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px 60px;">
+    <div style="width:100%;max-width:860px;position:relative;">
+
+      <!-- Close -->
+      <button onclick="closePartner()" style="position:absolute;top:0;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;z-index:10;" onmouseover="this.style.background='rgba(201,168,76,0.15)';this.style.color='#C9A84C'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='rgba(255,255,255,0.5)'">✕</button>
+
+      <!-- Header -->
+      <div style="text-align:center;padding:0 40px 40px;border-bottom:1px solid rgba(201,168,76,0.12);margin-bottom:44px;">
+        <img src="https://missionchain.io/mission-chain-logo-clear.png" alt="Mission Chain" style="height:44px;width:auto;margin-bottom:20px;filter:drop-shadow(0 0 8px rgba(201,168,76,0.3));">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:20px;padding:6px 16px;font-size:11px;color:rgba(201,168,76,0.7);letter-spacing:.8px;text-transform:uppercase;margin-bottom:22px;">✦ Programa “Founding Partner” · 2026</div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,5vw,54px);font-weight:600;color:#FFFFFF;line-height:1.05;margin-bottom:16px;">Seja parceiro do<br><em style="color:var(--gold);font-style:italic;">Mission Chain</em></h2>
+
+        <!-- The Call -->
+        <div style="max-width:660px;margin:0 auto 28px;font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,20px);font-style:italic;color:rgba(255,255,255,0.65);line-height:1.7;">
+          “Agradeço a Deus sempre que me lembro de vocês, em todas as minhas orações por todos vocês, fazendo minhas orações com alegria, por causa da sua parceria no evangelho.”<br>
+          <span style="font-size:13px;color:rgba(201,168,76,0.5);font-style:normal;letter-spacing:.3px;">— Filipenses 1:3–5</span>
+        </div>
+
+        <!-- Manifesto -->
+        <div style="max-width:680px;margin:0 auto;text-align:left;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:14px;padding:28px 32px;">
+          <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.82;margin-bottom:16px;">
+            Em todo o Sul Global — em Lagos, Manila, São Paulo, Nairóbi — há centenas de milhões de pessoas talentosas cujo talento é real, mas cujo acesso é estruturalmente limitado. Jovens músicos compõem canções de louvor antes do amanhecer. Artistas visuais pintam murais em igrejas sem perspectiva de renda profissional. Cineastas capturam testemunhos em smartphones sem canal de distribuição.
+          </p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.82;margin-bottom:16px;">
+            <strong style="color:#FFFFFF;">Mission Chainestá sendo construído para mudar isso.</strong>
+            Não com caridade. Com infraestrutura — credenciais verificadas por blockchain, um mercado criativo justo, correspondência impulsionada por IA e uma comunidade fundamentada na fé que se autogovernam.
+          </p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.82;margin-bottom:16px;">
+            Não estamos pedindo doações. Estamos convidando <strong style="color:var(--gold);">os “Founding Partners”</strong> — pessoas que acreditam que a tecnologia pode servir à dignidade humana em vez de explorá-la, e que desejam fazer parte da fundação de algo que perdure.
+          </p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.82;">
+          
+            Cada parceiro que contribui recebe <strong style="color:#FFFFFF;">tokens “MIC”</strong>
+          e <strong style="color:#FFFFFF;">credenciais</strong>
+          “<strong style="color:#FFFFFF;"><span translate='no'>MFP-NFT</span></strong>
+          ”<strong style="color:#FFFFFF;">Constitutional Steward</strong>
+          — não como pagamento, mas como reconhecimento. Você passa a fazer parte da base de governança dMission Chain
+          . Seu nome, sua contribuição, sua vocação — registrados na blockchain, permanentemente. <em style="color:rgba(201,168,76,0.7);">“Uma cidade situada sobre uma colina não pode ficar escondida.”</em>
+          </p>
+        </div>
+      </div>
+
+      <!-- What You Receive -->
+      <div style="margin-bottom:40px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(201,168,76,0.65);margin-bottom:8px;">O que todo Founding Partner recebe</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:#FFFFFF;">Reconhecimento proporcional ao seu compromisso</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:10px;">🪙</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:#FFF;margin-bottom:5px;"><span translate='no'>MIC Token</span> s</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,0.4);line-height:1.5;">Tokens de utilidade do ecossistema ao preço de lançamento (US$ 0,0025/MIC). Carência: 6 meses, 2,5% ao mês. Estimativa de cotação: US$ 0,01.</div>
+          </div>
+          <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:20px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:10px;">🏛</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);margin-bottom:5px;"><span translate='no'>MFP-NFT</span></div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,0.4);line-height:1.5;">Constitutional Steward Credencial. Voz na governança dMission DAO. Recompensa proporcional do pool de<span translate='no'>MFP-NFT</span>.</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:10px;">🌟</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:#FFF;margin-bottom:5px;">NFTe da comunidade s</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,0.4);line-height:1.5;">Credenciais de Construtor, Criador ou Luminar. Reconhecimento na cadeia de blocos de sua contribuição fundadora. Permanente.</div>
+          </div>
+        </div>
+
+        <!-- Tiers table -->
+        <div style="margin-top:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;background:rgba(6,17,31,0.8);padding:10px 20px;">
+            <div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:rgba(201,168,76,0.6);">Pacote</div>
+            <div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:rgba(201,168,76,0.6);text-align:right;">Contribuição</div>
+            <div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:rgba(201,168,76,0.6);text-align:right;">MIC Recebida</div>
+            <div style="font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:rgba(201,168,76,0.6);text-align:right;"><span translate='no'>MFP-NFT</span></div>
+          </div>
+          <div id="pkg-rows"></div>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.15);border-radius:16px;padding:32px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#FFF;margin-bottom:6px;">Sua Declaração de Parceria</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:24px;">Todos os campos marcados com * são obrigatórios. Suas informações são criptografadas e nunca compartilhadas.</div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:12px;margin-bottom:14px;">
+          <!-- Title -->
+          <div>
+            <label class="p-label">Título *</label>
+            <select class="p-input" style="width:90px;">
+              <option>Sr.</option><option>Sra.</option><option>Sra.</option><option>Dr.</option><option>Rev.</option><option>Pastor</option>
+            </select>
+          </div>
+          <!-- First Name -->
+          <div>
+            <label class="p-label">Nome *</label>
+            <input class="p-input" type="text" placeholder="Given name">
+          </div>
+          <!-- Last Name -->
+          <div>
+            <label class="p-label">Sobrenome *</label>
+            <input class="p-input" type="text" placeholder="Family name">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div>
+            <label class="p-label">Endereço de e-mail *</label>
+            <input class="p-input" type="email" placeholder="your@email.com">
+          </div>
+          <div>
+            <label class="p-label">País *</label>
+            <select class="p-input" id="partner-country">
+              <option value="">Selecione seu país…</option>
+              <option>Estados Unidos</option><option>Reino Unido</option><option>Nigéria</option>
+              <option>Coreia do Sul</option><option>Vietnã</option><option>Brasil</option>
+              <option>Filipinas</option><option>África do Sul</option><option>Indonésia</option>
+              <option>Austrália</option><option>Canadá</option><option>Alemanha</option>
+              <option>Cingapura</option><option>Quênia</option><option>Gana</option>
+              <option>Outros</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div>
+            <label class="p-label">Valor da contribuição (USD) *</label>
+            <div style="position:relative;">
+              <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.35);font-size:14px;">$</span>
+              <input class="p-input" type="number" min="1000" step="100" placeholder="Minimum $1,000" id="partner-amount" style="padding-left:26px;" oninput="updatePackage(this.value)">
+            </div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,0.28);margin-top:4px;">Mínimo de US$ 1.000 · Pacotes de US$ 1.000 a US$ 25.000+</div>
+          </div>
+          <div>
+            <label class="p-label">MIC e NFT estimados</label>
+            <div id="partner-calc" style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:10px 14px;min-height:42px;font-size:12.5px;color:var(--gold);">Insira o valor acima para ver suas recompensas</div>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div style="margin-bottom:20px;">
+          <label class="p-label">Método de pagamento preferencial *</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="payment-methods">
+            <div class="pay-opt active" onclick="selectPay(this,'usdt-bep20')">
+              <div style="font-size:11.5px;font-weight:600;color:var(--gold);">USDT BEP-20</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;"><span translate='no'>BNB Smart Chain</span></div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this,'usdt-trc20')">
+              <div style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);">USDT TRC-20</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Rede Tron</div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this,'usdt-erc20')">
+              <div style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);">USDT ERC-20</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Rede Ethereum</div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this,'paypal')">
+              <div style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);">PayPal</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Pagamento em USD</div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this,'bank')">
+              <div style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);">Transferência bancária</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">SWIFT / Transferência</div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this,'other')">
+              <div style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);">Outros</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Entre em contato conosco primeiro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional fields -->
+        <div style="margin-bottom:20px;">
+          <label class="p-label">Sua missão / Por que você está fazendo parceria (opcional)</label>
+          <textarea class="p-input" style="min-height:80px;resize:vertical;" placeholder="Share your heart. What drew you to Mission Chain? What are you building? This will be kept confidential unless you choose to share it publicly."></textarea>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label class="p-label">BEP-20 Endereço da carteira (opcional — necessário para receber MIC e NFT)</label>
+          <input class="p-input" type="text" placeholder="0x… (You can add this later after registration)">
+          <div style="font-size:10.5px;color:rgba(255,255,255,0.28);margin-top:4px;">Deixe em branco agora — você pode vincular sua carteira após concluir o registro na plataforma.</div>
+        </div>
+
+        <!-- Consent -->
+        <div style="margin-bottom:24px;padding:14px 16px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);border-radius:8px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:8px;">
+            <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--gold);"> Compreendo que MIC e <span translate='no'>MFP-NFT</span> são instrumentos de utilidade do ecossistema — não são títulos ou produtos de investimento — e que Mission Chain não garante qualquer retorno financeiro.
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;color:rgba(255,255,255,0.55);line-height:1.6;">
+            <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--gold);"> Concordo com os Termos de Serviço e a Política de Privacidade de missionchain.world. Entendo que minha contribuição será reconhecida com tokens MIC e credenciais NFT, conforme descrito acima.
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <div style="text-align:center;">
+          <button onclick="submitPartner()" style="padding:15px 48px;border-radius:30px;background:var(--gold);color:var(--navy);font-size:15px;font-weight:600;border:none;cursor:pointer;letter-spacing:.3px;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:10px;" onmouseover="this.style.background='#DEB96A';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)'">
+            ✦ Enviar Declaração de Parceria
+          </button>
+          <div style="font-size:11.5px;color:rgba(255,255,255,0.25);margin-top:12px;">Nossa equipe entrará em contato com você em até 48 horas com instruções de pagamento e os próximos passos.</div>
+        </div>
+
+        <!-- Footer note -->
+        <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(201,168,76,0.4);">
+          &quot;Vocês são a luz do mundo. Uma cidade situada sobre uma colina não pode ficar escondida.&quot; — Mateus 5:14<br>
+          
+          <span style="font-size:11px;font-style:normal;color:rgba(255,255,255,0.2);letter-spacing:.3px;"><span translate='no'>Mission Chain Network</span>· missionchain.io · Inspirado pela fé. Construído para as pessoas.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.p-label{display:block;font-size:10.5px;color:rgba(255,255,255,0.4);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;}
+.p-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;font-size:13.5px;color:#FFF;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.p-input:focus{border-color:rgba(201,168,76,0.45);}
+.p-input::placeholder{color:rgba(255,255,255,0.22);}
+.p-input option{background:#0C1E35;color:white;}
+.pay-opt{padding:12px 14px;border-radius:9px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);cursor:pointer;transition:all .18s;}
+.pay-opt:hover{border-color:rgba(201,168,76,0.25);background:rgba(201,168,76,0.06);}
+.pay-opt.active{border-color:var(--gold);background:rgba(201,168,76,0.1);}
+.pay-opt.active div:first-child{color:var(--gold) !important;}
+@media(max-width:600px){
+  #partner-overlay .p-grid-3{grid-template-columns:1fr 1fr;}
+}
+</style>
+
+<script>
+// ── PARTNER MODAL ──
+const PACKAGES=[
+  {label:"Founding Partner",min:1000,max:2499,mic:400000,mfp:20},
+  {label:"Founding Partner+",min:2500,max:4999,mic:1000000,mfp:60},
+  {label:"Strategic Partner",min:5000,max:9999,mic:2000000,mfp:150},
+  {label:"Luminary Founder",min:10000,max:24999,mic:4000000,mfp:350},
+  {label:"Luminary Founder+",min:25000,max:9999999,mic:10000000,mfp:800},
+];
+
+// Build package rows
+(function(){
+  const cont=document.getElementById('pkg-rows');
+  PACKAGES.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;padding:11px 20px;border-bottom:1px solid rgba(255,255,255,0.04);';
+    if(i===PACKAGES.length-1)row.style.borderBottom='none';
+    row.style.background=i%2===0?'rgba(255,255,255,0.01)':'transparent';
+    const range=p.min===25000?'$25,000+':`$${p.min.toLocaleString()} – $${p.max.toLocaleString()}`;
+    const mic='+'+p.mic.toLocaleString()+' MIC';
+    const mfp='+'+p.mfp;
+    const isLuminary=i>=3;
+    row.innerHTML=`
+      <div style="font-size:13px;font-weight:500;color:${isLuminary?'#C9A84C':'#FFF'};">${p.label}</div>
+      <div style="font-size:12.5px;color:rgba(201,168,76,0.8);text-align:right;">${range}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);text-align:right;font-variant-numeric:tabular-nums;">${mic}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);text-align:right;">${mfp}</div>`;
+    cont.appendChild(row);
+  });
+})();
+
+function openPartner(){document.getElementById('partner-overlay').style.display='block';document.body.style.overflow='hidden';}
+function closePartner(){document.getElementById('partner-overlay').style.display='none';document.body.style.overflow='';}
+document.getElementById('partner-overlay').addEventListener('click',function(e){if(e.target===this)closePartner();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePartner();});
+
+function updatePackage(val){
+  const amt=parseFloat(val);
+  const calc=document.getElementById('partner-calc');
+  if(!amt||amt<1000){calc.textContent='Enter amount above to see your rewards';return;}
+  const mic=Math.floor(amt/0.0025);
+  let pkg=null;
+  for(const p of PACKAGES){if(amt>=p.min&&amt<=p.max){pkg=p;break;}}
+  if(pkg){
+    calc.innerHTML=`<strong style="color:var(--gold)">${pkg.label}</strong><br>${mic.toLocaleString()} MIC + ${pkg.mfp} MFP-NFT`;
+  } else {
+    calc.innerHTML=`${mic.toLocaleString()} MIC estimated`;
+  }
+}
+
+let selectedPay='usdt-bep20';
+function selectPay(el,method){
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  selectedPay=method;
+}
+
+function submitPartner(){
+  alert('Thank you for your partnership declaration!\n\nOur team will contact you within 48 hours with secure payment instructions.\n\n"I thank my God in all my remembrance of you." — Philippians 1:3');
+  closePartner();
+}
+</script>
+</body>
+</html>

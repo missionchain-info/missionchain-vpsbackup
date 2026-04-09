@@ -1,0 +1,576 @@
+[
+  {
+    "namespace": "default",
+    "kill_retry_time": 100,
+    "windowsHide": true,
+    "username": "root",
+    "treekill": true,
+    "automation": true,
+    "pmx": true,
+    "instance_var": "NODE_APP_INSTANCE",
+    "max_restarts": 10,
+    "watch": false,
+    "autorestart": true,
+    "autostart": true,
+    "vizion": true,
+    "merge_logs": true,
+    "restart_delay": 5000,
+    "max_memory_restart": 268435456,
+    "env": {
+      "mic-commander": "{}",
+      "PM2_HOME": "/root/.pm2",
+      "NODE_ENV": "production",
+      "PM2_JSON_PROCESSING": "true",
+      "PM2_INTERACTOR_PROCESSING": "true",
+      "PM2_USAGE": "CLI",
+      "_": "/usr/bin/pm2",
+      "OLDPWD": "/root",
+      "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+      "SSH_CLIENT": "171.97.42.46 64705 22",
+      "XDG_RUNTIME_DIR": "/run/user/0",
+      "XDG_SESSION_ID": "4003",
+      "SHLVL": "1",
+      "USER": "root",
+      "XDG_SESSION_CLASS": "user",
+      "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+      "LANG": "C.UTF-8",
+      "HOME": "/root",
+      "XDG_SESSION_TYPE": "tty",
+      "LOGNAME": "root",
+      "PWD": "/opt/missionchain/mic-orchestra",
+      "SHELL": "/bin/bash",
+      "unique_id": "4a303922-7ab4-47ed-83d8-beb5e5bda713"
+    },
+    "log_date_format": "YYYY-MM-DD HH:mm:ss",
+    "cwd": "/opt/missionchain/mic-orchestra",
+    "name": "mic-commander",
+    "node_args": [],
+    "pm_exec_path": "/opt/missionchain/mic-orchestra/ops-commander.js",
+    "pm_cwd": "/opt/missionchain/mic-orchestra",
+    "exec_interpreter": "node",
+    "exec_mode": "fork_mode",
+    "pm_out_log_path": "/opt/missionchain/mic-orchestra/logs/commander-out.log",
+    "pm_err_log_path": "/opt/missionchain/mic-orchestra/logs/commander-error.log",
+    "pm_pid_path": "/root/.pm2/pids/mic-commander-0.pid",
+    "km_link": false,
+    "vizion_running": false,
+    "NODE_APP_INSTANCE": 0,
+    "mic-commander": "{}",
+    "PM2_HOME": "/root/.pm2",
+    "NODE_ENV": "production",
+    "PM2_JSON_PROCESSING": "true",
+    "PM2_INTERACTOR_PROCESSING": "true",
+    "PM2_USAGE": "CLI",
+    "_": "/usr/bin/pm2",
+    "OLDPWD": "/root",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "SSH_CLIENT": "171.97.42.46 64705 22",
+    "XDG_RUNTIME_DIR": "/run/user/0",
+    "XDG_SESSION_ID": "4003",
+    "SHLVL": "1",
+    "USER": "root",
+    "XDG_SESSION_CLASS": "user",
+    "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+    "LANG": "C.UTF-8",
+    "HOME": "/root",
+    "XDG_SESSION_TYPE": "tty",
+    "LOGNAME": "root",
+    "PWD": "/opt/missionchain/mic-orchestra",
+    "SHELL": "/bin/bash",
+    "unique_id": "4a303922-7ab4-47ed-83d8-beb5e5bda713",
+    "status": "online",
+    "pm_uptime": 1775409080982,
+    "axm_actions": [
+      {
+        "action_name": "km:heapdump",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:stop",
+        "action_type": "internal",
+        "arity": 1
+      },
+      {
+        "action_name": "km:heap:sampling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:heap:sampling:stop",
+        "action_type": "internal",
+        "arity": 1
+      }
+    ],
+    "axm_monitor": {
+      "Used Heap Size": {
+        "value": "20.22",
+        "type": "internal/v8/heap/used",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Heap Usage": {
+        "value": 72.37,
+        "type": "internal/v8/heap/usage",
+        "unit": "%",
+        "historic": true
+      },
+      "Heap Size": {
+        "value": "27.93",
+        "type": "internal/v8/heap/total",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Event Loop Latency p95": {
+        "value": "1.57",
+        "type": "internal/libuv/latency/p95",
+        "unit": "ms",
+        "historic": true
+      },
+      "Event Loop Latency": {
+        "value": "0.57",
+        "type": "internal/libuv/latency/p50",
+        "unit": "ms",
+        "historic": true
+      },
+      "Active handles": {
+        "value": 4,
+        "type": "internal/libuv/handles",
+        "historic": true
+      },
+      "Active requests": {
+        "value": 0,
+        "type": "internal/libuv/requests",
+        "historic": true
+      }
+    },
+    "axm_options": {
+      "error": true,
+      "heapdump": true,
+      "feature.profiler.heapsnapshot": false,
+      "feature.profiler.heapsampling": true,
+      "feature.profiler.cpu_js": true,
+      "latency": true,
+      "catchExceptions": true,
+      "profiling": true,
+      "metrics": {
+        "http": true,
+        "runtime": true,
+        "eventLoop": true,
+        "network": false,
+        "v8": true
+      },
+      "standalone": false,
+      "module_conf": {},
+      "apm": {
+        "version": "6.1.0",
+        "type": "node"
+      },
+      "module_name": "mic-commander",
+      "module_version": "6.0.14"
+    },
+    "axm_dynamic": {},
+    "created_at": 1775409080871,
+    "restart_time": 310,
+    "unstable_restarts": 0,
+    "version": "4.0.0",
+    "node_version": "20.20.2",
+    "exit_code": 0,
+    "filter_env": []
+  },
+  {
+    "namespace": "default",
+    "kill_retry_time": 100,
+    "windowsHide": true,
+    "username": "root",
+    "treekill": true,
+    "automation": true,
+    "pmx": true,
+    "instance_var": "NODE_APP_INSTANCE",
+    "max_restarts": 5,
+    "watch": false,
+    "autorestart": true,
+    "autostart": true,
+    "vizion": true,
+    "merge_logs": true,
+    "restart_delay": 10000,
+    "max_memory_restart": 268435456,
+    "env": {
+      "mic-scheduler": "{}",
+      "PM2_HOME": "/root/.pm2",
+      "NODE_ENV": "production",
+      "PM2_JSON_PROCESSING": "true",
+      "PM2_INTERACTOR_PROCESSING": "true",
+      "PM2_USAGE": "CLI",
+      "_": "/usr/bin/pm2",
+      "OLDPWD": "/root",
+      "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+      "SSH_CLIENT": "171.97.42.46 64705 22",
+      "XDG_RUNTIME_DIR": "/run/user/0",
+      "XDG_SESSION_ID": "4003",
+      "SHLVL": "1",
+      "USER": "root",
+      "XDG_SESSION_CLASS": "user",
+      "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+      "LANG": "C.UTF-8",
+      "HOME": "/root",
+      "XDG_SESSION_TYPE": "tty",
+      "LOGNAME": "root",
+      "PWD": "/opt/missionchain/mic-orchestra",
+      "SHELL": "/bin/bash",
+      "unique_id": "f47b3dfc-2f13-4666-a774-32fb037a1947"
+    },
+    "log_date_format": "YYYY-MM-DD HH:mm:ss",
+    "cwd": "/opt/missionchain/mic-orchestra",
+    "name": "mic-scheduler",
+    "node_args": [],
+    "pm_exec_path": "/opt/missionchain/mic-orchestra/scheduler.js",
+    "pm_cwd": "/opt/missionchain/mic-orchestra",
+    "exec_interpreter": "node",
+    "exec_mode": "fork_mode",
+    "pm_out_log_path": "/opt/missionchain/mic-orchestra/logs/scheduler-out.log",
+    "pm_err_log_path": "/opt/missionchain/mic-orchestra/logs/scheduler-error.log",
+    "pm_pid_path": "/root/.pm2/pids/mic-scheduler-1.pid",
+    "km_link": false,
+    "vizion_running": false,
+    "NODE_APP_INSTANCE": 0,
+    "mic-scheduler": "{}",
+    "PM2_HOME": "/root/.pm2",
+    "NODE_ENV": "production",
+    "PM2_JSON_PROCESSING": "true",
+    "PM2_INTERACTOR_PROCESSING": "true",
+    "PM2_USAGE": "CLI",
+    "_": "/usr/bin/pm2",
+    "OLDPWD": "/root",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "SSH_CLIENT": "171.97.42.46 64705 22",
+    "XDG_RUNTIME_DIR": "/run/user/0",
+    "XDG_SESSION_ID": "4003",
+    "SHLVL": "1",
+    "USER": "root",
+    "XDG_SESSION_CLASS": "user",
+    "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+    "LANG": "C.UTF-8",
+    "HOME": "/root",
+    "XDG_SESSION_TYPE": "tty",
+    "LOGNAME": "root",
+    "PWD": "/opt/missionchain/mic-orchestra",
+    "SHELL": "/bin/bash",
+    "unique_id": "f47b3dfc-2f13-4666-a774-32fb037a1947",
+    "status": "online",
+    "pm_uptime": 1775407113576,
+    "axm_actions": [
+      {
+        "action_name": "km:heapdump",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:stop",
+        "action_type": "internal",
+        "arity": 1
+      },
+      {
+        "action_name": "km:heap:sampling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:heap:sampling:stop",
+        "action_type": "internal",
+        "arity": 1
+      }
+    ],
+    "axm_monitor": {
+      "Used Heap Size": {
+        "value": "22.97",
+        "type": "internal/v8/heap/used",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Heap Usage": {
+        "value": 88.56,
+        "type": "internal/v8/heap/usage",
+        "unit": "%",
+        "historic": true
+      },
+      "Heap Size": {
+        "value": "25.93",
+        "type": "internal/v8/heap/total",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Event Loop Latency p95": {
+        "value": "1.46",
+        "type": "internal/libuv/latency/p95",
+        "unit": "ms",
+        "historic": true
+      },
+      "Event Loop Latency": {
+        "value": "0.57",
+        "type": "internal/libuv/latency/p50",
+        "unit": "ms",
+        "historic": true
+      },
+      "Active handles": {
+        "value": 3,
+        "type": "internal/libuv/handles",
+        "historic": true
+      },
+      "Active requests": {
+        "value": 0,
+        "type": "internal/libuv/requests",
+        "historic": true
+      }
+    },
+    "axm_options": {
+      "error": true,
+      "heapdump": true,
+      "feature.profiler.heapsnapshot": false,
+      "feature.profiler.heapsampling": true,
+      "feature.profiler.cpu_js": true,
+      "latency": true,
+      "catchExceptions": true,
+      "profiling": true,
+      "metrics": {
+        "http": true,
+        "runtime": true,
+        "eventLoop": true,
+        "network": false,
+        "v8": true
+      },
+      "standalone": false,
+      "module_conf": {},
+      "apm": {
+        "version": "6.1.0",
+        "type": "node"
+      },
+      "module_name": "mic-scheduler",
+      "module_version": "6.0.14"
+    },
+    "axm_dynamic": {},
+    "created_at": 1775407113576,
+    "restart_time": 0,
+    "unstable_restarts": 0,
+    "version": "4.0.0",
+    "node_version": "20.20.2"
+  },
+  {
+    "namespace": "default",
+    "kill_retry_time": 100,
+    "windowsHide": true,
+    "username": "root",
+    "treekill": true,
+    "automation": true,
+    "pmx": true,
+    "instance_var": "NODE_APP_INSTANCE",
+    "max_restarts": 5,
+    "watch": false,
+    "autorestart": true,
+    "autostart": true,
+    "vizion": true,
+    "merge_logs": true,
+    "restart_delay": 5000,
+    "max_memory_restart": 134217728,
+    "env": {
+      "mic-settings": "{}",
+      "PM2_HOME": "/root/.pm2",
+      "NODE_ENV": "production",
+      "ADMIN_API_PORT": 3847,
+      "PM2_JSON_PROCESSING": "true",
+      "PM2_INTERACTOR_PROCESSING": "true",
+      "PM2_USAGE": "CLI",
+      "_": "/usr/bin/pm2",
+      "OLDPWD": "/root",
+      "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+      "SSH_CLIENT": "171.97.42.46 64705 22",
+      "XDG_RUNTIME_DIR": "/run/user/0",
+      "XDG_SESSION_ID": "4003",
+      "SHLVL": "1",
+      "USER": "root",
+      "XDG_SESSION_CLASS": "user",
+      "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+      "LANG": "C.UTF-8",
+      "HOME": "/root",
+      "XDG_SESSION_TYPE": "tty",
+      "LOGNAME": "root",
+      "PWD": "/opt/missionchain/mic-orchestra",
+      "SHELL": "/bin/bash",
+      "unique_id": "4b54cfee-f060-4504-925e-2c62adf45481"
+    },
+    "log_date_format": "YYYY-MM-DD HH:mm:ss",
+    "cwd": "/opt/missionchain/mic-orchestra",
+    "name": "mic-settings",
+    "node_args": [],
+    "pm_exec_path": "/opt/missionchain/mic-orchestra/admin-settings-api.js",
+    "pm_cwd": "/opt/missionchain/mic-orchestra",
+    "exec_interpreter": "node",
+    "exec_mode": "fork_mode",
+    "pm_out_log_path": "/opt/missionchain/mic-orchestra/logs/settings-out.log",
+    "pm_err_log_path": "/opt/missionchain/mic-orchestra/logs/settings-error.log",
+    "pm_pid_path": "/root/.pm2/pids/mic-settings-2.pid",
+    "km_link": false,
+    "vizion_running": false,
+    "NODE_APP_INSTANCE": 0,
+    "mic-settings": "{}",
+    "PM2_HOME": "/root/.pm2",
+    "NODE_ENV": "production",
+    "ADMIN_API_PORT": 3847,
+    "PM2_JSON_PROCESSING": "true",
+    "PM2_INTERACTOR_PROCESSING": "true",
+    "PM2_USAGE": "CLI",
+    "_": "/usr/bin/pm2",
+    "OLDPWD": "/root",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/0/bus",
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "SSH_CLIENT": "171.97.42.46 64705 22",
+    "XDG_RUNTIME_DIR": "/run/user/0",
+    "XDG_SESSION_ID": "4003",
+    "SHLVL": "1",
+    "USER": "root",
+    "XDG_SESSION_CLASS": "user",
+    "SSH_CONNECTION": "171.97.42.46 64705 187.77.149.158 22",
+    "LANG": "C.UTF-8",
+    "HOME": "/root",
+    "XDG_SESSION_TYPE": "tty",
+    "LOGNAME": "root",
+    "PWD": "/opt/missionchain/mic-orchestra",
+    "SHELL": "/bin/bash",
+    "unique_id": "4b54cfee-f060-4504-925e-2c62adf45481",
+    "status": "online",
+    "pm_uptime": 1775407113588,
+    "axm_actions": [
+      {
+        "action_name": "km:heapdump",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:cpu:profiling:stop",
+        "action_type": "internal",
+        "arity": 1
+      },
+      {
+        "action_name": "km:heap:sampling:start",
+        "action_type": "internal",
+        "arity": 2
+      },
+      {
+        "action_name": "km:heap:sampling:stop",
+        "action_type": "internal",
+        "arity": 1
+      }
+    ],
+    "axm_monitor": {
+      "Used Heap Size": {
+        "value": "12.66",
+        "type": "internal/v8/heap/used",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Heap Usage": {
+        "value": 78.52,
+        "type": "internal/v8/heap/usage",
+        "unit": "%",
+        "historic": true
+      },
+      "Heap Size": {
+        "value": "16.13",
+        "type": "internal/v8/heap/total",
+        "unit": "MiB",
+        "historic": true
+      },
+      "Event Loop Latency p95": {
+        "value": "1.33",
+        "type": "internal/libuv/latency/p95",
+        "unit": "ms",
+        "historic": true
+      },
+      "Event Loop Latency": {
+        "value": "0.54",
+        "type": "internal/libuv/latency/p50",
+        "unit": "ms",
+        "historic": true
+      },
+      "Active handles": {
+        "value": 4,
+        "type": "internal/libuv/handles",
+        "historic": true
+      },
+      "Active requests": {
+        "value": 0,
+        "type": "internal/libuv/requests",
+        "historic": true
+      },
+      "HTTP": {
+        "value": 0,
+        "type": "internal/http/builtin/reqs",
+        "unit": "req/min",
+        "historic": true
+      },
+      "HTTP P95 Latency": {
+        "value": 680.7,
+        "type": "internal/http/builtin/latency/p95",
+        "unit": "ms",
+        "historic": true
+      },
+      "HTTP Mean Latency": {
+        "value": 0,
+        "type": "internal/http/builtin/latency/p50",
+        "unit": "ms",
+        "historic": true
+      }
+    },
+    "axm_options": {
+      "error": true,
+      "heapdump": true,
+      "feature.profiler.heapsnapshot": false,
+      "feature.profiler.heapsampling": true,
+      "feature.profiler.cpu_js": true,
+      "latency": true,
+      "catchExceptions": true,
+      "profiling": true,
+      "metrics": {
+        "http": true,
+        "runtime": true,
+        "eventLoop": true,
+        "network": false,
+        "v8": true
+      },
+      "standalone": false,
+      "module_conf": {},
+      "apm": {
+        "version": "6.1.0",
+        "type": "node"
+      },
+      "module_name": "mic-settings",
+      "module_version": "6.0.14"
+    },
+    "axm_dynamic": {},
+    "created_at": 1775407113588,
+    "restart_time": 0,
+    "unstable_restarts": 0,
+    "version": "4.0.0",
+    "node_version": "20.20.2"
+  }
+]

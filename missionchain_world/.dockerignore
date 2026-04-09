@@ -1,0 +1,11 @@
+node_modules
+app
+components
+lib
+*.ts
+*.tsx
+tsconfig.json
+next.config.js
+package*.json
+Dockerfile
+.dockerignore
