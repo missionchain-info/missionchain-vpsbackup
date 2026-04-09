@@ -34,3 +34,4 @@ data/redis/
 Thumbs.db
 
 # Large images (will add sophia-avatar separately)
+.env.backup.txt
