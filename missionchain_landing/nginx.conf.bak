@@ -1,0 +1,29 @@
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Main landing page
+    location / {
+        try_files $uri $uri.html $uri/ /index.html;
+    }
+
+    # Documents at /documents/ AND /frontend/documents/ (both work)
+    location /documents/ {
+        try_files $uri =404;
+    }
+
+    location /frontend/documents/ {
+        try_files $uri =404;
+    }
+
+    location /translations/ {
+        try_files $uri =404;
+    }
+
+    # Static assets
+    location ~* \.(png|jpg|jpeg|gif|ico|svg|css|js|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+    }
+}

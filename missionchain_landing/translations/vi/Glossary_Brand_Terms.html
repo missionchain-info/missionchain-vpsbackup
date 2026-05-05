@@ -1,0 +1,427 @@
+html
+<html class="lang-vi" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Mission Chain Network - Glossary of Brand Terms</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0C0812;--bg2:#130A1E;--bg3:#1A0E28;--bg4:#1F1035;--purple:#7B2D8B;--purple2:#C084D4;--blue:#6B1428;--blue2:#9B2C42;--gold:#C9A84C;--gold2:#E8C96A;--white:#F0E6D3;--gray:#B09090;--gray2:#7A6070;--border:rgba(200,168,200,.1);--font-d:"Montserrat",sans-serif;--font-b:"Montserrat",sans-serif;--font-m:"Montserrat",sans-serif;--langbar-bg:rgba(6,12,24,.9);--sidebar-bg:rgba(6,12,24,.97);--toggle-bg:rgba(6,12,24,.9);--hero-bg:radial-gradient(ellipse 80% 60% at 30% 50%,rgba(59,20,100,.18) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 30%,rgba(107,20,40,.12) 0%,transparent 55%),var(--bg);}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--white);font-family:var(--font-b);line-height:1.7;overflow-x:hidden}
+.lang-vi,.lang-vi body,.lang-vi body *,.lang-vi button,.lang-vi input,.lang-vi select,.lang-vi textarea,.lang-vi svg text{font-family:"Montserrat",sans-serif !important}
+body.theme-light{--bg:#F7F2E8;--bg2:#F0E7D8;--bg3:#F8F1E4;--bg4:#EDE1CF;--purple:#7B2D8B;--purple2:#8C4CA0;--blue:#7A2B3C;--blue2:#964257;--gold:#B88D2E;--gold2:#D9B75B;--white:#231B15;--gray:#5D4F43;--gray2:#7B6E63;--border:rgba(107,77,45,.16);--langbar-bg:rgba(255,248,240,.92);--sidebar-bg:rgba(250,244,236,.96);--toggle-bg:rgba(255,248,240,.92);--hero-bg:radial-gradient(ellipse 85% 65% at 30% 45%,rgba(201,168,76,.12) 0%,transparent 60%),radial-gradient(ellipse 52% 42% at 82% 28%,rgba(123,45,139,.08) 0%,transparent 55%),linear-gradient(180deg,#FBF6ED 0%,#F4EADC 100%);}
+img{max-width:100%}
+a{color:var(--blue2);text-decoration:none}
+a:hover{color:var(--purple2)}
+#lang-bar{position:fixed;top:16px;right:20px;z-index:1000;display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:min(760px,calc(100vw - 28px));background:var(--langbar-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:30px;padding:5px 8px}
+.theme-toggle-group{display:flex;gap:5px;padding-right:4px;margin-right:4px;border-right:1px solid var(--border)}
+.theme-btn,.top-btn{padding:5px 13px;border-radius:20px;font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:.05em;cursor:pointer;border:none;background:transparent;color:var(--gray);transition:all .2s}
+.theme-btn{min-width:34px;padding:5px 10px}
+.theme-btn.active,.top-btn.active{background:linear-gradient(90deg,#7B2D8B,#6B1428);color:#fff}
+.theme-btn:hover:not(.active),.top-btn:hover:not(.active){color:var(--white);background:rgba(255,255,255,.05)}
+body.theme-light .theme-btn:hover:not(.active),body.theme-light .top-btn:hover:not(.active){background:rgba(35,27,21,.06)}
+#sidebar{position:fixed;left:0;top:0;height:100vh;width:260px;background:var(--sidebar-bg);backdrop-filter:blur(20px);border-right:1px solid var(--border);overflow-y:auto;z-index:900;transition:transform .3s;padding:24px 0 40px}
+#sidebar::-webkit-scrollbar{width:3px}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(59,20,100,.4)}
+.sidebar-logo{padding:20px 24px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo img{height:40px;width:40px;border-radius:8px;object-fit:contain;background:transparent}
+.sidebar-logo-text{font-family:var(--font-d);font-weight:800;font-size:13px;line-height:1.3}
+.sidebar-logo-text span{display:block;font-size:10px;color:var(--gray);font-weight:500;letter-spacing:.06em;margin-top:1px}
+.nav-group-label{padding:8px 24px 4px;font-family:var(--font-m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray2)}
+.nav-link{display:block;padding:8px 24px;font-size:12.5px;color:var(--gray);transition:all .15s;position:relative;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font-b)}
+.nav-link::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:linear-gradient(var(--purple),var(--blue));border-radius:0 2px 2px 0;transform:scaleY(0);transition:transform .2s}
+.nav-link:hover{color:var(--white);background:rgba(59,20,100,.1)}
+.nav-link.active{color:var(--white);background:rgba(59,20,100,.15)}
+.nav-link.active::before{transform:scaleY(1)}
+#toggle-sb{position:fixed;left:16px;top:16px;z-index:1100;width:38px;height:38px;background:var(--toggle-bg);border:1px solid var(--border);border-radius:10px;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:16px;backdrop-filter:blur(12px);color:var(--white)}
+#main{margin-left:260px;min-height:100vh}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;position:relative;overflow:hidden;background:var(--hero-bg)}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:60px;align-items:center;max-width:980px}
+.hero-eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple2);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--purple2)}
+.hero-title{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.4rem);font-weight:900;line-height:1.05;letter-spacing:-.02em;margin-bottom:8px}
+.hero-title span{color:var(--gold2)}
+.hero-tagline{font-family:var(--font-d);font-size:clamp(1rem,2vw,1.2rem);font-weight:300;color:var(--gray);letter-spacing:.06em;margin-bottom:28px;text-transform:uppercase}
+.hero-quote{border-left:3px solid var(--purple);padding:12px 20px;margin-bottom:32px;font-style:italic;color:var(--gray);font-size:.95rem;line-height:1.7;background:rgba(59,20,100,.08);border-radius:0 8px 8px 0}
+.hero-quote cite{display:block;margin-top:6px;font-style:normal;font-size:.8rem;color:var(--gray2);font-family:var(--font-m)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:32px}
+.hero-meta-item{display:flex;flex-direction:column}
+.hero-meta-label{font-family:var(--font-m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray2);margin-bottom:3px}
+.hero-meta-val{font-family:var(--font-d);font-weight:700;font-size:.95rem;color:var(--white)}
+.hero-logo-block{text-align:center}
+.hero-logo-block img{width:min(220px,32vw);height:min(220px,32vw);min-width:160px;min-height:160px;border-radius:24px;object-fit:contain;background:transparent;filter:drop-shadow(0 20px 60px rgba(59,20,100,.35));animation:floatY 4s ease-in-out infinite}
+.hero-version{font-family:var(--font-m);font-size:10px;color:var(--gray2);margin-top:12px;letter-spacing:.1em}
+.section{padding:80px 60px;max-width:980px;position:relative}
+.section:not(:last-child)::after{content:'';display:block;margin-top:60px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.section-num{font-family:var(--font-m);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-num::before{content:'';width:16px;height:1px;background:var(--purple2)}
+.section-title{font-family:var(--font-d);font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.1;letter-spacing:-.015em;margin-bottom:8px}
+p{color:var(--gray);margin-bottom:16px;font-size:.95rem;line-height:1.75}
+strong{color:var(--white)}
+.lead{font-size:1.05rem;color:rgba(241,245,249,.8);margin-bottom:24px;line-height:1.8}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.toc-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;text-decoration:none}
+.toc-item:hover{border-color:var(--purple);background:rgba(59,20,100,.1)}
+.toc-num{font-family:var(--font-m);font-size:.75rem;color:var(--purple2);min-width:28px}
+.toc-name{font-size:.85rem;color:var(--gray);transition:color .2s}
+.toc-item:hover .toc-name{color:var(--white)}
+.fancy-list{list-style:none;padding:0;margin:16px 0 0}
+.fancy-list li{padding:8px 0 8px 24px;position:relative;color:var(--gray);font-size:.93rem;border-bottom:1px solid rgba(148,163,184,.05)}
+.fancy-list li::before{content:'>';position:absolute;left:0;color:var(--purple2);font-family:var(--font-m);font-size:.8rem}
+.callout{background:linear-gradient(135deg,rgba(59,20,100,.12),rgba(107,20,40,.08));border:1px solid rgba(59,20,100,.25);border-radius:14px;padding:24px 28px;margin:24px 0}
+.callout.gold{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.05));border-color:rgba(245,158,11,.2)}
+.sub-title{font-family:var(--font-d);font-weight:700;font-size:1.15rem;color:var(--white);margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.wp-table-wrap{overflow-x:auto;margin:18px 0 12px}
+.wp-table{width:100%;border-collapse:collapse;font-size:.87rem;min-width:760px}
+.wp-table th{background:var(--bg4);color:var(--gray);font-family:var(--font-d);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.wp-table td{padding:14px 16px;border-bottom:1px solid rgba(148,163,184,.05);color:var(--gray);vertical-align:top;line-height:1.65}
+.wp-table td strong{color:var(--white)}
+.wp-table tr:hover td{background:rgba(59,20,100,.07)}
+.glossary-table td:nth-child(1){width:20%}
+.glossary-table td:nth-child(2){width:18%;color:var(--purple2);font-weight:600}
+.glossary-table td:nth-child(3){width:62%}
+.formula-table td:nth-child(1){width:34%;color:var(--gold2)}
+.formula-math{display:inline-block;font-family:var(--font-m);font-weight:600;letter-spacing:.01em;color:var(--gold2)}
+.formula-math sub,.formula-math sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline}
+.formula-math sup{top:-.45em}
+.formula-math sub{bottom:-.15em}
+.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+.quick-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+.quick-card h3{font-family:var(--font-d);font-size:1rem;margin-bottom:10px;color:var(--white)}
+.quick-card p{margin:0;font-size:.9rem}
+.quick-note{margin-top:18px;padding:18px 20px;border:1px solid var(--border);border-radius:14px;background:rgba(59,20,100,.05)}
+body.theme-light .nav-link:hover,body.theme-light .nav-link.active,body.theme-light .toc-item:hover{background:rgba(123,45,139,.08)}
+body.theme-light .lead{color:rgba(35,27,21,.82)}
+body.theme-light .hero-quote{background:rgba(123,45,139,.06)}
+body.theme-light .callout{background:linear-gradient(135deg,rgba(123,45,139,.07),rgba(107,20,40,.05));border-color:rgba(123,45,139,.16)}
+body.theme-light .wp-table tr:hover td{background:rgba(123,45,139,.05)}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 60px}
+footer .foot-grid{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;max-width:980px}
+.foot-logo img{height:52px;width:52px;border-radius:12px;object-fit:contain;background:transparent}
+.foot-logo-name{font-family:var(--font-d);font-weight:800;font-size:1.1rem;margin-top:8px}
+.foot-tagline{font-size:.82rem;color:var(--gray);margin-top:4px}
+footer p{font-size:.8rem;color:var(--gray2);line-height:1.8}
+footer .disclaimer{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:10px;padding:16px 20px;font-size:.78rem;color:var(--gray2);line-height:1.7;margin-top:20px;max-width:900px}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.anim{opacity:0;animation:fadeUp .6s ease forwards}
+.a1{animation-delay:.1s}.a2{animation-delay:.2s}.a3{animation-delay:.3s}
+@media(max-width:900px){#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}#main{margin-left:0}#toggle-sb{display:flex}#lang-bar{top:14px;right:14px;left:62px;max-width:calc(100vw - 76px)}.section{padding:60px 28px}.hero{padding:80px 28px 60px}}
+@media(max-width:700px){.hero-grid{grid-template-columns:1fr}.section{padding:60px 24px}footer{padding:40px 24px}footer .foot-grid{grid-template-columns:1fr}.toc-grid,.quick-grid{grid-template-columns:1fr}.hero-logo-block{display:none}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Noto+Serif+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<div id="lang-bar">
+  <div class="theme-toggle-group" aria-label="Theme switcher">
+    <button class="theme-btn active" onclick="setTheme('daylight')" id="theme-daylight" aria-label="Daylight theme">☀</button>
+    <button class="theme-btn" onclick="setTheme('night')" id="theme-night" aria-label="Night theme">☾</button>
+  </div>
+  <a class="top-btn" href="index.html">Website Mission Chain</a>
+  <a class="top-btn" href="White_Paper.html">White Paper</a>
+  <a class="top-btn active" href="Glossary_Brand_Terms.html">Thuật ngữ</a>
+  <button class="top-btn" onclick="setLang('en')" id="lb-en" type="button">EN</button>
+  <button class="top-btn" onclick="setLang('es')" id="lb-es" type="button">ES</button>
+  <button class="top-btn" onclick="setLang('pt')" id="lb-pt" type="button">PT</button>
+  <button class="top-btn" onclick="setLang('ko')" id="lb-ko" type="button">한국어</button>
+  <button class="top-btn active" onclick="setLang('vi')" id="lb-vi" type="button">VI</button>
+</div>
+<button id="toggle-sb" onclick="toggleSidebar()">☰</button>
+<nav id="sidebar">
+<div class="sidebar-logo">
+<img alt="Mission Chain" src="../../mission-chain-logo-clear.png"/>
+<div class="sidebar-logo-text">MISSION CHAIN<span>Bảng Thuật ngữ Thương hiệu</span></div>
+</div>
+<div class="nav-group">
+<div class="nav-group-label">Bảng thuật ngữ</div>
+<button class="nav-link" onclick="goTo('hero')">Tổng quan</button>
+<button class="nav-link" onclick="goTo('toc')">Nội dung</button>
+<button class="nav-link" onclick="goTo('purpose')">Mục đích</button>
+<button class="nav-link" onclick="goTo('brand')">Thương hiệu &amp; Hệ sinh thái</button>
+<button class="nav-link" onclick="goTo('product')">Sản phẩm &amp; Nền tảng</button>
+<button class="nav-link" onclick="goTo('economic')">Công cụ kinh tế</button>
+<button class="nav-link" onclick="goTo('governance')">Quản trị &amp; Kỹ thuật</button>
+<button class="nav-link" onclick="goTo('community')">Vai trò trong cộng đồng</button>
+<button class="nav-link" onclick="goTo('platform')">Nền tảng &amp; Kinh doanh</button>
+<button class="nav-link" onclick="goTo('math')">Biến công thức</button>
+</div>
+<div class="nav-group">
+<div class="nav-group-label">Tài liệu</div>
+<a class="nav-link" href="index.html">Website Mission Chain</a>
+<a class="nav-link" href="White_Paper.html">White Paper</a>
+</div>
+</nav>
+<main id="main">
+<section class="hero" id="hero">
+<div class="hero-grid">
+<div class="anim a1">
+<div class="hero-eyebrow">Tai lieu Mission Chain</div>
+<h1 class="hero-title">Từ Điển Thuật Ngữ <span>Thương Hiệu</span></h1>
+<p class="hero-tagline">Ngôn ngữ không thể dịch cho các đội ngũ dịch thuật, chuyên gia truyền thông và đối tác trong hệ sinh thái</p>
+<div class="hero-quote">"Các con là ánh sáng của thế gian. Một thành phố trên núi không thể bị che khuất."<cite>Ma-thi-ơ 5:14</cite></div>
+<div class="hero-meta">
+<div class="hero-meta-item"><span class="hero-meta-label">Phiên bản</span><span class="hero-meta-val">1.0</span></div>
+<div class="hero-meta-item"><span class="hero-meta-label">Ngôn ngữ</span><span class="hero-meta-val">Chỉ tiếng Anh</span></div>
+<div class="hero-meta-item"><span class="hero-meta-label">Tham khảo</span><span class="hero-meta-val">missionchain.io</span></div>
+</div>
+<p class="lead">Tham chiếu này giữ nguyên các thuật ngữ chính thức Mission Chain chính xác như được viết bằng tiếng Anh, để các đội ngũ dịch thuật, nhà điều hành khu vực và đối tác hệ sinh thái có thể địa phương hóa nội dung mà không làm ảnh hưởng đến tính toàn vẹn của thương hiệu, độ chính xác pháp lý hoặc ý nghĩa kinh tế.</p>
+</div>
+<div class="hero-logo-block anim a2">
+<img alt="Mission Chain" src="../../mission-chain-logo-clear.png"/>
+<div class="hero-version">Mission Chain Network · 2026</div>
+</div>
+</div>
+</section>
+<section class="section anim a1" id="toc">
+<div class="section-num">Nội dung</div>
+<h2 class="section-title">Bản đồ thuật ngữ</h2>
+<p>Phiên bản tiếng Anh này được giữ nguyên hoàn toàn bằng tiếng Anh. Tên thương hiệu, công cụ kinh tế, vai trò quản trị và ký hiệu công thức phải được giữ nguyên trong các tài liệu đã được dịch.</p>
+<div class="toc-grid">
+<a class="toc-item" href="#purpose"><span class="toc-num">00</span><span class="toc-name">Mục đích và Quy tắc cơ bản</span></a>
+<a class="toc-item" href="#brand"><span class="toc-num">01</span><span class="toc-name">Tên thương hiệu và hệ sinh thái</span></a>
+<a class="toc-item" href="#product"><span class="toc-num">02</span><span class="toc-name">Tên sản phẩm và nền tảng</span></a>
+<a class="toc-item" href="#economic"><span class="toc-num">03</span><span class="toc-name">Các công cụ kinh tế và ten token</span></a>
+<a class="toc-item" href="#governance"><span class="toc-num">04</span><span class="toc-name">Quản trị, Cơ chế và Thuật ngữ kỹ thuật</span></a>
+<a class="toc-item" href="#community"><span class="toc-num">05</span><span class="toc-name">Vai trò trong cộng đồng và tên chương trình</span></a>
+<a class="toc-item" href="#platform"><span class="toc-num">06</span><span class="toc-name">Nền tảng, Nội dung và Điều khoản Kinh doanh</span></a>
+<a class="toc-item" href="#math"><span class="toc-num">07</span><span class="toc-name">Biến trong công thức toán học</span></a>
+</div>
+</section>
+<section class="section anim a1" id="purpose">
+<div class="section-num">Giới thiệu</div>
+<h2 class="section-title">Mục đích của tài liệu này</h2>
+<p>Bảng thuật ngữ này định nghĩa tất cả các danh từ riêng, tên thương hiệu, tên sản phẩm, tên chứng chỉ, thuật ngữ kỹ thuật, tên công cụ tài chính, vai trò quản trị và biến số công thức được sử dụng trong các tài liệu truyền thông của Mission Chain.</p>
+<p>Tất cả các thuật ngữ được liệt kê trong tài liệu này phải được giữ nguyên chính xác như bản gốc tiếng Anh, không được dịch, chuyển tự hoặc thay thế, khi tài liệu Mission Chain được chuyển đổi sang bất kỳ ngôn ngữ nào khác.</p>
+<div class="callout gold">
+<h3 class="sub-title">Quy tắc cơ bản cho người dịch</h3>
+<p>Nếu có nghi ngờ: không nên dịch. Giữ nguyên thuật ngữ tiếng Anh và thêm một giải thích ngắn gọn bằng ngôn ngữ đích trong ngoặc đơn khi lần đầu tiên đề cập. Một thuật ngữ được giữ nguyên bằng tiếng Anh luôn được ưu tiên hơn một thuật ngữ được dịch sai — đặc biệt đối với tên thương hiệu, công cụ kinh tế, cấp độ chứng chỉ, vai trò quản trị và tất cả ký hiệu toán học. Đối với các ngôn ngữ sử dụng bảng chữ cái không phải La-tinh (tiếng Hàn, tiếng Trung, tiếng Ả Rập, tiếng Thái, tiếng Hindi, v.v.): hãy viết giải thích bằng ngôn ngữ địa phương trước, sau đó ghi thuật ngữ tiếng Anh trong ngoặc đơn khi lần đầu tiên sử dụng — và từ đó trở đi chỉ sử dụng thuật ngữ tiếng Anh trong toàn bộ tài liệu.</p>
+</div>
+<p>Bảng thuật ngữ được chia thành 7 phần:</p>
+<ul class="fancy-list">
+<li>Tên thương hiệu và hệ sinh thái</li>
+<li>Tên sản phẩm và nền tảng</li>
+<li>Các công cụ kinh tế và ten token</li>
+<li>Quản trị, Cơ chế và Thuật ngữ kỹ thuật</li>
+<li>Vai trò trong cộng đồng và tên chương trình</li>
+<li>Nền tảng, Nội dung và Điều khoản Kinh doanh</li>
+<li>Biến trong công thức toán học</li>
+</ul>
+</section>
+<section class="section anim a1" id="brand">
+<div class="section-num">Mục 1</div>
+<h2 class="section-title">Tên thương hiệu và hệ sinh thái</h2>
+<p>Đây là các danh tính thương hiệu cơ bản của hệ sinh thái Mission Chain. Đây là các danh từ riêng và phải luôn được viết hoa và giữ nguyên tiếng Anh chính xác như đã hiển thị.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>Mission Chain</td><td>Thương hiệu Hệ sinh thái</td><td>Tên của toàn bộ hệ sinh thái — hai từ, luôn viết hoa. "Mission" mang cả ý nghĩa tiếng Anh của một sứ mệnh có mục đích rõ ràng và ý nghĩa Kitô giáo về mục đích truyền giáo. "Chain" ám chỉ cả công nghệ blockchain và chuỗi liên kết không gián đoạn của những người được kết nối bởi một sứ mệnh chung. Không bao giờ gạch nối. Không bao giờ dịch.</td></tr>
+<tr><td>Mission Chain Network</td><td>Thương hiệu Hệ sinh thái (chính thức)</td><td>Tên đầy đủ chính thức của giao thức và hệ sinh thái. Sử dụng trong các tài liệu pháp lý, thông số kỹ thuật, thông tin liên lạc chính thức với nhà đầu tư và lần đầu tiên được đề cập trong các ấn phẩm chính thức. Sau lần đề cập đầu tiên, chỉ cần sử dụng "Mission Chain" là đủ.</td></tr>
+<tr><td>Mission DAO</td><td>Thực thể quản trị</td><td>Tổ chức tự trị phi tập trung (DAO) quản lý hệ sinh thái Mission Chain. "Mission DAO" là một danh từ riêng duy nhất. Từ "DAO" không bao giờ được tách rời khỏi "Mission" trong ngữ cảnh này. Có thể giải thích lần đầu tiên bằng ngôn ngữ địa phương kèm theo một chú thích ngắn — sau đó sử dụng "Mission DAO" từ lần sau.</td></tr>
+<tr><td>Creator Mission Economy</td><td>Khung khái niệm</td><td>Tên gọi của mô hình kinh tế mới mà Mission Chain giới thiệu — nơi đóng góp của con người được xác minh, chứ không phải đầu cơ tài chính, là động lực tạo ra giá trị. Đây là khái niệm thương hiệu chính thức. Giải thích khái niệm này bằng ngôn ngữ mục tiêu nếu cần thiết; giữ "Creator Mission Economy" làm nhãn tiếng Anh cho chính khái niệm này.</td></tr>
+<tr><td>Mission Network</td><td>Thuong hieu Layer 2</td><td>Tên thương hiệu của cơ sở hạ tầng blockchain Layer 2 trong tương lai của Mission Chain — mạng lưới được thiết kế chuyên dụng mà toàn bộ hệ sinh thái sẽ vận hành trên đó, với MIC là đồng tiền gốc. Luôn viết hoa hai từ. Không bao giờ sử dụng "Mission Network Layer 2 chain" — hãy sử dụng "Mission Network Layer 2" hoặc "Mission Network" riêng lẻ sau lần đề cập đầu tiên.</td></tr>
+<tr><td>Mission Network Layer 2</td><td>Chức danh kỹ thuật</td><td>Tên đầy đủ của blockchain Mission Chain Layer 2. "Layer 2" là thuật ngữ kiến trúc blockchain được hiểu rộng rãi trên toàn cầu. Tên gọi này thể hiện cả loại công nghệ và vị trí của nó trong tầm nhìn dài hạn của Mission Chain. Sau lần đề cập đầu tiên: "Mission Network L2" là cách viết tắt được chấp nhận trong các bối cảnh không chính thức hoặc kỹ thuật.</td></tr></tbody></table></div>
+</section>
+<section class="section anim a1" id="product">
+<div class="section-num">Mục 2</div>
+<h2 class="section-title">Tên sản phẩm và nền tảng</h2>
+<p>Mỗi tên sản phẩm là một danh từ riêng ghép từ, được tạo thành từ từ "Mission" theo sau là mô tả chức năng của nó. Tất cả tên sản phẩm đều được viết hoa và giữ nguyên tiếng Anh. Chúng là danh tính thương hiệu, không phải là các cụm từ mô tả.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>Mission Learn</td><td>Sản phẩm — Trụ cột 1</td><td>Học viện sáng tạo được chứng nhận bằng blockchain — trụ cột đầu tiên trong ba trụ cột của hệ sinh thái. "Learn" là một hậu tố thương hiệu, không phải là một từ độc lập. Không bao giờ dịch "Learn" sang ngôn ngữ địa phương trong ngữ cảnh này — ví dụ: "Mission Aprender" (Tiếng Tây Ban Nha) hoặc bất kỳ tương đương nào. Khái niệm có thể được giải thích theo ngữ cảnh địa phương; tên gọi vẫn giữ nguyên.</td></tr>
+<tr><td>Mission Work</td><td>Sản phẩm — Trụ cột 2</td><td>Thị trường kinh tế sáng tạo được xác minh — trụ cột thứ hai. Kết nối các nhà sáng tạo có chứng chỉ với khách hàng toàn cầu, tất cả thanh toán được thực hiện bằng MIC. Không bao giờ dịch từ "Work" trong tên này. Cụm từ "Mission Work" là danh tính của thị trường — không phải là mô tả chung chung về "làm việc cho một nhiệm vụ."</td></tr>
+<tr><td>Mission Social</td><td>Sản phẩm — Trụ cột 3</td><td>Nền tảng cộng đồng, trưng bày và cảm giác thuộc về — trụ cột thứ ba. Tổ chức các sự kiện, trưng bày tác phẩm của nhà sáng tạo, hoạt động Mission Hub và các lộ trình đi vào participation governance đã được phê duyệt, nhưng bản thân nó không phải là một tầng governance riêng biệt. Không dịch "Social." Không nhầm lẫn với các nền tảng mạng xã hội thông thường — Mission Social là tên sản phẩm cụ thể.</td></tr>
+<tr><td>Mission Arts</td><td>Nền tảng con</td><td>Lớp tài sản kỹ thuật số và cấp phép được tích hợp trong Mission Work. Quản lý việc bán và cấp phép cho các tài sản âm nhạc, nghệ thuật thị giác và video — kèm theo cơ chế chia sẻ doanh thu cho các nhà sáng tạo. "Mission Arts" là tên thương hiệu sản phẩm con. Luôn viết hoa thành hai từ.</td></tr>
+<tr><td>Mission Hub</td><td>Chương trình / Nút vật lý</td><td>Một địa điểm vật lý được chứng nhận — thường nằm trong nhà thờ, không gian sáng tạo hoặc tổ chức cộng đồng — đóng vai trò là nút địa phương của hệ sinh thái Mission Chain. Các Mission Hub tổ chức các phiên họp Mission Learn trực tiếp, điều phối Mission Work tại địa phương, hỗ trợ quá trình tham gia cộng đồng và củng cố các lộ trình tham gia cộng đồng. "Hub" là thuật ngữ thương hiệu; không dịch. "Mission Hub" (viết hoa hai từ) là tên gọi chính thức.</td></tr>
+<tr><td>Mission Social Festival</td><td>Thương hiệu sự kiện</td><td>Các sự kiện lễ hội cộng đồng quy mô lớn được tổ chức hàng quý trên nền tảng Mission Social — bao gồm Lễ hội Âm nhạc Cơ đốc Toàn cầu, Giải Thưởng Hình Ảnh Thờ Phượng và Giải Thưởng Phim Chứng Ngôn. Tên "Festival" có thể được điều chỉnh cho phù hợp với văn hóa trong các tài liệu quảng cáo địa phương, nhưng tên chính thức của sự kiện vẫn giữ nguyên bằng tiếng Anh.</td></tr>
+<tr><td>Mission World</td><td>Thương hiệu nền tảng</td><td>Nền tảng cộng đồng đầu tiên được xây dựng trên kiến trúc ba trụ cột của Mission Chain. Mission World không phải là trụ cột thứ tư; đây là biểu hiện nền tảng đầu tiên nơi Mission Learn, Mission Work và Mission Social hội tụ thành trải nghiệm cộng đồng sống động. Luôn được viết là hai từ viết hoa. Tham chiếu tên miền công khai là <span class="formula-math">missionchain.world</span>.</td></tr>
+<tr><td>SOPHIA</td><td>AI KOL / Nhân vật nền tảng</td><td>AI KOL công khai và người hướng dẫn cộng đồng được triển khai trên Mission World. SOPHIA tuyển chọn nội dung, hỗ trợ devotional và củng cố các lộ trình tương tác cho cộng đồng đức tin. Luôn viết hoa toàn bộ. Giữ "SOPHIA" bằng tiếng Anh trong mọi tài liệu bản địa hóa.</td></tr></tbody></table></div>
+</section>
+<section class="section anim a1" id="economic">
+<div class="section-num">Mục 3</div>
+<h2 class="section-title">Các công cụ kinh tế và ten token</h2>
+<p>Đây là các công cụ tài chính và kinh tế của hệ sinh thái Mission Chain. Các công cụ này phải được sử dụng một cách chính xác để đảm bảo bản chất của công cụ không bao giờ bị hiểu sai đối với các bên tham gia, đối tác hoặc cơ quan quản lý.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>MIC</td><td>Token Mã chứng khoán</td><td>Tên mã chính thức và tên viết tắt của Mission Chain Token — token điều phối chung và đồng tiền gốc tương lai của Mission Network Layer 2. Luôn viết hoa. Trong lần đề cập đầu tiên trong bất kỳ tài liệu nào: "MIC (Mission Chain Token)" — sau đó chỉ sử dụng "MIC" mà thôi. Không viết "MIC token" sau khi tên đầy đủ đã được giới thiệu, vì "MIC" đã là tên đầy đủ. Không bao giờ dịch hoặc chuyển đổi thành từ tiếng địa phương.</td></tr>
+<tr><td>Mission Chain Token</td><td>Token Tên đầy đủ</td><td>Tên chính thức đầy đủ của MIC. Sử dụng trong các thông báo pháp lý, tài liệu cho nhà đầu tư, hồ sơ đăng ký với cơ quan quản lý và lần đầu tiên đề cập trong các ấn phẩm chính thức. Sau lần đề cập đầu tiên, chỉ sử dụng "MIC" một cách độc quyền.</td></tr>
+<tr><td>MICE</td><td>Thông báo giấy phép</td><td>Tên chính thức của Mission Algorithm Node License — giấy phép khai thác thuật toán 360 ngày cho phép truy cập tỷ lệ vào phần thưởng phát hành hàng ngày của MIC. Luôn viết hoa. Lần đầu tiên đề cập: "MICE (Mission Algorithm Node License)" — sau đó là "MICE." MICE vừa là từ viết tắt vừa là tên thương hiệu đầy đủ của công cụ này. Không bao giờ dịch.</td></tr>
+<tr><td>Mission Algorithm Node License</td><td>Giấy phép Tên đầy đủ</td><td>Tên chính thức đầy đủ của MICE. Giấy phép MICE là quyền sử dụng có thời hạn để vận hành một nút khai thác thuật toán trong hệ thống phát hành Hindex — không phải là token, không phải là chứng khoán, không phải là công cụ đầu tư. Sử dụng tên đầy đủ trong các bối cảnh pháp lý và chính thức; "MICE" trong tất cả các tham chiếu tiếp theo.</td></tr>
+<tr><td>MFP-NFT</td><td>Nhãn chứng chỉ</td><td>Nhãn giao diện và cộng đồng được dùng trong toàn hệ sinh thái cho MFP — Mission Founders Pass, chứng chỉ constitutional steward. Luôn được viết là "MFP-NFT" với dấu gạch nối khi nhãn này được sử dụng trong UI sản phẩm, dashboard và tài liệu public-facing. Ở lần đề cập đầu tiên trong văn bản chính thức, có thể viết "MFP / MFP-NFT (Mission Founders Pass)".</td></tr>
+<tr><td>Mission Founders Pass</td><td>Tên đầy đủ của chứng chỉ</td><td>Tên canonical đầy đủ của MFP — chứng chỉ constitutional steward trọn đời với tổng cung tối đa 2.500. MFP hỗ trợ DAO eligibility và reward weight đã công bố, nhưng formal DAO participation chỉ được kích hoạt khi đáp ứng quy tắc đã phê duyệt: ít nhất 1 MFP cộng với tối thiểu 100.000 MIC đang staking và còn lại ít nhất 360 ngày khóa. Đây không phải là công cụ tài chính, chứng khoán hoặc cam kết lợi nhuận.</td></tr>
+<tr><td>Community NFT</td><td>Loại chứng chỉ</td><td>Tên danh mục bao trùm cho ba cấp chứng chỉ dựa trên đóng góp: Builder NFT, Maker NFT và Luminary NFT. "Community NFT" đề cập đến toàn bộ danh mục. Luôn được giữ nguyên bằng tiếng Anh. Community NFT không được bán — chúng được earned thông qua hoạt động hệ sinh thái đã xác minh và chỉ tham gia các reward pool được chỉ định, không tham gia bỏ phiếu DAO.</td></tr>
+<tr><td>Builder NFT</td><td>Community NFT Cấp 1 🔨</td><td>Community NFT cấp đầu tiên. Thời lượng reward pool: 60 ngày. Trọng số phần thưởng: ×1.0. Builder NFT ghi nhận đóng góp ban đầu đã được xác minh và không cấp quyền bỏ phiếu DAO cũng như không thay đổi trọng số staking MIC. Không bao giờ dịch từ "Builder" trong ngữ cảnh này. Viết là "Builder NFT" hoặc "Builder Community NFT".</td></tr>
+<tr><td>Maker NFT</td><td>Community NFT Cấp 2 ⚡</td><td>Community NFT cấp thứ hai. Thời lượng reward pool: 90 ngày. Trọng số phần thưởng: ×2.5. Maker NFT ghi nhận đóng góp bền vững và không cấp quyền bỏ phiếu DAO cũng như không thay đổi trọng số staking MIC. Viết là "Maker NFT" hoặc "Maker Community NFT".</td></tr>
+<tr><td>Luminary NFT</td><td>Community NFT Cấp 3 🌟</td><td>Cấp cao nhất của Community NFT. Thời lượng reward pool: 180 ngày. Trọng số phần thưởng: ×5.0. Luminary NFT ghi nhận đóng góp và mức độ hiện diện đặc biệt trong hệ sinh thái, nhưng vẫn không cấp quyền bỏ phiếu DAO cũng như không thay đổi trọng số staking MIC. Viết là "Luminary NFT" hoặc "Luminary Community NFT".</td></tr>
+<tr><td>USDT</td><td>Tham chiếu Stablecoin</td><td>Tether — đồng tiền ổn định được neo giá với USD, được sử dụng làm thành phần thanh toán tương đương tiền pháp định trong các giao dịch mua giấy phép MICE (50% tổng giá trị giao dịch). Luôn viết hoa. Một thuật ngữ tài chính phổ biến — không bao giờ được dịch.</td></tr></tbody></table></div>
+<div class="callout">
+<h3 class="sub-title">Tiêu chuẩn đặt tên vai trò</h3>
+<p>Lưu ý quan trọng: Builder, Maker, Luminary là tên riêng — luôn viết hoa và giữ nguyên tiếng Anh. Ý nghĩa của chúng có thể được giải thích bằng ngôn ngữ đích, nhưng chính các tên này là danh tính thương hiệu Mission Chain và phải xuất hiện chính xác như đã viết.</p>
+</div>
+</section>
+<section class="section anim a1" id="governance">
+<div class="section-num">Mục 4</div>
+<h2 class="section-title">Quản trị, Cơ chế và Thuật ngữ kỹ thuật</h2>
+<p>Các thuật ngữ này mô tả cơ chế hoạt động của giao thức, hệ thống quản trị và hệ thống kinh tế của Mission Chain. Hầu hết đều là các thuật ngữ tiêu chuẩn trong lĩnh vực Web3 hoặc tài chính toàn cầu, do đó nên giữ nguyên tiếng Anh để đảm bảo độ chính xác và khả năng tương tác.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>DAO</td><td>Cấu trúc quản trị</td><td>Tổ chức Tự trị Phi tập trung (DAO) — mô hình quản trị trong đó các quyết định được đưa ra bởi chủ sở hữu token và chứng chỉ thông qua bỏ phiếu trên chuỗi, với các quy tắc được thực thi bởi hợp đồng thông minh thay vì quản lý tập trung. Luôn viết hoa. Được hiểu rộng rãi trong bối cảnh blockchain. Khi sử dụng lần đầu tiên trong bất kỳ tài liệu địa phương hóa nào, một giải thích ngắn gọn trong ngoặc đơn bằng ngôn ngữ địa phương là hữu ích — sau đó "DAO" được sử dụng riêng lẻ.</td></tr>
+<tr><td>Staking / Stake / Staked / Unstake</td><td>Quản trị &amp; Cơ chế thưởng</td><td>Hành động chỉ định MIC cho việc tham gia reward có time-lock và, khi các quy tắc được phê duyệt yêu cầu, để kích hoạt DAO eligibility. Trong kiến trúc mục tiêu của bộ master docs Mission Chain, staking là wallet-resident thay vì bắt buộc phải chuyển custody: số dư staking vẫn được ghi nhận gắn với ví của holder, và MIC đang bị khóa theo vesting được phê duyệt cũng có thể tham gia theo các quy tắc xác định. Pure MIC staking không có cap theo địa chỉ, và Community NFT không làm thay đổi các multiplier staking của MIC.</td></tr>
+<tr><td>NFT</td><td>Tiêu chuẩn công nghệ</td><td>Token — một tài sản kỹ thuật số duy nhất, có thể xác minh được, được ghi lại trên blockchain. Trong bối cảnh của Mission Chain, NFTs đóng vai trò là chứng chỉ nhận dạng (Community NFTs, MFP-NFTs) và giấy phép chức năng (MICE). Luôn viết hoa. Một thuật ngữ được hiểu rộng rãi trên toàn cầu — giải thích ngắn gọn khi sử dụng lần đầu tiên khi viết cho đối tượng không am hiểu về tiền điện tử.</td></tr>
+<tr><td>Token</td><td>Công cụ kinh tế</td><td>Một tài sản kỹ thuật số được phát hành trên blockchain, đại diện cho một đơn vị giá trị hoặc tiện ích trong một hệ sinh thái. "Token" được sử dụng cụ thể cho MIC — không thể thay thế bằng các thuật ngữ địa phương cho tiền, đồng xu hoặc tiền tệ. Việc sử dụng thuật ngữ tương đương trong ngôn ngữ địa phương có thể gây ra sự không chính xác, dẫn đến hiểu lầm về bản chất của công cụ tài chính này.</td></tr>
+<tr><td>Smart Contract</td><td>Thành phần công nghệ</td><td>Mã tự thực thi được triển khai trên blockchain, tự động thực thi các quy tắc và điều kiện của một giao dịch hoặc hành động quản trị mà không cần đến bên trung gian đáng tin cậy. Trong Mission Chain: hợp đồng thông minh quản lý thanh toán ký quỹ trong Mission Work, phát hành NFT, kích hoạt và hết hạn giấy phép MICE, bỏ phiếu DAO, và phân phối tất cả các quỹ thưởng. Luôn là hai từ, viết thường trong văn bản.</td></tr>
+<tr><td>Escrow</td><td>Cơ chế thanh toán</td><td>Một cơ chế hợp đồng thông minh giữ an toàn khoản thanh toán MIC từ thời điểm công việc Mission Work được chấp nhận cho đến khi xác nhận sự chấp thuận của khách hàng — tự động giải phóng khoản thanh toán sau khi được chấp thuận mà không yêu cầu bất kỳ bên nào phải tin tưởng bên kia. "Escrow" là một thuật ngữ thương mại được hiểu rộng rãi — giữ nguyên tiếng Anh.</td></tr>
+<tr><td>Hindex Algorithm</td><td>Thuật toán độc quyền</td><td>Thuật toán phát thải hàng ngày độc quyền của Mission Chain. Tên đầy đủ là "Hindex Algorithm" — luôn viết hoa. "Hindex" có thể được sử dụng riêng lẻ trong các kênh cộng đồng và trong các trường hợp không chính thức sau khi đã giới thiệu. Không bao giờ viết tắt thành "H-index" (một khái niệm khác trong xuất bản học thuật) hoặc dịch sang tiếng Việt.</td></tr>
+<tr><td>TWAP</td><td>Thuật ngữ tham chiếu thị trường</td><td>Time-Weighted Average Price — một phương pháp tham chiếu thị trường tiêu chuẩn có thể xuất hiện trong các tài liệu planning lịch sử, thảo luận oracle hoặc logic chuyển đổi. Trong các tài liệu công khai hiện tại của Mission Chain, TWAP không phải là quy tắc round-pricing công khai của MICE; MICE tuân theo các vòng giá cố định đã công bố. Luôn viết hoa từ viết tắt. Trong lần dùng đầu tiên trong tài liệu chính thức: "TWAP (Time-Weighted Average Price)".</td></tr>
+<tr><td>DEX</td><td>Tài chính / Thuật ngữ công nghệ</td><td>Decentralized Exchange — nền tảng giao dịch tiền điện tử ngang hàng vận hành thông qua hợp đồng thông minh thay vì trung gian tập trung. Mission Chain có thể sử dụng dữ liệu thị trường DEX và độ sâu giao dịch như tham chiếu về sức khỏe thị trường, nhưng public MICE pricing hiện tại không được mô tả là dynamic DEX-driven pricing. Luôn viết hoa — một thuật ngữ toàn cầu trong Web3.</td></tr>
+<tr><td>Vesting</td><td>Token Điều khoản phân phối</td><td>Việc giải phóng dần dần các token được phân bổ theo một lịch trình thời gian đã định. Mission Chain sử dụng phương thức "rolling vesting" cho các phân bổ SEED và PRE-SALE — nghĩa là các token được giải phóng liên tục trong suốt thời gian vesting thay vì theo các đợt lớn. Luôn sử dụng thuật ngữ "vesting" trong tiếng Anh.</td></tr>
+<tr><td>Cliff</td><td>Token Điều khoản phân phối</td><td>Thời gian khóa ban đầu trong đó không thể truy cập hoặc chuyển nhượng bất kỳ token nào, bất kể lịch trình giải phóng. Ví dụ: "6 tháng khóa" có nghĩa là trong 6 tháng đầu tiên sau Sự kiện Phát hành Token (TGE), không có token nào được giải phóng — quá trình giải phóng chỉ bắt đầu sau khi thời gian khóa kết thúc.</td></tr>
+<tr><td>TGE</td><td>Token Điều khoản phân phối</td><td>Sự kiện tạo ra Token — thời điểm mà các token MIC được tạo ra lần đầu tiên trên chuỗi khối và phân phối cho những người nhận đợt phân bổ ban đầu. Đây là mốc tham chiếu để tính toán tất cả các giai đoạn và lịch trình giải phóng quyền sở hữu. Viết tắt luôn bằng chữ in hoa.</td></tr>
+<tr><td>Timelock</td><td>Cơ chế an toàn quản trị</td><td>Khoảng trễ bắt buộc giữa một governance approval và việc thực thi on-chain. Timelock được dùng để làm chậm các thay đổi nhạy cảm, giảm các lần triển khai vội vàng và tạo thời gian review trước khi thực hiện. Luôn dùng "timelock" — một từ, viết thường trong văn bản.</td></tr>
+<tr><td>Quorum</td><td>Ngưỡng quản trị</td><td>Mức tham gia tối thiểu cần thiết để một cuộc bỏ phiếu governance được coi là hợp lệ. Nếu không đạt quorum, cuộc bỏ phiếu sẽ vô hiệu bất kể kết quả trong nhóm người đã tham gia. Đây là một thuật ngữ governance toàn cầu — giữ nguyên tiếng Anh.</td></tr>
+<tr><td>Buy &amp; Burn</td><td>Cơ chế tokenomics</td><td>Tên được dùng trong các tài liệu lịch sử hoặc đã được phê duyệt để chỉ những cơ chế mà một phần doanh thu hoặc phí của hệ sinh thái có thể được dành cho việc mua lại MIC và rút MIC khỏi lưu thông. Giữ "Buy &amp; Burn" bằng tiếng Anh, nhưng tránh mô tả toàn bộ dòng phí hiện tại như thể chúng tự động bị đốt dưới một cơ chế cố định duy nhất.</td></tr>
+<tr><td>Liquidity / Liquidity Pool</td><td>Thuật ngữ Tài chính &amp; DeFi</td><td>Trong bối cảnh Mission Chain, "độ thanh khoản" cụ thể đề cập đến độ sâu của cặp giao dịch MIC/USDT trên Sàn giao dịch phi tập trung — lượng vốn có sẵn để mua bán MIC mà không gây ra tác động giá đáng kể. Thanh khoản sâu giúp khám phá giá tốt hơn và giảm slippage, nhưng không còn là một hệ số riêng bên trong công thức emission. Luôn sử dụng các thuật ngữ tiếng Anh — việc dịch sang tiếng địa phương có thể gây ra sự không chính xác.</td></tr>
+<tr><td>Layer 2</td><td>Chỉ định công nghệ</td><td>Một kiến trúc mở rộng blockchain được xây dựng trên một chuỗi cơ sở hiện có (Layer 1 — trong trường hợp hiện tại của Mission Chain, đó là BNB Smart Chain). Các mạng Layer 2 kế thừa tính bảo mật của chuỗi cơ sở đồng thời cho phép giao dịch nhanh hơn và rẻ hơn. "Layer 2" luôn viết hoa, luôn là hai từ có khoảng cách. "L2" là viết tắt chấp nhận được sau lần đề cập đầy đủ đầu tiên.</td></tr>
+<tr><td>Multi-sig</td><td>Cơ chế bảo mật</td><td>Multi-signature — một cơ chế bảo mật yêu cầu nhiều bên được ủy quyền phải ký số một giao dịch blockchain bằng phương pháp mã hóa trước khi giao dịch đó có thể được thực thi. Được sử dụng trong Mission Chain cho các hành động của Kho bạc DAO và các quyết định quản trị quan trọng để ngăn chặn điểm yếu duy nhất hoặc kiểm soát đơn phương. Luôn viết liền: "multi-sig."</td></tr>
+<tr><td>On-chain / Off-chain</td><td>Thuật ngữ kỹ thuật</td><td>Mô tả xem một hành động, giao dịch hoặc giao dịch có diễn ra trực tiếp trên blockchain (on-chain — vĩnh viễn, có thể kiểm tra công khai, không thể thay đổi) hay bên ngoài blockchain (off-chain — nhanh hơn, rẻ hơn, nhưng không thể tự động xác minh trên sổ cái blockchain). Trong Mission Chain: chứng chỉ, thanh toán công việc, phiếu bầu quản trị và phát hành NFT đều là on-chain. Luôn sử dụng dấu gạch ngang.</td></tr></tbody></table></div>
+</section>
+<section class="section anim a1" id="community">
+<div class="section-num">Điều 5</div>
+<h2 class="section-title">Vai trò trong cộng đồng và tên chương trình</h2>
+<p>Đây là các tên gọi chính thức và chức danh cho các vị trí trong hệ sinh thái Mission Chain. Các tên gọi này được viết hoa như các chức danh chính thức khi đề cập đến vị trí, và chúng được giữ nguyên bằng tiếng Anh trong tất cả các tài liệu được bản địa hóa.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>Hub Leader</td><td>Vai trò của cộng đồng</td><td>Các đại sứ cộng đồng được chứng nhận điều hành Mission Hub. Hub Leader là những người nắm giữ tối thiểu Maker Community NFT — những thành viên tích cực có lịch sử Mission Work được xác minh và có uy tín trong cộng đồng nhà thờ hoặc sáng tạo địa phương của họ. Họ quản lý các cộng đồng Telegram địa phương, tổ chức các sự kiện trực tiếp, tìm kiếm cơ hội việc làm địa phương và đại diện cho Mission Chain tại các hội nghị khu vực. Tên vai trò luôn được viết hoa: "Hub Leader." Không dịch sang các tương đương ngôn ngữ địa phương — tên vai trò vẫn giữ nguyên tiếng Anh.</td></tr>
+<tr><td>Founding Member</td><td>Chức danh</td><td>Các thành viên của đội ngũ sáng lập đã đóng góp nỗ lực đáng kể, thương hiệu, tài sản trí tuệ hoặc công việc tổ chức để xây dựng hệ sinh thái Mission Chain — và nhận được MFP-NFT thông qua Con đường 2 (Đóng góp Sáng lập). "Founding Member" là tên vai trò được viết hoa. Khái niệm có thể được giải thích theo ngữ cảnh địa phương; tên vai trò vẫn giữ nguyên tiếng Anh.</td></tr>
+<tr><td>Constitutional Steward</td><td>Vai trò quản trị</td><td>Chức danh governance chính thức dành cho holder MFP đáp ứng quy tắc DAO eligibility đã được phê duyệt. Trong bộ tài liệu public canonical hiện tại, quy tắc đó là: ít nhất 1 MFP cộng với tối thiểu 100.000 MIC đang staking và còn lại ít nhất 360 ngày khóa. Constitutional Steward tham gia vào governance nền tảng của giao thức. Luôn viết hoa khi dùng như tên vai trò.</td></tr>
+<tr><td>Active Steward</td><td>Thuật ngữ planning legacy</td><td>Một nhãn vòng đời governance mang tính lịch sử, được dùng trong các bản thiết kế cũ cho holder MFP đang tham gia tích cực. Đây không phải là vai trò public canonical chính trong bộ master docs hiện tại. Nếu được nhắc tới, cần đánh dấu rõ là thuật ngữ legacy hoặc archival planning.</td></tr>
+<tr><td>Honorary Steward</td><td>Thuật ngữ planning legacy</td><td>Một nhãn vòng đời lịch sử dùng trong các bản thảo governance trước đây cho holder MFP không hoạt động hoặc hoạt động một phần. Đây không phải là vai trò public canonical chính trong bộ master docs hiện tại. Chỉ dùng khi nói về các thiết kế governance đã lưu trữ.</td></tr>
+<tr><td>Legacy Credential</td><td>Thuật ngữ planning legacy</td><td>Một nhãn vòng đời lịch sử dùng trong các bản thảo governance trước đây cho trạng thái MFP được giữ vĩnh viễn nhưng không còn hoạt động kinh tế. Đây không phải là vai trò public canonical chính trong bộ master docs hiện tại. Chỉ dùng khi nói về các thiết kế governance đã lưu trữ.</td></tr>
+<tr><td>Economic Oracle</td><td>Thuật ngữ hệ thống legacy / planning</td><td>Tên gọi ở giai đoạn planning dành cho một khái niệm AI advisory và monitoring được nhắc trong các tài liệu cũ của Mission Chain. Đây không phải là tên sản phẩm public-facing đang được ưu tiên trong bộ master docs canonical hiện tại. Nếu dùng, hãy trình bày nó như một thuật ngữ planning hoặc archival thay vì như một module public đã triển khai.</td></tr>
+<tr><td>Builder / Maker / Luminary</td><td>Community NFT Tên cấp độ</td><td>Ba cấp độ chứng chỉ đóng góp chính thức của Mission Chain. Đây là các tên riêng — luôn viết hoa, luôn bằng tiếng Anh. Builder 🔨 — Cấp độ 1. Lớp nền tảng. Người xây dựng bằng tay và trái tim, tạo ra từ hư vô, đặt viên gạch đầu tiên. Chứng chỉ đóng góp đầu tiên. Maker ⚡ — Cấp độ 2. Một sức mạnh sáng tạo đang phát triển. Người tạo ra giá trị bền vững, nhân rộng tác động và tổ chức cộng đồng. Chứng chỉ cấp trung. Luminary 🌟 — Cấp độ 3. Ánh sáng dẫn đường — người mà công việc của họ có thể nhìn thấy từ xa và sự hiện diện của họ chiếu sáng con đường cho người khác. Chứng chỉ hiếm nhất. Trực tiếp phản ánh Matthew 5:14: "Các con là ánh sáng của thế giới." Cùng nhau: Builder. Maker. Luminary. — sự tiến triển của ánh sáng.</td></tr>
+<tr><td>Founding Steward</td><td>Định danh vai trò tập thể</td><td>Thuật ngữ tập thể dành cho những holder MFP được công nhận là những constitutional participant nền tảng trong hệ sinh thái. Khi cần độ chính xác trong tài liệu public hiện tại, nên ưu tiên cách diễn đạt explicit theo rule là "holders MFP đáp ứng yêu cầu DAO eligibility" thay vì dùng các nhãn viết tắt theo vòng đời cũ.</td></tr>
+<tr><td>Global South</td><td>Thuật ngữ địa chính trị / chiến lược</td><td>Thuật ngữ được công nhận quốc tế để chỉ các khu vực ở Châu Phi, Mỹ Latinh, Đông Nam Á, Nam Á và một số vùng Trung Đông, đặc trưng bởi nền kinh tế đang phát triển và — trong bối cảnh của Mission Chain — dân số trẻ, năng động và có hoạt động tôn giáo sôi nổi. "Global South" là thuật ngữ được chấp nhận trên toàn cầu trong các lĩnh vực phát triển, địa chính trị và chiến lược. Giữ nguyên tiếng Anh; không có bản dịch địa phương nào có thể truyền tải chính xác ý nghĩa tương tự.</td></tr>
+<tr><td>Creator Economy</td><td>Thuật ngữ ngành</td><td>Ngành công nghiệp toàn cầu rộng lớn hơn, nơi các nhà sáng tạo cá nhân có thể kiếm tiền từ nội dung, kỹ năng và đối tượng khán giả của mình một cách trực tiếp — mà không cần thông qua các tổ chức trung gian truyền thống. Mission Chain hoạt động trong và hướng đến việc chuyển đổi Creator Economy. "Creator Mission Economy" là biến thể thương hiệu cụ thể của Mission Chain — một phân loại con của Creator Economy được xây dựng dựa trên các giá trị đóng góp được xác minh và niềm tin.</td></tr></tbody></table></div>
+</section>
+<section class="section anim a1" id="platform">
+<div class="section-num">Mục 6</div>
+<h2 class="section-title">Điều khoản về nền tảng, nội dung và kinh doanh</h2>
+<p>Các thuật ngữ này xuất hiện thường xuyên trong các tài liệu và thông tin liên lạc của Mission Chain. Đây là các thuật ngữ kỹ thuật số, vận hành và kinh doanh tiêu chuẩn, cần được giữ nguyên tiếng Anh để đảm bảo tính nhất quán trên các thị trường.</p>
+<div class="wp-table-wrap"><table class="wp-table glossary-table"><thead><tr><th>Thuật ngữ</th><th>Thể loại</th><th>Ý nghĩa &amp; Bối cảnh</th></tr></thead><tbody><tr><td>Portfolio</td><td>Thuật ngữ nền tảng</td><td>Bộ sưu tập trực tuyến các tác phẩm xuất sắc nhất của một nhà sáng tạo — được trưng bày trên Mission Work và Mission Social để thể hiện kỹ năng, phong cách và thành tích chuyên nghiệp cho các khách hàng tiềm năng. Một thuật ngữ chuyên nghiệp phổ biến trong lĩnh vực sáng tạo. Không nên dịch sang các thuật ngữ địa phương — "portfolio" được hiểu rộng rãi trên các thị trường và mang ý nghĩa cụ thể về bằng chứng về công việc sáng tạo chuyên nghiệp.</td></tr>
+<tr><td>Dashboard</td><td>Thuật ngữ nền tảng</td><td>Giao diện hệ sinh thái cá nhân hiển thị chứng chỉ của người tham gia, tiến độ KPI hướng tới cấp NFT tiếp theo, trạng thái staking, lịch sử phần thưởng, bối cảnh governance eligibility, hoạt động Mission Work và số dư MIC. "Dashboard" là thuật ngữ sản phẩm số được hiểu rộng rãi.</td></tr>
+<tr><td>KPI</td><td>Thuật ngữ kinh doanh</td><td>Chỉ số Hiệu suất Chính — các chỉ số có thể đo lường và xác minh trên chuỗi mà người tham gia phải đạt được để nhận được từng cấp độ Community NFT (Builder, Maker, Luminary). Ví dụ: số lượng công việc Mission Work hoàn thành, điểm đánh giá trung bình của công việc, số MIC kiếm được, số phiếu bầu trong quản trị, số sự kiện cộng đồng tổ chức. Khi sử dụng lần đầu trong tài liệu dành cho đối tượng không phải doanh nghiệp: "KPI (Chỉ số Hiệu suất Chính)" — sau đó gọi tắt là "KPI."</td></tr>
+<tr><td>Roadmap</td><td>Thuật ngữ chiến lược</td><td>Kế hoạch phát triển và tăng trưởng theo giai đoạn chính thức cho Mission Chain — được chia thành bốn giai đoạn từ Giai đoạn Nền tảng đến Giai đoạn Lãnh đạo Toàn cầu. "Roadmap" trong các tài liệu Mission Chain luôn đề cập đến kế hoạch chính thức cụ thể này. Từ này có thể được sử dụng trong văn bản tiếng địa phương khi giải thích khái niệm; "Mission Chain Roadmap" hoặc "bản đồ đường đi của Mission Chain" trong các tài liệu chính thức.</td></tr>
+<tr><td>Flywheel</td><td>Ẩn dụ chiến lược</td><td>"Ecosystem Flywheel" là chu kỳ tăng trưởng tự củng cố của Mission Chain: học hỏi, xây dựng kỹ năng có thể xác minh, đóng góp công việc, kiếm MIC, củng cố uy tín, đào sâu cảm giác thuộc về cộng đồng và mở rộng stewardship participation. Mỗi vòng quay làm sâu hơn mức độ gắn kết và tăng utility thực của hệ sinh thái. "Flywheel" là ẩn dụ thương hiệu cho chu kỳ này — giữ nguyên tiếng Anh trong các thông tin chính thức.</td></tr>
+<tr><td>White Paper</td><td>Loại tài liệu</td><td>Tài liệu chính thức mô tả tầm nhìn, kiến trúc, thiết kế kinh tế, hệ thống quản trị và lộ trình của dự án Mission Chain. Trong tiếng Anh: "White Paper" — hai từ, cả hai đều viết hoa. Trên bìa tài liệu đã dịch, "White Paper" có thể xuất hiện như một tiêu đề phụ tiếng Anh bên cạnh tiêu đề bằng ngôn ngữ địa phương.</td></tr>
+<tr><td>MVP</td><td>Thuật ngữ sản phẩm</td><td>Sản phẩm tối thiểu khả thi (Minimum Viable Product) — phiên bản chức năng ban đầu của một sản phẩm hoặc bộ tính năng, đủ để xác thực việc sử dụng trong thực tế và thu thập phản hồi trước khi phát triển đầy đủ. Khi đề cập lần đầu trong tài liệu dành cho đối tượng chung: "MVP (Sản phẩm tối thiểu khả thi)" — sau đó gọi tắt là "MVP."</td></tr>
+<tr><td>ARR</td><td>Chỉ số kinh doanh</td><td>Doanh thu định kỳ hàng năm — tổng doanh thu định kỳ hàng năm từ nền tảng, được tính theo năm. Được sử dụng làm chỉ số mốc quan trọng trong lộ trình phát triển của Mission Chain ($1 triệu ARR là mục tiêu tại Giai đoạn III). Lần đầu tiên đề cập: "ARR (Doanh thu định kỳ hàng năm)" — sau đó gọi tắt là "ARR."</td></tr>
+<tr><td>Whitelist</td><td>Thuật ngữ truy cập</td><td>Danh sách các địa chỉ ví đã được phê duyệt trước và được phép tham gia vào một đợt bán token cụ thể hoặc đợt phân bổ quyền truy cập sớm. "Whitelist" là một thuật ngữ tiêu chuẩn trong Web3 — giữ nguyên bằng tiếng Anh.</td></tr>
+<tr><td>Airdrop</td><td>Điều khoản phân phối</td><td>Phân phối token hoặc NFT vào các ví được chỉ định, thường không kèm theo thanh toán trực tiếp — được sử dụng như một cơ chế thưởng tiếp thị hoặc cộng đồng. Lưu ý: Community NFT trong Mission Chain không được airdrop — chúng được kiếm được thông qua đóng góp đã được xác minh. Giữ nguyên từ "airdrop" bằng tiếng Anh khi đề cập đến cơ chế phân phối.</td></tr>
+<tr><td>Mainnet / Testnet</td><td>Thuật ngữ kỹ thuật</td><td>Mainnet: Mạng lưới blockchain sản xuất hoạt động thực tế, nơi diễn ra các giao dịch thực tế với giá trị thực. Testnet: Môi trường thử nghiệm mô phỏng mạng chính (mainnet) nhưng sử dụng các token thử nghiệm không có giá trị — được sử dụng cho phát triển và kiểm toán trước khi mạng chính được triển khai. Cả hai thuật ngữ đều là thuật ngữ blockchain tiêu chuẩn toàn cầu — giữ nguyên tiếng Anh.</td></tr>
+<tr><td>BSC</td><td>Từ viết tắt kỹ thuật</td><td>BNB Smart Chain — chuỗi khối mà Mission Chain hiện đang được triển khai (Giai đoạn I – III). Một chuỗi khối tốc độ cao, chi phí thấp tương thích với EVM, có mặt rộng rãi tại Đông Nam Á và Châu Phi — các thị trường mục tiêu chính của Mission Chain. Luôn sử dụng "BSC" làm từ viết tắt sau lần đề cập đầu tiên. Trong lần đề cập đầu tiên: "BNB Smart Chain (BSC)."</td></tr></tbody></table></div>
+</section>
+<section class="section anim a1" id="math">
+<div class="section-num">Muc 7</div>
+<h2 class="section-title">Bien trong Cong thuc Toan hoc</h2>
+<p>Tat ca cong thuc toan hoc, ten bien, ky hieu ham va hang so trong tai lieu Mission Chain phai duoc giu nguyen dung nhu ban tieng Anh, khong duoc dia phuong hoa ky hieu, dau phan cach hay notations.</p>
+<p>Mission Chain su dung dau cham (.) lam dau thap phan theo chuan quoc te trong tat ca cong thuc, vi du 0.60, 0.95 va 22,907,500. Khong thay bang dau phay hoac quy uoc so dia phuong ben trong cu phap cong thuc.</p>
+<div class="wp-table-wrap"><table class="wp-table formula-table"><thead><tr><th>Cong thuc / Bien</th><th>Dinh nghia / Y nghia cua tung bien</th></tr></thead><tbody>
+<tr><td><span class="formula-math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span></td><td>Công thức phát hành MIC hằng ngày của Adaptive Emission Engine. t = số ngày đã trôi qua kể từ khi hệ sinh thái khởi sinh. Bốn thành phần này được nhân với nhau để tạo ra E(t), tức tổng lượng MIC phát hành lên mạng trong ngày t.</td></tr>
+<tr><td><span class="formula-math">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup></span></td><td>Lượng phát hành cơ sở theo suy giảm hàm mũ. E₀ ≈ 22,907,500 MIC/ngày (mức ban đầu). T_half = 180 ngày. Khi kết hợp với cơ chế suy giảm, công thức này phân phối chính xác 5,950,000,000 MIC (85% tổng cung) cho mining pool trong khoảng 3 năm để đạt mức phát hành 99%.</td></tr>
+<tr><td><span class="formula-math">D(t) = 0.5 + U(t)</span></td><td>Hệ số nhu cầu. U(t) = tỷ lệ sử dụng MICE. Phạm vi: [0.5, 1.5]. Điều chỉnh lượng phát hành theo nhu cầu thời gian thực đối với giấy phép MICE, tăng phát hành khi mức sử dụng cao và giảm khi mức sử dụng thấp.</td></tr>
+<tr><td><span class="formula-math">R(t) = clamp(250%/ROI, 0.5, 2.0)</span></td><td>Bộ điều tiết ROI. ROI mục tiêu = 250%. Khi ROI vượt mục tiêu, R(t) giảm lượng phát hành; khi ROI thấp hơn mục tiêu, R(t) tăng lượng phát hành. Giá trị này được chặn trong khoảng 0.5 đến 2.0 để tránh biến động cực đoan.</td></tr>
+<tr><td><span class="formula-math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.60 × E(t)</span></td><td>Phan thuong MIC hang ngay cua MICE operator i tai ngay t. M<sub>i</sub> la so license MICE dang hoat dong cua operator i. N<sub>t</sub> la tong so license MICE dang hoat dong tren toan mang. 0.60 la 60% daily emission duoc phan bo cho pool Miners.</td></tr>
+<tr><td><span class="formula-math">VotingWeight<sub>MFP,i</sub> = S<sub>i</sub> / Σ S<sub>MFP,eligible</sub></span></td><td>Trọng số biểu quyết của holder MFP đủ điều kiện governance i trong tập hợp constitutional governance. S<sub>i</sub> là lượng MIC đủ điều kiện được ghi nhận cho holder i. Σ S<sub>MFP,eligible</sub> là tổng lượng MIC đủ điều kiện của tất cả các holder MFP đủ điều kiện governance. Chỉ sở hữu MFP thôi chưa kích hoạt voting weight; quy tắc staking và thời gian lock còn lại cũng phải được đáp ứng.</td></tr>
+<tr><td><span class="formula-math">PoolShare<sub>i</sub>(t) = (userStaked<sub>i</sub> × timeLockMultiplier<sub>i</sub>) / totalWeightedPool × dailyStakingEmission</span></td><td>Phân bổ MIC hàng ngày từ Staking pool cho holder i. timeLockMultiplier = hệ số time-lock (30d=1×, 90d=1.25×, 180d=1.5×, 360d=2×). Không áp dụng NFT multiplier.</td></tr>
+<tr><td><span class="formula-math">W(t) = min(1.0, t/30)</span></td><td>Hệ số warm-up áp dụng trong 30 ngày đầu sau khi hệ sinh thái ra mắt. Hệ số này tăng dần lượng emission hiệu dụng để làm mềm giai đoạn khởi động.</td></tr>
+<tr><td><span class="formula-math">PoolShare<sub>i</sub>(t) = (userStaked<sub>i</sub> × timeLockMultiplier<sub>i</sub>) / totalWeightedPool × dailyStakingEmission</span></td><td>Phân bổ MIC hàng ngày từ Staking pool cho holder i. timeLockMultiplier = 30d/90d/180d/360d = 1×/1.25×/1.5×/2×. Staking là thuần MIC, không áp dụng NFT multiplier.</td></tr>
+</tbody></table></div>
+<div class="callout gold">
+<h3 class="sub-title">Vì sao công thức không được dịch</h3>
+<p>Cong thuc toan hoc la cac dac ta ky thuat chinh xac, khong phai van xuoi. Neu doi ten bien, ky hieu hoac cach viet so, y nghia cua cong thuc se thay doi va co the gay loi trong implementation, audit va truyen thong.</p>
+</div>
+<div class="callout">
+<h3 class="sub-title">Tham khảo nhanh</h3>
+<p>Các nhóm sau phải được giữ nguyên bằng tiếng Anh trong mọi bản dịch và bản địa hóa của Mission Chain.</p>
+<div class="quick-grid">
+<div class="quick-card"><h3>Tên hệ sinh thái và sản phẩm</h3><p>Mission Chain · Mission Chain Network · Mission DAO · Creator Mission Economy · Mission Network · Mission Network Layer 2 · Mission Learn · Mission Work · Mission Social · Mission Arts · Mission Hub · Mission Social Festival · Mission World · SOPHIA</p></div>
+<div class="quick-card"><h3>Công cụ kinh tế</h3><p>MIC · Mission Chain Token · MICE · Mission Algorithm Node License · MFP-NFT · Mission Founders Pass · Community NFT · Builder NFT · Maker NFT · Luminary NFT · USDT</p></div>
+<div class="quick-card"><h3>Thuật ngữ kỹ thuật và governance</h3><p>DAO · NFT · Token · Staking / Stake / Staked · Smart Contract · Escrow · Hindex Algorithm · TWAP · DEX · Vesting · Cliff · TGE · Timelock · Quorum · Buy & Burn · Liquidity · Layer 2 · Multi-sig · On-chain · Off-chain · Mainnet · Testnet · BSC</p></div>
+<div class="quick-card"><h3>Vai trò và chương trình cộng đồng</h3><p>Hub Leader · Founding Member · Constitutional Steward · Active Steward (legacy) · Honorary Steward (legacy) · Legacy Credential (legacy) · Founding Steward · Economic Oracle (planning) · Builder · Maker · Luminary · Global South · Creator Economy</p></div>
+<div class="quick-card"><h3>Thuật ngữ nền tảng và kinh doanh</h3><p>Portfolio · Dashboard · KPI · Roadmap · Flywheel · White Paper · MVP · ARR · Whitelist · Airdrop</p></div>
+<div class="quick-card"><h3>All Formula Variables (preserve exactly as written)</h3><p>E(t) · E<sub>base</sub>(t) · D(t) · R(t) · W(t) · R<sub>MICE,i</sub>(t) · VotingWeight<sub>MFP,i</sub> · PoolShare<sub>i</sub>(t)</p></div>
+</div>
+</div>
+</section>
+<footer>
+<div class="foot-grid">
+<div class="foot-logo">
+<img alt="Mission Chain" src="../../mission-chain-logo-clear.png"/>
+<div class="foot-logo-name">Mission Chain</div>
+<div class="foot-tagline">Bảng Thuật ngữ Thương hiệu</div>
+</div>
+<div>
+<p>© 2026 Mission Chain Network. Từ điển thuật ngữ này là tài liệu tham khảo để đảm bảo chất lượng dịch thuật, tính nhất quán trong giao tiếp và tính toàn vẹn của thương hiệu trên toàn hệ sinh thái.</p>
+<div class="disclaimer">Tất cả các tên thương hiệu, tên sản phẩm, vai trò quản trị, mã định danh token và biến công thức được liệt kê phải được giữ nguyên chính xác như trong tiếng Anh trừ khi Mission Chain công bố tiêu chuẩn thay thế rõ ràng.</div>
+</div>
+</div>
+</footer>
+</main>
+<script>
+const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
+const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
+function detectLocale() {
+  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
+  return match ? match[1] : 'en';
+}
+function detectFileName(fallback) {
+  const path = window.location.pathname || '';
+  const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+  const name = cleanPath.split('/').pop();
+  return name || fallback;
+}
+function getLocalizedHref(lang, fallbackFile) {
+  const currentLocale = detectLocale();
+  const file = detectFileName(fallbackFile);
+  const suffix = window.location.search + window.location.hash;
+  if (currentLocale === 'en') {
+    return (lang === 'en' ? file : 'translations/' + lang + '/' + file) + suffix;
+  }
+  return (lang === 'en' ? '../../documents/' + file : '../' + lang + '/' + file) + suffix;
+}
+const THEME_KEY = 'missionchain-theme';
+function syncGlossaryLanguageButtons() {
+  const current = detectLocale();
+  document.querySelectorAll('[id^="lb-"]').forEach(btn => btn.classList.remove('active'));
+  const active = document.getElementById('lb-' + current);
+  if (active) active.classList.add('active');
+  document.documentElement.lang = current;
+}
+function setLang(lang) {
+  window.location.href = getLocalizedHref(lang, 'Glossary_Brand_Terms.html');
+}
+function setTheme(theme) {
+  const isLight = theme === 'night';
+  document.body.classList.toggle('theme-light', isLight);
+  document.getElementById('theme-daylight').classList.toggle('active', !isLight);
+  document.getElementById('theme-night').classList.toggle('active', isLight);
+  localStorage.setItem(THEME_KEY, theme);
+}
+syncGlossaryLanguageButtons();
+setTheme(localStorage.getItem(THEME_KEY) || 'daylight');
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+const sections = ['hero','toc','purpose','brand','product','economic','governance','community','platform','math'];
+const navBtns = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 120) current = id;
+  });
+  navBtns.forEach(btn => {
+    btn.classList.remove('active');
+    const oc = btn.getAttribute('onclick') || '';
+    if (current && oc.includes("'" + current + "'")) btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Seed Round — Mission Chain</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&amp;family=Montserrat:wght@300;400;500;600;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-l:#E8C96B;--gold-d:#8A6520;
+  --ink:#0C0810;--ink2:#120D1C;
+  --cream:#F4ECD7;--dim:rgba(244,236,215,.62);--faint:rgba(244,236,215,.32);
+  --border:rgba(201,168,76,.18);--brd:rgba(201,168,76,.42);
+  --red:#B84040;--teal:#2A7A6A;--amber:#8A5A20;
+}
+html{scroll-behavior:smooth}
+body{font-family:"EB Garamond",Georgia,serif;background:var(--ink);color:var(--cream);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+body.theme-light{
+  --ink:#F7F2E8;
+  --ink2:#F0E7D8;
+  --cream:#231B15;
+  --dim:rgba(35,27,21,.72);
+  --faint:rgba(35,27,21,.42);
+  --border:rgba(184,141,46,.18);
+  --border-med:rgba(184,141,46,.38);
+  --brd:rgba(184,141,46,.36);
+}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(107,26,42,.45),transparent 58%),
+             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(44,26,62,.50),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(201,168,76,.05),transparent 50%)}
+body.theme-light::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(201,168,76,.18),transparent 58%),
+             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(123,45,139,.08),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(184,141,46,.06),transparent 50%)}
+
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+    height:64px;padding:0 44px;background:rgba(12,8,16,.94);
+    backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--border)}
+.nlogo{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
+.nlogo img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 7px rgba(201,168,76,.5))}
+.nbrand{font-family:"Cinzel",serif;font-size:.82rem;font-weight:600;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+.nav-tools{display:flex;align-items:center;gap:10px}
+.theme-toggle-group{display:flex;align-items:center;gap:6px;padding-right:10px;margin-right:2px;border-right:1px solid var(--border)}
+.theme-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;font-family:"Cinzel",serif;font-size:.82rem;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all .2s}
+.theme-btn:hover{border-color:var(--gold);color:var(--gold)}
+.theme-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--ink);border-color:transparent}
+body.theme-light nav{background:rgba(250,244,236,.94)}
+body.theme-light .lsdrop{background:rgba(250,244,236,.98)}
+body.theme-light .lsbtn,body.theme-light .theme-btn{backdrop-filter:blur(10px)}
+body.theme-light .wallet-qr{background:#fffdf8}
+body.theme-light select option{background:#F0E7D8;color:#231B15}
+.ls{position:relative}
+.lsbtn{display:flex;align-items:center;gap:6px;font-family:"Cinzel",serif;font-size:.68rem;
+       letter-spacing:.1em;color:var(--dim);background:transparent;border:1px solid var(--border);
+       border-radius:2px;padding:6px 12px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.lsbtn::after{content:"▾";font-size:.58rem;opacity:.5;margin-left:2px}
+.lsbtn:hover{border-color:var(--gold);color:var(--gold)}
+.lsdrop{display:none;position:absolute;right:0;top:calc(100% + 6px);min-width:110px;
+        background:rgba(15,10,24,.98);border:1px solid var(--border);border-radius:3px;
+        box-shadow:0 16px 48px rgba(0,0,0,.6)}
+.ls.open .lsdrop{display:block}
+.lopt{display:block;width:100%;padding:9px 14px;text-align:left;font-family:"Cinzel",serif;
+      font-size:.68rem;letter-spacing:.08em;color:var(--dim);background:none;border:none;
+      cursor:pointer;transition:background .15s,color .15s}
+.lopt:hover,.lopt.on{background:rgba(201,168,76,.1);color:var(--gold)}
+
+/* PAGE */
+.page{position:relative;z-index:1;max-width:840px;margin:0 auto;padding:60px 36px 96px}
+
+/* HERO */
+.eyebrow{font-family:"Cinzel",serif;font-size:.68rem;letter-spacing:.22em;color:var(--gold-d);
+         text-transform:uppercase;margin-bottom:12px}
+.badge-pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--brd);
+            background:rgba(201,168,76,.07);padding:5px 17px 5px 12px;border-radius:100px;
+            margin-bottom:22px;font-family:"Cinzel",serif;font-size:.67rem;
+            letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+.bdot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;
+      animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}55%{opacity:.25;transform:scale(.55)}}
+h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
+   line-height:1.05;letter-spacing:.04em;color:var(--gold);margin-bottom:8px}
+.h1-sub{font-family:"Cinzel",serif;font-size:clamp(1rem,3vw,1.6rem);font-weight:400;
+        letter-spacing:.18em;color:var(--cream);text-transform:uppercase;margin-bottom:20px}
+.tagline{font-size:1.05rem;line-height:1.78;color:var(--dim);margin-bottom:10px;font-style:italic}
+.sub-copy{font-family:"Cinzel",serif;font-size:.78rem;letter-spacing:.1em;color:var(--gold);
+          text-transform:uppercase;border-left:2px solid var(--gold);padding-left:14px;margin-bottom:48px}
+
+/* RULE */
+.rule{display:flex;align-items:center;gap:0;margin:44px 0}
+.rule-line{flex:1;height:1px;background:var(--border)}
+.rule-glyph{padding:0 18px;font-family:"Cinzel",serif;font-size:.68rem;
+            letter-spacing:.3em;color:var(--gold-d);opacity:.7}
+
+/* SECTIONS */
+.sec-title{font-family:"Cinzel",serif;font-size:clamp(1rem,2.5vw,1.35rem);
+           font-weight:600;letter-spacing:.06em;color:var(--cream);margin-bottom:8px}
+.sec-sub{font-size:.88rem;color:var(--dim);margin-bottom:28px;line-height:1.7}
+.copy{font-size:1.02rem;line-height:1.9;color:var(--dim)}
+.copy em{font-style:italic;color:rgba(244,236,215,.82)}
+.copy strong{color:var(--cream);font-weight:600}
+
+/* PACKAGES — 2×2 grid */
+.pkg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:8px}
+.pkg-card{background:var(--ink2);border:1px solid var(--border);border-radius:4px;
+          padding:26px 22px;position:relative;transition:border-color .25s,transform .25s;cursor:pointer}
+.pkg-card:hover{border-color:var(--brd);transform:translateY(-3px)}
+.pkg-card.selected{border-color:var(--gold);background:rgba(201,168,76,.06);box-shadow:0 0 24px rgba(201,168,76,.12)}
+.pkg-card.featured{border-color:var(--brd)}
+.pkg-popular{position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+             background:linear-gradient(135deg,var(--gold),var(--gold-l));
+             color:var(--ink);font-family:"Cinzel",serif;font-size:.6rem;
+             letter-spacing:.16em;font-weight:700;text-transform:uppercase;
+             padding:4px 14px;border-radius:100px;white-space:nowrap}
+.pkg-name{font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.2em;
+          color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.pkg-price{font-family:"Cinzel",serif;font-size:1.7rem;font-weight:700;
+           color:var(--cream);line-height:1;margin-bottom:6px}
+.pkg-rate{font-size:.78rem;color:var(--faint);margin-bottom:8px;font-style:italic}
+.pkg-mic{font-size:1rem;color:var(--gold);margin-bottom:3px;font-family:"Cinzel",serif}
+.pkg-nft{font-size:.88rem;color:var(--cream);margin-bottom:12px;font-weight:500}
+.pkg-desc{font-size:.84rem;color:var(--faint);line-height:1.65;border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
+
+/* ROI */
+.roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.roi-card{background:var(--ink2);border:1px solid var(--border);border-radius:4px;padding:22px 18px}
+.roi-c{border-top:2px solid var(--teal)}
+.roi-m{border-top:2px solid var(--gold-d)}
+.roi-o{border-top:2px solid #8A3A2A}
+.roi-label{font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--cream);margin-bottom:8px;font-weight:600}
+.roi-target{font-family:"Cinzel",serif;font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px}
+.roi-timeframe{font-size:.78rem;color:var(--faint);font-style:italic;margin-bottom:16px}
+.roi-rows{display:flex;flex-direction:column;gap:7px}
+.roi-row{display:flex;justify-content:space-between;align-items:center;
+         font-size:.78rem;color:var(--dim);border-bottom:1px solid rgba(201,168,76,.06);padding-bottom:5px}
+.roi-row:last-child{border-bottom:none;padding-bottom:0}
+.rv{color:var(--cream);font-weight:600;font-family:"Cinzel",serif;font-size:.82rem}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.step{display:flex;align-items:flex-start;gap:16px}
+.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;
+          background:rgba(201,168,76,.1);border:1px solid var(--border);
+          display:flex;align-items:center;justify-content:center;
+          font-family:"Cinzel",serif;font-size:.68rem;color:var(--gold);font-weight:700}
+.step-text{font-size:.95rem;color:var(--dim);line-height:1.6;padding-top:4px}
+
+/* WALLET */
+.wallet-box{background:var(--ink2);border:1px solid var(--brd);border-radius:4px;padding:24px;margin:28px 0}
+.wallet-lbl{font-family:"Cinzel",serif;font-size:.68rem;letter-spacing:.18em;
+            color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.wallet-row{display:flex;align-items:center;gap:24px;margin-bottom:16px}
+.wallet-qr{width:110px;height:110px;border-radius:4px;border:2px solid var(--border);
+           flex-shrink:0;object-fit:contain;background:#fff}
+.wallet-right{flex:1;min-width:0}
+.wallet-addr{font-family:"Courier New",monospace;font-size:.78rem;color:var(--cream);
+             background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:2px;
+             padding:10px 14px;word-break:break-all;line-height:1.5;margin-bottom:10px;
+             letter-spacing:.04em}
+.copy-btn{display:inline-flex;align-items:center;gap:7px;font-family:"Cinzel",serif;
+          font-size:.68rem;letter-spacing:.12em;color:var(--gold);
+          background:rgba(201,168,76,.08);border:1px solid var(--border);border-radius:2px;
+          padding:7px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.copy-btn:hover{background:rgba(201,168,76,.16);border-color:var(--brd)}
+.copy-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.net-warn{display:flex;align-items:flex-start;gap:10px;background:rgba(184,64,64,.12);
+          border:1px solid rgba(184,64,64,.3);border-radius:3px;padding:12px 16px;
+          font-size:.84rem;color:rgba(240,160,160,.9);line-height:1.6;
+          font-family:"Cinzel",serif;letter-spacing:.04em}
+
+/* FORM */
+.formhead{font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.22em;color:var(--gold);
+          text-transform:uppercase;display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.formhead::before,.formhead::after{content:'';flex:1;height:1px;background:var(--border)}
+.fstack{display:flex;flex-direction:column;gap:20px}
+.fgroup{display:flex;flex-direction:column;gap:7px}
+.flabel{font-family:"Cinzel",serif;font-size:.66rem;letter-spacing:.13em;color:var(--gold);
+        text-transform:uppercase;display:flex;align-items:baseline;gap:7px}
+.flabel-note{font-family:"EB Garamond",serif;text-transform:none;font-style:italic;
+             font-size:.82rem;letter-spacing:.02em;color:var(--faint)}
+.freq{color:rgba(201,168,76,.5);font-size:.62rem}
+input,select{background:rgba(255,255,255,.03);color:var(--cream);border:1px solid var(--border);
+             border-radius:2px;padding:11px 14px;font-family:"EB Garamond",serif;font-size:1rem;
+             outline:none;width:100%;transition:border-color .22s,background .22s;line-height:1.4}
+input::placeholder{color:rgba(244,236,215,.18);font-size:.88rem}
+input:focus,select:focus{border-color:var(--brd);background:rgba(201,168,76,.035)}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:36px;
+       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+       background-repeat:no-repeat;background-position:right 13px center}
+select option{background:#130E1C;color:var(--cream)}
+select option:disabled{color:rgba(244,236,215,.3)}
+.check-row{display:flex;align-items:flex-start;gap:12px}
+.check-row input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
+.check-label{font-size:.9rem;color:var(--dim);line-height:1.65;cursor:pointer}
+
+.fsubmit{display:flex;justify-content:center;margin-top:28px}
+.btn-main{display:inline-flex;align-items:center;gap:14px;
+          background:linear-gradient(130deg,var(--gold),var(--gold-l));
+          color:var(--ink);font-family:"Cinzel",serif;font-size:.82rem;font-weight:700;
+          letter-spacing:.2em;text-transform:uppercase;padding:16px 56px;
+          border:none;border-radius:2px;cursor:pointer;
+          transition:transform .22s,box-shadow .22s;box-shadow:0 6px 30px rgba(201,168,76,.25)}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.42)}
+.btn-orn{opacity:.5;font-size:.65rem}
+
+.msgsuccess{display:none;margin-top:20px;background:rgba(58,138,74,.08);
+            border:1px solid rgba(58,138,74,.3);border-radius:3px;padding:20px 24px;
+            text-align:center;font-size:.95rem;color:rgba(160,230,170,.9);line-height:1.7}
+.msgsuccess strong{color:#a8eaa8}
+
+.risk-box{margin-top:20px;padding:20px 24px;background:rgba(92,20,20,.16);
+          border:1px solid rgba(201,168,76,.12);border-left:3px solid var(--red);
+          border-radius:0 4px 4px 0;font-size:.88rem;color:var(--faint);line-height:1.82}
+.risk-ttl{font-family:"Cinzel",serif;font-size:.67rem;letter-spacing:.18em;
+          color:#cc7070;text-transform:uppercase;margin-bottom:9px}
+.risk-box strong{color:#cc7070}
+
+.closing{margin-top:52px;text-align:center}
+.cl1{display:block;font-family:"Cinzel",serif;font-size:1.05rem;color:var(--gold);
+     letter-spacing:.1em;margin-bottom:7px}
+.cl2{display:block;font-family:"Cinzel",serif;font-size:.72rem;color:var(--faint);
+     letter-spacing:.2em;text-transform:uppercase}
+
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22px;
+       text-align:center;font-family:"Cinzel",serif;font-size:.63rem;
+       letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.ani{animation:fadeUp .65s ease both}
+.ani-1{animation-delay:.07s}.ani-2{animation-delay:.15s}
+.ani-3{animation-delay:.23s}.ani-4{animation-delay:.31s}.ani-5{animation-delay:.39s}
+
+/* LANG OVERRIDES */
+.lang-vi body,.lang-vi p,.lang-vi span,.lang-vi div,.lang-vi h1,.lang-vi h2,.lang-vi h3,
+.lang-vi label,.lang-vi .flabel,.lang-vi .copy,.lang-vi .risk-box,
+.lang-vi .sec-sub,.lang-vi .step-text,.lang-vi .pkg-desc,.lang-vi input,
+.lang-vi select,.lang-vi button,.lang-vi .btn-main,.lang-vi .check-label,
+.lang-vi .msgsuccess,.lang-vi footer,.lang-vi .closing{
+  font-family:"Montserrat",sans-serif!important;
+  font-feature-settings:"liga" 0,"calt" 0;-webkit-font-feature-settings:"liga" 0,"calt" 0}
+.lang-es .copy,.lang-es .risk-box,.lang-es .step-text,.lang-es .pkg-desc,
+.lang-es input,.lang-es select,.lang-es .check-label,
+.lang-pt .copy,.lang-pt .risk-box,.lang-pt .step-text,.lang-pt .pkg-desc,
+.lang-pt input,.lang-pt select,.lang-pt .check-label{font-family:"Montserrat",sans-serif!important}
+.lang-ko .copy,.lang-ko .risk-box,.lang-ko .step-text,.lang-ko .pkg-desc,
+.lang-ko input,.lang-ko select,.lang-ko .check-label{font-family:"Montserrat","Noto Sans KR",sans-serif!important}
+
+@media(max-width:700px){
+  nav{padding:0 16px}
+  .nav-tools{gap:8px}
+  .theme-toggle-group{padding-right:8px}
+  .page{padding:40px 16px 72px}
+  .pkg-grid,.roi-grid{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .wallet-row{flex-direction:column;align-items:flex-start}
+  .wallet-qr{width:140px;height:140px}
+}
+</style>
+</head>
+<body>
+<nav>
+<a class="nlogo" href="#">
+<img alt="Mission Chain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAHgCAYAAAB91L6VAAEAAElEQVR4nOz9d5hkV3Xoj3/23idX6jxZYRRRJAiUQCJnEYzBmGSDbWxMMA7X1+HiCPg6c43B2IAME2x8MTYgm2yyZZQzGkmjOKhjxZN2+P5xqnpmBO7m95O5EnA+z1OaVld31alT1efda+213gU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NQ8OxAN9ADU1/y8QovqoO+eOvsMb3z/+dnX34T8LccTPjx9i/bEAzH0eT9znL0qZ8ffHN4VASokQAikESrfWH/O+N4DAjzd8XQES60kKBdoalNHEtmQa6RIcJhtgcFgcpbPCOIvGYbBYYBg6nHPVzzhBicVYMONz4VsPB1gcVoB1Yv36qgO3TL6UAqSr/gVQQKGCo8+7sAhX/b9zDuXAjl+LEw63/n1vfA5KN7n3O6PchnejN7nEfdvnoabm/yG1ANf8wHOkoB35PQCDAXekuKqjf85UF2jnHI5vv1gL5W/43J3waIH1xFh8xyLcjKa+7TiPPF6Bt6FCRE5ilMIoQeFKlNGiaa1r42gISFyJc5VgahzaWSwC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L/zz/9y/9M/8U//kP/1P/uf/93/+//7/9v9w31//4H/tj3/of+1/1a/8V/zNf+3f/Nf9tf9av95v+Jv/+r/xb/jb/La/82/8u/9uv8/f/Xf8fX/f3/sP/IP/0j/6f/iv/zf/2v/5f/Hf/O/+Tf/m/+a/9b/9b/x7/rv/u//z/+F//L/5n/zP/xf/i//F/+J/8b/4X/wv/uf/y//F//w/+V/+z//n/81/81//3/7X/+3/+b/+7/8v/uf/+f/yf/yf/of/8f/0P/0f/6f/0f/4f/wf/5f/8X/+n/wv/+f/+f/8P/1P/9P/9P/0P/9P/w//0//0P/0f/0//0//yP/uf/+f/+f/wP/yP/+P/9D/+j//z//C//W//m//2//z//M//8//z//v//f/+f//f//f//X/93//X//X//n//X//3//X/8N/8N/8P/+N/+N/+N/+N//t//H/+N/+N/+d/89/89/9N/89/+N/89/+N/+9/8///+P/PH/P7/d7/97//r//7//n///f/+f/+f/8//+f/+f//f//f/wX//X//X//X/9N/8N/8N//t//z//j//j//z//i//u//u//x//h//z/9T/8T//T//j//f/+//+//7//b//X//X//X//X//X//z//f/+v/8//3//z//r//z//n/8P/8P/8v/8P/+f/+f/8//+f/8//+f/+f/1//9f/w//w//0//0//0/+y//7/+y//7/+y//7/+y//z/+C//r/+C//j/+C//j/+D//v//j//v/+v/9//r/+v/+//2//+//i//+/8f//v//v8P/+//v//o//i//i//j//j//t//j//z//j/+d/+x//x/+d/+x//x/9f/+f/+f/n/9///f/3/9d/+H/+H/+P/+P/+O/sP/8f/9//6/+e//X/+3/+v/9f/6//+//7/+z/+r/+p//t//r//x//h//h//h//t//t//j/+d/+d/+t/+t//x//h//h//h//N/+N//j/+z//z/+x//x//h//t/9t//t//t/+h//r//r//p//p//p//p//p//r//x/+N/+x/+t/+Z//Z/+t/8d/+d/+d/+d/9f/8f/+f/+f/+f/7/9f/+f/+/87/6//+/+h/7h/7h//h//v/+v//v/+v/7//v/+v//f//d//t/+N/7N/+f/+P/+n/+j/+T/8j/8T/+z//z/+z//H/8H/+n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N7X9j+9/Y/sb2P7X9T+1/avtf2v/S/pf2v7H/j+1/Y/8b+9/Y/9f+v/b/r/1/7f9r+//X/r+2/7n9z+1/bv+f2//c/j+3/8/t/3v7/97+v7f/r+3/e/v/3P7n9j+3/a/sf2n7n9v/3P7n9v+1/X9t//Pa/+f2/7n9f23/X9v/1/b/tf1/bf9f2/7/tf//7f9/+//X/v+1/e/t/3v739v/3v739r+3/b/v/2/7/9v+//b/v/2/7/9v+//f/v+3///t/3/7/9/+/7b///3/b/v/3/7/t//+/P9v/3/b/7/2/7n9z+5/bvuf2//X/r/2/7X9f2//X9v+5/Y/t/3P7X9u/3P7n9/+5/b/uf3P7f9r+//X/r+2/7n9z+1/a/sf2/7n9v+5/c/t/2v/X9v/1/a/t/+v7X9r+1/a/8f2/739f+//f/v/3P7n9j+3/5/9f27/n9v/5/a/tv+v7f9r+//a/v+3//8d/vMfeE97XZ+3Wv/X9r+2/7n9z+3/c/uf2//n9j+3/7n9f25/Y/sb25/c/sb2v7H9b2x/Y/vf2v639r+1/W/uf3P/m9v/3P4/t/+5/U/t/3/7/9/+//f/t/3P7/9/+//f/v/3/7/9/+//f/v/3/7/9v/3///9/+//f/v/3/7/t/+//f/v/3/7/9/+//f/v/3/7/9/+//f/t/3/7f9z+5/c/uf2v7X9r+1/Zvv/3/7/9/+//f/v/3/7/9/+//f/v/3/7f9/+//b/v/2/7/9/+//f/v/2/7/9v+//f/v/3/7/9v+//f/v/3/7/9/+//f/v/3/7/9/+/7f9v+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7X93+7/d/u/2/7f93+3/d/u/3f7v93+7/d/u/3f7X9v+3/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v9t/3/7X93+7/d/u/3f7v93+7/d/u/2/7v93+7/d/u/3/7v93+7/d/u/3f7f/v/3/7v93+7/d/u/3f7v93+//f/v/3/7/9/+//f/v/3/7/9/+//f/u/3f7v93+7/d/u/3f7v93+7/d/t/3/7f93+7/c/uf3P7n9z+5/c/u/3P7n9z+5/c/uf3P7f9/+//f/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7f93+7/b/u/2/7f93+7/d/u/3f7v93+7/b/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+/7f9/+/8f8LRrof4dUAtxTU3Nfye/uQLwa3vQ1BfH/hJrffwLeJCddc9VVX+v/8f7hf+bfYMl7/v15zd+W6/1XPP75f/bH/l39v7qyGIBramr+i/zu/6/+x37e//t/7f/UH2LN7y9XUui/2e/qv/bNqKm5PbguA/4f9j/oJvSGrpdx/7o//O/c/r//b/8B39uf5zf/rf+z/2l/S9/oX+b35pf0qv/T/+7//X/1P+RX+j//l/2/9Z/8p//pf+V/85/+V//b/9b/+L/5f/s//5/+j/5n/qv/6v/mf/O/9j//L/4L/5P/yf/c/+R/4n/6f/I/9T/93/5P/3f/s/+z/+P/4v/4v/w/+W/9T/53/5v/9f/Gf/1f+9/8N/81/+N/89/83/43/w//D/8P/3f+R/53/kf+x/53/kf+x/6n/kf+J/6n/sf+x/4n/if+5/4n/sf+p/7n/qf/p/9n/2f/Z/9n/5f/Z/+X/+f/t//n/2f/t/+n/+f/t/+n/2f/J//n/7f+z/+//h//P/9//h//f/+//k//f/+//k//f/+//r//f//v/j//H/1//P/9//P/6/+f/6/+f/6/+v/6//n/6//f/x//f/7/8f/H/1//f/3/9f/L/5f/L/5f/T/y/8X/p/4f+r/i/8v/r/8/+r/z/7v/r/8/+b/y/+v/h/+v/x/7f+p/k/6v+j/j/8/+f/P/m/zf7v+n/z/8f/n/y/+f+v/h/5f+3/l/8f/n/y/+f/P/n/+f+P/z/9P/7/+/+r/r/6/+f/P/n/z/9P/T/y//f/t/2//f/v/2/7/9/9//3/7/t/+//f/v/3/7/9v+//b/t/+//f/v/3/7/9/+//b/v/2//f/v/3/7/9/+//b///+//f/v/3/7/9/+/7f/v/3/7/9/+//b/v/2/7/9/+//f/v/3/7/9/+//b/v/3/7/9/+//f/v/3/7/9/+//b/v/3/7/9/+//f/v/3/7f93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/c/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/b/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9v+//b/v/3/7/9/+//b/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+/+f/P/+//f/P/n/z/5/8/+f/P/n/z/5/8/+v/b/r/2/7/9/+//f/v/3/7/9/+//f/v/3/7/9/+//f/v/2/7f9v+3/b/t/+//f/v/3/7/9/+//f/v/2/7/9/+//f/t/2/7f9v+3/b/u/2/7f93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v93+7/d/u/3f7v
+```html
+<div class="ls" id="LS">
+<button class="lsbtn" id="LSL" onclick="tgl()">🇬🇧 EN</button>
+<div class="lsdrop">
+<button class="lopt on" onclick="sl('en','🇬🇧 EN',this)">🇬🇧 EN</button>
+<button class="lopt" onclick="sl('es','🇪🇸 ES',this)">🇪🇸 ES</button>
+<button class="lopt" onclick="sl('pt','🇧🇷 PT',this)">🇧🇷 PT</button>
+<button class="lopt" onclick="sl('ko','🇰🇷 KO',this)">🇰🇷 KO</button>
+<button class="lopt" onclick="sl('vi','🇻🇳 VI',this)">🇻🇳 VI</button>
+</div>
+</div>
+</div>
+</nav>
+<main class="page">
+<div class="ani">
+<p class="eyebrow">Phân bổ giới hạn — Ai đến trước được phục vụ trước</p>
+<p class="badge-pill"><span class="bdot"></span><span>Độc quyền · Seed Round</span></p>
+<h1>SEED ROUND</h1>
+<p class="h1-sub">Mission Chain</p>
+<p class="tagline">Điểm vào hiếm nhất vào tương lai phi tập trung hóa có mục đích — với giá sáng lập $0.0025 cho mỗi MIC.</p>
+<p class="sub-copy">Cơ hội này sẽ đóng lại mãi mãi. Sẽ không có cơ hội thứ hai ở mức giá Seed.</p>
+</div>
+<div class="ani ani-1">
+<h2 class="sec-title">Tại sao thời điểm này khác biệt</h2>
+<p class="copy">Các nhà đầu tư Seed Round mua MIC với giá tuyệt đối thấp nhất sẽ không bao giờ tồn tại nữa. Bạn không đơn thuần mua một token: bạn đang nắm giữ cổ phần sáng lập trong một giao thức được thiết kế để vận hành qua nhiều thế hệ. Công cụ khai thác MICE, lớp quản trị MFP-NFT, và thuật toán thích ứng Hindex đã được xây dựng và hoạt động. Mỗi ngày bạn chờ đợi, mức giá này càng đi xa vào quá khứ.</p>
+</div>
+<div class="rule ani ani-2"><span class="rule-line"></span><span class="rule-glyph">✦ ✦ ✦</span><span class="rule-line"></span></div>
+<!-- PACKAGES -->
+<div class="ani ani-2">
+<h2 class="sec-title">Bốn gói · Một quyết định</h2>
+<div class="pkg-grid">
+<div class="pkg-card" id="pkg-p1" onclick="selectPkg('p1')">
+<div class="pkg-name">EARLY BIRD</div>
+<div class="pkg-price">$1,000 USDT</div>
+<div class="pkg-rate">@ $0.0025 / MIC</div>
+<div class="pkg-mic">400,000 MIC</div>
+<div class="pkg-nft">🎁 20 MFP-NFT</div>
+<div class="pkg-desc">Điểm vào sáng lập của bạn vào Mission Chain. Lý tưởng cho tiếp xúc chiến lược sớm.</div>
+</div>
+<div class="pkg-card featured" id="pkg-p2" onclick="selectPkg('p2')">
+<div class="pkg-popular">Phổ biến nhất</div>
+<div class="pkg-name">FOUNDING PARTNER I</div>
+<div class="pkg-price">$2,500 USDT</div>
+<div class="pkg-rate">@ $0.0025 / MIC</div>
+<div class="pkg-mic">1,000,000 MIC</div>
+<div class="pkg-nft">🎁 60 MFP-NFT</div>
+<div class="pkg-desc">Một triệu MIC và 60 NFT quản trị. Một vị trí được xây dựng cho dài hạn.</div>
+</div>
+<div class="pkg-card" id="pkg-p3" onclick="selectPkg('p3')">
+<div class="pkg-name">FOUNDING PARTNER II</div>
+<div class="pkg-price">$5,000 USDT</div>
+<div class="pkg-rate">@ $0.0025 / MIC</div>
+<div class="pkg-mic">2,000,000 MIC</div>
+<div class="pkg-nft">🎁 150 MFP-NFT</div>
+<div class="pkg-desc">Phân bổ đáng kể với 150 MFP-NFT cho việc tham gia quản trị nghiêm túc.</div>
+</div>
+<div class="pkg-card" id="pkg-p4" onclick="selectPkg('p4')">
+<div class="pkg-name">FOUNDING PARTNER III</div>
+<div class="pkg-price">$10,000 USDT</div>
+<div class="pkg-rate">@ $0.0025 / MIC</div>
+<div class="pkg-mic">4,000,000 MIC</div>
+<div class="pkg-nft">🎁 350 MFP-NFT</div>
+<div class="pkg-desc">Phân bổ sáng lập tối đa. Dành cho những ai có ý định định hình giao thức.</div>
+</div>
+</div>
+</div>
+<div class="rule ani ani-3"><span class="rule-line"></span><span class="rule-glyph">✦</span><span class="rule-line"></span></div>
+<!-- ROI -->
+<div class="ani ani-3">
+<h2 class="sec-title">Ba kịch bản ROI</h2>
+<p class="sec-sub">Dựa trên các lần ra mắt giao thức Web3 tương đương. Giá Seed: $0.0025/MIC. Không phải lời khuyên tài chính.</p>
+<div class="roi-grid">
+<div class="roi-card roi-c">
+<div class="roi-label">Thận trọng · 4×</div>
+<div class="roi-target">MIC @ $0.01</div>
+<div class="roi-timeframe">Tại niêm yết TGE</div>
+<div class="roi-rows">
+<div class="roi-row"><span>Early Bird $1,000</span><span class="rv">→ $4,000</span></div>
+<div class="roi-row"><span>Partner I $2,500</span><span class="rv">→ $10,000</span></div>
+<div class="roi-row"><span>Partner II $5,000</span><span class="rv">→ $20,000</span></div>
+<div class="roi-row"><span>Partner III $10,000</span><span class="rv">→ $40,000</span></div>
+</div>
+</div>
+<div class="roi-card roi-m">
+<div class="roi-label">Trung bình · 20×</div>
+<div class="roi-target">MIC @ $0.05</div>
+<div class="roi-timeframe">Trong vòng 12 tháng</div>
+<div class="roi-rows">
+<div class="roi-row"><span>Early Bird $1,000</span><span class="rv">→ $20,000</span></div>
+<div class="roi-row"><span>Partner I $2,500</span><span class="rv">→ $50,000</span></div>
+<div class="roi-row"><span>Partner II $5,000</span><span class="rv">→ $100,000</span></div>
+<div class="roi-row"><span>Partner III $10,000</span><span class="rv">→ $200,000</span></div>
+</div>
+</div>
+<div class="roi-card roi-o">
+<div class="roi-label">Lạc quan · 100×</div>
+<div class="roi-target">MIC @ $0.25</div>
+<div class="roi-timeframe">Trong vòng 24 tháng</div>
+<div class="roi-rows">
+<div class="roi-row"><span>Early Bird $1,000</span><span class="rv">→ $100,000</span></div>
+<div class="roi-row"><span>Partner I $2,500</span><span class="rv">→ $250,000</span></div>
+<div class="roi-row"><span>Partner II $5,000</span><span class="rv">→ $500,000</span></div>
+<div class="roi-row"><span>Partner III $10,000</span><span class="rv">→ $1,000,000</span></div>
+</div>
+</div>
+</div>
+<p style="margin-top:14px;font-size:.8rem;font-style:italic;color:var(--faint);line-height:1.7">Quyền quản trị MFP-NFT, lợi suất staking và phần thưởng khai thác là bổ sung cho sự tăng giá token và không được bao gồm trong các dự báo này.</p>
+</div>
+<div class="rule ani ani-3"><span class="rule-line"></span><span class="rule-glyph">✦ ✦ ✦</span><span class="rule-line"></span></div>
+<!-- HOW TO -->
+<div class="ani ani-3">
+<h2 class="sec-title">Cách tham gia</h2>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-text">Chọn gói của bạn và nhấp để chọn</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-text">Gửi chính xác số tiền USDT trên mạng BEP20 (BSC) đến địa chỉ ví bên dưới</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-text">Sao chép ID giao dịch (TXID) của bạn từ ví hoặc BscScan</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-text">Hoàn thành biểu mẫu đăng ký với email, ví nhận và TXID của bạn</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-text">Đội ngũ của chúng tôi xác minh on-chain trong vòng 24 giờ và gửi MIC + MFP-NFT của bạn</div></div>
+</div>
+</div>
+<!-- WALLET -->
+<div class="wallet-box ani ani-4">
+<div class="wallet-lbl">Gửi USDT (BEP20 / Mạng BSC) đến:</div>
+<div class="wallet-row">
+<img alt="Mã QR USDT BEP20" class="wallet-qr" src="data:image/png;base64,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
+```html
+<button class="copy-btn" id="copyBtn" onclick="copyWallet()">
+<svg viewbox="0 0 24 24"><rect height="13" rx="2" width="13" x="9" y="9"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>
+<span>Sao Chép Địa Chỉ</span>
+</button>
+</div>
+</div>
+<div class="net-warn">⚠ CHỈ mạng BEP20 (BSC). Gửi trên Ethereum, TRC20 hoặc bất kỳ mạng nào khác sẽ dẫn đến mất vĩnh viễn, không thể khôi phục được số tiền.</div>
+</div>
+<div class="rule ani ani-4"><span class="rule-line"></span><span class="rule-glyph">✦</span><span class="rule-line"></span></div>
+<!-- FORM -->
+<div class="ani ani-4">
+<div class="formhead">Mẫu Đăng Ký</div>
+<form class="fstack" id="REG" onsubmit="handleSubmit(event)">
+<div class="fgroup">
+<label class="flabel" for="femail"><span>Địa Chỉ Email</span><span class="freq">*</span></label>
+<input autocomplete="email" id="femail" name="email" placeholder="email@cua-ban.com" required="" type="email"/>
+</div>
+<div class="fgroup">
+<label class="flabel" for="fwallet">
+<span>Địa Chỉ Ví Nhận Của Bạn (BEP20)</span><span class="freq">*</span>
+<span class="flabel-note">Token MIC &amp; MFP-NFTs sẽ được gửi đến địa chỉ này</span>
+</label>
+<input id="fwallet" name="wallet" placeholder="0x..." required="" type="text"/>
+</div>
+<div class="fgroup">
+<label class="flabel" for="fpkg"><span>Chọn Gói</span><span class="freq">*</span></label>
+<select id="fpkg" name="package" required="">
+<option disabled="" selected="" value="">— Chọn gói của bạn —</option>
+<option value="p1">EARLY BIRD — $1,000 · 400,000 MIC + 20 MFP-NFT</option>
+<option value="p2">FOUNDING PARTNER I — $2,500 · 1,000,000 MIC + 60 MFP-NFT</option>
+<option value="p3">FOUNDING PARTNER II — $5,000 · 2,000,000 MIC + 150 MFP-NFT</option>
+<option value="p4">FOUNDING PARTNER III — $10,000 · 4,000,000 MIC + 350 MFP-NFT</option>
+</select>
+</div>
+<div class="fgroup">
+<label class="flabel" for="ftxid"><span>Mã Giao Dịch (TXID)</span><span class="freq">*</span></label>
+<p style="font-size:.82rem;color:var(--faint);margin-bottom:6px;font-style:italic">Dán TXID chuyển USDT của bạn từ ví hoặc BscScan</p>
+<input id="ftxid" name="txid" placeholder="0x..." required="" type="text"/>
+</div>
+<div class="fgroup">
+<div class="check-row">
+<input id="fconfirm" name="confirm" type="checkbox"/>
+<label class="check-label" for="fconfirm">Tôi xác nhận đã gửi đúng số lượng USDT trên mạng BEP20 (BSC) đến địa chỉ trên, và TXID đã nhập khớp với giao dịch của tôi.</label>
+</div>
+</div>
+<div class="fsubmit">
+<button class="btn-main" type="submit">
+<span class="btn-orn">✦</span>
+<span>Gửi Đăng Ký</span>
+<span class="btn-orn">✦</span>
+</button>
+</div>
+</form>
+<div class="msgsuccess" id="OK">
+      ✓ <strong>Đã Gửi Đăng Ký</strong><br/>
+<span>Cảm ơn bạn. Đội ngũ của chúng tôi sẽ xác minh giao dịch của bạn trên chuỗi trong vòng 24 giờ và gửi chi tiết phân bổ MIC cũng như MFP-NFT đến email đã đăng ký của bạn.</span>
+</div>
+<div class="risk-box">
+<div class="risk-ttl">Cảnh Báo Rủi Ro</div>
+<span>Đầu tư tiền điện tử mang rủi ro đáng kể. Chỉ đầu tư số tiền bạn có thể chấp nhận mất hoàn toàn. Gửi USDT đến địa chỉ ví không chính xác hoặc trên mạng sai (không phải BEP20) sẽ dẫn đến mất vĩnh viễn. Mission Chain không thể đảo ngược các giao dịch blockchain trong bất kỳ trường hợp nào. Luôn xác minh toàn bộ địa chỉ ví từng ký tự trước khi gửi. Không bao giờ chia sẻ khóa riêng hoặc cụm từ khôi phục của bạn với bất kỳ ai.</span>
+</div>
+</div>
+<div class="closing ani ani-5">
+<span class="cl1">Cánh Cửa Đang Mở. Tạm Thời.</span>
+<span class="cl2">Mission Chain · Seed Round 2026</span>
+</div>
+</main>
+<footer>© 2026 Mission Chain · Đăng Ký Seed Round · Bảo Lưu Mọi Quyền · Không Phải Tư Vấn Tài Chính</footer>
+<script>
+const THEME_KEY = 'missionchain-theme';
+function setTheme(theme){
+  const isLight = theme === 'night';
+  document.body.classList.toggle('theme-light', isLight);
+  document.getElementById('theme-daylight').classList.toggle('active', !isLight);
+  document.getElementById('theme-night').classList.toggle('active', isLight);
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
+const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
+function detectLocale() {
+  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
+  return match ? match[1] : 'en';
+}
+function detectFileName(fallback) {
+  const path = window.location.pathname || '';
+  const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+  const name = cleanPath.split('/').pop();
+  return name || fallback;
+}
+function getLocalizedHref(lang, fallbackFile) {
+  const currentLocale = detectLocale();
+  const file = detectFileName(fallbackFile);
+  const suffix = window.location.search + window.location.hash;
+  if (currentLocale === 'en') {
+    return (lang === 'en' ? file : '../translations/' + lang + '/' + file) + suffix;
+  }
+  return (lang === 'en' ? '../../' + file : '../' + lang + '/' + file) + suffix;
+}
+function tgl(){document.getElementById('LS').classList.toggle('open')}
+document.addEventListener('click',function(e){
+  var s=document.getElementById('LS');if(s&&!s.contains(e.target))s.classList.remove('open');
+});
+function syncFormLanguageMenu() {
+  var current = detectLocale();
+  document.getElementById('LSL').textContent = LOCALE_LABELS[current] || LOCALE_LABELS.en;
+  document.querySelectorAll('.lopt').forEach(function(o) {
+    o.classList.toggle('on', o.textContent.trim() === (LOCALE_LABELS[current] || LOCALE_LABELS.en));
+  });
+  document.documentElement.lang = current;
+}
+function sl(l, label, el) {
+  document.getElementById('LSL').textContent = label || LOCALE_LABELS[l] || LOCALE_LABELS.en;
+  document.querySelectorAll('.lopt').forEach(function(o) { o.classList.remove('on'); });
+  if (el) el.classList.add('on');
+  document.getElementById('LS').classList.remove('open');
+  window.location.href = getLocalizedHref(l, 'mc_seed_round.html');
+}
+function copyWallet(){
+  var addr='0x185440aC3d7dbD26EB35470B7648d4D4e43Cf7ac';
+  navigator.clipboard.writeText(addr).then(function(){
+    var btn=document.getElementById('copyBtn');
+    btn.textContent='Đã Sao Chép ✓';
+    setTimeout(function(){
+      btn.innerHTML='<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Sao Chép Địa Chỉ';
+    },2000);
+  });
+}
+async function handleSubmit(e){
+  e.preventDefault();
+  if(!document.getElementById('fconfirm').checked){
+    alert('Vui lòng xác nhận hộp kiểm tra giao dịch.');return;
+  }
+  var btn=document.querySelector('.btn-main');
+  btn.style.opacity='0.6';btn.style.pointerEvents='none';
+  var pkg=document.getElementById('fpkg');
+  var pkgText=pkg.options[pkg.selectedIndex]?pkg.options[pkg.selectedIndex].text:'';
+  var row=[
+    new Date().toLocaleString(),
+    document.getElementById('femail').value,
+    document.getElementById('fwallet').value,
+    pkgText,
+    document.getElementById('ftxid').value,
+    'YES'
+  ];
+  try{
+    await fetch('https://script.google.com/macros/s/AKfycbzsUQihh21uK-i-Fjj8lwyL2hBBqFE10rmuNlpP_yl6esn4p3XPdZrRdX-I4zWV_vqX/exec',{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'SEED',row:row})
+    });
+  }catch(err){console.log('submit err',err);}
+  var f=document.getElementById('REG');
+  f.style.opacity='.3';f.style.pointerEvents='none';
+  var ok=document.getElementById('OK');
+  ok.style.display='block';
+  syncFormLanguageMenu();
+  ok.scrollIntoView({behavior:'smooth',block:'center'});
+}
+setTheme(localStorage.getItem(THEME_KEY) || 'daylight');
+syncFormLanguageMenu();
+
+</script>
+```
+```html
+</body>
+</html>
+```

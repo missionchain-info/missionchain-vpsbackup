@@ -1,0 +1,2102 @@
+html
+<html class="lang-vi" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Mission Chain Network — White Paper</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+/* ── BRAND TOKENS ── */
+:root{
+  --bg:         #0C0812;
+  --bg2:        #130A1E;
+  --bg3:        #1A0E28;
+  --bg4:        #1F1035;
+  --purple:     #7B2D8B;
+  --purple2:    #C084D4;
+  --blue:       #6B1428;
+  --blue2:      #9B2C42;
+  --gold:       #C9A84C;
+  --gold2:      #E8C96A;
+  --green:      #A8744A;
+  --teal:       #D4A84C;
+  --white:      #F0E6D3;
+  --gray:       #B09090;
+  --gray2:      #7A6070;
+  --border:     rgba(200,168,200,.1);
+  --font-d:     "Montserrat",sans-serif;
+  --font-b:     "Montserrat",sans-serif;
+  --font-m:     "Montserrat",sans-serif;
+  --glow-p:     rgba(123,45,139,.3);
+  --glow-b:     rgba(107,20,40,.2);
+  --langbar-bg: rgba(6,12,24,.9);
+  --sidebar-bg: rgba(6,12,24,.97);
+  --toggle-bg:  rgba(6,12,24,.9);
+  --hero-bg:    radial-gradient(ellipse 80% 60% at 30% 50%,rgba(59,20,100,.18) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 30%,rgba(107,20,40,.12) 0%,transparent 55%),var(--bg);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--white);font-family:var(--font-b);line-height:1.7;overflow-x:hidden}
+.lang-vi,
+.lang-vi body,
+.lang-vi body *,
+.lang-vi button,
+.lang-vi input,
+.lang-vi select,
+.lang-vi textarea,
+.lang-vi svg text{font-family:"Montserrat",sans-serif !important}
+body.theme-light{
+  --bg:         #F7F2E8;
+  --bg2:        #F0E7D8;
+  --bg3:        #F8F1E4;
+  --bg4:        #EDE1CF;
+  --purple:     #7B2D8B;
+  --purple2:    #8C4CA0;
+  --blue:       #7A2B3C;
+  --blue2:      #964257;
+  --gold:       #B88D2E;
+  --gold2:      #D9B75B;
+  --green:      #7E5B2E;
+  --teal:       #9C7A32;
+  --white:      #231B15;
+  --gray:       #5D4F43;
+  --gray2:      #7B6E63;
+  --border:     rgba(107,77,45,.16);
+  --glow-p:     rgba(123,45,139,.12);
+  --glow-b:     rgba(107,20,40,.08);
+  --langbar-bg: rgba(255,248,240,.92);
+  --sidebar-bg: rgba(250,244,236,.96);
+  --toggle-bg:  rgba(255,248,240,.92);
+  --hero-bg:    radial-gradient(ellipse 85% 65% at 30% 45%,rgba(201,168,76,.12) 0%,transparent 60%),radial-gradient(ellipse 52% 42% at 82% 28%,rgba(123,45,139,.08) 0%,transparent 55%),linear-gradient(180deg,#FBF6ED 0%,#F4EADC 100%);
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--purple),var(--blue));border-radius:3px}
+img{max-width:100%}
+a{color:var(--blue2);text-decoration:none}
+a:hover{color:var(--purple2)}
+
+/* ── LANG BAR ── */
+#lang-bar{position:fixed;top:16px;right:20px;z-index:1000;display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:min(920px,calc(100vw - 28px));background:var(--langbar-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:30px;padding:5px 8px}
+.theme-toggle-group{display:flex;gap:5px;padding-right:4px;margin-right:4px;border-right:1px solid var(--border)}
+.docnav-group{display:flex;gap:5px;padding-right:4px;margin-right:4px;border-right:1px solid var(--border)}
+.theme-btn,.lbtn{padding:5px 13px;border-radius:20px;font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:.05em;cursor:pointer;border:none;background:transparent;color:var(--gray);transition:all .2s}
+.theme-btn{min-width:34px;padding:5px 10px}
+.theme-btn.active,.lbtn.active{background:linear-gradient(90deg,#7B2D8B,#6B1428);color:#fff}
+.theme-btn:hover:not(.active),.lbtn:hover:not(.active){color:var(--white);background:rgba(255,255,255,.05)}
+body.theme-light .theme-btn:hover:not(.active),body.theme-light .lbtn:hover:not(.active){background:rgba(35,27,21,.06)}
+
+/* ── SIDEBAR NAV ── */
+#sidebar{position:fixed;left:0;top:0;height:100vh;width:260px;background:var(--sidebar-bg);backdrop-filter:blur(20px);border-right:1px solid var(--border);overflow-y:auto;z-index:900;transition:transform .3s;padding:24px 0 40px}
+#sidebar::-webkit-scrollbar{width:3px}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(59,20,100,.4)}
+.sidebar-logo{padding:20px 24px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo img{height:40px;width:40px;border-radius:8px;object-fit:contain;background:transparent}
+.sidebar-logo-text{font-family:var(--font-d);font-weight:800;font-size:13px;line-height:1.3}
+.sidebar-logo-text span{display:block;font-size:10px;color:var(--gray);font-weight:500;letter-spacing:.06em;margin-top:1px}
+.nav-group{margin-bottom:8px}
+.nav-group-label{padding:8px 24px 4px;font-family:var(--font-m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray2)}
+.nav-link{display:block;padding:8px 24px;font-size:12.5px;color:var(--gray);transition:all .15s;position:relative;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font-b)}
+.nav-link::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:linear-gradient(var(--purple),var(--blue));border-radius:0 2px 2px 0;transform:scaleY(0);transition:transform .2s}
+.nav-link:hover{color:var(--white);background:rgba(59,20,100,.1)}
+.nav-link.active{color:var(--white);background:rgba(59,20,100,.15)}
+.nav-link.active::before{transform:scaleY(1)}
+.nav-link.sub{padding-left:36px;font-size:12px}
+
+/* ── TOGGLE SIDEBAR ── */
+#toggle-sb{position:fixed;left:16px;top:16px;z-index:1100;width:38px;height:38px;background:var(--toggle-bg);border:1px solid var(--border);border-radius:10px;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:16px;backdrop-filter:blur(12px);color:var(--white)}
+
+/* ── MAIN CONTENT ── */
+#main{margin-left:260px;min-height:100vh}
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #toggle-sb{display:flex}
+  #lang-bar{top:14px;right:14px;left:62px;max-width:calc(100vw - 76px)}
+}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;position:relative;overflow:hidden;background:var(--hero-bg)}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:60px;align-items:center;max-width:960px}
+.hero-eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple2);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--purple2)}
+.hero-title{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.4rem);font-weight:900;line-height:1.05;letter-spacing:-.02em;margin-bottom:8px}
+.hero-tagline{font-family:var(--font-d);font-size:clamp(1rem,2vw,1.3rem);font-weight:300;color:var(--gray);letter-spacing:.06em;margin-bottom:28px;text-transform:uppercase}
+.hero-quote{border-left:3px solid var(--purple);padding:12px 20px;margin-bottom:32px;font-style:italic;color:var(--gray);font-size:.95rem;line-height:1.7;background:rgba(59,20,100,.08);border-radius:0 8px 8px 0}
+.hero-quote cite{display:block;margin-top:6px;font-style:normal;font-size:.8rem;color:var(--gray2);font-family:var(--font-m)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:32px}
+.hero-meta-item{display:flex;flex-direction:column}
+.hero-meta-label{font-family:var(--font-m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray2);margin-bottom:3px}
+.hero-meta-val{font-family:var(--font-d);font-weight:700;font-size:.95rem;color:var(--white)}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px}
+.hero-logo-block{text-align:center}
+.hero-logo-block img{width:200px;height:200px;border-radius:24px;object-fit:contain;background:transparent;filter:drop-shadow(0 20px 60px rgba(59,20,100,.5));animation:floatY 4s ease-in-out infinite}
+.hero-version{font-family:var(--font-m);font-size:10px;color:var(--gray2);margin-top:12px;letter-spacing:.1em}
+
+/* ── SECTION ── */
+.section{padding:80px 60px;max-width:960px;position:relative}
+.section:not(:last-child)::after{content:'';display:block;margin-top:60px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.section-num{font-family:var(--font-m);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-num::before{content:'';width:16px;height:1px;background:var(--purple2)}
+h2.section-title{font-family:var(--font-d);font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.1;letter-spacing:-.015em;margin-bottom:8px}
+h3.sub-title{font-family:var(--font-d);font-weight:700;font-size:1.15rem;color:var(--white);margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h4.mini-title{font-family:var(--font-d);font-weight:600;font-size:.95rem;color:var(--white);margin:20px 0 8px}
+p{color:var(--gray);margin-bottom:16px;font-size:.95rem;line-height:1.75}
+p strong{color:var(--white)}
+.lead{font-size:1.05rem;color:rgba(241,245,249,.8);margin-bottom:24px;line-height:1.8}
+
+/* ── GRADIENT TEXT ── */
+.g-purple{background:linear-gradient(90deg,#C084D4,#E8C96A);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.g-gold{background:linear-gradient(90deg,#C9A84C,#E8C96A);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.g-full{background:linear-gradient(90deg,#7B2D8B,#6B1428,#C9A84C);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;font-family:var(--font-d);letter-spacing:.05em}
+.badge-p{background:rgba(59,20,100,.18);color:var(--purple2);border:1px solid rgba(59,20,100,.4)}
+.badge-b{background:rgba(107,20,40,.15);color:var(--blue2);border:1px solid rgba(37,99,235,.3)}
+.badge-g{background:rgba(201,168,76,.14);color:var(--gold2);border:1px solid rgba(245,158,11,.3)}
+.badge-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.badge-teal{background:rgba(212,168,76,.14);color:var(--teal);border:1px solid rgba(6,182,212,.3)}
+
+/* ── CARDS ── */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color .2s}
+.card:hover{border-color:rgba(59,20,100,.3)}
+.card-p{border-left:3px solid var(--purple)}
+.card-b{border-left:3px solid var(--blue)}
+.card-g{border-left:3px solid var(--gold)}
+.card-green{border-left:3px solid var(--green)}
+.card-teal{border-left:3px solid var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:700px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+/* ── STAT BOX ── */
+.stat-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-val{font-family:var(--font-d);font-size:1.9rem;font-weight:900;line-height:1;margin-bottom:6px}
+.stat-lbl{font-family:var(--font-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2)}
+
+/* ── QUOTE / CALLOUT ── */
+.callout{background:linear-gradient(135deg,rgba(59,20,100,.12),rgba(107,20,40,.08));border:1px solid rgba(59,20,100,.25);border-radius:14px;padding:24px 28px;margin:24px 0}
+.callout p{margin-bottom:0;font-size:.92rem}
+.callout.gold{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.05));border-color:rgba(245,158,11,.2)}
+.callout.green{background:linear-gradient(135deg,rgba(168,116,74,.1),rgba(168,116,74,.05));border-color:rgba(16,185,129,.2)}
+.callout.warn{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.03));border-color:rgba(239,68,68,.2)}
+
+/* ── LISTS ── */
+.fancy-list{list-style:none;padding:0;margin:16px 0}
+.fancy-list li{padding:8px 0 8px 24px;position:relative;color:var(--gray);font-size:.93rem;border-bottom:1px solid rgba(148,163,184,.05)}
+.fancy-list li::before{content:"→";position:absolute;left:0;color:var(--purple2);font-family:var(--font-m);font-size:.8rem}
+.fancy-list li strong{color:var(--white)}
+.dot-list{list-style:none;padding:0;margin:12px 0}
+.dot-list li{padding:5px 0 5px 20px;position:relative;color:var(--gray);font-size:.92rem}
+.dot-list li::before{content:'◆';position:absolute;left:0;color:var(--purple);font-size:.55rem;top:9px}
+
+/* ── TABLE ── */
+.wp-table-wrap{overflow-x:auto;margin:16px 0}
+.wp-table{width:100%;border-collapse:collapse;font-size:.87rem}
+.wp-table th{background:var(--bg4);color:var(--gray);font-family:var(--font-d);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.wp-table td{padding:11px 16px;border-bottom:1px solid rgba(148,163,184,.05);color:var(--white)}
+.wp-table tr:hover td{background:rgba(59,20,100,.07)}
+.wp-table .mono{font-family:var(--font-m);font-size:.82rem}
+.wp-table .hl{color:var(--gold2);font-weight:700;font-family:var(--font-m)}
+.wp-table .green{color:var(--green)}
+.wp-table .purple{color:var(--purple2)}
+
+/* ── FORMULA BOX ── */
+.formula{background:var(--bg4);border:1px solid rgba(59,20,100,.25);border-radius:10px;padding:16px 20px;margin:16px 0;font-family:var(--font-m);font-size:.88rem;color:var(--teal);line-height:1.9;overflow-x:auto}
+.formula .comment{color:var(--gray2);font-size:.8rem}
+.formula .math,.wp-table .math{display:inline-block;font-family:var(--font-m);letter-spacing:.01em}
+.formula .math sub,.formula .math sup,.wp-table .math sub,.wp-table .math sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline}
+.formula .math sup,.wp-table .math sup{top:-.45em}
+.formula .math sub,.wp-table .math sub{bottom:-.15em}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:32px;margin:24px 0}
+.timeline::before{content:'';position:absolute;left:9px;top:6px;bottom:0;width:2px;background:linear-gradient(to bottom,var(--purple),var(--blue),transparent)}
+.tl-item{position:relative;margin-bottom:32px}
+.tl-dot{position:absolute;left:-32px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center}
+.tl-dot::after{content:'';width:8px;height:8px;background:var(--purple2);border-radius:50%}
+.tl-phase{font-family:var(--font-m);font-size:.75rem;color:var(--purple2);letter-spacing:.12em;margin-bottom:5px}
+.tl-title{font-family:var(--font-d);font-weight:700;font-size:1rem;margin-bottom:6px}
+.tl-body{font-size:.88rem;color:var(--gray);line-height:1.7}
+
+/* ── TEAM CARD ── */
+.team-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
+.team-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7B2D8B,#6B1428);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:.85rem;flex-shrink:0;color:#fff}
+.team-name{font-family:var(--font-d);font-weight:700;font-size:.95rem;margin-bottom:3px}
+.team-role{font-size:.8rem;color:var(--purple2);font-weight:600;margin-bottom:6px}
+.team-bio{font-size:.83rem;color:var(--gray);line-height:1.6}
+
+/* ── APPENDIX SECTION ── */
+.app-header{background:linear-gradient(135deg,rgba(59,20,100,.18),rgba(107,20,40,.1));border:1px solid rgba(59,20,100,.25);border-radius:14px;padding:24px 28px;margin-bottom:28px}
+.app-header-num{font-family:var(--font-m);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--purple2);margin-bottom:6px}
+.app-header h2{font-family:var(--font-d);font-weight:800;font-size:1.5rem;margin-bottom:0}
+
+/* ── SOCIAL LINKS ── */
+.social-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.social-link{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:.85rem;color:var(--white);transition:all .2s}
+.social-link:hover{border-color:var(--purple);background:rgba(59,20,100,.12);color:var(--white)}
+.social-icon{font-size:1.1rem}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 60px;margin-left:0}
+footer .foot-grid{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;max-width:960px}
+.foot-logo img{height:52px;width:52px;border-radius:12px;object-fit:contain;background:transparent}
+.foot-logo-name{font-family:var(--font-d);font-weight:800;font-size:1.1rem;margin-top:8px}
+.foot-tagline{font-size:.82rem;color:var(--gray);margin-top:4px}
+footer p{font-size:.8rem;color:var(--gray2);line-height:1.8}
+footer .disclaimer{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:10px;padding:16px 20px;font-size:.78rem;color:var(--gray2);line-height:1.7;margin-top:20px;max-width:900px}
+
+/* ── TOC ── */
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:16px}
+.toc-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;text-decoration:none}
+.toc-item:hover{border-color:var(--purple);background:rgba(59,20,100,.1)}
+.toc-num{font-family:var(--font-m);font-size:.75rem;color:var(--purple2);min-width:28px}
+.toc-name{font-size:.85rem;color:var(--gray);transition:color .2s}
+.toc-item:hover .toc-name{color:var(--white)}
+body.theme-light .nav-link:hover,
+body.theme-light .nav-link.active,
+body.theme-light .toc-item:hover,
+body.theme-light .social-link:hover{background:rgba(123,45,139,.08)}
+body.theme-light .lead{color:rgba(35,27,21,.82)}
+body.theme-light .hero-quote{background:rgba(123,45,139,.06)}
+body.theme-light .callout{background:linear-gradient(135deg,rgba(123,45,139,.07),rgba(107,20,40,.05));border-color:rgba(123,45,139,.16)}
+body.theme-light .app-header{background:linear-gradient(135deg,rgba(123,45,139,.08),rgba(201,168,76,.06));border-color:rgba(123,45,139,.14)}
+body.theme-light .wp-table tr:hover td{background:rgba(123,45,139,.05)}
+body.theme-light .formula{border-color:rgba(123,45,139,.16)}
+@media(max-width:640px){.toc-grid{grid-template-columns:1fr}}
+
+/* ── ANIMATIONS ── */
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-p{0%,100%{box-shadow:0 0 0 0 rgba(59,20,100,.5)}70%{box-shadow:0 0 0 10px rgba(124,58,237,0)}}
+.anim{opacity:0;animation:fadeUp .6s ease forwards}
+.a1{animation-delay:.1s}.a2{animation-delay:.2s}.a3{animation-delay:.3s}.a4{animation-delay:.4s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .hero{padding:60px 24px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-logo-block{display:none}
+  .section{padding:60px 24px}
+  footer{padding:40px 24px}
+  footer .foot-grid{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .section{padding:60px 28px}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Noto+Serif+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<!-- ── LANG BAR ── -->
+<div id="lang-bar">
+<div aria-label="Trình chuyển đổi chủ đề" class="theme-toggle-group">
+<button aria-label="Chủ đề ánh sáng ban ngày" class="theme-btn active" id="theme-daylight" onclick="setTheme('daylight')">☀</button>
+<button aria-label="Chủ đề ban đêm" class="theme-btn" id="theme-night" onclick="setTheme('night')">☾</button>
+</div>
+<div aria-label="Điều hướng tài liệu" class="docnav-group">
+<a class="lbtn" href="index.html">Trang web</a>
+<a class="lbtn active" href="White_Paper.html">White Paper</a>
+<a class="lbtn" href="Glossary_Brand_Terms.html">Bảng thuật ngữ</a>
+</div>
+<button class="lbtn active" id="lb-en" onclick="setLang('en')">EN</button>
+<button class="lbtn" id="lb-es" onclick="setLang('es')">ES</button>
+<button class="lbtn" id="lb-pt" onclick="setLang('pt')">PT</button>
+<button class="lbtn" id="lb-ko" onclick="setLang('ko')">한국어</button>
+<button class="lbtn" id="lb-vi" onclick="setLang('vi')">VI</button>
+</div>
+<!-- ── MOBILE TOGGLE ── -->
+<button id="toggle-sb" onclick="toggleSidebar()">☰</button>
+<!-- ── SIDEBAR ── -->
+<nav id="sidebar">
+<div class="sidebar-logo">
+<img alt="MIC" src="../../mission-chain-logo-clear.png"/>
+<div class="sidebar-logo-text">MISSION CHAIN<span>White Paper</span></div>
+</div>
+<div class="nav-group">
+<div class="nav-group-label" data-t="nav-overview">Tổng quan</div>
+<button class="nav-link active" data-t="nav-home" onclick="goTo('hero')">⬛ Bìa</button>
+<button class="nav-link" data-t="nav-toc" onclick="goTo('toc')">📋 Mục lục</button>
+</div>
+<div class="nav-group">
+<div class="nav-group-label">Tài liệu</div>
+<a class="nav-link" href="index.html">Website Mission Chain</a>
+<a class="nav-link" href="Glossary_Brand_Terms.html">Bảng Thuật Ngữ Thương Hiệu</a>
+</div>
+<div class="nav-group">
+<div class="nav-group-label">Các phần chính</div>
+<button class="nav-link" onclick="goTo('s1')">1. Tóm tắt</button>
+<button class="nav-link" onclick="goTo('s2')">2. Giới thiệu — Cuộc khủng hoảng nhân đạo</button>
+<button class="nav-link" onclick="goTo('s3')">3. Ý tưởng lớn: Mission DAO</button>
+<button class="nav-link" onclick="goTo('s4')">4. Sứ mệnh &amp; Tầm nhìn</button>
+<button class="nav-link" onclick="goTo('s5')">5. Cơ hội thị trường</button>
+<button class="nav-link" onclick="goTo('s6')">6. Ba trụ cột</button>
+<button class="nav-link" onclick="goTo('s7')">7. Cấu trúc kinh tế</button>
+<button class="nav-link" onclick="goTo('s8')">8. Kiến trúc công nghệ</button>
+<button class="nav-link" onclick="goTo('s9')">9. Quản trị — Mission DAO</button>
+<button class="nav-link" onclick="goTo('s10')">10. Lộ trình & GTM</button>
+<button class="nav-link" onclick="goTo('s11')">11. Rủi ro &amp; Giảm thiểu</button>
+<button class="nav-link" onclick="goTo('s12')">12. Đội ngũ sáng lập và điều hành</button>
+<button class="nav-link" onclick="goTo('s13')">13. Kết luận</button>
+</div>
+<div class="nav-group">
+<div class="nav-group-label" data-t="nav-app">Phụ lục</div>
+<button class="nav-link" data-t="nav-appA" onclick="goTo('appA')">A. Seed Round</button>
+<button class="nav-link" data-t="nav-appB" onclick="goTo('appB')">B. Pre-Sale</button>
+<button class="nav-link" data-t="nav-appC" onclick="goTo('appC')">C. Cấu trúc Bán MICE</button>
+<button class="nav-link" data-t="nav-appD" onclick="goTo('appD')">D. Đặc tả Kinh tế Chính thức</button>
+<button class="nav-link" data-t="nav-appE" onclick="goTo('appE')">E. Chiến lược Thâm nhập Thị trường</button>
+<button class="nav-link" data-t="nav-appF" onclick="goTo('appF')">F. Pháp lý, Tuyên bố & Quyền riêng tư</button>
+<button class="nav-link" data-t="nav-appG" onclick="goTo('appG')">G. Dự báo Tài chính (Nội bộ)</button>
+<button class="nav-link" data-t="nav-appH" onclick="goTo('appH')">H. Vận hành DAO (Nội bộ)</button>
+<button class="nav-link" data-t="nav-appI" onclick="goTo('appI')">I. Hỗ trợ Vận hành NIRA-AI (Nội bộ)</button>
+</div>
+</nav>
+<!-- ── MAIN ── -->
+<main id="main">
+<!-- ════ HERO ════ -->
+<section class="hero" id="hero">
+<div class="hero-orb" style="width:600px;height:400px;background:rgba(59,20,100,.3);top:-100px;left:-100px"></div>
+<div class="hero-orb" style="width:400px;height:400px;background:rgba(107,20,40,.2);bottom:-80px;right:10%"></div>
+<div class="hero-grid">
+<div>
+<div class="hero-eyebrow anim a1" data-t="hero-eyebrow">Phiên bản chính thức White Paper · v3.5</div>
+<h1 class="hero-title anim a2">
+<span class="g-full">MISSION CHAIN</span><br/>
+<span data-t="hero-sub" style="font-weight:300;font-size:.65em;color:var(--gray)">NETWORK</span>
+</h1>
+<div class="hero-tagline anim a2" data-t="hero-tagline">Được truyền cảm hứng từ niềm tin. Được thiết kế cho con người.</div>
+<div class="hero-quote anim a3">
+<span data-t="hero-quote">"Các con là ánh sáng của thế gian. Một thành phố trên núi không thể bị che khuất."</span>
+<cite>— Ma-thi-ơ 5:14</cite>
+</div>
+<div class="hero-meta anim a3">
+<div class="hero-meta-item">
+<span class="hero-meta-label" data-t="meta-token">Token</span>
+<span class="hero-meta-val">MIC</span>
+</div>
+<div class="hero-meta-item">
+<span class="hero-meta-label" data-t="meta-network">Mạng</span>
+<span class="hero-meta-val">BSC (BEP-20)</span>
+</div>
+<div class="hero-meta-item">
+<span class="hero-meta-label" data-t="meta-supply">Cung cấp tối đa</span>
+<span class="hero-meta-val" style="font-family:var(--font-m)">7,000,000,000</span>
+</div>
+<div class="hero-meta-item">
+<span class="hero-meta-label" data-t="meta-version">Phiên bản</span>
+<span class="hero-meta-val">3.5 · 2026</span>
+</div>
+</div>
+<div class="hero-badges anim a4">
+<span class="badge badge-p">◈ BSC Blockchain</span>
+<span class="badge badge-b">🔗 DAO Được quản lý</span>
+<span class="badge badge-g">⚡ Khai thác thích ứng</span>
+<span class="badge badge-green">🎓 Học tập · Làm việc · Giao lưu</span>
+<span class="badge badge-teal">👩‍💻 NIRA - AI Đại lý Mission Chain</span>
+</div>
+</div>
+<div class="hero-logo-block anim a2">
+<img alt="Mission Chain" src="../../mission-chain-logo-clear.png"/>
+<div class="hero-version" data-t="hero-version">Mission Chain Network · 2026</div>
+</div>
+</div>
+</section>
+<!-- ════ TABLE OF CONTENTS ════ -->
+<div class="section" id="toc">
+<div class="section-num">TABLE OF CONTENTS</div>
+<h2 class="section-title">Tài liệu <span class="g-purple">Cấu trúc</span></h2>
+<div class="toc-grid">
+<a class="toc-item" onclick="goTo('s1')"><span class="toc-num">01</span><span class="toc-name">Tóm tắt</span></a>
+<a class="toc-item" onclick="goTo('s2')"><span class="toc-num">02</span><span class="toc-name">Giới thiệu — Cuộc khủng hoảng nhân đạo</span></a>
+<a class="toc-item" onclick="goTo('s3')"><span class="toc-num">03</span><span class="toc-name">Ý tưởng chính: Mission DAO</span></a>
+<a class="toc-item" onclick="goTo('s4')"><span class="toc-num">04</span><span class="toc-name">Sứ mệnh &amp; Tầm nhìn</span></a>
+<a class="toc-item" onclick="goTo('s5')"><span class="toc-num">05</span><span class="toc-name">Cơ hội thị trường</span></a>
+<a class="toc-item" onclick="goTo('s6')"><span class="toc-num">06</span><span class="toc-name">Ba trụ cột của hệ sinh thái</span></a>
+<a class="toc-item" onclick="goTo('s7')"><span class="toc-num">07</span><span class="toc-name">Cấu trúc kinh tế — MIC, MICE &amp; NFT</span></a>
+<a class="toc-item" onclick="goTo('s8')"><span class="toc-num">08</span><span class="toc-name">Kiến trúc công nghệ</span></a>
+<a class="toc-item" onclick="goTo('s9')"><span class="toc-num">09</span><span class="toc-name">Quản trị — Mission DAO</span></a>
+<a class="toc-item" onclick="goTo('s10')"><span class="toc-num">10</span><span class="toc-name">Lộ trình &amp; Chiến lược tiếp cận thị trường</span></a>
+<a class="toc-item" onclick="goTo('s11')"><span class="toc-num">11</span><span class="toc-name">Rủi ro &amp; Giảm thiểu</span></a>
+<a class="toc-item" onclick="goTo('s12')"><span class="toc-num">12</span><span class="toc-name">Đội ngũ sáng lập và điều hành</span></a>
+<a class="toc-item" onclick="goTo('s13')"><span class="toc-num">13</span><span class="toc-name">Kết luận</span></a>
+<a class="toc-item" onclick="goTo('appA')"><span class="toc-num">A</span><span class="toc-name">Phụ lục A — Seed Round (Private Sale to Early and Strategic Investors)</span></a>
+<a class="toc-item" onclick="goTo('appB')"><span class="toc-num">B</span><span class="toc-name">Phụ lục B — Pre-Sale</span></a>
+<a class="toc-item" onclick="goTo('appC')"><span class="toc-num">C</span><span class="toc-name">Phụ lục C — Cấu trúc Bán MICE</span></a>
+<a class="toc-item" onclick="goTo('appD')"><span class="toc-num">D</span><span class="toc-name">Phụ lục D — Đặc tả Kinh tế Chính thức</span></a>
+<a class="toc-item" onclick="goTo('appE')"><span class="toc-num">E</span><span class="toc-name">Phụ lục E — Chiến lược thâm nhập thị trường</span></a>
+<a class="toc-item" onclick="goTo('appF')"><span class="toc-num">F</span><span class="toc-name">Phụ lục F — Điều khoản pháp lý, Miễn trừ trách nhiệm &amp; Chính sách bảo mật</span></a>
+<a class="toc-item" onclick="goTo('appG')"><span class="toc-num">G</span><span class="toc-name">Phụ lục G — Dự báo tài chính và phân bổ vốn (Nội bộ)</span></a>
+<a class="toc-item" onclick="goTo('appH')"><span class="toc-num">H</span><span class="toc-name">Phụ lục H — Vận hành &amp; Quản trị DAO (Nội bộ)</span></a>
+<a class="toc-item" onclick="goTo('appI')"><span class="toc-num">I</span><span class="toc-name">Phụ lục I — Hỗ trợ Vận hành &amp; Quản trị NIRA-AI (Nội bộ)</span></a>
+</div>
+</div>
+<div class="section" id="s1">
+<div class="section-num">01</div>
+<h2 class="section-title">Tóm tắt</h2>
+<p class="lead"><em>"Mỗi người đều mang trong mình một ánh sáng độc đáo, do Thượng Đế ban tặng — không phải để giấu đi, mà để tỏa sáng ra thế giới."</em></p>
+<p>Mission Chain không chỉ là một nền tảng hay một dự án token. Ở cốt lõi, nó là cam kết vì phẩm giá con người — một hệ sinh thái kỹ thuật số được xây dựng dựa trên niềm tin rằng mỗi người đều xứng đáng có một môi trường công bằng, minh bạch để khám phá, phát triển và chia sẻ tài năng của mình với thế giới.</p>
+<p>Tại trung tâm của Mission Chain là MIC — Mission Chain Token. MIC là sợi chỉ kinh tế xuyên suốt mọi hoạt động, giao dịch và quyết định trong hệ sinh thái. Theo thời gian, MIC được thiết kế để trở thành đồng tiền gốc của Mission Network Layer 2: cơ sở hạ tầng blockchain được thiết kế để cung cấp năng lượng cho toàn bộ hệ sinh thái trên quy mô lớn.</p>
+<div class="callout green">
+<p><strong>Sáng tạo cốt lõi:</strong> Khi bạn học tập, bạn sẽ nhận được chứng chỉ. Khi bạn làm việc, bạn sẽ nhận được thu nhập trong MIC. Khi bạn đóng góp, bạn sẽ có tiếng nói trong quản trị. Mọi hành động đều được ghi lại trên chuỗi khối — không có phí ẩn và không có bên trung gian chiếm đoạt phần lớn giá trị mà bạn tạo ra.</p>
+</div>
+<ul class="fancy-list">
+<li><strong>MIC</strong> — token điều phối chung và đồng tiền gốc Mission Network Layer 2 trong tương lai.</li>
+<li><strong>MICE</strong> — Giấy phép khai thác thuật toán 360 ngày cho nút mạng, phân phối phần thưởng MIC cho các nhà điều hành nút hoạt động theo tỷ lệ tương ứng.</li>
+<li><strong>MFP-NFT</strong> — Chứng chỉ quản lý hiến pháp cho nhà đầu tư và thành viên sáng lập tham gia quản lý các thông số cơ bản của giao thức.</li>
+<li><strong>Community NFTs</strong> — Chứng chỉ Builder, Maker và Luminary được trao cho các thành viên tích cực đáp ứng các tiêu chí đã được xác minh của KPI.</li>
+</ul>
+<div class="grid4" style="margin:28px 0">
+<div class="stat-box"><div class="stat-val g-purple">7B</div><div class="stat-lbl">Giới hạn tối đa</div></div>
+<div class="stat-box"><div class="stat-val g-gold">85%</div><div class="stat-lbl">Phân bổ khai thác</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--green)">100.000</div><div class="stat-lbl">MICE Nắp</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--teal)">3</div><div class="stat-lbl">Các trụ cột chính</div></div>
+</div>
+<p>Tất cả các quyền quản trị — quyền biểu quyết, tỷ lệ cổ phần trong pool và quyền đề xuất — đều được thực hiện thông qua việc staking MIC. Quyền quản trị trong Mission Chain không được thừa kế. Nó được kiếm được thông qua sự tham gia, đóng góp được xác minh và số cổ phần cam kết.</p>
+<p>Mission Chain không cam kết mang lại lợi nhuận tài chính. Nó cung cấp một nền tảng hạ tầng nơi các khoản đóng góp được xác minh trên chuỗi khối, giá trị được lưu chuyển theo các quy tắc toán học, và các nhà sáng tạo có thể tham gia vào một nền kinh tế toàn cầu, công bằng, được xây dựng dựa trên mục đích.</p>
+</div>
+<div class="section" id="s2">
+<div class="section-num">02</div>
+<h2 class="section-title">Giới thiệu — <span class="g-purple">Cuộc khủng hoảng nhân đạo</span></h2>
+<h3 class="sub-title">2.1. Đa số thầm lặng</h3>
+<p class="lead">Trên khắp Global South — tại Lagos, Manila, São Paulo, Nairobi, Jakarta và hàng nghìn thành phố khác — có hàng trăm triệu người tài năng, nhưng khả năng tiếp cận của họ bị hạn chế về mặt cấu trúc.</p>
+<p>Những nhạc sĩ trẻ sáng tác các bài hát thờ phượng trước bình minh. Các nghệ sĩ thị giác vẽ tranh tường nhà thờ mà không có con đường nào dẫn đến thu nhập chuyên nghiệp. Các nhà làm phim ghi lại những câu chuyện chứng ngôn bằng điện thoại thông minh mà không có kênh phân phối. Các nhà sáng tạo kỹ thuật số xây dựng khán giả cho các nền tảng chỉ trả lại vài xu cho mỗi đô la giá trị tạo ra.</p>
+<p>Những người này không thiếu tài năng hay nhiệt huyết. Họ thiếu cơ hội tiếp cận — với giáo dục, với thị trường công bằng và với cơ sở hạ tầng kinh tế công nhận đóng góp của họ và thưởng cho họ một cách công bằng.</p>
+<h3 class="sub-title">2.2 Sự thất bại hệ thống</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Thế giới Cổ đại nói rằng</th><th>Mission Chain Trả lời</th></tr></thead>
+<tbody>
+<tr><td>Nhà sáng tạo tạo ra nội dung. Nền tảng thu lợi nhuận.</td><td>Giá trị được thiết kế để quay trở lại với mọi nhà sáng tạo đóng góp — thông qua MIC, thông qua các chứng chỉ, thông qua quyền biểu quyết trong quản trị.</td></tr>
+<tr><td>Quản trị là dành cho nhà đầu tư và chủ sở hữu vốn.</td><td>Quản trị được xác định thông qua đóng góp được xác minh, MIC được staking và cam kết được thể hiện.</td></tr>
+<tr><td>Web3 là để đầu cơ.</td><td>Mission Chain là dành cho việc sáng tạo — MIC được đạt được thông qua học tập, làm việc, xây dựng và đóng góp.</td></tr>
+<tr><td>Các cộng đồng tôn giáo không thuộc về Web3.</td><td>Các cộng đồng tôn giáo là trung tâm của thiết kế — nhịp đập của hệ sinh thái và kênh phát triển đáng tin cậy nhất.</td></tr>
+<tr><td>Công việc của bạn thuộc về thuật toán.</td><td>Công việc, bằng cấp và hồ sơ của bạn được xác minh trên chuỗi khối và thuộc sở hữu của bạn vĩnh viễn.</td></tr>
+<tr><td>Công nghệ phục vụ lợi nhuận.</td><td>Công nghệ phục vụ cho phẩm giá con người, sứ mệnh và sự thịnh vượng của cộng đồng.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">2.3 Tại sao lại là bây giờ?</h3>
+<ul class="dot-list">
+<li>Khoảng 2,6 tỷ tín đồ Kitô giáo trên toàn thế giới, với tốc độ tăng trưởng nhanh nhất tại Global South.</li>
+<li>Hơn 200 triệu nhà sáng tạo nội dung kỹ thuật số trên toàn cầu, với phần lớn trong số họ kiếm được dưới USD 1.000 USD mỗi năm từ công việc sáng tạo.</li>
+<li>Sự phổ biến của điện thoại thông minh đang gia tăng nhanh chóng tại châu Phi, Đông Nam Á và Mỹ Latinh.</li>
+<li>Blockchain và AI đã phát triển đủ để mang lại giá trị thực sự cho các cộng đồng không chuyên về công nghệ.</li>
+<li>Creator Economy đã đạt đến USD 250B+ mà không có giải pháp Web3 nào đáng tin cậy và phù hợp với giá trị ở quy mô đáng kể.</li>
+</ul>
+<div class="callout warn"><p><strong>Đây là bối cảnh mà Mission Chain được phát triển.</strong></p></div>
+</div>
+<div class="section" id="s3">
+<div class="section-num">03</div>
+<h2 class="section-title">Ý tưởng lớn: <span class="g-gold">Mission DAO</span></h2>
+<p class="lead"><em>"Sự đổi mới quan trọng nhất trong Mission Chain không phải là token, không phải là thuật toán, cũng không phải là AI. Đó là ý tưởng rằng một cộng đồng — được kết nối bởi những giá trị chung và đóng góp được xác minh — có thể tự quản lý và xây dựng sự thịnh vượng chung, mà không bị giới hạn bởi địa lý trong việc xác định ai là thành viên."</em></p>
+<p>Hầu hết các DAO hoạt động như các lớp bọc quản trị cho các giao thức. Mission DAO được thiết kế để trở thành một điều gì đó khác biệt: một cộng đồng kỹ thuật số do cộng đồng quản trị, được tổ chức xung quanh niềm tin, sự sáng tạo, đóng góp và phẩm giá con người — nơi thành viên được kiếm được, không phải mua.</p>
+<h3 class="sub-title">3.1 Một cộng đồng được tổ chức dựa trên giá trị, không phải địa lý</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tổ chức truyền thống</th><th>Mission DAO</th></tr></thead>
+<tbody>
+<tr><td>Thành viên theo khu vực địa lý hoặc thủ đô</td><td>Thành viên được trao tặng thông qua việc học tập, làm việc và đóng góp</td></tr>
+<tr><td>Quy tắc do lãnh đạo đề ra, có thể thay đổi bởi quyền lực</td><td>Các quy tắc cơ bản được mã hóa trong giao thức; các thông số hiến pháp yêu cầu sự đồng thuận của MFP-NFT</td></tr>
+<tr><td>Tiền tệ do ban quản lý kiểm soát</td><td>MIC được điều chỉnh bởi toán học — giới hạn tối đa cứng, phát hành Hindex minh bạch, không có việc đúc tiền tùy ý</td></tr>
+<tr><td>Quyết định của các nhà quản lý hoặc chủ sở hữu vốn</td><td>Quyết định của các bên tham gia đặt cược — trọng số bỏ phiếu tỷ lệ thuận với số lượng MIC đã đặt cược, được lọc theo cấp độ chứng chỉ</td></tr>
+<tr><td>Phí do tổ chức thu</td><td>Phí giao thức được trả lại cho cộng đồng thông qua việc đốt token, các bể thanh khoản và các bể thưởng</td></tr>
+<tr><td>Quản trị hoạt động trong tình trạng thiếu minh bạch</td><td>Đảm bảo tính minh bạch hoàn toàn trên chuỗi — mọi phiếu bầu, phân bổ và thay đổi thông số đều có thể được kiểm toán công khai</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">3.2 Ba cấp độ thành viên cộng đồng</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Cấp độ</th><th>Cách kiếm được</th><th>Lớp Quản trị</th><th>Chứng chỉ</th></tr></thead>
+<tbody>
+<tr><td>Người tham gia</td><td>Tạo ví và bắt đầu sử dụng hệ sinh thái</td><td>Quyền truy cập vào sản phẩm; cơ chế quản trị được kích hoạt sau khi đạt được các điều kiện cần thiết</td><td>—</td></tr>
+<tr><td>Người đóng góp</td><td>Kiếm Builder, Maker hoặc Luminary Community NFT thông qua các KPI đã được xác minh</td><td>Quyền đề xuất và quyền biểu quyết tỷ lệ thuận với cấp độ và số lượng MIC được staking</td><td>Community NFT</td></tr>
+<tr><td>Constitutional Steward</td><td>Nhận MFP-NFT thông qua các kênh đóng góp ban đầu, chiến lược, thành lập hoặc được phê duyệt theo DAO</td><td>Quản trị hiến pháp và quản lý khung pháp lý</td><td>MFP-NFT</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">3.3 Staking là động lực của quản trị và khen thưởng</h3>
+<ul class="fancy-list">
+<li>Những người nắm giữ thụ động không thể tham gia quản trị — cần phải đặt cọc MIC để thực hiện quyền quản trị.</li>
+<li>Các cơ chế khuyến khích quản trị phù hợp với sức khỏe lâu dài của hệ sinh thái vì những người đầu tư nhiều nhất cũng là những người có lợi ích lớn nhất.</li>
+<li>Phân phối phần thưởng vẫn duy trì tính minh bạch và kháng thao túng vì các phần thưởng trong pool được tính toán trên chuỗi dựa trên số lượng cổ phần có thể xác minh.</li>
+</ul>
+<div class="callout"><p><strong>Nguyên tắc Staking:</strong> Chứng chỉ NFT của bạn quyết định cấp độ quản trị mà bạn tham gia. Số cổ phần MIC của bạn quyết định trọng số biểu quyết thực tế và tỷ lệ cổ phần trong nhóm của bạn tại cấp độ đó. Không có cổ phần thì không có quyền biểu quyết. Không có cổ phần thì không có tỷ lệ cổ phần trong nhóm.</p></div>
+</div>
+<div class="section" id="s4">
+<div class="section-num">04</div>
+<h2 class="section-title">Sứ mệnh &amp; Tầm nhìn — <span class="g-full">Creator Mission Economy</span></h2>
+<h3 class="sub-title">4.1 Sứ mệnh của chúng tôi</h3>
+<p class="lead">Sứ mệnh của Mission Chain là xây dựng một hệ sinh thái mạnh mẽ, hướng tới mục tiêu, nơi niềm tin, sự sáng tạo, giáo dục và công nghệ phi tập trung hội tụ để khai phá tiềm năng con người trên quy mô toàn cầu, đồng thời trả lại chủ quyền kinh tế cho những người tạo ra giá trị.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Cột</th><th>Ý nghĩa của nó trong thực tế</th></tr></thead>
+<tbody>
+<tr><td>Sáng tạo độc lập</td><td>Mỗi nhà sáng tạo sở hữu tác phẩm, bằng cấp và tương lai kinh tế của mình — được xác minh trên chuỗi khối và công nhận trên toàn cầu.</td></tr>
+<tr><td>Trao đổi giá trị công bằng</td><td>Tài năng và đóng góp được đánh giá công bằng thông qua các tiêu chí minh bạch, chứ không phải qua các thuật toán bí ẩn của nền tảng.</td></tr>
+<tr><td>Công nghệ như một công cụ phục vụ</td><td>Blockchain, AI và tầm nhìn Layer 2 của MIC là công cụ của sự chủ động con người — không phải là mục tiêu cuối cùng.</td></tr>
+<tr><td>Niềm tin là nền tảng</td><td>Động lực sâu sắc nhất cho tác động lâu dài xuất phát từ mục đích — Mission Chain tôn vinh điều đó mà không áp đặt nó.</td></tr>
+<tr><td>Sự thịnh vượng của cộng đồng</td><td>Hệ thống kinh tế nên củng cố gia đình, nhà thờ và cộng đồng — chứ không phải bóc lột họ.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">4.2. Creator Mission Economy trông như thế nào trong thực tế</h3>
+<ul class="dot-list">
+<li>Một nhạc sĩ thờ phượng ở vùng nông thôn châu Phi hoàn thành Mission Learn, nhận được Builder NFT, đặt cọc MIC, đăng tải các bản thu gốc trên Mission Work và nhận được MIC cho mỗi giấy phép được bán.</li>
+<li>Một đạo diễn trẻ ở Đông Nam Á đã đạt được chứng chỉ Maker trên chuỗi khối, bán các bộ phim đã chỉnh sửa cho các nhà thờ trên toàn thế giới và tiến tới đạt được trạng thái Luminary.</li>
+<li>Một nhà thiết kế đồ họa tại São Paulo tạo ra các thiết kế đồ họa cho nhà thờ thông qua Mission Work, đạt được trạng thái Maker NFT và bỏ phiếu về các thông số của hệ sinh thái với mức độ ảnh hưởng được xác định bởi số cổ phần MIC.</li>
+<li>Một nhà thờ ở Nairobi trở thành Mission Hub — tổ chức các buổi họp Mission Learn, tạo điều kiện cho việc làm địa phương và cuối cùng đạt được trạng thái Luminary thông qua sự lãnh đạo bền vững.</li>
+</ul>
+<h3 class="sub-title">4.3 Tầm nhìn dài hạn: MIC là đồng tiền gốc Mission Network Layer 2</h3>
+<p>MIC được thiết kế với một quỹ đạo dài. Trong giai đoạn đầu tiên, MIC là token tiện ích kết nối tất cả các hoạt động trong hệ sinh thái — phí, phần thưởng, quản trị và giao dịch thị trường. Trong giai đoạn phát triển hoàn thiện, MIC dự kiến sẽ trở thành đồng tiền gốc của Mission Network Layer 2.</p>
+<div class="callout green"><p><strong>Tầm nhìn Layer 2:</strong> Khi Mission Network Layer 2 được ra mắt, MIC được thiết kế để trở thành đồng tiền gas và thanh toán gốc của một blockchain được xây dựng riêng biệt, phục vụ cho Creator Mission Economy trên quy mô toàn cầu.</p></div>
+</div>
+<div class="section" id="s5">
+<div class="section-num">05</div>
+<h2 class="section-title">Thị trường <span class="g-gold">Cơ hội</span></h2>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Ngành</th><th>Quy mô thị trường toàn cầu</th><th>Mission Chain Điểm vào</th></tr></thead>
+<tbody>
+<tr><td>Creator Economy</td><td>USD 250B+</td><td>Thị trường Mission Work và Giấy phép Mission Arts</td></tr>
+<tr><td>Giáo dục trực tuyến (Công nghệ giáo dục)</td><td>USD 400B+</td><td>Mission Learn — Giáo dục sáng tạo đã được xác minh</td></tr>
+<tr><td>Làm việc tự do &amp; Kinh tế gig</td><td>USD 450B+</td><td>Mission Work — Thị trường sáng tạo có chứng nhận</td></tr>
+<tr><td>Mạng xã hội &amp; Cộng đồng</td><td>USD 300B+</td><td>Mission Social — Triển lãm cộng đồng và nhà sáng tạo</td></tr>
+<tr><td>Hạ tầng Web3</td><td>USD 50B+</td><td>MIC, MICE, NFT và mạng Layer 2 trong tương lai</td></tr>
+<tr><td>Truyền thông và Nội dung Kitô giáo</td><td>USD 50B+</td><td>Hệ sinh thái sáng tạo được thúc đẩy bởi niềm tin với vị thế thị trường độc đáo</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid4" style="margin:24px 0">
+<div class="stat-box"><div class="stat-val g-purple">$1,5 nghìn tỷ trở lên</div><div class="stat-lbl">Thị trường tiềm năng</div></div>
+<div class="stat-box"><div class="stat-val g-gold">2.6B</div><div class="stat-lbl">Kitô hữu trên toàn thế giới</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--teal)">hơn 200 triệu</div><div class="stat-lbl">Nhà sáng tạo toàn cầu</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--green)">0</div><div class="stat-lbl">Những nhà lãnh đạo Web3 có giá trị tương đồng</div></div>
+</div>
+<h3 class="sub-title">5.1 Giao lộ chưa được phục vụ đầy đủ</h3>
+<ul class="dot-list">
+<li>Khoảng 2,6 tỷ tín đồ Kitô giáo trên toàn thế giới, với sự tập trung chủ yếu ở châu Phi cận Sahara, Đông Nam Á và Mỹ Latinh.</li>
+<li>Một số tài năng sáng tạo phát triển nhanh nhất trong các dân số trẻ nhất thế giới.</li>
+<li>Các cộng đồng giáo hội vẫn là một trong những cơ sở hạ tầng xã hội được tin cậy nhất và phù hợp với sứ mệnh trên thế giới.</li>
+<li>Âm nhạc thờ phượng, phim chứng đạo và nội dung số dựa trên đức tin đang trải qua một sự phục hưng văn hóa toàn cầu.</li>
+<li>Chưa có cơ sở hạ tầng Web3 nào đáng tin cậy và phù hợp với giá trị được thiết kế dành riêng cho cộng đồng này.</li>
+</ul>
+<h3 class="sub-title">5.2 Khoảng cách hội tụ — Điều chưa từng tồn tại</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Khoảng cách</th><th>Điều gì còn thiếu?</th><th>Phản hồi của Mission Chain</th></tr></thead>
+<tbody>
+<tr><td>Khoảng cách về bằng cấp</td><td>Không có bằng chứng xác thực, có thể mang theo về khả năng sáng tạo</td><td>On-chain Community NFTs — chống giả mạo, được công nhận trên toàn cầu, đạt được chứ không phải mua</td></tr>
+<tr><td>Khoảng cách kinh tế</td><td>Không có thị trường công bằng cho các tác phẩm sáng tạo phù hợp với tôn giáo</td><td>Mission Work — ký quỹ, xác thực thông tin, kỹ năng được xác minh, MIC thanh toán</td></tr>
+<tr><td>Khoảng cách giáo dục</td><td>Không có chương trình giáo dục sáng tạo có cấu trúc và chi phí hợp lý cho Global South</td><td>Mission Learn — nhiều chương trình, học bổng và chứng chỉ trên chuỗi khối</td></tr>
+<tr><td>Khoảng cách cộng đồng</td><td>Không có cộng đồng kỹ thuật số tự quản lý dành cho các nghệ sĩ sáng tạo Kitô giáo trên toàn thế giới</td><td>Mission DAO và Mission Social — quốc tịch được cấp, không phải mua</td></tr>
+<tr><td>Khoảng cách cơ sở hạ tầng</td><td>Không có blockchain được thiết kế riêng cho một nền kinh tế sáng tạo có chung giá trị</td><td>Mission Network Layer 2 — chuỗi gốc MIC dài hạn</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="s6">
+<div class="section-num">06</div>
+<h2 class="section-title">Bốn trụ cột của <span class="g-full">Hệ sinh thái</span></h2>
+<p class="lead">Hệ sinh thái của Mission Chain được tổ chức xung quanh bốn trụ cột liên kết. Cùng nhau, chúng tạo thành một hành trình hoàn chỉnh: học tập → làm việc → thuộc về → xây dựng thế giới. MIC lưu thông qua cả bốn trụ cột này như một phương tiện kinh tế phổ quát.</p>
+<div class="callout"><p><strong>Ghi chú về kiến trúc:</strong> Mission Arts được nhúng trong Mission Work. Các Mission Hub được nhúng trong Mission Social. Điều này tạo ra sự nhất quán sâu hơn và một hệ sinh thái có sức mạnh quay vòng mạnh mẽ hơn.</p></div>
+<div class="grid4" style="margin-top:24px">
+<div class="card card-p">
+<h4 class="mini-title">6.1 Mission Learn — Học viện Sáng tạo</h4>
+<p>Mission Learn là một học viện sáng tạo được xác thực bằng công nghệ blockchain, được thành lập dành riêng cho Global South và các tài năng Kitô giáo. Hoàn thành chương trình Mission Learn là con đường chính để đạt được bằng Builder Community NFT.</p>
+<ul class="dot-list">
+<li>Bốn chuyên ngành: Sản xuất Âm nhạc và Thờ phượng, Nghệ thuật Thị giác và Thiết kế, Làm phim và Video, và Sáng tạo Kỹ thuật số.</li>
+<li>Bộ sưu tập các tác phẩm xuất sắc nhất On-chain có thể xem được bởi khách hàng toàn cầu trên Mission Work.</li>
+<li>Quá trình nâng cấp chứng chỉ từ Builder lên Maker và Luminary thông qua các chứng chỉ KPI đã được xác minh.</li>
+<li>Hệ thống ghép đôi công việc được hỗ trợ bởi AI dựa trên bằng cấp, hồ sơ và đánh giá.</li>
+</ul>
+</div>
+<div class="card card-b">
+<h4 class="mini-title">6.2 Mission Work — Thị trường Kinh tế Sáng tạo</h4>
+<p>Mission Work là động lực kinh tế — một nền tảng thương mại điện tử chuyên biệt kết nối các nhà sáng tạo Kitô giáo đã được xác minh với khách hàng toàn cầu. Tất cả các khoản thanh toán công việc đều được thực hiện qua MIC, và Mission Arts hoạt động ở đây như lớp tài sản kỹ thuật số và cấp phép.</p>
+<ul class="dot-list">
+<li>Các danh mục dịch vụ bao gồm âm nhạc, nghệ thuật thị giác, phim và video, và sáng tạo kỹ thuật số.</li>
+<li>Các công việc được xử lý qua quy trình khớp đơn hàng theo thứ hạng, dịch vụ ký quỹ MIC, kiểm tra giao hàng, bảo hành chất lượng và đánh giá hai chiều.</li>
+<li>Mission Arts hỗ trợ cấp phép cho các tài sản âm nhạc, nghệ thuật thị giác và video với các mô hình bản quyền tùy chọn.</li>
+</ul>
+</div>
+<div class="card card-teal">
+<h4 class="mini-title">6.3 Mission Social — Cộng đồng, Trưng bày &amp; Phát triển</h4>
+<p>Mission Social là lớp cộng đồng, lớp kích hoạt quản trị và là nơi lưu trữ các nút vật lý Mission Hub — các nút vật lý của cộng đồng kỹ thuật số trong các thành phố thực tế.</p>
+<ul class="dot-list">
+<li>Các sự kiện cộng đồng trực tuyến bao gồm các buổi hòa nhạc thờ phượng, các buổi sáng tạo nghệ thuật, các buổi chiếu phim chứng đạo và các lễ hội toàn cầu.</li>
+<li>Mission Hubs hỗ trợ giáo dục địa phương, hỗ trợ việc làm, quá trình tiếp nhận, kiểm tra sàng lọc và tham gia vào DAO.</li>
+<li>Sự đóng góp tạo nên sự thuộc về. Sự thuộc về mang lại quyền quản lý.</li>
+</ul>
+</div>
+<div class="card card-gold">
+<h4 class="mini-title">6.4 Mission World — Nền tảng Cộng đồng Toàn cầu</h4>
+<p>Mission World là một nền tảng cộng đồng và nội dung toàn cầu dành cho các nhà sáng tạo Kitô giáo, doanh nhân và lãnh đạo trên toàn thế giới. Nó cho phép kết nối, học tập và cộng tác vượt thời gian, kết nối toàn bộ hệ sinh thái.</p>
+<ul class="dot-list">
+<li>Kết nối các lãnh đạo Kitô giáo thông qua các sự kiện toàn cầu, kết nối mạng, bảng điều khiển thảo luận và những thách thức cộng đồng.</li>
+<li>SOPHIA AI KOL hướng dẫn mentoring, quản lý nội dung, cẩm nang cộng đồng và các cuộc hội thoại dựa trên đức tin.</li>
+<li>Tất cả các stímul được dựa trên MIC, và các đóng góp được công nhân qua danh tiếng, cân nặng bỏ phiếu quản trị và phần thưởng kinh tế.</li>
+</ul>
+</div>
+</div>
+<h3 class="sub-title">6.5 Hệ sinh thái Flywheel</h3>
+<div class="callout green"><p style="text-align:center;font-family:var(--font-d);font-weight:700">Học → Kiếm tiền Builder NFT → Stake MIC → Truy cập Mission Work → Tạo thu nhập trong MIC → Trình bày trên Mission Social → Xây dựng mạng lưới toàn cầu trên Mission World → Xây dựng uy tín → Kiếm tiền Maker → Kiếm tiền Luminary → Bỏ phiếu về quản trị → Định hình nền tảng phục vụ bạn.</p></div>
+</div>
+<div class="section" id="s7">
+<div class="section-num">07</div>
+<h2 class="section-title">Cấu trúc kinh tế — <span class="g-gold">MIC, MICE và NFT</span></h2>
+<p class="lead">Cấu trúc kinh tế của Mission Chain được xây dựng dựa trên một nguyên tắc duy nhất: giá trị nên được phân phối cho đóng góp, chứ không chỉ cho vốn.</p>
+<h3 class="sub-title">7.1 MIC — Nền tảng Điều phối Tổng quát Token &amp; Layer 2</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>MIC Vai trò</th><th>Cách thức hoạt động</th><th>Nơi nó xuất hiện</th></tr></thead>
+<tbody>
+<tr><td>Phương tiện trao đổi phổ quát</td><td>Tất cả các giao dịch nội bộ — phí khóa học, thanh toán công việc, mua hàng trên thị trường và phí nền tảng — đều được tính toán và thanh toán bằng MIC.</td><td>Mission Learn, Mission Work, Mission Arts, Phần thưởng hoạt động Hub, 50% của mỗi lần kích hoạt MICE</td></tr>
+<tr><td>Quản trị Stake</td><td>MIC được đặt cược cùng với thông tin xác thực NFT để xác định tỷ trọng biểu quyết và tỷ lệ cổ phần trong nhóm. Nếu không đặt cược MIC thì sẽ không được tham gia quản trị.</td><td>DAO phiếu bầu, MFP-NFT nhóm, Community NFT nhóm, ngưỡng đề xuất</td></tr>
+<tr><td>Phân phối phần thưởng</td><td>MIC được phát hành hàng ngày thông qua Hindex Algorithm và phân phối cho các nhà điều hành nút, người nắm giữ Community NFT và các quản trị viên MFP-NFT.</td><td>60% Miners (MICE), 25% Staking, 10% DAO Treasury, 5% Community NFT Reward</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">Token Cấu trúc cung ứng</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Phân bổ</th><th>tỷ lệ phần trăm của nguồn cung</th><th>MIC Số tiền</th><th>Ghi chú</th></tr></thead>
+<tbody>
+<tr><td>Phần thưởng khai thác (Hindex Algorithm)</td><td class="hl">85%</td><td class="mono">5,950,000,000</td><td>Phát thải hàng ngày theo từng giai đoạn thông qua các nút MICE hoạt động</td></tr>
+<tr><td>SEED Round</td><td>3.25%</td><td class="mono">227,500,000</td><td>USD 0,0025 trên MIC · 10% sau 6 tháng, sau đó 2,5% hàng tháng</td></tr>
+<tr><td>PRE-SALE</td><td>4.50%</td><td class="mono">315,000,000</td><td>USD 0,005 trên MIC · 10% sau 6 tháng, sau đó 2,5% hàng tháng</td></tr>
+<tr><td>Kích thích &amp; Airdrops</td><td>0.25%</td><td class="mono">17,500,000</td><td>10% sau 6 tháng, sau đó 2,5% mỗi tháng</td></tr>
+<tr><td>DEX / CEX Danh sách</td><td>1.50%</td><td class="mono">105,000,000</td><td>Giá niêm yết dự kiến USD 0,01 · đã được mở khóa để đảm bảo thanh khoản thị trường</td></tr>
+<tr><td>Nhà sáng lập, Điều hành &amp; Quản lý</td><td>4.00%</td><td class="mono">280,000,000</td><td>10% sau 24 tháng, sau đó 2,5% mỗi tháng</td></tr>
+<tr><td>DAO Kho bạc</td><td>1.50%</td><td class="mono">105,000,000</td><td>10% sau 24 tháng, sau đó là 2,5% mỗi tháng</td></tr>
+<tr><td><strong>Tổng cung</strong></td><td><strong>100%</strong></td><td class="mono"><strong>7,000,000,000</strong></td><td>Giới hạn tối đa không thể thay đổi — không thể phát hành thêm</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">7.2 MICE — Mission Algorithm Node License</h3>
+<p>MICE không phải là một token và cũng không phải là một công cụ đầu tư. Đây là giấy phép nút có thời hạn 360 ngày — quyền tham gia vào quá trình khai thác thuật toán của MIC.</p>
+<div class="grid2">
+<div class="card card-p">
+<h4 class="mini-title">Cách hoạt động của MICE được giải thích bằng ngôn ngữ đơn giản</h4>
+<p>Khi bạn kích hoạt giấy phép MICE, nút của bạn sẽ tham gia vào chu kỳ phát hành Hindex. Phần trăm 60% phát hành hàng ngày được phân bổ cho các thợ đào sẽ được tính theo tỷ lệ giữa số giấy phép MICE đang hoạt động của bạn so với tổng số giấy phép đang hoạt động trong ngày đó. Sau 360 ngày, giấy phép sẽ hết hạn tự động.</p>
+<div class="formula"><span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.60 × E(t)</span></div>
+</div>
+<div class="card card-b">
+<h4 class="mini-title">Thông số kỹ thuật MICE</h4>
+<ul class="dot-list">
+<li>Số lượng cấp phép tối đa: 100.000 giấy phép MICE.</li>
+<li>Thời hạn giấy phép: 360 ngày kể từ ngày kích hoạt.</li>
+<li>Cấu trúc thanh toán: 50% USDT + 50% MIC sử dụng TWAP trong 7 ngày kể từ ngày kích hoạt.</li>
+<li>Chính sách tái sử dụng: Giấy phép hết hạn được tái sử dụng theo quy trình; DAO quy định các điều kiện cấp lại.</li>
+</ul>
+</div>
+</div>
+<div class="wp-table-wrap" style="margin-top:20px">
+<table class="wp-table">
+<thead><tr><th>Thanh khoản On-chain MIC/USDT</th><th>Giá giấy phép MICE</th></tr></thead>
+<tbody>
+<tr><td>&lt; USD 200.000</td><td>USD 100</td></tr>
+<tr><td>USD 200.000 – &lt; 1.000.000</td><td>USD 200</td></tr>
+<tr><td>USD 1.000.000 – &lt; 5.000.000</td><td>USD 300</td></tr>
+<tr><td>USD 5.000.000 – &lt; 15.000.000</td><td>USD 400</td></tr>
+<tr><td>≥ USD 15.000.000</td><td>USD 500</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">7.3 MFP-NFT — Constitutional Steward Chứng chỉ</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Đường dẫn</th><th>Người nhận</th><th>Cơ sở</th></tr></thead>
+<tbody>
+<tr><td>Vốn và Đóng góp Chiến lược</td><td>Nhà đầu tư hạt giống và các đối tác chiến lược</td><td>Được cấp thông qua việc tham gia sớm vào hệ sinh thái có rủi ro cao</td></tr>
+<tr><td>Đóng góp sáng lập</td><td>Các thành viên sáng lập</td><td>Được cấp cho các đóng góp quan trọng về thương hiệu, tài sản, quyền sở hữu trí tuệ hoặc tổ chức</td></tr>
+<tr><td>Phân bổ cho Người đóng góp tích cực</td><td>Các nhà đóng góp được phê duyệt theo tiêu chuẩn DAO</td><td>Được phân bổ từ nguồn cung còn lại của MFP-NFT thông qua cuộc bỏ phiếu quản trị</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout warn"><p><strong>MFP-NFT Cấu trúc cung ứng:</strong> tổng số MFP-NFT tối đa là 2.500. Phát hành ban đầu và phát hành được quản lý bởi DAO chia sẻ một giới hạn giao thức không thể thay đổi.</p></div>
+<div class="formula">
+<span class="math">Trọng số phiếu bầu<sub>MFP,i</sub> = S<sub>i</sub> / Σ S<sub>MFP, đang hoạt động</sub></span><br/>
+<span class="math">PoolShare<sub>MFP,i</sub>(t) = (S<sub>i</sub> / Σ S<sub>MFP,active</sub>) × 0.20 × E(t)</span>
+</div>
+<h3 class="sub-title">7.4 Community NFT — Builder, Maker và Luminary</h3>
+<p>Community NFT là các chứng chỉ đóng góp. Chúng không được bán, không được airdrop và không được nhận chỉ bằng cách tham gia. Chúng được kiếm được thông qua các đóng góp có thể xác minh trên chuỗi khối, đáp ứng các tiêu chuẩn rõ ràng.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Cấp độ</th><th>Cách kiếm được</th><th>Trọng số phiếu bầu</th><th>Tham gia bể bơi</th></tr></thead>
+<tbody>
+<tr><td>Builder</td><td>Hoàn thành Mission Learn, đã xác minh lịch sử Mission Work, tham gia tích cực Mission Social</td><td>1× trọng lượng cơ bản trong phạm vi Builder</td><td>Quyền truy cập vào bể bơi cộng đồng tỷ lệ thuận với số lượng MIC được staking</td></tr>
+<tr><td>Maker</td><td>Trạng thái hoạt động của Builder cùng với các trạng thái sâu hơn của Mission Learn, Mission Work, Mission Social và KPI về quản trị</td><td>tham gia với trọng số gấp đôi trong các cuộc bỏ phiếu chung</td><td>Trọng số cao hơn trong bể cộng đồng</td></tr>
+<tr><td>Luminary</td><td>Tình trạng hoạt động Maker cùng với lịch sử làm việc xuất sắc, khả năng lãnh đạo, sự ủng hộ từ đồng nghiệp và sự tham gia vào hoạt động quản trị</td><td>4 lần tham gia có trọng số trong các cuộc bỏ phiếu chung</td><td>Trọng lượng cao nhất trong nhóm cộng đồng</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">7.5 Quyền quản trị &amp; Staking — Ma trận đầy đủ</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Chứng chỉ</th><th>Cấp độ quản trị</th><th>Các thông số được điều khiển</th><th>Yêu cầu Staking</th></tr></thead>
+<tbody>
+<tr><td>MFP-NFT</td><td>Lớp Hiến pháp</td><td>Các thông số khung như hệ số Hindex, dải giá MICE và tỷ lệ phần trăm trong nhóm</td><td>Số cổ phần tối thiểu MIC; không có cổ phần nghĩa là không có quyền lợi</td></tr>
+<tr><td>Luminary</td><td>Chiến lược + Cộng đồng</td><td>Tất cả các phiếu bầu của cộng đồng và sản phẩm; vai trò tư vấn trong các cuộc thảo luận về hiến pháp</td><td>Cổ phần hoạt động MIC và xác minh lại hàng năm</td></tr>
+<tr><td>Maker</td><td>Sản phẩm + Cộng đồng</td><td>Lộ trình sản phẩm, phân bổ sự kiện, chứng nhận trung tâm và ngưỡng KPI</td><td>Cổ phần hoạt động MIC và xác minh lại KPI</td></tr>
+<tr><td>Builder</td><td>Lớp Cộng đồng</td><td>Quyết định về trung tâm địa phương, tài trợ cho các sáng kiến và phân bổ kinh phí cho các sự kiện cộng đồng</td><td>Cổ phần hoạt động MIC và xác minh lại hàng năm</td></tr>
+<tr><td>MICE Nhân viên vận hành</td><td>Ý kiến tư vấn</td><td>Chỉ các tín hiệu về hoạt động — không có cuộc bỏ phiếu nào liên quan đến hiến pháp hay khung pháp lý</td><td>Giấy phép MICE có hiệu lực trong 360 ngày</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">7.6 Kinh tế tuần hoàn</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Hoạt động</th><th>MIC Lưu lượng</th><th>Phân phối giá trị</th></tr></thead>
+<tbody>
+<tr><td>Phí Mission Learn</td><td>MIC đã thu thập → cháy một phần</td><td>60% nhà sáng tạo · 20% mua và đốt · 20% Kho bạc</td></tr>
+<tr><td>Mua giấy phép MICE</td><td>50% USDT + 50% MIC → đốt + bể chứa</td><td>50% Kho bạc, 30% Thanh khoản, 20% Mua lại & Đốt</td></tr>
+<tr><td>Thanh toán công việc Mission Work</td><td>100% MIC đã được thanh toán trên chuỗi khối</td><td>Phí nền tảng được chia đều giữa Kho bạc, đốt token và phần thưởng Hub; phần còn lại được chuyển cho nhà sáng tạo</td></tr>
+<tr><td>Giấy phép Mission Arts</td><td>MIC cho mỗi giấy phép + dòng thu phí bản quyền tùy chọn</td><td>80–85% dành cho người sáng tạo · 10–15% dành cho giao thức · 5% dành cho việc đốt</td></tr>
+<tr><td>Phần thưởng cho sự tham gia của cộng đồng</td><td>MIC từ các nhóm sự kiện</td><td>Phần thưởng cho nhà sáng tạo + Tăng cường vòng quay hệ sinh thái</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="s8">
+<div class="section-num">08</div>
+<h2 class="section-title">Công nghệ <span class="g-purple">Kiến trúc</span></h2>
+<p class="lead">Mission Chain được xây dựng trên phong cách tối giản tinh tế: triển khai những gì cần thiết cho hiện tại, thiết kế cho tương lai của Layer 2.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Lớp</th><th>Công nghệ</th><th>Chức năng</th></tr></thead>
+<tbody>
+<tr><td>Chuỗi cơ sở (Giai đoạn I – III)</td><td>BNB Chuỗi thông minh (BSC)</td><td>Thanh toán tốc độ cao, chi phí thấp, phù hợp với các thị trường đang phát triển</td></tr>
+<tr><td>Hợp đồng Token</td><td>Tiêu chuẩn BEP-20</td><td>Token tiện ích MIC với nguồn cung được giới hạn cứng và cơ chế phát hành được quản lý bởi Hindex</td></tr>
+<tr><td>Hệ thống khai thác</td><td>Hindex Algorithm</td><td>Phát thải hàng ngày MIC có khả năng thích ứng, phản ứng với thanh khoản và suy giảm theo thời gian</td></tr>
+<tr><td>Lớp NFT</td><td>Tiêu chuẩn BEP-721</td><td>Chứng chỉ có thể chuyển nhượng NFTs với quyền quản trị được kích hoạt thông qua staking và xác minh lại</td></tr>
+<tr><td>Hợp đồng MICE</td><td>Hợp đồng giấy phép có thời hạn NFT</td><td>giấy phép nút 360 ngày với tính năng tự động hết hạn, logic tái sử dụng và giá cả động</td></tr>
+<tr><td>Lớp Quản trị</td><td>Hợp đồng DAO có cơ chế khóa thời gian và yêu cầu đa số</td><td>Áp dụng các thông số không thể thay đổi và thực hiện các cuộc bỏ phiếu trong khuôn khổ hiến pháp</td></tr>
+<tr><td>Lớp AI</td><td>Economic Oracle + Hệ thống phân tích</td><td>Giám sát tư vấn, phát hiện sự cố bất thường và hỗ trợ đề xuất quản trị</td></tr>
+<tr><td>Layer 2 (Tương lai)</td><td>Mission Network Layer 2</td><td>MIC là khí tự nhiên và đồng tiền thanh toán cho Creator Mission Economy</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">8.1 Hindex Algorithm</h3>
+<div class="formula">
+<span class="math">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup></span><br/>
+<span class="comment">E₀ ≈ 22,907,500 MIC/ngày · T<sub>half</sub> = 180 ngày · D(t) = 0.5 + U(t) [0.5, 1.5] · R(t) = clamp(250%/ROI, 0.5, 2.0)</span>
+</div>
+<div class="wp-table-wrap" style="margin-top:18px">
+<table class="wp-table">
+<thead><tr><th>Thành phần</th><th>Giá trị / Công thức</th><th>Chức năng</th></tr></thead>
+<tbody>
+<tr><td>E₀</td><td>22,907,500 MIC/ngày</td><td>Tỷ lệ phát thải ban đầu với suy giảm theo cấp số nhân</td></tr>
+<tr><td>λ</td><td>ln(2)/180</td><td>Hằng số suy giảm cho vòng đời 180 ngày</td></tr>
+<tr><td>D(t)</td><td>0.5 + U(t)</td><td>Hệ số nhân nhu cầu trong khoảng [0.5, 1.5]</td></tr>
+<tr><td>R(t)</td><td>clamp(250%/ROI, 0.5, 2.0)</td><td>Hệ số nhân ROI được liên kết với hiệu suất</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">8.2 Lớp tư vấn Economic Oracle — AI</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Chức năng</th><th>Phạm vi</th><th>Đầu ra</th></tr></thead>
+<tbody>
+<tr><td>Màn hình</td><td>Sức khỏe phát thải, Hoạt động MICE, Độ sâu thanh khoản, Tập trung bể thanh khoản, Lỗi ví</td><td>Bảng điều khiển công khai liên tục</td></tr>
+<tr><td>Khuyến nghị</td><td>Các tùy chọn điều chỉnh A/B/C có giới hạn khi phát hiện sự lệch lạc</td><td>Bộ tài liệu đề xuất quản trị có cấu trúc cho việc xem xét DAO</td></tr>
+<tr><td>Báo cáo</td><td>Bản tóm tắt hàng tuần, chỉ số hàng tháng và cảnh báo sự cố</td><td>Báo cáo công khai cho cộng đồng</td></tr>
+<tr><td>Không bao giờ thực thi</td><td>Không có hành động nào từ Bộ Tài chính, thay đổi thông số hoặc phát hành</td><td>Tất cả các giao dịch vẫn yêu cầu phiếu bầu DAO → khóa thời gian → bản ghi kiểm toán trên chuỗi</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">8.3 Lộ trình Layer 2</h3>
+<ul class="dot-list">
+<li>MIC là đồng tiền gốc được sử dụng cho phí giao dịch, thanh toán và chuyển giao giá trị trên Mission Network Layer 2.</li>
+<li>Giao dịch có độ trễ thấp và phí thấp được tối ưu hóa cho người tạo nội dung, dành cho các giao dịch thanh toán nhỏ với khối lượng lớn.</li>
+<li>Phát hành và xác minh bản gốc cho các chứng chỉ Builder, Maker, Luminary và MFP-NFT.</li>
+<li>Giấy phép và phân phối phần thưởng cho nút thuật toán tích hợp MICE hoạt động trực tiếp trên Layer 2.</li>
+<li>Đường dẫn nâng cấp được quản lý bởi DAO, đảm bảo duy trì các quyền hiến pháp từ Lớp 1.</li>
+</ul>
+</div>
+<div class="section" id="s9">
+<div class="section-num">09</div>
+<h2 class="section-title">Quản trị — <span class="g-purple">Mission DAO</span></h2>
+<p class="lead"><em>"Hệ sinh thái không thuộc về một công ty. Nó thuộc về mọi người đã kiếm được vị trí của mình thông qua việc học tập, làm việc, đóng góp và cam kết — được mã hóa trong giao thức."</em></p>
+<h3 class="sub-title">9.1. Kiến trúc quản trị — Ba cấp độ</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Cấp độ quản trị</th><th>Ai tham gia?</th><th>Phạm vi</th><th>Ngưỡng / Timelock</th></tr></thead>
+<tbody>
+<tr><td>Lớp Hiến pháp</td><td>Người nắm giữ MFP-NFT đang hoạt động có MIC được staking</td><td>Các thông số khung như hệ số Hindex, dải tần MICE và tỷ lệ phần trăm của nhóm</td><td>66% đa số tuyệt đối · 30% số phiếu tối thiểu · 72 giờ khóa thời gian</td></tr>
+<tr><td>Sản phẩm &amp; Lớp chiến lược</td><td>Người nắm giữ Maker và Luminary đang hoạt động; người nắm giữ MFP-NFT có thể tham gia</td><td>Lộ trình sản phẩm, tính năng mới, chứng nhận trung tâm, thông số sự kiện Mission Social, ngưỡng KPI</td><td>Đa số đơn giản · 20% số lượng tối thiểu · Khóa thời gian 48 giờ</td></tr>
+<tr><td>Lớp Cộng đồng</td><td>Tất cả các chủ sở hữu đang hoạt động của Builder, Maker và Luminary có MIC được staking</td><td>Quyết định về trung tâm địa phương, phân bổ tài nguyên cho sự kiện, tài trợ cho các sáng kiến, ý kiến tư vấn về đề xuất sản phẩm</td><td>Đa số đơn giản · 15% số lượng tối thiểu · Khóa thời gian 24 giờ</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">9.2 Những điều có thể và không thể thay đổi</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tham số</th><th>Trạng thái</th><th>Được quản lý bởi</th></tr></thead>
+<tbody>
+<tr><td>Số lượng tối đa MIC</td><td>Không thể thay đổi</td><td>Không thể thay đổi bởi bất kỳ cuộc bỏ phiếu, đội ngũ hoặc vốn nào</td></tr>
+<tr><td>Tỷ lệ phân bổ khai thác</td><td>Không thể thay đổi</td><td>Không thể bị pha loãng bởi quản trị</td></tr>
+<tr><td>MFP-NFT tổng giới hạn</td><td>Không thể thay đổi</td><td>Không thể mở rộng để ưu tiên các thành viên mới</td></tr>
+<tr><td>Tên cấp độ Community NFT và quy tắc "được cấp chứ không phải mua"</td><td>Nguyên tắc bất biến</td><td>Thông tin xác thực không thể được mua trực tiếp từ giao thức</td></tr>
+<tr><td>Hindex Hệ số α và giới hạn thanh khoản</td><td>Khung</td><td>MFP-NFT đa số tuyệt đối cộng với khóa thời gian</td></tr>
+<tr><td>Các mức giá và thời hạn giấy phép của MICE</td><td>Khung</td><td>MFP-NFT đa số tuyệt đối</td></tr>
+<tr><td>Tỷ lệ phân phối bể bơi</td><td>Khung</td><td>MFP-NFT đa số tuyệt đối</td></tr>
+<tr><td>Community NFT KPI ngưỡng và triển khai Kho bạc</td><td>Sản phẩm</td><td>Maker/Luminary cộng với MFP-NFT bỏ phiếu chung</td></tr>
+<tr><td>Thông số khởi động Mission Network Layer 2</td><td>Hiến pháp</td><td>Ngưỡng quản trị cao nhất trong hệ sinh thái</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">9.3 Quy trình quản trị</h3>
+<ul class="dot-list">
+<li>AI Economic Oracle phát hiện sự trôi dạt hoặc cơ hội và tạo ra các gói đề xuất có giới hạn.</li>
+<li>Ủy ban Hoạt động xem xét tính chính xác và xác nhận tuân thủ các giới hạn hiến pháp.</li>
+<li>Dự thảo được công bố để lấy ý kiến công chúng trước khi cuộc bỏ phiếu chính thức bắt đầu.</li>
+<li>Việc bỏ phiếu diễn ra theo các quy định về thời gian và số lượng thành viên cần thiết theo từng cấp độ.</li>
+<li>Timelock bắt đầu sau khi đóng cửa, sau đó các hợp đồng quản trị được thực thi trên chuỗi khối với đầy đủ nhật ký kiểm toán.</li>
+<li>Báo cáo giám sát công khai được công bố sau khi thực hiện.</li>
+</ul>
+<h3 class="sub-title">9.4 Lộ trình Phi tập trung hóa</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Giai đoạn</th><th>Trạng thái DAO</th><th>Cơ quan Quản lý Cộng đồng</th></tr></thead>
+<tbody>
+<tr><td>Giai đoạn I</td><td>Quản trị sáng lập</td><td>Các chủ sở hữu MFP-NFT đã được kích hoạt; các đề xuất cộng đồng đầu tiên đã được chấp nhận; khung Builder KPI đã được công bố</td></tr>
+<tr><td>Giai đoạn II</td><td>Kích hoạt cộng đồng</td><td>Các chủ sở hữu Builder, Maker và Luminary tham gia vào quá trình quản trị; cuộc bỏ phiếu đầu tiên về các thông số khung</td></tr>
+<tr><td>Giai đoạn III</td><td>Toàn bộ DAO</td><td>Đội ngũ sáng lập trở thành một trong nhiều tiếng nói; tất cả các cấp quản trị đều hoạt động</td></tr>
+<tr><td>Giai đoạn IV</td><td>Tự chủ hoàn toàn</td><td>Không có thành viên nào trong đội ngũ sáng lập có quyền hạn đặc biệt ngoài các bằng cấp đã đạt được và số MIC đã được đặt cọc</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="s10">
+<div class="section-num">10</div>
+<h2 class="section-title">Lộ trình &amp; <span class="g-gold">Chiến lược tiếp cận thị trường</span></h2>
+<p class="lead">Lộ trình của Mission Chain được xây dựng dựa trên tiến trình đã được xác thực, chứ không phải mở rộng nhanh chóng. Mỗi giai đoạn sẽ mở khóa giai đoạn tiếp theo sau khi chứng minh được tính ổn định, sự chấp nhận và sức khỏe kinh tế.</p>
+<div class="timeline" style="margin-top:28px">
+<div class="tl-item">
+<div class="tl-dot"></div>
+<div class="tl-phase">Giai đoạn I · Quý 1–Quý 2 năm 2026</div>
+<div class="tl-title">Nền tảng &amp; Hình thành vốn</div>
+<div class="tl-body"><ul class="dot-list"><li>Triển khai MIC trên BSC, động cơ khai thác Hindex, hợp đồng MICE, Community NFT, MFP-NFT và các rào cản bảo vệ hiến pháp DAO.</li><li>Ra mắt Mission Learn MVP, Mission Work alpha và phiên bản khởi đầu của Mission Arts.</li><li>Kích hoạt ba Mission Hub tại Châu Phi, Đông Nam Á và Mỹ Latinh.</li><li>Mở SEED và PRE-SALE để hình thành vốn cùng thanh khoản DEX ban đầu.</li></ul></div>
+</div>
+<div class="tl-item">
+<div class="tl-dot" style="border-color:var(--blue2)"><div style="width:8px;height:8px;background:var(--blue2);border-radius:50%"></div></div>
+<div class="tl-phase" style="color:var(--blue2)">Giai đoạn II · Quý 3–Quý 4 năm 2026</div>
+<div class="tl-title">Kích hoạt hệ sinh thái</div>
+<div class="tl-body"><ul class="dot-list"><li>Mở rộng thư viện Mission Learn và kích hoạt hoàn toàn Builder, Maker và Luminary NFTs với xác minh KPI.</li><li>Mở rộng Mission Work lên 500 nghệ sĩ đã được xác minh và 2.000+ công việc mỗi tháng.</li><li>Phát hành phiên bản beta Mission Social, mở rộng lên tám Mission Hub và mở rộng MICE lên 5.000 giấy phép hoạt động.</li><li>Thực hiện cuộc bỏ phiếu đầu tiên cho cấp độ Sản phẩm (Product-tier) và cấp độ Khung (Framework-tier) của DAO.</li></ul></div>
+</div>
+<div class="tl-item">
+<div class="tl-dot" style="border-color:var(--gold)"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%"></div></div>
+<div class="tl-phase" style="color:var(--gold)">Giai đoạn III · Quý 1–Quý 2 năm 2027</div>
+<div class="tl-title">Tăng trưởng &amp; Lãnh đạo thị trường</div>
+<div class="tl-body"><ul class="dot-list"><li>Phát hành Mission Social trên toàn cầu và tổ chức ba lễ hội quốc tế hàng đầu.</li><li>Phát triển lên 15 Mission Hub và hơn 5.000 nhà sáng tạo đã được xác minh và hoạt động.</li><li>Chuẩn bị các mốc quan trọng của mạng thử nghiệm Layer 2 và củng cố các mối quan hệ đối tác chiến lược.</li><li>Xác lập doanh thu do nền tảng tạo ra trở thành phần lớn hơn trong thu nhập của hệ sinh thái.</li></ul></div>
+</div>
+<div class="tl-item">
+<div class="tl-dot" style="border-color:var(--green)"><div style="width:8px;height:8px;background:var(--green);border-radius:50%"></div></div>
+<div class="tl-phase" style="color:var(--green)">Giai đoạn IV · Năm 2+</div>
+<div class="tl-title">Sự trưởng thành &amp; Lãnh đạo toàn cầu</div>
+<div class="tl-body"><ul class="dot-list"><li>Phát hành Mission Network Layer 2 với MIC làm đồng tiền gốc.</li><li>Đưa quyền sở hữu âm nhạc, phim IP và tài sản sáng tạo lên chuỗi khối.</li><li>Mở rộng khả năng tương tác chuỗi chéo và các Mission Hub được quản lý bởi DAO trên năm châu lục.</li><li>Hoàn tất quá trình chuyển giao quyền quản trị để đội ngũ sáng lập không còn nắm giữ bất kỳ quyền hạn đặc biệt nào.</li></ul></div>
+</div>
+</div>
+<h3 class="sub-title">10.2 Triết lý tiếp cận thị trường</h3>
+<div class="grid3">
+<div class="card card-p"><h4 class="mini-title">Cộng đồng trước lợi nhuận</h4><p>Tuyển dụng Hub Leaders, đối tác nhà thờ và các nhà sáng tạo đáng tin cậy trước khi ra mắt công khai rộng rãi.</p></div>
+<div class="card card-b"><h4 class="mini-title">Giáo dục trước quảng bá</h4><p>Mỗi kênh giải thích Mission Chain là gì, nó giải quyết vấn đề gì và tại sao MIC là một loại tiền tệ trong hệ sinh thái.</p></div>
+<div class="card card-g"><h4 class="mini-title">Đóng góp trước khi đầu cơ</h4><p>Giấy phép MICE và phần thưởng MIC được xem là sự công nhận cho sự tham gia tích cực — chứ không phải là sản phẩm đầu tư.</p></div>
+<div class="card card-green"><h4 class="mini-title">Địa phương trước toàn cầu</h4><p>Việc thâm nhập thị trường bắt đầu thông qua các Hub Leader đáng tin cậy trước khi triển khai các chiến dịch số diện rộng.</p></div>
+<div class="card card-teal"><h4 class="mini-title">Chứng minh trước khi mở rộng</h4><p>Mỗi giai đoạn chỉ được mở rộng sau khi các KPI của giai đoạn trước đó đã được xác minh trên chuỗi.</p></div>
+</div>
+<h3 class="sub-title">10.3 Năm Kênh Chính</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Kênh</th><th>Vai trò chính</th><th>Nội dung chính</th></tr></thead>
+<tbody>
+<tr><td>Twitter / X</td><td>Tiếng nói của hệ sinh thái thời gian thực và uy tín của nhà sáng lập</td><td>Dữ liệu Hindex, bài luận của nhà sáng lập, điểm nhấn về nhà sáng tạo và giáo dục hệ sinh thái</td></tr>
+<tr><td>Telegram</td><td>Phối hợp cộng đồng và hỏi đáp trực tiếp</td><td>Kênh thông báo, nhóm cộng đồng, nhóm điều phối Hub Leader, nhóm vận hành MICE</td></tr>
+<tr><td>YouTube</td><td>Giáo dục dài hạn và kể chuyện của người sáng tạo</td><td>Mission Chain Explained, phim tài liệu về nhà sáng tạo, bản xem trước khóa học và điểm nhấn lễ hội</td></tr>
+<tr><td>Podcast</td><td>Kênh tin cậy chính</td><td>Câu chuyện nhà sáng tạo, niềm tin và công nghệ, các phân tích sâu về Creator Mission Economy, cùng những cuộc trò chuyện với Hub Leader</td></tr>
+<tr><td>Hội nghị &amp; Sự kiện trực tiếp</td><td>Tuyển hub, đối thoại với nhà đầu tư và củng cố uy tín</td><td>Hội nghị lãnh đạo Cơ Đốc, hội nghị Web3, sự kiện EdTech, lễ hội khu vực và workshop tại nhà thờ</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="s11">
+<div class="section-num">11</div>
+<h2 class="section-title">Rủi ro &amp; <span class="g-purple">Giảm thiểu</span></h2>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Loại rủi ro</th><th>Mô tả</th><th>Chiến lược giảm thiểu</th></tr></thead>
+<tbody>
+<tr><td>Lạm phát tiền tệ</td><td>Phát thải MIC không được kiểm soát làm suy giảm giá trị hệ sinh thái</td><td>Hard cap 7B bất biến; 85% phân phối qua khai thác tiến trình; Hindex bị ràng buộc bởi suy giảm theo thời gian và giới hạn thanh khoản; không có phát hành tùy ý</td></tr>
+<tr><td>Động lực đầu cơ</td><td>Người tham gia thu thập MICE hoặc NFT để trích xuất thay vì đóng góp</td><td>MICE vẫn là giấy phép truy cập; Community NFTs yêu cầu xác minh lại KPI; MFP-NFTs có các điều kiện khóa, quy tắc bán hàng và yêu cầu staking</td></tr>
+<tr><td>Chiếm đoạt quyền quản trị</td><td>Sự tập trung vốn chi phối các quyết định của DAO</td><td>Lớp hiến pháp được cài đặt cố định; trọng số bỏ phiếu tỷ lệ thuận với số MIC đã đặt cọc, không phụ thuộc vào số lượng chứng chỉ; các khóa thời gian ngăn chặn hành động nhanh chóng</td></tr>
+<tr><td>Lạm phát bằng cấp</td><td>Các ngưỡng KPI trở nên quá dễ dàng và làm suy giảm giá trị của chứng chỉ</td><td>Quản lý cấp độ sản phẩm điều chỉnh ngưỡng; xác minh lại hàng năm; yêu cầu về lịch sử công việc và đánh giá khách quan</td></tr>
+<tr><td>Tính thụ động của MFP-NFT</td><td>Các nhà quản lý hiến pháp trở nên không hoạt động</td><td>Không có cổ phần nghĩa là không có quyền biểu quyết và không có phần trong quỹ; trạng thái kế thừa có thể tạm ngừng các quyền kinh tế cho đến khi khôi phục quản trị</td></tr>
+<tr><td>Rủi ro thanh khoản</td><td>Các cú sốc thị trường ảnh hưởng đến quá trình xác định giá của MIC và việc áp dụng MICE</td><td>Yếu tố thanh khoản giúp giảm phát thải trong thị trường mỏng; nguồn thu MICE hỗ trợ thanh khoản DEX; kho bạc DAO đóng vai trò quỹ dự phòng</td></tr>
+<tr><td>Rủi ro Smart Contract</td><td>Lỗ hổng bảo mật làm suy yếu tính toàn vẹn của giao thức</td><td>Kiến trúc mô-đun, kích hoạt theo giai đoạn, kiểm toán bắt buộc, giám sát oracle, không có đường dẫn nâng cấp cho các thông số hiến pháp</td></tr>
+<tr><td>Rủi ro pháp lý</td><td>Sự thay đổi trong quy định ảnh hưởng đến việc phân phối token hoặc hoạt động của chúng</td><td>Thiết kế token chỉ dành cho mục đích sử dụng, khung cấp phép truy cập cho MICE, khung xác thực cho NFTs và đánh giá tuân thủ liên tục</td></tr>
+<tr><td>Rủi ro thực thi Layer 2</td><td>Mission Network Layer 2 không thể khởi động đúng lịch trình</td><td>Layer 2 là một bản nâng cấp, không phải là điều kiện tiên quyết; hệ sinh thái có thể hoạt động trên BSC vô thời hạn; việc triển khai yêu cầu sự phê duyệt của DAO</td></tr>
+<tr><td>Rủi ro chấp nhận thị trường</td><td>Hoạt động sáng tạo trên thị trường thực tế không đủ</td><td>Lộ trình ưu tiên hạ tầng, mạng lưới nhà thờ và Hub Leader, triển khai vốn theo giai đoạn, và mở rộng có điều kiện KPI</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="s12">
+<div class="section-num">12</div>
+<h2 class="section-title">Đội Ngũ <span class="g-full">Sáng Lập và Điều Hành</span></h2>
+<p class="lead">Mission Chain được khởi xướng bởi một đội ngũ sáng lập đa ngành, với nhiệm vụ rõ ràng: xây dựng nền tảng, thiết lập hạ tầng, và sau đó chuyển giao quyền quản lý cho cộng đồng một cách có hệ thống và minh bạch.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tên</th><th>Vai trò</th><th>Tập trung &amp; Đóng góp</th></tr></thead>
+<tbody>
+<tr><td>David Trương Chính</td><td>Nhà sáng lập có tầm nhìn xa và người đóng góp chính trong giai đoạn đầu</td><td>Lãnh đạo dựa trên niềm tin, tầm nhìn sáng tạo, triết lý lấy con người làm trung tâm và kiến trúc hệ sinh thái nền tảng</td></tr>
+<tr><td>James Lee Harstad</td><td>Đồng sáng lập &amp; CEO</td><td>Sự nhất quán chiến lược, phối hợp toàn cầu, lãnh đạo đặt tính liêm chính lên hàng đầu và quản lý khung khổ quản trị</td></tr>
+<tr><td>John Clement</td><td>Đồng sáng lập &amp; CEO Africa</td><td>Chương trình giảng dạy Mission Learn, phát triển lãnh đạo, kinh nghiệm trong lĩnh vực ngân hàng và công nghệ, và chiến lược Trung tâm Châu Phi</td></tr>
+<tr><td>Nirmal Mukherjee</td><td>Giám đốc Công nghệ (CTO)</td><td>Kiến trúc ứng dụng lõi, sự xuất sắc trong kỹ thuật, bảo mật hợp đồng thông minh và triển khai Hindex</td></tr>
+<tr><td>Mr. Hector Ardon</td><td>Trưởng bộ phận Công nghệ &amp; Phát triển</td><td>Kiến trúc Web3, lãnh đạo phát triển toàn cầu, thiết kế hợp đồng MICE và thông số kỹ thuật kỹ thuật Community NFT</td></tr>
+<tr><td>Aniekan Inemesit Essien</td><td>Giám đốc Truyền thông Xã hội (Toàn cầu)</td><td>Các chiến dịch kể chuyện để thúc đẩy việc áp dụng, phát triển cộng đồng hệ sinh thái và chiến lược nội dung cho Creator Story</td></tr>
+<tr><td>Mr. Thomas L.</td><td>Cố vấn đặc biệt — Kiến trúc hệ thống</td><td>Cấu trúc tổ chức, mô hình hoạt động và thiết kế hệ thống kinh tế - xã hội</td></tr>
+<tr><td>Melanie Phạm</td><td>Trưởng phòng Quan hệ Quốc tế &amp; BD</td><td>Các mối quan hệ đối tác toàn cầu, hợp tác xuyên biên giới và quan hệ đối tác chiến lược với nhà đầu tư</td></tr>
+<tr><td>Clement Otu</td><td>CMO — Châu Phi</td><td>Tiếp thị khu vực, tương tác cộng đồng và tuyển dụng Hub Leader tại khu vực châu Phi hạ Sahara</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout green"><p><strong>Cam kết Quản lý:</strong> Mỗi thành viên sáng lập nhận được MFP-NFT thông qua đóng góp sáng lập và phải tuân thủ các quy tắc hiến pháp, yêu cầu staking, thời gian khóa và hạn chế bán hàng giống như mọi chủ sở hữu MFP-NFT khác.</p></div>
+</div>
+<div class="section" id="s13">
+<div class="section-num">13</div>
+<h2 class="section-title">Kết luận — <span class="g-gold">Xây dựng điều gì đó bền vững</span></h2>
+<p class="lead"><em>"Mission Chain không phải là một đích đến. Đó là một lời cam kết — một sự cam kết sống động đối với niềm tin rằng công nghệ có thể và phải phục vụ những khát vọng cao cả nhất của tinh thần con người."</em></p>
+<p>Chúng ta đang sống trong một thời điểm hội tụ đặc biệt. Công nghệ blockchain, trí tuệ nhân tạo và quản trị phi tập trung nay đã trở nên dễ dàng tiếp cận với bất kỳ ai sở hữu một chiếc điện thoại thông minh. Các cộng đồng lâu nay bị loại trừ khỏi những lợi ích của nền kinh tế số nay có cơ hội tham gia vào nền kinh tế toàn cầu với những điều kiện mà họ chưa từng có trước đây.</p>
+<p>Câu hỏi không phải là liệu công nghệ có biến đổi những cộng đồng này hay không. Nó đã đang diễn ra. Câu hỏi là liệu sự biến đổi đó có mang lại lợi ích cho họ — hay chỉ khai thác họ. Mission Chain là câu trả lời của chúng tôi cho câu hỏi đó.</p>
+<div class="callout"><p>Đây là Creator Mission Economy. Không phải là lời hứa về lợi nhuận. Một kiến trúc vì sự tôn trọng.</p></div>
+<p style="text-align:center;font-family:var(--font-d);font-weight:700;color:var(--white);margin-top:20px">"Một thành phố trên đồi không thể bị che khuất." — Ma-thi-ơ 5:14<br/>Builder. Maker. Luminary.<br/>Tham gia Mission Chain. Xây dựng điều gì đó bền vững.</p>
+<h3 class="sub-title">Kênh chính thức</h3>
+<div class="social-grid">
+<a class="social-link" href="https://missionchain.io" target="_blank"><span class="social-icon">🌐</span><span>missionchain.io</span></a>
+<a class="social-link" href="#"><span class="social-icon">🎙️</span><span>Podcast</span></a>
+<a class="social-link" href="https://www.youtube.com/@MissionChainChannel" target="_blank"><span class="social-icon">▶️</span><span>YouTube</span></a>
+<a class="social-link" href="https://x.com/chain_mission" target="_blank"><span class="social-icon">𝕏</span><span>Twitter / X</span></a>
+<a class="social-link" href="https://t.me/missionchainofficial" target="_blank"><span class="social-icon">✈️</span><span>Kênh Telegram</span></a>
+<a class="social-link" href="https://t.me/missionchainglobalcommunity" target="_blank"><span class="social-icon">👥</span><span>Cộng đồng Telegram</span></a>
+</div>
+</div>
+<!-- ════════════════════════════
+     APPENDICES
+════════════════════════════ -->
+<!-- APPENDIX A -->
+<div class="section" id="appA">
+<div class="app-header">
+<div class="app-header-num">APPENDIX A</div>
+<h2>SEED Round / Private Sale</h2>
+</div>
+<div class="callout gold">
+<p><strong>Cơ sở Hướng dẫn Chiến lược và Quy trình:</strong> Phụ lục A định nghĩa khung tham gia đầy đủ của SEED, bao gồm phân bổ, thiết kế gói, logic sở hữu và mục đích sử dụng của quỹ SEED ròng.</p>
+</div>
+<h3 class="sub-title">A.1 SEED Round — Mục đích &amp; Định vị</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Khía cạnh</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td>Loại tròn</td><td>Riêng tư / Chiến lược</td></tr>
+<tr><td>Mục tiêu</td><td>Xây dựng nền tảng giao thức, cung cấp thanh khoản ban đầu cho DEX và đảm bảo sự đồng bộ chiến lược lâu dài</td></tr>
+<tr><td>Đối tượng tham gia</td><td>Nhà đầu tư chiến lược, đối tác tin cậy, quỹ và cá nhân có chung mục tiêu</td></tr>
+<tr><td>Truy cập</td><td>Chỉ dành cho khách mời — không cho phép truy cập công khai</td></tr>
+<tr><td>Tính chất bán hàng</td><td>Tham gia dựa trên gói (xem Mục A.2)</td></tr>
+<tr><td>Đối tác liên kết / Giới thiệu</td><td>Không áp dụng — được loại trừ rõ ràng khỏi tất cả các chương trình khuyến khích</td></tr>
+<tr><td>MICE Điều kiện tham gia</td><td>Không áp dụng — Các token SEED bị loại trừ khỏi tất cả các chương trình khuyến khích khai thác MICE</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Mục tiêu chiến lược:</strong> SEED Round ưu tiên sự đồng thuận, tính minh bạch và cam kết lâu dài hơn là khối lượng vốn. Nhà đầu tư SEED trở thành Người quản lý sáng lập MFP-NFT — tầng quản trị hiến pháp của Mission DAO. Vai trò của họ không phải là vốn thụ động: đó là việc quản lý tích cực các thông số cơ bản của giao thức.</p>
+<div class="callout">
+<p><strong>Quy tắc Quản lý MFP-NFT:</strong> Các MFP-NFT nhận được thông qua việc tham gia SEED cấp quyền quản trị hiến pháp trong Mission DAO, vẫn có thể chuyển nhượng, và áp dụng voting cooldown 7 ngày sau mỗi lần chuyển nhượng, đồng thời vẫn chịu ràng buộc khóa 1 năm, sự đồng ý của DAO đối với các giao dịch bán vượt quá 50%, và yêu cầu staking MIC.</p>
+</div>
+<h3 class="sub-title">A.2 SEED Gói phân bổ và tham gia</h3>
+<div class="grid4">
+<div class="stat-box"><div class="stat-val g-gold">3.25%</div><div class="stat-lbl">Phân bổ nguồn cung</div></div>
+<div class="stat-box"><div class="stat-val g-purple">227.5M</div><div class="stat-lbl">MIC Đã phân bổ</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--green)">$0.0025</div><div class="stat-lbl">Giá cố định MIC</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--teal)">14,000</div><div class="stat-lbl">SEED MFP-NFT Nắp</div></div>
+</div>
+<h4 class="mini-title">A.2.1 Tóm tắt phân bổ</h4>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Mặt hàng</th><th>Giá trị</th></tr></thead>
+<tbody>
+<tr><td>Phân bổ (phần trăm nguồn cung)</td><td>3.25%</td></tr>
+<tr><td>Số lượng token</td><td class="mono">227.500.000 MIC</td></tr>
+<tr><td>Giá token</td><td>USD 0.0025 / MIC — cố định trên tất cả các gói mà không có ngoại lệ</td></tr>
+<tr><td>Mức tăng tối đa ngụ ý</td><td>~USD 568.750</td></tr>
+<tr><td>Nắp MFP-NFT (SEED)</td><td>tối đa 14.000 đơn vị — tổng hợp từ tất cả các gói SEED</td></tr>
+<tr><td>Xác minh giá</td><td>MIC Phân bổ = Đầu tư (USD) ÷ 0,0025</td></tr>
+</tbody>
+</table>
+</div>
+<h4 class="mini-title">A.2.2 Gói tham gia</h4>
+<p>Tất cả các đợt phân bổ đều được xác minh theo mức giá cố định là <strong>USD 0,0025</strong>. Công thức xác minh: <strong>MIC phân bổ = Khoản đầu tư ÷ 0,0025</strong>.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Gói</th><th>Đầu tư (USD)</th><th>MIC Phân bổ</th><th>MFP-NFT</th><th>Xác minh</th></tr></thead>
+<tbody>
+<tr><td>Gói 1 — Đăng ký sớm</td><td>$1,000</td><td class="mono">400.000 MIC</td><td>20</td><td>$1,000 ÷ $0.0025 = 400,000 ✓</td></tr>
+<tr><td>Gói 2 — Đối tác Sáng lập I</td><td>$2,500</td><td class="mono">1.000.000 MIC</td><td>60</td><td>$2,500 ÷ $0.0025 = 1,000,000 ✓</td></tr>
+<tr><td>Gói 3 — Đối tác Sáng lập II</td><td>$5,000</td><td class="mono">2.000.000 MIC</td><td>150</td><td>$5,000 ÷ $0.0025 = 2,000,000 ✓</td></tr>
+<tr><td>Gói 4 — Đối tác Sáng lập III</td><td>$10,000</td><td class="mono">4.000.000 MIC</td><td>350</td><td>$10,000 ÷ $0.0025 = 4,000,000 ✓</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout gold">
+<ul class="fancy-list" style="margin:0">
+<li>Giá của MIC được cố định ở mức $0.0025 cho tất cả các gói — không có các mức giảm giá và không có giá thỏa thuận.</li>
+<li>MFP-NFTs là các chứng chỉ quản trị và quản lý — không phải là cổ phần, quyền lợi lợi nhuận hoặc công cụ sinh lời đầu tư.</li>
+<li>Các sản phẩm MFP-NFT không được bán riêng lẻ mà phải đi kèm với gói tham gia.</li>
+<li>Gói 2 MIC được phân bổ = 1.000.000 MIC, sửa lỗi đánh máy trong phiên bản v1.2 trước đó là 2.000.000 MIC.</li>
+<li>Tổng số lượng Trần MFP-NFT của SEED: Tối đa 14.000 đơn vị trên tất cả các gói hàng kết hợp.</li>
+</ul>
+</div>
+<h3 class="sub-title">A.3 Lịch vesting</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tham số</th><th>Điều khoản</th></tr></thead>
+<tbody>
+<tr><td>Mở khóa tại TGE</td><td>Không — Quyền sở hữu cổ phiếu SEED được cấp dần theo ngày mua của từng cá nhân</td></tr>
+<tr><td>Bắt đầu vesting</td><td>Từ ngày mua hàng cá nhân — không liên kết với sự kiện TGE chung của toàn bộ giao thức</td></tr>
+<tr><td>Thời gian cliff</td><td>6 tháng kể từ ngày mua hàng</td></tr>
+<tr><td>Mở khóa ban đầu tại Cliff</td><td>10% của tổng số phân bổ MIC</td></tr>
+<tr><td>Mở khóa hằng tháng (sau cliff)</td><td>2.5% mỗi tháng — tuyến tính, liên tục</td></tr>
+<tr><td>Lịch trình mở khóa đầy đủ</td><td>khoảng 38 tháng kể từ ngày mua</td></tr>
+<tr><td>Bản chất vesting</td><td>Cuộn và tuyến tính — không có sự kiện mở khóa đồng bộ cho toàn bộ nhóm nhà đầu tư</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Thiết kế Vesting: Ý định thiết kế:</strong> Quyền sở hữu SEED bắt đầu từ ngày mua riêng lẻ của từng nhà đầu tư — không phải là một ngày chung cho toàn bộ giao thức TGE. Điều này loại bỏ các sự kiện giải phóng quyền sở hữu đồng loạt có thể gây ra sự sốc về nguồn cung và biến động giá.</p>
+</div>
+<p>Thời gian chờ 6 tháng đảm bảo tất cả nhà đầu tư SEED duy trì cam kết trong giai đoạn kích hoạt ban đầu quan trọng. Việc giải phóng 2,5% hàng tháng theo tỷ lệ tuyến tính sau đó tạo ra sự mở rộng nguồn cung dự đoán được, từ từ, phù hợp với các mốc phát triển của hệ sinh thái.</p>
+<h3 class="sub-title">A.4 Sử dụng quỹ SEED</h3>
+<p><strong>Mạng SEED Nâng mục tiêu:</strong> ~USD 425.000 sau khi trừ chi phí gây quỹ dự kiến. Tất cả các con số chỉ mang tính ước tính.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Thể loại</th><th>Mục đích</th><th>tỷ lệ phần trăm của số tiền thuần tăng thêm</th></tr></thead>
+<tbody>
+<tr><td>Kỹ thuật giao thức lõi</td><td>Hợp đồng Token, động cơ khai thác Hindex, hệ thống NFT (MFP-NFT + Community NFT), hợp đồng MICE và triển khai mạng chính BSC</td><td>35% (~$149,000)</td></tr>
+<tr><td>Kiểm toán an ninh &amp; Pháp lý</td><td>Kiểm toán hợp đồng thông minh của bên thứ ba cho tất cả các hợp đồng cốt lõi, cấu trúc pháp lý và đánh giá thẩm quyền</td><td>5% (~$21,250)</td></tr>
+<tr><td>Cung cấp thanh khoản ban đầu</td><td>Danh sách DEX Gieo hạt LP để thiết lập <span class="math">L<sub>ref</sub></span> đường cơ sở ở độ sâu có ý nghĩa</td><td>30% (~$127,500)</td></tr>
+<tr><td>Hoạt động &amp; Hạ tầng</td><td>Chi phí hoạt động của đội ngũ, công cụ, hạ tầng đám mây và môi trường phát triển</td><td>10% (~$42,500)</td></tr>
+<tr><td>SEED Bán hàng &amp; Quyên góp</td><td>Du lịch, các cuộc họp với nhà đầu tư, dịch vụ tư vấn, sự kiện, tài liệu hướng dẫn onboarding và hỗ trợ thẩm định</td><td>15% (~$63,750)</td></tr>
+<tr><td><strong>TOTAL</strong></td><td><strong>100% Tiền mặt ròng SEED</strong></td><td><strong>~USD 425.000</strong></td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout green">
+<p><strong>Ghi chú về thanh khoản:</strong> Phân bổ 30% cho thanh khoản DEX là một yếu tố khởi động quan trọng — không phải chi phí tiếp thị tùy ý. Thanh khoản ban đầu đủ sâu giúp khám phá giá tốt hơn, giảm slippage và hỗ trợ thị trường lành mạnh hơn trong 30 ngày đầu. Adaptive Emission Engine được điều khiển bởi <span class="math">E<sub>base</sub>(t)</span>, <span class="math">D(t)</span>, <span class="math">R(t)</span> và <span class="math">W(t)</span>; không còn hệ số thanh khoản riêng trong công thức phát thải.</p>
+</div>
+<div class="formula">
+<span class="math">Mục tiêu: quỹ DEX ban đầu 127.500 USD → hỗ trợ khám phá giá tốt hơn, giảm slippage và tăng độ sẵn sàng thị trường trong giai đoạn Warm-Up W(t).</span>
+</div>
+</div>
+<!-- APPENDIX B -->
+<div class="section" id="appB">
+<div class="app-header">
+<div class="app-header-num">APPENDIX B</div>
+<h2>PRE-SALE — Mở rộng Cộng đồng &amp; Nền tảng</h2>
+</div>
+<div class="callout warn">
+<p><strong>Lưu ý pháp lý:</strong> Các khoản thưởng giới thiệu và thưởng theo nhóm được nêu trong phụ lục này chỉ là các cơ chế kích hoạt thị trường và phân phối. Chúng không phải là thu nhập thụ động, chia sẻ lợi nhuận hoặc quyền lợi kinh tế liên tục. Tất cả các khoản thưởng đều có giới hạn, có thời hạn và sẽ bị vô hiệu hóa vĩnh viễn khi PRE-SALE đóng cửa.</p>
+</div>
+<h3 class="sub-title">B.1 Mục đích &amp; Vị trí</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Khía cạnh</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td>Loại tròn</td><td>Mở rộng cộng đồng</td></tr>
+<tr><td>Mục tiêu</td><td>Kích hoạt hệ sinh thái và hiệu ứng mạng ban đầu</td></tr>
+<tr><td>Đối tượng tham gia</td><td>Các thành viên đóng góp cho cộng đồng và những người tiên phong</td></tr>
+<tr><td>Truy cập</td><td>Các nền tảng và bệ phóng được phê duyệt</td></tr>
+<tr><td>Mua tối thiểu</td><td>USD 50 — và các bội số của USD 50</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>PRE-SALE so với SEED:</strong> Trong khi Chương trình SEED tập trung vào sự đồng bộ chiến lược và quản trị hiến pháp thông qua việc quản lý MFP-NFT, Chương trình PRE-SALE tập trung vào mở rộng cộng đồng và kích hoạt hiệu ứng mạng lưới. Các thành viên tham gia PRE-SALE có quyền truy cập vào các ưu đãi giới thiệu và hiệu suất nhóm có giới hạn thời gian, những ưu đãi này được loại trừ rõ ràng khỏi vòng SEED và sẽ bị vô hiệu hóa vĩnh viễn sau khi vòng PRE-SALE kết thúc.</p>
+</div>
+<h3 class="sub-title">B.2 Phân bổ &amp; Định giá</h3>
+<div class="grid4">
+<div class="stat-box"><div class="stat-val g-gold">4.50%</div><div class="stat-lbl">Phân bổ nguồn cung</div></div>
+<div class="stat-box"><div class="stat-val g-purple">315 triệu</div><div class="stat-lbl">MIC Đã phân bổ</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--green)">$0.005</div><div class="stat-lbl">Giá cố định MIC</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--teal)">$50</div><div class="stat-lbl">Mua tối thiểu</div></div>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Mặt hàng</th><th>Giá trị</th></tr></thead>
+<tbody>
+<tr><td>Phân bổ (% so với tổng nguồn cung)</td><td>4.50%</td></tr>
+<tr><td>Số lượng token</td><td class="mono">315.000.000 MIC</td></tr>
+<tr><td>Giá token</td><td>USD 0.005 / MIC — cố định</td></tr>
+<tr><td>Mua tối thiểu</td><td>USD 50 — các bội số của USD 50</td></tr>
+<tr><td>Mức tăng tối đa (ngụ ý)</td><td>~USD 1.575.000</td></tr>
+<tr><td>Xác minh giá</td><td>MIC Phân bổ = Đầu tư (USD) ÷ 0,005</td></tr>
+</tbody>
+</table>
+</div>
+<h4 class="mini-title">B.2.1 Tính linh hoạt trong phân bổ — SEED ↔ PRE-SALE</h4>
+<p>Phân bổ kết hợp SEED và PRE-SALE được giới hạn bởi một giới hạn chung. Phân bổ SEED chưa được đăng ký có thể được chuyển sang PRE-SALE, và ngược lại, tuân theo các giới hạn về công bố và cung cấp cố định.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Quy tắc</th><th>Giới hạn</th></tr></thead>
+<tbody>
+<tr><td>Kết hợp SEED + PRE-SALE Nắp</td><td>≤ 8,25% tổng nguồn cung (giới hạn trần cố định kết hợp)</td></tr>
+<tr><td>Tổng giới hạn phát hành trước</td><td>15% tổng nguồn cung — cố định và không thể thay đổi</td></tr>
+<tr><td>Thông báo điều chỉnh</td><td>Bắt buộc, minh bạch, được thông báo qua các kênh chính thức trước khi bất kỳ việc điều chỉnh phân bổ nào có hiệu lực</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">B.3 Lịch trình Vesting</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tham số</th><th>Điều khoản</th></tr></thead>
+<tbody>
+<tr><td>Mở khóa tại TGE</td><td>Không — Quyền sở hữu cổ phiếu PRE-SALE được cấp dần theo ngày mua của từng cá nhân</td></tr>
+<tr><td>Bắt đầu vesting</td><td>Tính từ ngày mua riêng lẻ — không liên quan đến một sự kiện TGE duy nhất trên toàn giao thức</td></tr>
+<tr><td>Thời gian cliff</td><td>6 tháng kể từ ngày mua hàng</td></tr>
+<tr><td>Mở khóa ban đầu tại Cliff</td><td>10% của tổng số phân bổ MIC</td></tr>
+<tr><td>Mở khóa hằng tháng (sau cliff)</td><td>2.5% mỗi tháng — tuyến tính, liên tục; tương ứng với việc phân phối quyền sở hữu cổ phần SEED để đảm bảo công bằng</td></tr>
+<tr><td>Lịch trình mở khóa đầy đủ</td><td>khoảng 38 tháng kể từ ngày mua</td></tr>
+<tr><td>Bản chất vesting</td><td>Cuộn và tuyến tính — không có sự kiện mở khóa đồng bộ cho khối lượng</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">B.4 Mission Ambassador Program (chỉ áp dụng cho PRE-SALE)</h3>
+<div class="callout gold"><p><strong>Giới hạn phạm vi:</strong> Mission Ambassador Program chỉ áp dụng trong giai đoạn PRE-SALE. Chương trình sẽ bị vô hiệu hóa vĩnh viễn khi PRE-SALE kết thúc. Không tồn tại cơ chế Mission Ambassador Program trong vòng SEED, giấy phép MICE hay bất kỳ thành phần nào khác của hệ sinh thái.</p></div>
+<p>Mission Chain tưởng thưởng cho những người mang thông điệp đi xa hơn, không phải vì chúng ta cần marketing, mà vì chúng ta tin rằng những người gần cộng đồng nhất nên được chia sẻ thành quả tăng trưởng ban đầu của hệ sinh thái. Phần thưởng minh bạch, có giới hạn, có thời hạn và được ghi nhận on-chain.</p>
+<h4 class="mini-title">B.4.1 Cấu trúc chương trình</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Blessing</th><th>Phần thưởng</th><th>Tiền tệ thanh toán</th></tr></thead><tbody><tr><td>Harvest Blessing — Mission Invite trực tiếp</td><td>10% giá trị mua được mời</td><td>USDT (on-chain, có thể xác minh)</td></tr><tr><td>Multiplication Blessing — Mission Invite cấp hai</td><td>5% giá trị mua được mời</td><td>USDT (on-chain, có thể xác minh)</td></tr></tbody></table></div>
+<h4 class="mini-title">B.4.2 Điều kiện và tư cách tham gia</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Điều kiện</th><th>Quy tắc</th></tr></thead><tbody><tr><td>Tiền tệ thanh toán</td><td>USDT — on-chain và có thể xác minh tại thời điểm thanh toán</td></tr><tr><td>Nguồn chi trả</td><td>Chỉ lấy từ doanh thu PRE-SALE — không dùng quỹ kho bạc, khai thác hay bất kỳ pool nào khác</td></tr><tr><td>Tư cách ambassador</td><td>Người giới thiệu phải là MICE operator đang hoạt động hoặc Community NFT holder trước khi nhận Harvest Blessing.</td></tr><tr><td>Độ sâu chương trình</td><td>Tối đa 2 bước — không thưởng cho chuỗi sâu hơn</td></tr><tr><td>Trần chương trình</td><td>≤ 15% tổng doanh thu PRE-SALE (~$225,000 khi huy động $1.5M)</td></tr><tr><td>Kết thúc chương trình</td><td>Bị vô hiệu hóa vĩnh viễn khi PRE-SALE kết thúc — không có ngoại lệ</td></tr></tbody></table></div>
+<h4 class="mini-title">B.4.3 Cơ chế bảo vệ tính toàn vẹn</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Bảo vệ</th><th>Mô tả</th></tr></thead><tbody><tr><td>Giới hạn Mission Invite theo wallet</td><td>Tối đa 50 Mission Invite trực tiếp cho mỗi wallet. Cơ chế này tưởng thưởng cho các community leader thực sự, không phải sybil farming quy mô công nghiệp.</td></tr><tr><td>Thời gian nắm giữ tối thiểu</td><td>Người mua được mời phải nắm giữ 30 ngày trước khi phần thưởng Mission Ambassador Program được giải ngân. Điều này ngăn việc mua-bán trong ngày để farm.</td></tr><tr><td>Xác minh danh tính wallet</td><td>Tư cách tham gia chương trình yêu cầu kiểm tra KYC/AML ở cấp wallet khi pháp luật yêu cầu. Mission Invite không KYC chỉ được giới hạn ở Harvest Blessing.</td></tr><tr><td>Khả năng truy vết on-chain</td><td>Mọi quan hệ Mission Invite đều được ghi lại on-chain tại thời điểm mua. Không thể gán ngược về sau.</td></tr></tbody></table></div>
+<h3 class="sub-title">B.5 Community Growth Award (chỉ áp dụng cho PRE-SALE)</h3>
+<p>Community Growth Award ghi nhận các Hub Leaders xây dựng cộng đồng địa phương lành mạnh thông qua cơ chế chênh lệch. Phần thưởng chỉ được chi trả trên khoảng chênh tăng trưởng, không tính trên khối lượng trùng lặp.</p>
+<h4 class="mini-title">B.5.1 Các mốc đủ điều kiện</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Khối lượng cộng đồng trực tiếp (USD)</th><th>Tỷ lệ phần thưởng</th><th>Phần thưởng Community NFT</th></tr></thead><tbody><tr><td>≥ $25,000</td><td>Khoản thưởng cố định một lần $1,000</td><td>—</td></tr><tr><td>≥ $50,000</td><td>4%</td><td>5 × Silver NFTs</td></tr><tr><td>≥ $100,000</td><td>5%</td><td>10 × Silver NFTs</td></tr><tr><td>≥ $150,000</td><td>6%</td><td>15 × Silver NFTs</td></tr><tr><td>≥ $200,000</td><td>7%</td><td>20 × Gold NFTs</td></tr><tr><td>≥ $250,000</td><td>8% (tối đa)</td><td>25 × Gold NFTs</td></tr></tbody></table></div>
+<h4 class="mini-title">B.5.2 Công thức tăng trưởng chênh lệch</h4>
+<div class="formula"><span class="math">GrowthAward<sub>i</sub> = MAX(0, Rate<sub>self</sub> − Rate<sub>subgroup,i</sub>) × Volume<sub>subgroup,i</sub></span><br/><span class="comment">Mỗi người tham gia chỉ đủ điều kiện cho một tỷ lệ phần thưởng dựa trên khối lượng cộng đồng trực tiếp. Nếu một nhóm con trực tiếp đủ điều kiện ở mức bằng hoặc cao hơn, sẽ không có phần thưởng chênh lệch nào được trả cho nhóm đó.</span></div>
+<h4 class="mini-title">B.5.3 Ví dụ minh họa</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Người tham gia</th><th>Khối lượng cộng đồng</th><th>Tỷ lệ áp dụng</th><th>Cách tính phần thưởng</th></tr></thead><tbody><tr><td>A (Hub Leader)</td><td>$100,000</td><td>5%</td><td>—</td></tr><tr><td>B (Nhóm con trực tiếp)</td><td>$55,000</td><td>4%</td><td>5% − 4% = 1% × $55,000 = $550 USDT</td></tr></tbody></table></div>
+<div class="callout"><p><strong>Kết quả ví dụ:</strong> A nhận <strong>$550 USDT</strong> Community Growth Award từ nhóm con của B. B nhận trọn 4% phần thưởng trên khối lượng cộng đồng của riêng mình. Không có khối lượng nào được thưởng hai lần.</p></div>
+<h4 class="mini-title">B.5.4 Điều kiện và cơ chế bảo vệ</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Quy tắc</th><th>Mô tả</th></tr></thead><tbody><tr><td>Phạm vi</td><td>Chỉ áp dụng cho nhóm con trực tiếp — không có chuỗi chênh lệch đa tầng</td></tr><tr><td>Tiền tệ thanh toán</td><td>USDT — on-chain, có thể xác minh</td></tr><tr><td>Tỷ lệ tối đa</td><td>8% khối lượng cộng đồng trực tiếp — hard cap</td></tr><tr><td>Khoản thưởng cố định (mốc $25K)</td><td>Một lần cho mỗi wallet, không chênh lệch, không cộng dồn</td></tr><tr><td>Tổng trần</td><td>≤ 8% tổng doanh thu PRE-SALE (~$120,000 khi huy động $1.5M)</td></tr><tr><td>Kết thúc</td><td>Bị vô hiệu hóa vĩnh viễn khi PRE-SALE kết thúc — không có ngoại lệ</td></tr></tbody></table></div>
+<div class="callout green"><p><strong>Tóm tắt PRE-SALE:</strong> PRE-SALE hỗ trợ tăng trưởng hệ sinh thái có kiểm soát thông qua Mission Ambassador Program, Community Growth Award, vesting kỷ luật, thực thi minh bạch và các cơ chế anti-sybil.</p></div>
+<div class="formula"><span class="math">Token Price: $0.005 / MIC · Minimum Purchase: $50 · Allocation: 315,000,000 MIC (4.5%)</span><br/><span class="comment">Tất cả cơ chế của Mission Ambassador Program và Community Growth Award sẽ bị vô hiệu hóa vĩnh viễn khi PRE-SALE kết thúc.</span></div>
+</div>
+<!-- APPENDIX C -->
+<div class="section" id="appC">
+<div class="app-header">
+<div class="app-header-num">APPENDIX C</div>
+<h2>Cấu trúc bán hàng MICE</h2>
+</div>
+<p>Mission Algorithm Node License — Khung chính sách tiếp cận và khuyến khích trong lĩnh vực khai thác mỏ</p>
+<div class="callout warn">
+<p><strong>Ghi chú tuân thủ:</strong> MICE (Mission Algorithm Node License) là giấy phép khai thác có thời hạn, không phải là token và không phải là công cụ đầu tư. Các khoản khuyến khích liên quan đến việc phân phối MICE được phân loại là chi phí kích hoạt thị trường và chi phí onboarding. Chúng không đại diện cho lợi nhuận của giao thức, lợi nhuận đầu tư hoặc phần thưởng định kỳ.</p>
+</div>
+<h3 class="sub-title">C.1 Mục đích và vai trò của MICE</h3>
+<p>MICE cấp cho chủ sở hữu quyền tham gia vào quá trình phân phối khai thác MIC trong một khoảng thời gian kích hoạt cố định. Đây là chìa khóa truy cập vào hệ sinh thái khai thác Mission Chain, không phải là công cụ tài chính hoặc sản phẩm đầu tư.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Khía cạnh</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td>Loại thiết bị</td><td>Giấy phép khai thác</td></tr>
+<tr><td>Chức năng chính</td><td>Quyền truy cập vào phân phối phần thưởng khai thác MIC</td></tr>
+<tr><td>Quyền đúc tiền</td><td>Không tạo mới MIC — chỉ truy cập lịch trình phát thải hiện có</td></tr>
+<tr><td>Tính chất đầu tư</td><td>Không phải là sản phẩm đầu tư</td></tr>
+<tr><td>Bảo đảm năng suất</td><td>Không có</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">C.2 Cung ứng &amp; Vòng đời</h3>
+<div class="grid3">
+<div class="stat-box"><div class="stat-val g-purple">100,000</div><div class="stat-lbl">Tổng MICE Giới hạn</div></div>
+<div class="stat-box"><div class="stat-val g-gold">360</div><div class="stat-lbl">Ngày kích hoạt</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--green)">DAO</div><div class="stat-lbl">Tái chế khi hết hạn</div></div>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tham số</th><th>Giá trị</th></tr></thead>
+<tbody>
+<tr><td>Số lượng cung cấp tối đa</td><td>100.000 MICE — giới hạn tối đa, không thể thay đổi</td></tr>
+<tr><td>Thời gian kích hoạt</td><td>360 ngày cho mỗi giấy phép kể từ ngày kích hoạt</td></tr>
+<tr><td>Hạn sử dụng</td><td>Tự động sau thời gian kích hoạt 360 ngày — không cần thao tác thủ công</td></tr>
+<tr><td>Tái chế</td><td>MICE đã hết hạn được thu hồi theo quy trình và được cấp lại thông qua phiếu bầu của DAO</td></tr>
+<tr><td>Tác động đến tổng lượng phát thải</td><td>Không — chỉ số đếm MICE đang hoạt động ảnh hưởng đến phân phối theo từng người tham gia</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Nguyên tắc cơ bản — Cách ly phát thải:</strong> Lượng cung cấp MICE đã phát hành không ảnh hưởng đến tổng lượng phát thải MIC. Toàn bộ 85% phân bổ khai thác (5.950.000.000 MIC) được phát hành đúng lịch trình bất kể có bao nhiêu giấy phép MICE đang hoạt động. Chỉ số lượng giấy phép MICE đang hoạt động vào một ngày cụ thể mới ảnh hưởng đến cách chia sẻ nguồn phát thải hàng ngày giữa các thành viên, chứ không phải tổng lượng phát thải.</p>
+</div>
+<h3 class="sub-title">C.3 Cơ chế định giá động</h3>
+<p>Mission Chain áp dụng các dải giá động (Dynamic Price Bands) được liên kết với giá trung bình theo thời gian (Time-Weighted Average Price) trong 7 ngày của thanh khoản trên chuỗi MIC/USDT. Điều này giúp ngăn chặn việc phát hành quá mức trong các giai đoạn thanh khoản thấp và hỗ trợ sự phát triển bền vững của mạng lưới. Các dải giá được quản lý bởi DAO và không thể bỏ qua.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Dải thanh khoản DEX MIC/USDT (TWAP 7 ngày)</th><th>MICE Giá (USD)</th><th>Mô tả ban nhạc</th></tr></thead>
+<tbody>
+<tr><td>&lt; $200,000</td><td>$100</td><td>Giai đoạn đầu</td></tr>
+<tr><td>$200,000 — &lt; $1,000,000</td><td>$200</td><td>Sự phát triển</td></tr>
+<tr><td>$1,000,000 — &lt; $5,000,000</td><td>$300</td><td>Mở rộng</td></tr>
+<tr><td>$5,000,000 — &lt; $15,000,000</td><td>$400</td><td>Quy mô</td></tr>
+<tr><td>≥ $15,000,000</td><td>$500</td><td>Sự trưởng thành</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout gold">
+<p><strong>Cấu trúc thanh toán:</strong> Mỗi giao dịch mua MICE được thanh toán như sau <strong>50% USDT + 50% MIC</strong>thành phần MIC được tính toán tự động tại thời điểm kích hoạt dựa trên TWAP trong 7 ngày. Cơ chế thanh toán kép này tạo ra áp lực mua tự nhiên đối với MIC đồng thời đảm bảo giao thức nhận được thanh khoản ổn định thông qua USDT.</p>
+</div>
+<h3 class="sub-title">C.4 Quy tắc tham gia khai thác</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Quy tắc</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td>Điều kiện tham gia</td><td>Chỉ áp dụng cho MICE đang hoạt động — các giấy phép đã hết hạn sẽ không nhận được phần thưởng khai thác</td></tr>
+<tr><td>Thời gian thưởng</td><td>Giới hạn trong khoảng thời gian kích hoạt 360 ngày — không thể gia hạn</td></tr>
+<tr><td>Tác động của khí thải</td><td>Không có thay đổi về tổng lượng phát thải MIC trên mỗi giấy phép hoạt động</td></tr>
+<tr><td>Khả năng kiểm toán</td><td>On-chain, hoàn toàn minh bạch — tất cả các bản ghi khai thác đều có thể xác minh được</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">C.5 MIC Phân phối khai thác (85% tổng nguồn cung)</h3>
+<p>Toàn bộ 85% phân bổ khai thác (5.950.000.000 MIC) được phân phối hàng ngày thông qua Hindex Algorithm qua bốn bể. Phân chia dưới đây quy định cách phân bổ tổng lượng phát hành hàng ngày <span class="math">E(t)</span> được phân bổ.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Mục tiêu phân bổ</th><th>Tỷ lệ phát thải hàng ngày E(t)</th></tr></thead>
+<tbody>
+<tr><td>Miners (MICE)</td><td class="hl">60%</td></tr>
+<tr><td>Staking</td><td class="hl">25%</td></tr>
+<tr><td>DAO Treasury</td><td class="hl">10%</td></tr>
+<tr><td>Community NFT Reward</td><td class="hl">5%</td></tr>
+<tr><td>Tổng cộng</td><td class="hl">100%</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">C.6 Công thức thưởng cho thợ đào</h3>
+<div class="formula">
+<span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.60 × E(t)</span><br/>
+<span class="comment">Tổng phần thưởng khai thác vẫn giữ nguyên · Lợi suất trên mỗi giấy phép giảm khi số lượng người tham gia tăng · Không có sự gia tăng lạm phát</span>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Biến</th><th>Ý nghĩa</th></tr></thead>
+<tbody>
+<tr><td>E(t)</td><td>Tổng lượng MIC phát thải vào ngày t — được quy định bởi Hindex Algorithm</td></tr>
+<tr><td>N<sub>t</sub></td><td>Tổng số giấy phép MICE đang hoạt động vào ngày t trên tất cả các bên tham gia</td></tr>
+<tr><td>M<sub>i</sub></td><td>Số giấy phép MICE đang hoạt động do người tham gia i nắm giữ vào ngày t</td></tr>
+<tr><td>R<sub>MICE,i</sub>(t)</td><td>Phần thưởng hàng ngày MIC cho người tham gia i vào ngày t</td></tr>
+<tr><td>0.60</td><td>Phần trăm phát thải hàng ngày của các thợ đào — được cố định ở mức 60%</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Giải thích công thức:</strong> Phần thưởng hàng ngày của mỗi người tham gia tỷ lệ thuận với tỷ lệ sở hữu của họ trong tổng số giấy phép MICE đang hoạt động vào ngày đó. Một người tham gia sở hữu 10 MICE khi có 1.000 giấy phép đang hoạt động sẽ nhận được 1% của 60% pool Miners. Bởi vì <span class="math">E(t)</span> thay đổi theo ngày theo Adaptive Emission Engine, phần thưởng hàng ngày không cố định và phản ánh cả tỷ lệ phần trăm tương đối của người tham gia và tỷ lệ phát hành hiện tại của giao thức.</p>
+</div>
+<h3 class="sub-title">C.7 Mission Ambassador Program (MICE sale)</h3>
+<p>Mission Chain tưởng thưởng cho những người mang thông điệp đi xa hơn, không phải vì chúng ta cần marketing, mà vì chúng ta tin rằng những người gần cộng đồng nhất nên được chia sẻ thành quả tăng trưởng ban đầu của hệ sinh thái. Phần thưởng minh bạch, có giới hạn, có thời hạn và được ghi nhận on-chain.</p>
+<h4 class="mini-title">C.7.1 Harvest Blessing &amp; Multiplication Blessing</h4>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Blessing</th><th>Phần thưởng</th><th>Tiền tệ</th></tr></thead><tbody><tr><td>Harvest Blessing — Mission Invite trực tiếp</td><td>10% giá trị bán</td><td>USDT (on-chain)</td></tr><tr><td>Multiplication Blessing — Mission Invite cấp hai</td><td>5% giá trị bán</td><td>USDT (on-chain)</td></tr></tbody></table></div>
+<div class="callout gold"><p><strong>Tư cách ambassador:</strong> Người giới thiệu phải là MICE operator đang hoạt động hoặc Community NFT holder trước khi nhận Harvest Blessing. Các quan hệ Mission Invite được ghi nhận on-chain tại thời điểm bán.</p></div>
+<h4 class="mini-title">C.7.2 Community Growth Award</h4>
+<p>Community Growth Award ghi nhận các Hub Leaders xây dựng cộng đồng địa phương lành mạnh. Chương trình dùng cùng cơ chế chênh lệch như PRE-SALE và chỉ chi trả trên khoảng tăng trưởng, không trả trên khối lượng trùng lặp.</p>
+<div class="wp-table-wrap"><table class="wp-table"><thead><tr><th>Khối lượng cộng đồng trực tiếp (USD)</th><th>Tỷ lệ phần thưởng</th><th>Phần thưởng Community NFT</th></tr></thead><tbody><tr><td>≥ $25,000</td><td>Khoản thưởng cố định một lần $1,000</td><td>—</td></tr><tr><td>≥ $50,000</td><td>4%</td><td>5 × Silver NFTs</td></tr><tr><td>≥ $100,000</td><td>5%</td><td>10 × Silver NFTs</td></tr><tr><td>≥ $150,000</td><td>6%</td><td>15 × Silver NFTs</td></tr><tr><td>≥ $200,000</td><td>7%</td><td>20 × Gold NFTs</td></tr><tr><td>≥ $250,000</td><td>8% (tối đa)</td><td>25 × Gold NFTs</td></tr></tbody></table></div>
+<h3 class="sub-title">C.8 Phân bổ doanh thu từ doanh số bán hàng của MICE</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Loại phân bổ</th><th>USDT Cổ phiếu</th></tr></thead>
+<tbody>
+<tr><td>DAO Kho bạc</td><td class="hl">50%</td></tr>
+<tr><td>Quỹ thanh khoản MIC</td><td class="hl">30%</td></tr>
+<tr><td>MIC Buy &amp; Burn (Tự động và tức thì)</td><td class="hl">20%</td></tr>
+<tr><td>Tổng cộng</td><td class="hl">100%</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout green">
+<p><strong>Community Growth Award — Giải thích về Giới hạn:</strong> Community Growth Award có giới hạn tối đa cứng là 8% tổng doanh thu từ việc bán MICE và chỉ được thanh toán theo cơ chế chênh lệch. Số tiền chi trả thực tế thường thấp hơn giới hạn tối đa vì không có khối lượng cộng đồng nào được thưởng hai lần.</p>
+</div>
+<h3 class="sub-title">C.9 Hàng rào an toàn &amp; Tuân thủ</h3>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Bảo vệ</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td>Lợi nhuận được đảm bảo</td><td>Không — MICE là giấy phép truy cập, không phải là công cụ sinh lời</td></tr>
+<tr><td>Hoàn tiền sau khi kích hoạt</td><td>Không được phép — việc kích hoạt là quyết định cuối cùng và không thể thay đổi</td></tr>
+<tr><td>Thao túng khí thải</td><td>Không được phép — lịch trình phát thải tổng thể là không thể thay đổi và được ghi trên chuỗi khối</td></tr>
+<tr><td>Khả năng kiểm toán</td><td>On-chain, hoàn toàn minh bạch — tất cả các giao dịch mua hàng và ghi nhận phần thưởng đều có thể kiểm tra được</td></tr>
+<tr><td>Quản trị</td><td>DAO được kiểm soát trong giới hạn của giao thức — dải giá và quy tắc tái chế</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Phụ lục C Tóm tắt:</strong> MICE thiết lập một lớp truy cập khai thác có kỷ luật, có thời hạn với giá cả động, cấu trúc thanh toán kép (50% USDT + 50% MIC) và phân phối phần thưởng cân bằng. Bằng cách áp dụng các dải giá linh hoạt, giới hạn phần thưởng cho đối tác, cơ chế mua và đốt ngay lập tức, và phân bổ doanh thu trên chuỗi minh bạch, Mission Chain củng cố tính hữu dụng của MIC và sự ổn định lâu dài của hệ sinh thái.</p>
+</div>
+<div class="formula">
+<span class="math">Số lượng tối đa: 100.000 MICE · Thời gian kích hoạt: 360 ngày · Phạm vi giá: $100-$500 (dựa trên thanh khoản)</span>
+</div>
+</div>
+<!-- APPENDIX D -->
+<div class="section" id="appD">
+<div class="app-header">
+<div class="app-header-num">APPENDIX D</div>
+<h2>Quy định kinh tế chính thức</h2>
+</div>
+<p>Hindex Algorithm · Mô hình phát thải · Phân phối phần thưởng · Các hằng số kinh tế</p>
+<div class="callout warn">
+<p><strong>Đối tượng mục tiêu:</strong> Kiểm toán viên giao thức, chuyên gia đánh giá kinh tế và kỹ sư triển khai. Phụ lục này tổng hợp tất cả các công thức cốt lõi quy định việc phát hành token, phân phối phần thưởng và các hằng số kinh tế. Độc giả có thể bỏ qua phụ lục này khi đọc lần đầu tiên tài liệu White Paper.</p>
+</div>
+<h3 class="sub-title">D.1 Mục đích &amp; Phạm vi</h3>
+<p>Phụ lục này cung cấp bản mô tả toán học chính thức về các cơ chế kinh tế của Mission Chain. Nó tổng hợp tất cả các công thức cơ bản điều chỉnh việc phát hành token, phân phối phần thưởng và các bất biến kinh tế, và đóng vai trò là tài liệu tham khảo chính thức cho các kiểm toán viên giao thức, chuyên gia đánh giá kỹ thuật và kỹ sư triển khai.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Phạm vi của Phụ lục này</th><th>Phạm vi bảo hiểm</th></tr></thead>
+<tbody>
+<tr><td>D.2</td><td>Các hằng số giao thức không thay đổi — được mã hóa cứng, không thể thay đổi</td></tr>
+<tr><td>D.3</td><td>Công thức phát thải hàng ngày — Hindex Algorithm và ba thành phần của nó</td></tr>
+<tr><td>D.4</td><td>Phân phối lượng phát thải hàng ngày — như thế nào <span class="math">E(t)</span> được chia thành bốn nhóm phân bổ</td></tr>
+<tr><td>D.5</td><td>Công thức tính thưởng MICE — Cách tính thưởng khai thác hàng ngày cho từng người tham gia</td></tr>
+<tr><td>D.6</td><td>Công thức thưởng Community NFT — Phân phối theo tỷ lệ cổ phần trong pool</td></tr>
+<tr><td>D.7</td><td>MFP-NFT Công thức thưởng — Phân phối cổ phần theo cấp độ Hiến pháp</td></tr>
+<tr><td>D.8</td><td>Bảo đảm kinh tế — các thông số không đổi được áp dụng ở cấp độ giao thức</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">D.2 Các hằng số kinh tế (không thể thay đổi ở cấp độ giao thức)</h3>
+<p>Các thông số sau đây được cài đặt cố định trong giao thức Mission Chain. Cơ quan quản lý không thể thay đổi các giá trị này trong bất kỳ trường hợp nào. Chúng là nền tảng của niềm tin tiền tệ.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Tham số</th><th>Biểu tượng</th><th>Giá trị</th></tr></thead>
+<tbody>
+<tr><td>Số lượng tối đa MIC</td><td class="mono"><span class="math">S<sub>max</sub></span></td><td>7.000.000.000 MIC — giới hạn tối đa, không thể thay đổi</td></tr>
+<tr><td>Phân bổ khai thác</td><td class="mono"><span class="math">S<sub>mining</sub></span></td><td><span class="math">85% × S<sub>max</sub> = 5.950.000.000 MIC</span></td></tr>
+<tr><td>Phân bổ trước khi phát hành</td><td class="mono"><span class="math">S<sub>pre</sub></span></td><td><span class="math">15% × S<sub>max</sub> = 1.050.000.000 MIC</span></td></tr>
+<tr><td>Tỷ lệ phát thải cơ bản</td><td class="mono"><span class="math">E₀</span></td><td>22,907,500 MIC / ngày</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Bảo đảm tính bất biến:</strong> Bốn hằng số này không thể bị vô hiệu hóa bởi bất kỳ hành động quản trị nào, phiếu bầu DAO hoặc bản cập nhật giao thức. <span class="math">S<sub>max</sub></span> đảm bảo rằng MIC duy trì tính giảm phát theo thời gian. <span class="math">E<sub>base</sub></span>kết hợp với các yếu tố suy giảm và thanh khoản của Hindex, đảm bảo rằng tổng lượng phát hành tích lũy không bao giờ vượt quá <span class="math">S<sub>mining</sub></span> bất kể mức độ tham gia.</p>
+</div>
+<h3 class="sub-title">D.3 Công thức phát hành hằng ngày (Adaptive Emission Engine)</h3>
+<p>Tổng lượng MIC được phát hành trong ngày <span class="math">t</span> được xác định bởi Adaptive Emission Engine. Công thức này kết hợp giữa suy giảm theo thời gian và cơ chế điều chỉnh phản hồi theo ROI, bảo đảm lượng phát hành luôn có giới hạn, thích ứng và có thể kiểm toán.</p>
+<div class="formula">
+<span class="math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span>
+</div>
+<h4 class="mini-title">D.3.1 Tốc độ phát hành cơ sở E_base(t)</h4>
+<div class="formula">
+<span class="math">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup></span><br/>
+<span class="comment">E₀ ≈ 22,907,500 MIC/ngày · T<sub>half</sub> = 180 ngày · Suy giảm theo hàm mũ bảo đảm đường cung mang tính giảm phát.</span>
+</div>
+<p>Tốc độ cơ sở áp dụng suy giảm theo hàm mũ, giữ vững hard cap <span class="math">S<sub>max</sub></span>.</p>
+
+<h4 class="mini-title">D.3.2 Biến động ngẫu nhiên D(t)</h4>
+<div class="formula">
+<span class="math">D(t) = 0.5 + U(t)</span> trong đó <span class="math">U(t) ∈ [0.5, 1.5]</span><br/>
+<span class="comment">Hệ số biến động hằng ngày đưa vào tính ngẫu nhiên thích ứng nhưng vẫn được giới hạn trong khoảng từ 50% đến 150% của mức phát hành cơ sở.</span>
+</div>
+
+<h4 class="mini-title">D.3.3 Hệ số phản hồi theo ROI R(t)</h4>
+<div class="formula">
+<span class="math">R(t) = clamp(250% / ROI(t), 0.5, 2.0)</span>
+</div>
+<p><span class="math">R(t)</span> là đổi mới cốt lõi của Adaptive Emission Engine. Nó điều chỉnh lượng phát hành hằng ngày một cách động dựa trên điều kiện ROI thực tế của hệ sinh thái, ngăn phát hành quá mức trong giai đoạn lợi suất thấp và mở rộng phần thưởng một cách linh hoạt trong giai đoạn lợi suất cao.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Biến số</th><th>Mô tả</th><th>Quản trị</th></tr></thead>
+<tbody>
+<tr><td><span class="math">ROI(t)</span></td><td>Tỷ suất hoàn vốn được tính từ các chỉ số lợi suất của hệ sinh thái và khả năng sinh lời của việc kích hoạt MICE</td><td>Dữ liệu từ oracle, on-chain</td></tr>
+<tr><td>250%</td><td>Ngưỡng ROI mục tiêu đại diện cho trạng thái cân bằng bền vững của hệ sinh thái</td><td>DAO thiết lập, trong giới hạn cho phép</td></tr>
+<tr><td><span class="math">R<sub>min</sub></span></td><td>Mức sàn hệ số tối thiểu (0.5) bảo đảm lượng phát hành cơ sở trong điều kiện ROI thấp</td><td>Giao thức quy định, bất biến</td></tr>
+<tr><td><span class="math">R<sub>max</sub></span></td><td>Mức trần hệ số tối đa (2.0) giới hạn biên độ khuếch đại trong giai đoạn ROI cao</td><td>Giao thức quy định, bất biến</td></tr>
+<tr><td><span class="math">clamp(x, a, b)</span></td><td>Trả về <span class="math">max(a, min(b, x))</span> để <span class="math">R(t)</span> luôn nằm trong giới hạn cho phép</td><td>Tất định, on-chain</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout gold">
+<p><strong>Vì sao phát hành phản hồi theo ROI quan trọng:</strong> Lịch phát hành tĩnh phân phối token theo một lịch cố định mà không phản ánh sức khỏe thực tế của hệ sinh thái. Ngược lại, hệ số ROI trong Adaptive Emission Engine gắn trực tiếp lượng phát hành với khả năng sinh lời thực của hệ sinh thái. Khi hệ sinh thái đạt ROI cao và tạo ra lợi nhuận mạnh, lượng phát hành sẽ cao hơn. Khi ROI thấp, lượng phát hành sẽ được kìm lại.</p>
+</div>
+</div>
+<h3 class="sub-title">D.4 Phân phối lượng phát thải hàng ngày E(t)</h3>
+<p>Tổng lượng phát thải hàng ngày <span class="math">E(t)</span> được phân phối qua bốn nhóm phân bổ. Các tỷ lệ phần trăm này được cố định ở cấp độ giao thức và không thể thay đổi bởi cơ chế quản trị.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Bể phân bổ</th><th>Tỷ lệ phần trăm của E(t)</th><th>Tham chiếu công thức</th><th>Người nhận</th></tr></thead>
+<tbody>
+<tr><td>Miners (MICE)</td><td class="hl">60%</td><td>Mục D.5</td><td>Người sở hữu giấy phép MICE</td></tr>
+<tr><td>Staking</td><td class="hl">25%</td><td>Mục D.6</td><td>Tất cả người nắm giữ MIC</td></tr>
+<tr><td>DAO Treasury</td><td class="hl">10%</td><td>Chuyển khoản trực tiếp</td><td>Hợp đồng kho bạc giao thức</td></tr>
+<tr><td>Community NFT Reward</td><td class="hl">5%</td><td>Tự động</td><td>Người nắm giữ Community NFT</td></tr>
+<tr><td>Tổng cộng</td><td class="hl">100%</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<h3 class="sub-title">D.5 MICE Công thức tính thưởng</h3>
+<div class="formula">
+<span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.60 × E(t)</span>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Biến</th><th>Ý nghĩa</th></tr></thead>
+<tbody>
+<tr><td><span class="math">E(t)</span></td><td>Tổng lượng MIC được phát thải vào ngày t, tuân thủ theo quy định Hindex Algorithm</td></tr>
+<tr><td><span class="math">N<sub>t</sub></span></td><td>Tổng số giấy phép MICE đang hoạt động trên tất cả các bên tham gia vào ngày t</td></tr>
+<tr><td><span class="math">M<sub>i</sub></span></td><td>Số lượng giấy phép MICE đang hoạt động mà người tham gia i sở hữu vào ngày t</td></tr>
+<tr><td><span class="math">0.60</span></td><td>Phần chia sẻ cố định của bể Miners — 60% của <span class="math">E(t)</span> được phân bổ cho các thợ đào</td></tr>
+<tr><td><span class="math">R<sub>MICE,i</sub>(t)</span></td><td>Phần thưởng hàng ngày MIC cho người tham gia MICE i vào ngày t</td></tr>
+</tbody>
+</table>
+</div>
+<ul class="dot-list">
+<li>Lượng phát hành được cố định bất kể số lượng tham gia — tổng lượng MIC được phát hành vào ngày t không thay đổi khi có thêm các giấy phép MICE được kích hoạt.</li>
+<li>Sản lượng trên mỗi giấy phép giảm dần khi số lượng người tham gia tăng lên — theo thiết kế, tạo ra động lực tự nhiên để tham gia sớm.</li>
+<li>Không có sự gia tăng lạm phát — việc bán thêm MICE không làm tăng tổng lượng phát hành của giao thức.</li>
+<li>Hoàn toàn trên chuỗi và xác định — tất cả các đầu vào đều có thể xác minh trên chuỗi.</li>
+</ul>
+<h3 class="sub-title">D.6 Community NFT Công thức tính thưởng</h3>
+<div class="formula">
+<span class="math">R<sub>COMM,i</sub>(t) = (S<sub>i</sub> / ΣS<sub>eff</sub>) × 0.20 × E(t)</span>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Biến</th><th>Ý nghĩa</th></tr></thead>
+<tbody>
+<tr><td><span class="math">S<sub>i</sub></span></td><td>Số cổ phần hiệu lực của người tham gia i trong Community NFT vào ngày t</td></tr>
+<tr><td><span class="math">ΣS<sub>hiệu quả</sub></span></td><td>Tổng số cổ phần hiệu lực của tất cả các chủ sở hữu hợp lệ của Community NFT vào ngày t</td></tr>
+<tr><td><span class="math">0.20</span></td><td>Phần chia sẻ cố định của bể Community NFT — 20% của <span class="math">E(t)</span></td></tr>
+<tr><td><span class="math">R<sub>COMM,i</sub>(t)</span></td><td>Phần thưởng hàng ngày MIC cho người tham gia Community NFT i vào ngày t</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Điều kiện quản trị:</strong> Phần thưởng Community NFT chịu sự điều chỉnh của giới hạn cổ phần theo từng cấp độ, tính hợp lệ của NFT và các thông số được phê duyệt bởi cơ quan quản trị. Các cấp độ Builder, Maker và Luminary có các giá trị cổ phần tối đa hiệu quả khác nhau, và các quy tắc đủ điều kiện vẫn có thể điều chỉnh theo DAO trong phạm vi quy định của giao thức.</p>
+</div>
+<h3 class="sub-title">D.7 MFP-NFT Công thức tính thưởng</h3>
+<div class="formula">
+<span class="math">R<sub>MFP,i</sub>(t) = (S<sub>i</sub> / ΣS<sub>MFP</sub>) × 0.20 × E(t)</span>
+</div>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Biến</th><th>Ý nghĩa</th></tr></thead>
+<tbody>
+<tr><td><span class="math">S<sub>i</sub></span></td><td>Cổ phần MIC liên quan đến chủ sở hữu MFP-NFT i vào ngày t</td></tr>
+<tr><td><span class="math">ΣS<sub>MFP</sub></span></td><td>Tổng số cổ phần của tất cả các chủ sở hữu hợp lệ của MFP-NFT vào ngày t</td></tr>
+<tr><td><span class="math">0.20</span></td><td>Phần chia sẻ cố định của bể MFP-NFT — 20% của <span class="math">E(t)</span></td></tr>
+<tr><td><span class="math">R<sub>MFP,i</sub>(t)</span></td><td>Phần thưởng hàng ngày MIC cho chủ sở hữu MFP-NFT vào ngày t</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout green">
+<p><strong>Staking (25% phát hành):</strong> Staking MIC thuần túy, chỉ dùng hệ số time-lock: 30d=1×, 90d=1.25×, 180d=1.5×, 360d=2×. Công thức: User Share = (userStaked × timeLockMultiplier) / totalWeightedPool × dailyStakingEmission. Không áp dụng NFT multiplier, không giới hạn staking cap.</p>
+</div>
+<h3 class="sub-title">D.8 Tóm tắt các cam kết kinh tế</h3>
+<p>Quy định chính thức ở trên đảm bảo các tính chất sau đây ở cấp độ giao thức. Đây là những kết quả toán học của các công thức được định nghĩa trong các Phần D.2 đến D.7.</p>
+<div class="wp-table-wrap">
+<table class="wp-table">
+<thead><tr><th>Bảo hành</th><th>Cơ chế</th></tr></thead>
+<tbody>
+<tr><td>Tổng nguồn cung MIC được giới hạn vĩnh viễn ở mức 7.000.000.000 token</td><td><span class="math">S<sub>max</sub></span> không đổi — không có công thức hoặc hành động quản trị nào có thể vượt quá giới hạn này</td></tr>
+<tr><td>Phát thải chỉ được điều chỉnh trong phạm vi các quy tắc được phê duyệt bởi quản trị</td><td><span class="math">W(t)</span> chỉ áp dụng trong 30 ngày đầu và luôn thỏa <span class="math">0 &lt; W(t) ≤ 1.0</span></td></tr>
+<tr><td>Phần thưởng được tính dựa trên tỷ lệ tham gia, không phải dựa trên sự thống trị về vốn</td><td>Công thức tỷ lệ trong D.5-D.7: phần thưởng = <span class="math">(cổ phần)<sub>i</sub> / tổng số cổ phần) × pool</span></td></tr>
+<tr><td>Quản trị không được phép làm suy yếu tính toàn vẹn của tiền tệ</td><td><span class="math">S<sub>max</sub></span>, <span class="math">S<sub>mining</sub></span>, <span class="math">S<sub>pre</sub></span>và <span class="math">E<sub>base</sub></span> là các hằng số cấp giao thức</td></tr>
+<tr><td>Tất cả các tính toán đều mang tính xác định, có thể kiểm toán và có thể tái tạo</td><td>Tất cả các đầu vào như <span class="math">E(t)</span>, <span class="math">N<sub>t</sub></span>, <span class="math">M<sub>i</sub></span>, <span class="math">S<sub>i</sub></span>và <span class="math">TWAP<sub>7d</sub></span> có thể xác minh trên chuỗi</td></tr>
+<tr><td>Những người tham gia sớm được ưu tiên một cách có hệ thống, không phải ngẫu nhiên</td><td><span class="math">D(t)</span> sự suy giảm làm giảm lượng phát thải theo thời gian; việc kích hoạt sớm MICE mang lại nhiều lợi ích hơn cho mỗi giấy phép</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout">
+<p><strong>Phụ lục D Tóm tắt:</strong> Hindex Algorithm là một giao thức khai thác tiền điện tử có khả năng thích ứng với mức đóng góp, phản ứng với thanh khoản và suy giảm theo thời gian. Giao thức này điều chỉnh tốc độ phát hành tiền điện tử dựa trên hoạt động kinh tế thực tế thay vì sức mạnh tính toán thô hoặc quy mô vốn, đồng thời đảm bảo tất cả các quy tắc tiền tệ được giới hạn bởi các bất biến không thể thay đổi.</p>
+</div>
+<div class="formula">
+<span class="math">Công thức cơ bản: E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span><br/>
+<span class="comment">Hard Cap: 7.000.000.000 MIC · Initial Rate: 22,907,500 MIC / ngày</span>
+</div>
+</div>
+<!-- APPENDIX E -->
+<div id="appE" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX E</div>
+    <h2>Hệ Thống NFT</h2>
+  </div>
+  <p>Quản trị MFP-NFT · Các cấp Community NFT · Hệ số nhân Staking · Yêu cầu tham gia DAO</p>
+  <h3 class="sub-title">E.1 Hai Loại NFT</h3>
+  <p>MissionChain triển khai hai loại NFT riêng biệt phục vụ các vai trò khác nhau trong hệ sinh thái:</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Loại</th><th>Tên</th><th>Cung cấp</th><th>Hệ số nhân</th><th>Thời hạn</th><th>Quyền DAO</th></tr></thead>
+      <tbody>
+        <tr><td>Loại 1</td><td>Community NFT (Builder/Maker/Luminary)</td><td>Không giới hạn</td><td>Tham gia reward pool</td><td>60 ngày / 90 ngày / 180 ngày</td><td>Không</td></tr>
+        <tr><td>Loại 2</td><td>MFP — Mission Founders Pass</td><td>Tối đa 2,500</td><td>Điều kiện DAO + reward pool</td><td>Vĩnh viễn</td><td>Đủ điều kiện quản trị</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">E.2 Staking (25% Phát Hành)</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Khóa Thời Gian</th><th>Hệ Số Nhân</th></tr></thead>
+      <tbody>
+        <tr><td>30 ngày</td><td class="hl">1×</td></tr>
+        <tr><td>90 ngày</td><td class="hl">1.25×</td></tr>
+        <tr><td>180 ngày</td><td class="hl">1.5×</td></tr>
+        <tr><td>360 ngày</td><td class="hl">2×</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">E.3 Tham Gia DAO</h3>
+  <p>Chỉ người nắm giữ MFP-NFT mới tham gia quản trị DAO. Yêu cầu đã chốt: stake tối thiểu 100,000 MIC và còn thời gian khóa ≥360 ngày.</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Cấp</th><th>MFP Staking</th><th>Quyền hạn</th></tr></thead>
+      <tbody>
+        <tr><td colspan="3">Quy tắc canonical đã chốt không còn dùng các tầng Guardian / Council / Senator. Tham gia DAO tuân theo điều kiện MFP + MIC stake tối thiểu + thời gian khóa còn lại.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout green">
+    <p><strong>Tóm tắt Phụ lục E:</strong> Kiến trúc NFT kép của MissionChain tách biệt sự tham gia cộng đồng (Builder/Maker/Luminary) khỏi quản trị giao thức (MFP-NFT), đảm bảo quyền quản trị tập trung vào những bên liên quan cam kết lâu dài.</p>
+  </div>
+</div>
+
+<!-- APPENDIX F -->
+<div id="appF" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX F</div>
+    <h2>Pool Thanh Khoản và Bộ Đệm</h2>
+  </div>
+  <p>LiquidityPool.sol · Ổn định giá · Quỹ Bền vững Staking · Chiến lược Market Making</p>
+  <h3 class="sub-title">F.1 Kiến Trúc Thanh Khoản</h3>
+  <p>1.50% tổng cung (105,000,000 MIC) được phân bổ cho niêm yết DEX/CEX. Khi triển khai, 105M MIC được gửi trực tiếp đến LiquidityPool.sol và khóa — không thể rút. Rút cho niêm yết CEX yêu cầu bỏ phiếu cấu trúc của DAOGovernor (timelock 7 ngày).</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Giai đoạn</th><th>Chức năng</th><th>Mô tả</th></tr></thead>
+      <tbody>
+        <tr><td>Giai đoạn 1</td><td>Bộ đệm</td><td>Nhận USDT, giữ MIC khóa. Không giao dịch.</td></tr>
+        <tr><td>Giai đoạn 2</td><td>SWAP + Ổn định IA</td><td>Cung cấp thanh khoản chủ động trên PancakeSwap V3.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">F.2 Nguồn Thanh Khoản USDT</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Nguồn</th><th>% cho Thanh khoản</th><th>Số tiền</th></tr></thead>
+      <tbody>
+        <tr><td>Vòng SEED</td><td>40% Vốn Ròng</td><td>$100,000</td></tr>
+        <tr><td>Pre-Sale</td><td>40% Vốn Ròng</td><td>$330,000</td></tr>
+        <tr><td>Giấy phép MICE</td><td>40% Vốn Ròng</td><td>$6,000,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">F.3 Quỹ Bền Vững Staking</h3>
+  <p>5% doanh thu USDT từ MICE ($750,000) được phân bổ cho mua tự động MIC từ DEX và khóa trong hợp đồng. Giai đoạn 1: tích lũy qua mua hàng tuần. Giai đoạn 2: nhỏ giọt vào Pool Thưởng Staking để duy trì APY > 0%. Bổ sung bằng phân bổ hàng quý từ Kho bạc DAO (10-20% lượng MIC nắm giữ của DAO).</p>
+  <div class="callout green">
+    <p><strong>Tóm tắt Phụ lục F:</strong> Chiến lược thanh khoản hai giai đoạn đảm bảo MIC có hỗ trợ thị trường sâu ngay từ ngày đầu, trong khi Quỹ Bền vững Staking cung cấp mạng lưới an toàn sau phát hành cho phần thưởng staking.</p>
+  </div>
+</div>
+
+<!-- APPENDIX G -->
+<div id="appG" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX G</div>
+    <h2>Quản Lý DAO</h2>
+  </div>
+  <p>DAOGovernor · Cấu trúc Quản trị · Danh mục Timelock · Quyền Khẩn cấp · Phân phối MIC</p>
+  <h3 class="sub-title">G.1 Tổng Quan DAOGovernor</h3>
+  <p>DAOGovernor.sol (Hợp đồng #24) là hợp đồng quản trị mục tiêu. Ban Thường Trực: 5 thành viên. Tài liệu public phải theo quy tắc governance đã chốt trong master docs, không dùng ngưỡng cố định cũ ≥75% trọng số MFP-NFT staking.</p>
+  <h3 class="sub-title">G.2 Danh Mục Timelock</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Danh mục</th><th>Timelock</th><th>Ví dụ</th></tr></thead>
+      <tbody>
+        <tr><td>Thay đổi Thông số</td><td>24 giờ</td><td>Phân chia pool, tỷ lệ phí</td></tr>
+        <tr><td>Ngân sách / Kho bạc</td><td>24 giờ</td><td>Phân bổ quỹ, chi tiêu</td></tr>
+        <tr><td>Thay đổi Cấu trúc</td><td>7 ngày</td><td>Nâng cấp hợp đồng, niêm yết CEX</td></tr>
+        <tr><td>Khẩn cấp</td><td>Không timelock</td><td>Tạm dừng hợp đồng, circuit breaker</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">G.3 Phân Phối MIC Khi Triển Khai</h3>
+  <p>15% = 1,050,000,000 MIC phát hành trước — phân phối TRỰC TIẾP vào ví người dùng và hợp đồng (không gửi đến bất kỳ multisig nào):</p>
+  <ul class="dot-list">
+    <li><strong>Hợp Đồng Bán Hàng (Khóa Hybrid):</strong> 945,000,000 MIC (phân phối trực tiếp đến ví người mua, khóa qua LockManager — mở khóa tự động theo lịch trình vesting)</li>
+    <li><strong>LiquidityPool:</strong> 105,000,000 MIC (khóa, không thể rút)</li>
+  </ul>
+  <p>DAOGovernor không nắm giữ MIC trực tiếp — kiểm soát hợp đồng thông qua vai trò AccessControl.</p>
+  <div class="callout green">
+    <p><strong>Tóm tắt Phụ lục G:</strong> Quản trị on-chain thông qua DAOGovernor đảm bảo quyết định minh bạch, do cộng đồng dẫn dắt với các biện pháp bảo vệ timelock phù hợp chống lại hành động vội vàng hoặc ác ý.</p>
+  </div>
+</div>
+
+<!-- APPENDIX H -->
+<div id="appH" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX H</div>
+    <h2>Bảo Mật và Kiểm Toán</h2>
+  </div>
+  <p>Bảo mật Hợp đồng Thông minh · Kiểm soát Truy cập · Circuit Breaker · KYC/AML · Ứng phó Sự cố</p>
+  <h3 class="sub-title">H.1 Kiến Trúc Bảo Mật</h3>
+  <p>24 hợp đồng thông minh trên BSC sử dụng OpenZeppelin v5.x. AccessControl (dựa trên vai trò, không phải Ownable) với DAOGovernor là DEFAULT_ADMIN_ROLE. Oracle PancakeSwap V3 TWAP (chính) + Chainlink (dự phòng).</p>
+  <h3 class="sub-title">H.2 Circuit Breaker</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>#</th><th>Bộ ngắt</th><th>Kích hoạt</th></tr></thead>
+      <tbody>
+        <tr><td>CB-1</td><td>Giới hạn Tích lũy</td><td>totalEmitted > 5,950,000,000</td></tr>
+        <tr><td>CB-2</td><td>Giới hạn Hàng ngày</td><td>dailyEmission > 2× E_base(t)</td></tr>
+        <tr><td>CB-3</td><td>Giá Sàn</td><td>MIC < $0.001</td></tr>
+        <tr><td>CB-4</td><td>Giới hạn Unstake</td><td>> 10%/ngày</td></tr>
+        <tr><td>CB-5</td><td>Tạm dừng Khẩn cấp</td><td>DAOGovernor (không timelock)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">H.3 KYC/AML</h3>
+  <p>Nhà cung cấp: Sumsub (off-chain). On-chain: KYCAllowlist.sol. Tất cả người tham gia SEED, Pre-Sale và MICE phải vượt qua KYC. Tham gia DAO yêu cầu ví đã xác minh KYC.</p>
+  <div class="callout green">
+    <p><strong>Tóm tắt Phụ lục H:</strong> Bảo mật đa lớp kết hợp kiểm soát truy cập dựa trên vai trò, năm circuit breaker, kiểm toán bên thứ ba và tích hợp KYC/AML đảm bảo tính toàn vẹn của giao thức từ lúc ra mắt đến trưởng thành.</p>
+  </div>
+</div>
+
+<!-- APPENDIX I -->
+<div id="appI" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX I</div>
+    <h2>Hoạt Động AI và Quản Trị</h2>
+  </div>
+  <div class="callout warn">
+    <p><strong>Hoạt động AI trong Mission Chain:</strong> NIRA-AI (Net Impact Reward Algorithm AI) hỗ trợ quản trị giao thức, phân phối phần thưởng tự động và phát hiện bất thường. Phụ lục này mô tả các nguyên tắc quản trị AI và triển khai.</p>
+  </div>
+</div>
+
+<!-- APPENDIX J -->
+<div id="appJ" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX J</div>
+    <h2>Pháp lý, Miễn trừ trách nhiệm &amp; Chính sách bảo mật</h2>
+  </div>
+  <p>Phân loại token · Thông báo rủi ro · Vị thế pháp lý · Bảo vệ dữ liệu</p>
+  <div class="callout warn">
+    <p><strong>Thông báo quan trọng:</strong> Phụ lục này là khung pháp lý chính thức điều chỉnh việc tương tác với Mission Chain Network, token MIC, giấy phép MICE, công cụ MFP-NFT và các sản phẩm nền tảng liên quan. Việc đọc và hiểu phụ lục này là điều kiện tiên quyết để tham gia. Không có nội dung nào trong White Paper hoặc bất kỳ phụ lục nào cấu thành lời khuyên tài chính, lời mời đầu tư hay cam kết lợi nhuận.</p>
+  </div>
+  <h3 class="sub-title">J.1 Mục đích &amp; Phạm vi</h3>
+  <p>Phụ lục này trình bày khung pháp lý, các điều khoản miễn trừ trách nhiệm, thông báo rủi ro, vị trí pháp lý và chính sách bảo mật áp dụng cho Mission Chain Network và tất cả các công cụ, nền tảng và bên tham gia liên quan.</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Công cụ / Sản phẩm</th><th>Phân loại pháp lý</th></tr></thead>
+      <tbody>
+        <tr><td>MIC Token</td><td>Token tiện ích được sử dụng để truy cập giao thức và tham gia vào hệ sinh thái. Không phải là chứng khoán, cổ phần hay hợp đồng đầu tư.</td></tr>
+        <tr><td>Giấy phép MICE</td><td>Giấy phép khai thác có thời hạn. Không phải là sản phẩm tài chính, token, cổ phần hoặc quyền tham gia lợi nhuận.</td></tr>
+        <tr><td>MFP-NFT</td><td>Công cụ quản trị và tham gia hệ sinh thái được sử dụng để truy cập SEED Round. Không có cổ phần, cổ tức hoặc lợi nhuận được đảm bảo.</td></tr>
+        <tr><td>Community NFT</td><td>Tình trạng hệ sinh thái và chứng chỉ cấp độ phần thưởng phản ánh mức độ tham gia trong mạng lưới.</td></tr>
+        <tr><td>White Paper &amp; Phụ lục</td><td>Chỉ là tài liệu thông tin và kỹ thuật. Không phải là bản cáo bạch, tài liệu chào bán hoặc hợp đồng mua bán có hiệu lực pháp lý.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">J.2 Lưu ý chung</h3>
+  <div class="callout gold">
+    <p><strong>Không phải là lời khuyên tài chính:</strong> Mission Chain White Paper, Phụ lục này và tất cả tài liệu liên quan được công bố chỉ với mục đích thông tin và kỹ thuật. Chúng không được coi là lời khuyên tài chính, đầu tư hoặc pháp lý, cũng như không phải là lời mời chào mua, bán hoặc giữ một công cụ tài chính.</p>
+  </div>
+  <ol class="dot-list">
+    <li><strong>Không có khuyến nghị đầu tư:</strong> Không có nội dung nào trong tài liệu Mission Chain được xem là khuyến nghị mua, bán hoặc nắm giữ MIC, MICE, MFP-NFT hay Community NFT.</li>
+    <li><strong>Không đảm bảo lợi nhuận:</strong> Mission Chain không đảm bảo rằng người tham gia sẽ thu được lợi nhuận từ phần thưởng khai thác MIC, việc kích hoạt MICE, thu nhập từ Mission Work hoặc các chương trình khuyến khích.</li>
+    <li><strong>Các tuyên bố hướng tới tương lai:</strong> Tất cả các dự báo liên quan đến việc phát triển quy trình, các mốc quan trọng và mục tiêu áp dụng đều có thể thay đổi và có thể khác biệt đáng kể so với kết quả thực tế.</li>
+    <li><strong>Xác nhận rủi ro kỹ thuật:</strong> Hệ thống blockchain mang theo những rủi ro kỹ thuật nội tại, bao gồm lỗ hổng trong hợp đồng thông minh, thao túng oracle, tắc nghẽn mạng và rủi ro nâng cấp.</li>
+    <li><strong>Không chịu trách nhiệm về các tổn thất:</strong> Mission Chain Network và các bên liên quan không chịu trách nhiệm về các thiệt hại trực tiếp, gián tiếp, ngẫu nhiên hoặc hậu quả phát sinh từ việc tham gia vào hệ sinh thái.</li>
+  </ol>
+  <h3 class="sub-title">J.3 Token Phân loại &amp; Vị trí pháp lý</h3>
+  <p>Mission Chain phân loại các công cụ MIC, MICE và NFT là các công cụ tiện ích theo hướng dẫn hiện hành tại các khu vực pháp lý chính. Các quan điểm này phản ánh nhận định của Mission Chain tại thời điểm công bố và có thể thay đổi theo quy định.</p>
+  <div class="callout">
+    <p><strong>Thông báo về Khung pháp lý:</strong> Quy định về tiền điện tử đang thay đổi nhanh chóng trên toàn cầu. Mission Chain theo dõi chặt chẽ các diễn biến pháp lý tại Nigeria, Philippines, Brazil, Kenya, Nam Phi và các thị trường mục tiêu khác. Các bên tham gia hoàn toàn chịu trách nhiệm xác định liệu việc tham gia có hợp pháp tại khu vực pháp lý của mình hay không.</p>
+  </div>
+  <h4 class="mini-title">J.3.1 MIC Token - Cơ sở phân loại tiện ích</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Yếu tố phân loại</th><th>Mission Chain Vị trí</th></tr></thead>
+      <tbody>
+        <tr><td>Mục đích</td><td>MIC được sử dụng để truy cập các dịch vụ giao thức, thanh toán cho giấy phép MICE, đặt cược để nhận phần thưởng Community NFT và tham gia vào quá trình quản trị.</td></tr>
+        <tr><td>Dự báo lợi nhuận</td><td>Phần thưởng khai thác MIC được tạo ra từ việc tham gia tích cực vào giao thức, không phải từ việc nắm giữ thụ động.</td></tr>
+        <tr><td>Quá trình phân quyền</td><td>Quyền quản lý được chuyển giao dần dần cho các chủ sở hữu MFP-NFT và Community NFT thông qua các cơ chế của DAO.</td></tr>
+        <tr><td>Không có cổ tức hoặc chia sẻ doanh thu</td><td>Chủ sở hữu MIC không nhận được cổ tức, phân phối lợi nhuận hoặc chia sẻ doanh thu chỉ bằng cách nắm giữ MIC.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.3.2 Giấy phép MICE - Cơ sở phân loại không liên quan đến an niên</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Yếu tố phân loại</th><th>Vị trí Mission Chain</th></tr></thead>
+      <tbody>
+        <tr><td>Tính chất của dụng cụ</td><td>MICE là giấy phép truy cập 360 ngày hoạt động tương tự như gói đăng ký phần mềm hoặc khóa truy cập hạ tầng.</td></tr>
+        <tr><td>Tính chất tiêu hao</td><td>Giấy phép MICE sẽ hết hạn tự động sau 360 ngày và được sử dụng thông qua việc sử dụng, không được giữ làm tài sản đầu tư.</td></tr>
+        <tr><td>Không chuyển nhượng quyền sở hữu</td><td>MICE không mang lại quyền sở hữu đối với cơ sở hạ tầng giao thức, thiết bị khai thác hoặc cổ phần trong Mission Chain Network.</td></tr>
+        <tr><td>Chính sách hoàn tiền</td><td>Giấy phép MICE không được hoàn lại sau khi kích hoạt, tuân theo quy định tiêu chuẩn về giấy phép phần mềm.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.3.3 Các khu vực pháp lý bị hạn chế</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Thẩm quyền</th><th>Cơ sở để áp dụng hạn chế</th></tr></thead>
+      <tbody>
+        <tr><td>Hợp chủng quốc Hoa Kỳ</td><td>Sự không chắc chắn về luật chứng khoán và việc xử lý chưa được giải quyết của bài kiểm tra Howey đối với các token tiện ích phân phối.</td></tr>
+        <tr><td>Cộng hòa Nhân dân Trung Hoa</td><td>Cấm hoàn toàn hoạt động giao dịch tiền điện tử và phát hành token.</td></tr>
+        <tr><td>Triều Tiên, Iran, Syria, Cuba</td><td>Các biện pháp trừng phạt OFAC và các yêu cầu tuân thủ về tội phạm tài chính quốc tế.</td></tr>
+        <tr><td>Bất kỳ khu vực pháp lý nào mà việc tham gia là bất hợp pháp</td><td>Người tham gia hoàn toàn chịu trách nhiệm xác định tính hợp pháp theo luật pháp địa phương.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warn">
+    <p><strong>US Cá nhân - Thông báo cụ thể:</strong> MIC, MICE, SEED Round và PRE-SALE không được cung cấp cho cư dân, công dân hoặc cá nhân thuộc US theo quy định của pháp luật chứng khoán hiện hành. Mission Chain có quyền yêu cầu chứng minh thẩm quyền và hủy bỏ quyền tham gia từ các khu vực bị hạn chế.</p>
+  </div>
+  <h3 class="sub-title">J.4 Thông tin về rủi ro</h3>
+  <p>Việc tham gia vào hệ sinh thái Mission Chain tiềm ẩn rủi ro đáng kể. Các danh mục sau đây là chính, không phải là danh sách đầy đủ.</p>
+  <h4 class="mini-title">J.4.1 Rủi ro thị trường &amp; thanh khoản</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Rủi ro</th><th>Mô tả</th><th>Mức độ nghiêm trọng</th></tr></thead>
+      <tbody>
+        <tr><td>Token Biến động giá</td><td>Giá của MIC có thể biến động mạnh và có thể giảm xuống mức 0. Hiệu suất của các tài sản tương tự không phải là yếu tố dự báo.</td><td class="hl">HIGH</td></tr>
+        <tr><td>Rủi ro thanh khoản</td><td>Thanh khoản trên DEX và CEX có thể không đủ để thoát vị thế theo mức giá mong muốn, dẫn tới trượt giá trong giai đoạn thanh khoản thấp.</td><td class="hl">HIGH</td></tr>
+        <tr><td>MICE Pha loãng tỷ suất sinh lời</td><td>Khi có thêm nhiều giấy phép MICE được kích hoạt, phần thưởng khai thác theo từng giấy phép sẽ giảm theo thiết kế.</td><td>MEDIUM</td></tr>
+        <tr><td>Rủi ro theo dải thanh khoản DEX</td><td>Giá của MICE được liên kết với thanh khoản 7 ngày của TWAP và DEX và có thể thay đổi tự động.</td><td>MEDIUM</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.4.2 Rủi ro pháp lý và quy định</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Rủi ro</th><th>Mô tả</th><th>Mức độ nghiêm trọng</th></tr></thead>
+      <tbody>
+        <tr><td>Phân loại lại theo quy định</td><td>Các cơ quan chức năng có thể tái phân loại MIC hoặc MICE thành chứng khoán hoặc sản phẩm tài chính tại một số khu vực pháp lý.</td><td class="hl">HIGH</td></tr>
+        <tr><td>AML / KYC Không tuân thủ</td><td>Việc không hoàn thành việc xác minh danh tính theo yêu cầu có thể dẫn đến việc tạm ngưng, mất quyền lợi hoặc rủi ro pháp lý.</td><td>MEDIUM</td></tr>
+        <tr><td>Nghĩa vụ thuế</td><td>Thu nhập từ khai thác, thu nhập từ giấy phép, thu nhập từ giới thiệu và thu nhập từ Mission Work có thể tạo ra các sự kiện chịu thuế.</td><td>MEDIUM</td></tr>
+        <tr><td>Tình trạng pháp lý của Smart Contract</td><td>Khả năng thi hành pháp lý của các thỏa thuận hợp đồng thông minh có thể khác nhau tùy theo từng khu vực pháp lý.</td><td>MEDIUM</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.4.3 Rủi ro kỹ thuật và quy trình</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Rủi ro</th><th>Mô tả</th><th>Mức độ nghiêm trọng</th></tr></thead>
+      <tbody>
+        <tr><td>Lỗ hổng của Smart Contract</td><td>Hợp đồng thông minh đã được kiểm toán vẫn có thể chứa các lỗ hổng bảo mật cho phép mất mát hoặc thao túng.</td><td class="hl">HIGH</td></tr>
+        <tr><td>Thao tác với Oracle</td><td>Các điều chỉnh giá và phát thải dựa trên TWAP có thể bị ảnh hưởng bởi việc thao túng oracle.</td><td>MEDIUM</td></tr>
+        <tr><td>Tắc nghẽn mạng</td><td>Tình trạng tắc nghẽn của BNB Chain hoặc các Layer 2 trong tương lai có thể làm chậm thanh toán, phần thưởng hoặc các thao tác trên nền tảng.</td><td>LOW</td></tr>
+        <tr><td>Rủi ro nâng cấp giao thức</td><td>Các bản cập nhật được phê duyệt theo DAO có thể thay đổi cấu trúc phí, hành vi phát thải hoặc cơ chế nền tảng.</td><td>MEDIUM</td></tr>
+        <tr><td>Rủi ro liên quan đến nhân sự chủ chốt</td><td>Việc mất đi nhân sự chủ chốt trong ban sáng lập hoặc nhân sự kỹ thuật có thể làm chậm tiến độ phát triển hoặc việc kích hoạt cơ chế quản trị.</td><td>MEDIUM</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.4.4 Rủi ro hệ sinh thái và rủi ro chấp nhận</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Rủi ro</th><th>Mô tả</th><th>Mức độ nghiêm trọng</th></tr></thead>
+      <tbody>
+        <tr><td>Việc chấp nhận thị trường không đạt kỳ vọng</td><td>Mission Chain phụ thuộc vào quy mô đủ lớn trên Mission Learn, Mission Work và MICE để tạo ra hiệu ứng mạng.</td><td class="hl">HIGH</td></tr>
+        <tr><td>Sự gián đoạn cạnh tranh</td><td>Các nền tảng hiện tại hoặc các đối thủ cạnh tranh mới trong lĩnh vực Web3 có thể sao chép mô hình này với nguồn lực lớn hơn.</td><td>MEDIUM</td></tr>
+        <tr><td>Hành vi sai trái của Hub Leader</td><td>Hub Leaders là các nhà điều hành cộng đồng độc lập và Mission Chain không đảm bảo hành vi của họ.</td><td>MEDIUM</td></tr>
+        <tr><td>PRE-SALE Lạm dụng chính sách khuyến khích</td><td>Hệ thống giới thiệu và đánh giá hiệu suất nhóm vẫn có thể bị lạm dụng ngay cả khi đã áp dụng các biện pháp chống Sybil.</td><td>LOW</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">J.5 Điều kiện tham gia</h3>
+  <h4 class="mini-title">J.5.1 Đại diện của người tham gia</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Đại diện</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>Năng lực pháp lý</td><td>Người tham gia phải từ 18 tuổi trở lên và có đủ năng lực pháp lý để ký kết các thỏa thuận có hiệu lực pháp lý.</td></tr>
+        <tr><td>Vốn tự có</td><td>Số tiền được sử dụng để mua lại MIC, MICE hoặc NFT là của chính người tham gia và không xuất phát từ hoạt động bất hợp pháp.</td></tr>
+        <tr><td>Thẩm quyền không bị hạn chế</td><td>Người tham gia không cư trú tại một khu vực pháp lý bị hạn chế.</td></tr>
+        <tr><td>Đánh giá độc lập</td><td>Người tham gia đã tự đánh giá các rủi ro và không dựa hoàn toàn vào tài liệu Mission Chain.</td></tr>
+        <tr><td>Không phụ thuộc vào dự báo</td><td>Tất cả các mục tiêu mốc, dự báo tài chính và ước tính thị trường đều được công nhận là mang tính dự báo và không được đảm bảo.</td></tr>
+        <tr><td>KYC / AML Tuân thủ</td><td>Thành viên đồng ý hoàn thành việc xác minh danh tính và cung cấp thông tin chính xác khi được yêu cầu.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.5.2 Điều khoản cụ thể cho nền tảng</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Nền tảng</th><th>Các thuật ngữ chính</th></tr></thead>
+      <tbody>
+        <tr><td>Mission Learn</td><td>Phí khóa học không được hoàn lại sau 7 ngày kể từ ngày đăng ký hoặc lần truy cập nội dung đầu tiên. Chứng chỉ On-chain có thể bị thu hồi nếu phát hiện gian lận.</td></tr>
+        <tr><td>Mission Work</td><td>Hợp đồng thông minh (smart contract) sẽ có hiệu lực ngay khi công việc được chấp nhận. Thời gian xem xét 48 giờ là cố định. Mission Chain chỉ đóng vai trò là nền tảng trung gian.</td></tr>
+        <tr><td>Bán MICE</td><td>Giấy phép MICE không được hoàn lại sau khi kích hoạt. Giá động được điều chỉnh dựa trên dữ liệu từ Oracle. Thời hạn giấy phép được cố định là 360 ngày.</td></tr>
+        <tr><td>SEED / PRE-SALE</td><td>Các giao dịch Token là cuối cùng. Vesting được thực thi thông qua hợp đồng thông minh và các giao dịch vi phạm các hạn chế về thẩm quyền có thể bị hủy bỏ.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">J.6 Quyền sở hữu trí tuệ</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Danh mục IP</th><th>Quyền sở hữu &amp; Quyền lợi</th></tr></thead>
+      <tbody>
+        <tr><td>Nền tảng mã nguồn giao thức</td><td>Hợp đồng thông minh hiện đang mở để kiểm toán; giao thức lõi IP vẫn thuộc quyền quản lý của Mission Chain Network cho đến khi hoàn tất quá trình chuyển giao quản trị sang DAO.</td></tr>
+        <tr><td>MIC / MICE Đặt tên</td><td>"MIC", "MICE", "Mission Chain Network", "Mission Learn", "Mission Work", "Mission Hub", "MFP-NFT" và "Hindex Algorithm" là các nhãn hiệu độc quyền.</td></tr>
+        <tr><td>White Paper &amp; Tài liệu</td><td>Tất cả nội dung và Phụ lục của White Paper đều thuộc bản quyền của Mission Chain Network năm 2026. Việc sao chép không vì mục đích thương mại kèm theo ghi nguồn được phép.</td></tr>
+        <tr><td>Nội dung khóa học Mission Learn</td><td>Nội dung khóa học là tài sản chung của Mission Chain Network và các tác giả theo các thỏa thuận áp dụng. Học viên được cấp quyền truy cập cá nhân và không thể chuyển nhượng.</td></tr>
+        <tr><td>Đầu ra của Mission Work</td><td>Quyền sở hữu được chuyển giao cho khách hàng sau khi thanh toán đầy đủ, trừ khi có các điều khoản bằng văn bản khác.</td></tr>
+        <tr><td>NFT Tác phẩm nghệ thuật &amp; Dữ liệu mô tả</td><td>Các tài sản hình ảnh MFP-NFT và Community NFT vẫn thuộc bản quyền của Mission Chain Network. Chủ sở hữu chỉ được cấp quyền hiển thị trừ khi có thỏa thuận riêng.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub-title">J.7 Chính sách bảo mật</h3>
+  <p>Mission Chain Network cam kết bảo vệ quyền riêng tư của người dùng, người tham gia và các thành viên trong hệ sinh thái. Ngày có hiệu lực: Tháng 3 năm 2026.</p>
+  <div class="callout">
+    <p><strong>Tiêu chuẩn quản lý:</strong> GDPR (EU), NDPR (Nigeria), DPA 2012 (Philippines), LGPD (Brazil) và các quy định pháp luật địa phương áp dụng tại tất cả các khu vực hoạt động.</p>
+  </div>
+  <h4 class="mini-title">J.7.1 Dữ liệu được thu thập</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Loại dữ liệu</th><th>Các điểm dữ liệu cụ thể</th><th>Cơ sở thu thập</th></tr></thead>
+      <tbody>
+        <tr><td>Dữ liệu nhận dạng</td><td>Họ và tên đầy đủ, ngày sinh, mã số ID của chính phủ</td><td>Nghĩa vụ pháp lý (AML/KYC)</td></tr>
+        <tr><td>Thông tin liên hệ</td><td>Địa chỉ email, Tên người dùng Telegram, Số điện thoại di động</td><td>Sự cần thiết theo hợp đồng</td></tr>
+        <tr><td>Dữ liệu ví</td><td>Địa chỉ ví công khai và hoạt động trên chuỗi khối công khai</td><td>Sự cần thiết theo hợp đồng</td></tr>
+        <tr><td>Hoạt động trên nền tảng</td><td>Tiến độ Mission Learn, Lịch sử Mission Work, Hồ sơ kích hoạt MICE</td><td>Lợi ích hợp pháp / Cung cấp dịch vụ</td></tr>
+        <tr><td>Dữ liệu tài chính</td><td>Số tiền giao dịch, thông tin chi tiết về phương thức thanh toán, hồ sơ thanh toán giới thiệu</td><td>Nghĩa vụ pháp lý và sự cần thiết hợp đồng</td></tr>
+        <tr><td>Thiết bị &amp; Dữ liệu kỹ thuật</td><td>Địa chỉ IP, loại trình duyệt, các thông tin nhận dạng thiết bị</td><td>Lợi ích hợp pháp / An niên</td></tr>
+        <tr><td>Thông tin liên lạc</td><td>Phiếu hỗ trợ, hồ sơ khiếu nại, tin nhắn cộng đồng được kiểm duyệt</td><td>Lợi ích hợp pháp / Giải quyết tranh chấp</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.7.2 Cách sử dụng dữ liệu</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Mục đích</th><th>Dữ liệu được sử dụng</th></tr></thead>
+      <tbody>
+        <tr><td>KYC / AML Tuân thủ</td><td>Thông tin cá nhân, thông tin liên hệ và thông tin ví điện tử</td></tr>
+        <tr><td>Quản lý tài khoản nền tảng</td><td>Dữ liệu về danh tính, thông tin liên hệ và hoạt động trên nền tảng</td></tr>
+        <tr><td>Thực thi Smart Contract</td><td>Địa chỉ ví cho xử lý giao dịch trên chuỗi khối</td></tr>
+        <tr><td>Xử lý giới thiệu và khuyến khích</td><td>Dữ liệu ví điện tử và hồ sơ giao dịch tài chính</td></tr>
+        <tr><td>Giải quyết tranh chấp</td><td>Thông tin liên lạc, hoạt động trên nền tảng và dữ liệu tài chính</td></tr>
+        <tr><td>Phòng chống gian lận &amp; An niên</td><td>Dữ liệu thiết bị, dữ liệu ví và mẫu hoạt động</td></tr>
+        <tr><td>Báo cáo pháp lý và quy định</td><td>Thông tin về danh tính, tài chính và hoạt động theo quy định của pháp luật</td></tr>
+        <tr><td>Cải tiến sản phẩm</td><td>Hoạt động trên nền tảng đã được ẩn danh và tổng hợp</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.7.3 Lưu trữ dữ liệu</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Loại dữ liệu</th><th>Thời hạn lưu trữ</th></tr></thead>
+      <tbody>
+        <tr><td>KYC / Dữ liệu nhận dạng</td><td>5 năm kể từ lần hoạt động cuối cùng trên nền tảng, hoặc lâu hơn nếu luật pháp yêu cầu</td></tr>
+        <tr><td>Bản ghi giao dịch</td><td>7 năm kể từ ngày giao dịch</td></tr>
+        <tr><td>Hoạt động trên nền tảng</td><td>Thời gian hoạt động cộng thêm 2 năm, hoặc 3 năm kể từ ngày đóng tài khoản</td></tr>
+        <tr><td>Dữ liệu trên chuỗi</td><td>Vĩnh viễn. Dữ liệu blockchain được thiết kế để không thể thay đổi.</td></tr>
+        <tr><td>Thông tin liên lạc</td><td>2 năm kể từ ngày tạo ra hoặc cho đến khi giải quyết tranh chấp hoàn tất</td></tr>
+        <tr><td>Thiết bị &amp; Dữ liệu kỹ thuật</td><td>cửa sổ 90 ngày liên tục để phát hiện gian lận</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.7.4 Chia sẻ dữ liệu</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Người nhận</th><th>Mục đích</th><th>Các biện pháp bảo vệ</th></tr></thead>
+      <tbody>
+        <tr><td>KYC / AML Nhà cung cấp dịch vụ</td><td>Xác minh danh tính</td><td>Thỏa thuận xử lý dữ liệu và nhà cung cấp dịch vụ xử lý dữ liệu tuân thủ</td></tr>
+        <tr><td>Mạng lưới Blockchain</td><td>Thực hiện giao dịch</td><td>Blockchain công khai theo bản chất; địa chỉ ví là công khai</td></tr>
+        <tr><td>Cơ quan thi hành pháp luật / Cơ quan quản lý</td><td>Nghĩa vụ pháp lý</td><td>Tiết lộ giới hạn ở mức tối thiểu bắt buộc</td></tr>
+        <tr><td>Mission Hub Lãnh đạo</td><td>Giải quyết tranh chấp trong cộng đồng</td><td>Chỉ dữ liệu liên quan đến tranh chấp, tuân thủ các yêu cầu về bảo mật</td></tr>
+        <tr><td>Không bán dữ liệu cá nhân</td><td>-</td><td>Mission Chain không bán, cho thuê hoặc trao đổi dữ liệu cá nhân cho mục đích thương mại</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mini-title">J.7.5 Quyền của người dùng</h4>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Quyền</th><th>Mô tả</th><th>Giới hạn</th></tr></thead>
+      <tbody>
+        <tr><td>Quyền truy cập</td><td>Yêu cầu cung cấp bản sao dữ liệu cá nhân do Mission Chain lưu trữ</td><td>Tùy thuộc vào việc xác minh danh tính</td></tr>
+        <tr><td>Quyền sửa đổi</td><td>Yêu cầu chỉnh sửa thông tin cá nhân không chính xác</td><td>Dữ liệu On-chain là không thể thay đổi</td></tr>
+        <tr><td>Quyền xóa dữ liệu</td><td>Yêu cầu xóa dữ liệu cá nhân</td><td>Không áp dụng cho dữ liệu trên chuỗi hoặc dữ liệu được lưu trữ theo quy định pháp luật</td></tr>
+        <tr><td>Quyền di chuyển dữ liệu</td><td>Nhận dữ liệu cá nhân dưới dạng định dạng có cấu trúc</td><td>Dữ liệu danh mục đầu tư On-chain đã được công khai</td></tr>
+        <tr><td>Quyền hạn chế xử lý</td><td>Hạn chế yêu cầu trong thời gian khiếu nại đang được điều tra</td><td>Có thể hạn chế quyền truy cập vào các dịch vụ</td></tr>
+        <tr><td>Quyền phản đối</td><td>Phản đối việc xử lý dữ liệu dựa trên lợi ích hợp pháp, chẳng hạn như tiếp thị</td><td>Không áp dụng cho việc xử lý theo quy định pháp luật hoặc hợp đồng</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <p><strong>Cách thực hiện quyền của bạn:</strong> Liên hệ với kênh bảo mật chính thức tại <strong>privacy@missionchain.io</strong>; các yêu cầu sẽ được xác nhận trong vòng 5 ngày làm việc và được giải quyết trong vòng 30 ngày lịch, tùy thuộc vào việc xác minh danh tính.</p>
+  </div>
+  <h3 class="sub-title">J.8 Luật áp dụng và Giải quyết tranh chấp</h3>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <thead><tr><th>Vật chất</th><th>Vị trí</th></tr></thead>
+      <tbody>
+        <tr><td>Luật áp dụng</td><td>Sẽ được xác nhận tại thời điểm khởi động quy trình, không phụ thuộc vào các nguyên tắc xung đột pháp luật.</td></tr>
+        <tr><td>Giải quyết tranh chấp cấp độ đầu tiên</td><td>Tất cả các tranh chấp nên được giải quyết thông qua các kênh hỗ trợ chính thức của Mission Chain. Các tranh chấp thuộc loại Mission Work sẽ được chuyển đến Mission Hub để hòa giải.</td></tr>
+        <tr><td>Giải quyết tranh chấp bằng trọng tài</td><td>Các tranh chấp không được giải quyết thông qua hòa giải theo quy trình Mission Hub trong vòng 30 ngày sẽ được đưa ra trọng tài bắt buộc theo quy tắc của một cơ quan trọng tài quốc tế được công nhận, sẽ được xác định tại thời điểm ra mắt.</td></tr>
+        <tr><td>Điều khoản từ chối tham gia vụ kiện tập thể</td><td>Các bên tham gia từ bỏ quyền tham gia vào các vụ kiện tập thể đến mức tối đa được pháp luật cho phép.</td></tr>
+        <tr><td>Tính cuối cùng của Smart Contract</td><td>Kết quả thanh toán, phân phối phần thưởng và thời gian sở hữu của Escrow được coi là cuối cùng, trừ khi có bằng chứng độc lập về sự cố kỹ thuật.</td></tr>
+        <tr><td>Ngôn ngữ</td><td>Phiên bản tiếng Anh của tài liệu pháp lý Mission Chain có giá trị ưu tiên so với các phiên bản dịch trong trường hợp có sự mâu thuẫn.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout green">
+    <p><strong>Phụ lục J Tóm tắt:</strong> MIC được định vị là một token tiện ích. MICE là giấy phép truy cập có thời hạn. Cả hai đều không được coi là chứng khoán hoặc sản phẩm đầu tư. Việc tham gia bị hạn chế đối với Hoa Kỳ, Trung Quốc và các khu vực bị trừng phạt, và tất cả các tuyên bố dự báo đều không được đảm bảo. Mission Chain không bán dữ liệu cá nhân, và kết quả của smart contract được xem là có hiệu lực trong khuôn khổ pháp lý được mô tả tại đây.</p>
+  </div>
+  <div class="callout warn">
+    <p><strong>Thông báo cuối cùng:</strong> Tài liệu này được chuẩn bị với mục đích cung cấp thông tin tính đến tháng 3 năm 2026. Mission Chain Network có quyền cập nhật khung pháp lý này khi các yêu cầu pháp lý thay đổi. Các bên tham gia nên truy cập missionchain.io để xem tài liệu pháp lý mới nhất.</p>
+  </div>
+</div>
+
+<!-- APPENDIX K -->
+<div id="appK" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX K</div>
+    <h2>Chiến Lược Thâm Nhập Thị Trường (Nội bộ)</h2>
+  </div>
+  <div class="callout warn">
+    <p><strong>Thông báo phụ lục nội bộ:</strong> Phụ lục này được duy trì trong tài liệu nội bộ của Mission Chain và được cố ý lược bỏ khỏi White Paper công khai. Chỉ có thể truy cập thông qua quy trình đánh giá quản trị nội bộ.</p>
+  </div>
+</div>
+
+<!-- APPENDIX L -->
+<div id="appL" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX L</div>
+    <h2>Dự Báo Tài Chính và Phân Bổ Vốn (Nội bộ)</h2>
+  </div>
+  <div class="callout warn">
+    <p><strong>Thông báo phụ lục nội bộ:</strong> Phụ lục này được duy trì trong tài liệu nội bộ của Mission Chain và được cố ý lược bỏ khỏi White Paper công khai. Chỉ có thể truy cập thông qua quy trình đánh giá quản trị nội bộ.</p>
+  </div>
+</div>
+
+<!-- APPENDIX M -->
+<div id="appM" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX M</div>
+    <h2>Hoạt Động Nội Bộ DAO (Nội bộ)</h2>
+  </div>
+  <div class="callout warn">
+    <p><strong>Thông báo phụ lục nội bộ:</strong> Phụ lục này được duy trì trong tài liệu nội bộ của Mission Chain và được cố ý lược bỏ khỏi White Paper công khai. Chỉ có thể truy cập thông qua quy trình đánh giá quản trị nội bộ.</p>
+  </div>
+</div>
+
+<!-- APPENDIX N -->
+<div id="appN" class="section">
+  <div class="app-header">
+    <div class="app-header-num">APPENDIX N</div>
+    <h2>Sáng Lập và Quản Lý (Nội bộ)</h2>
+  </div>
+  <div class="callout warn">
+    <p><strong>Thông báo phụ lục nội bộ:</strong> Phụ lục này được duy trì trong tài liệu nội bộ của Mission Chain và được cố ý lược bỏ khỏi White Paper công khai. Chỉ có thể truy cập thông qua quy trình đánh giá quản trị nội bộ.</p>
+  </div>
+</div>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+<div class="foot-grid" style="max-width:960px">
+<div class="foot-logo">
+<img alt="Mission Chain" src="../../mission-chain-logo-clear.png" style="height:60px;width:60px;border-radius:14px;object-fit:contain;background:transparent"/>
+<div class="foot-logo-name">Mission Chain Network</div>
+<div class="foot-tagline" data-t="foot-tagline">Được truyền cảm hứng từ niềm tin. Được thiết kế cho con người.</div>
+</div>
+<div>
+<p data-t="foot-p">© 2026 Mission Chain Network. Tất cả quyền được bảo lưu. · Token: MIC · Mạng lưới: BSC (BEP-20) · Số lượng tối đa: 7.000.000.000</p>
+<div class="disclaimer" data-t="foot-disclaimer">
+        ⚠️ White Paper được cung cấp chỉ mang tính chất thông tin và không cấu thành lời khuyên tài chính, đề nghị bán chứng khoán hoặc kêu gọi đầu tư. Các token MIC là tài sản tiện ích và không đại diện cho cổ phần, quyền sở hữu hoặc lợi nhuận được đảm bảo. Việc tham gia vào hệ sinh thái Mission Chain liên quan đến rủi ro đáng kể, bao gồm khả năng mất toàn bộ vốn. Dữ liệu hiệu suất quá khứ, dự báo và các mốc quan trọng trong lộ trình chỉ mang tính minh họa. Môi trường pháp lý khác nhau tùy theo từng khu vực pháp lý — các bên tham gia hoàn toàn chịu trách nhiệm tuân thủ các quy định pháp luật địa phương. Mission Chain không đảm bảo truy cập liên tục hoặc kết quả.
+      </div>
+</div>
+</div>
+</footer>
+</main><!-- /main -->
+<script>
+const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
+const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
+function detectLocale() {
+  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
+  return match ? match[1] : 'en';
+}
+function detectFileName(fallback) {
+  const path = window.location.pathname || '';
+  const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+  const name = cleanPath.split('/').pop();
+  return name || fallback;
+}
+function getLocalizedHref(lang, fallbackFile) {
+  const currentLocale = detectLocale();
+  const file = detectFileName(fallbackFile);
+  const suffix = window.location.search + window.location.hash;
+  if (currentLocale === 'en') {
+    return (lang === 'en' ? file : 'translations/' + lang + '/' + file) + suffix;
+  }
+  return (lang === 'en' ? '../../documents/' + file : '../' + lang + '/' + file) + suffix;
+}
+let curLang = detectLocale();
+const THEME_KEY = 'missionchain-theme';
+function syncWhitePaperLanguageButtons() {
+  document.querySelectorAll('[id^="lb-"]').forEach(btn => btn.classList.remove('active'));
+  const active = document.getElementById('lb-' + curLang);
+  if (active) active.classList.add('active');
+  document.documentElement.lang = curLang;
+}
+function setLang(lang) {
+  curLang = lang;
+  syncWhitePaperLanguageButtons();
+  window.location.href = getLocalizedHref(lang, 'White_Paper.html');
+}
+
+function setTheme(theme) {
+  const isLight = theme === 'night';
+  document.body.classList.toggle('theme-light', isLight);
+  document.getElementById('theme-daylight').classList.toggle('active', !isLight);
+  document.getElementById('theme-night').classList.toggle('active', isLight);
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+syncWhitePaperLanguageButtons();
+setTheme(localStorage.getItem(THEME_KEY) || 'daylight');
+
+// ── SIDEBAR SCROLL ──
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  if (window.innerWidth <= 900) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── ACTIVE NAV ON SCROLL ──
+const sections = ['hero','toc','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s12','appA','appB','appC','appD','appE','appF','appG','appH','appI','appJ','appK','appL','appM','appN'];
+const navBtns = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 120) current = id;
+  });
+  navBtns.forEach(btn => {
+    btn.classList.remove('active');
+    const oc = btn.getAttribute('onclick') || '';
+    if (current && oc.includes("'" + current + "'")) btn.classList.add('active');
+  });
+});
+
+// ── SCROLL ANIMATE ──
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.style.animationPlayState = 'running'; } });
+}, {threshold: 0.08});
+document.querySelectorAll('.anim').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  obs.observe(el);
+});
+
+</script>
+</body>
+</html>

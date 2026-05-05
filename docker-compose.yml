@@ -53,21 +53,6 @@ services:
     networks:
       - mc-network
 
-  mc-info:
-    image: mc-info:latest
-    container_name: mc-info
-    restart: always
-    volumes:
-      - /var/www/missionchain-info:/var/www/missionchain-info:ro
-    environment:
-      PORT: 3001
-      NEXT_PUBLIC_API_URL: https://api.missionchain.io/v1
-      NEXT_PUBLIC_APP_URL: https://missionchain.io
-      NEXT_PUBLIC_WORLD_URL: https://missionchain.world
-    ports:
-      - "0.0.0.0:3001:3001"
-    networks:
-      - mc-network
 
   mc-world:
     image: mc-world:latest
@@ -75,9 +60,9 @@ services:
     restart: always
     environment:
       PORT: 3002
-      NEXT_PUBLIC_API_URL: https://api.missionchain.io/v1
-      NEXT_PUBLIC_INFO_URL: https://missionchain.info
-      NEXT_PUBLIC_APP_URL: https://missionchain.io
+      NEXT_PUBLIC_API_URL: https://api.missionchain.io
+      NEXT_PUBLIC_INFO_URL: https://missionchain.io
+      NEXT_PUBLIC_APP_URL: https://app.missionchain.io
     ports:
       - "0.0.0.0:3002:3002"
     networks:
@@ -90,7 +75,7 @@ services:
     env_file: ./.env
     environment:
       PORT: 3003
-      NEXT_PUBLIC_API_URL: https://api.missionchain.io/v1
+      NEXT_PUBLIC_API_URL: https://api.missionchain.io
       NEXTAUTH_URL: https://admin.missionchain.io
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/missionchain
     ports:

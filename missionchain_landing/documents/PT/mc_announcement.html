@@ -1,0 +1,730 @@
+```html
+<!DOCTYPE html>
+
+<html lang="pt">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Migração de Smart Contract — Mission Chain</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&amp;family=Montserrat:wght@300;400;500;600;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────── RESET & TOKENS ─────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:       #C9A84C;
+  --gold-l:     #E8C96B;
+  --gold-d:     #8A6520;
+  --ink:        #0C0810;
+  --ink-card:   #130E1C;
+  --cream:      #F4ECD7;
+  --cream-dim:  rgba(244,236,215,.62);
+  --cream-faint:rgba(244,236,215,.32);
+  --border:     rgba(201,168,76,.18);
+  --border-med: rgba(201,168,76,.40);
+  --red:        #B84040;
+  --green:      #3A8A4A;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:"EB Garamond",Georgia,serif;
+  background:var(--ink);
+  color:var(--cream);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+body.theme-light{
+  --ink:#F7F2E8;
+  --ink-card:#F0E7D8;
+  --cream:#231B15;
+  --cream-dim:rgba(35,27,21,.72);
+  --cream-faint:rgba(35,27,21,.42);
+  --border:rgba(184,141,46,.18);
+  --border-med:rgba(184,141,46,.38);
+}
+
+/* ─────────────────── BACKGROUND ─────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -15%,rgba(107,26,42,.45) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 95% 90%, rgba(44,26,62,.50) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 30% at 5%  70%, rgba(201,168,76,.06) 0%,transparent 50%);
+}
+body.theme-light::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(201,168,76,.18),transparent 58%),
+             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(123,45,139,.08),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(184,141,46,.06),transparent 50%)}
+
+
+/* ─────────────────── NAV ─────────────────── */
+nav{
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;padding:0 44px;
+  background:rgba(12,8,16,.94);
+  backdrop-filter:blur(20px) saturate(1.6);
+  border-bottom:1px solid var(--border);
+}
+.nlogo{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
+.nlogo img{
+  width:36px;height:36px;object-fit:contain;
+  filter:drop-shadow(0 0 7px rgba(201,168,76,.5));
+}
+.nbrand{
+  font-family:"Cinzel",serif;font-size:.82rem;font-weight:700;
+  letter-spacing:.2em;color:var(--gold);text-transform:uppercase;
+}
+.nav-tools{display:flex;align-items:center;gap:10px}
+.theme-toggle-group{display:flex;align-items:center;gap:6px;padding-right:10px;margin-right:2px;border-right:1px solid var(--border)}
+.theme-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;font-family:"Cinzel",serif;font-size:.82rem;color:var(--cream-dim);background:transparent;border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all .2s}
+.theme-btn:hover{border-color:var(--gold);color:var(--gold)}
+.theme-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--ink);border-color:transparent}
+body.theme-light nav{background:rgba(250,244,236,.94)}
+body.theme-light .lsdrop{background:rgba(250,244,236,.98)}
+body.theme-light .lsbtn,body.theme-light .theme-btn{backdrop-filter:blur(10px)}
+body.theme-light .wallet-qr{background:#fffdf8}
+body.theme-light select option{background:#F0E7D8;color:#231B15}
+
+/* ─────────────────── LANG SWITCHER ─────────────────── */
+.ls{position:relative}
+.lsbtn{
+  display:flex;align-items:center;gap:6px;
+  font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.1em;
+  color:var(--cream-dim);background:transparent;
+  border:1px solid var(--border);border-radius:2px;
+  padding:6px 13px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.lsbtn::after{content:"▾";font-size:.58rem;opacity:.5;margin-left:2px}
+.lsbtn:hover{border-color:var(--gold);color:var(--gold)}
+.lsdrop{
+  display:none;position:absolute;right:0;top:calc(100% + 6px);
+  min-width:112px;overflow:hidden;
+  background:rgba(15,10,24,.98);
+  border:1px solid var(--border);border-radius:3px;
+  box-shadow:0 16px 48px rgba(0,0,0,.6);
+}
+.ls.open .lsdrop{display:block}
+.lopt{
+  display:block;width:100%;padding:9px 15px;text-align:left;
+  font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.08em;
+  color:var(--cream-dim);background:none;border:none;cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.lopt:hover,.lopt.on{background:rgba(201,168,76,.1);color:var(--gold)}
+
+/* ─────────────────── PAGE WRAPPER ─────────────────── */
+.page{
+  position:relative;z-index:1;
+  max-width:740px;margin:0 auto;
+  padding:64px 36px 96px;
+}
+
+/* ─────────────────── BADGE ─────────────────── */
+.badge{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--border-med);
+  background:rgba(201,168,76,.06);
+  padding:5px 17px 5px 12px;border-radius:100px;
+  margin-bottom:28px;
+  font-family:"Cinzel",serif;font-size:.67rem;
+  letter-spacing:.22em;color:var(--gold);text-transform:uppercase;
+}
+.bdot{
+  width:7px;height:7px;border-radius:50%;background:var(--gold);
+  flex-shrink:0;
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}55%{opacity:.25;transform:scale(.55)}}
+
+/* ─────────────────── HEADLINE ─────────────────── */
+h1{
+  font-family:"Cinzel",serif;
+  font-size:clamp(1.7rem,4.5vw,2.8rem);
+  font-weight:600;line-height:1.12;
+  letter-spacing:.025em;margin-bottom:10px;
+}
+.hl-gold{color:var(--gold)}
+.dateline{
+  font-family:"Cinzel",serif;font-size:.72rem;
+  letter-spacing:.18em;color:var(--cream-faint);
+  margin-bottom:52px;text-transform:uppercase;
+}
+
+/* ─────────────────── ORNAMENTAL RULE ─────────────────── */
+.ornrule{
+  display:flex;align-items:center;gap:0;
+  margin:44px 0;
+}
+.ornrule-line{flex:1;height:1px;background:var(--border)}
+.ornrule-glyph{
+  flex-shrink:0;padding:0 18px;
+  font-family:"Cinzel",serif;font-size:.72rem;
+  letter-spacing:.3em;color:var(--gold-d);
+  opacity:.7;
+}
+
+/* ─────────────────── BODY COPY ─────────────────── */
+.copy{font-size:1.05rem;line-height:1.88;color:var(--cream-dim)}
+.copy p + p{margin-top:1.1em}
+.copy strong{color:var(--cream);font-weight:600}
+.copy em{font-style:italic;color:rgba(244,236,215,.78)}
+
+/* ─────────────────── FORM ─────────────────── */
+.formhead{
+  display:flex;align-items:center;gap:14px;
+  font-family:"Cinzel",serif;font-size:.69rem;
+  letter-spacing:.22em;color:var(--gold);text-transform:uppercase;
+  margin-bottom:28px;
+}
+.formhead::before,.formhead::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.fstack{display:flex;flex-direction:column;gap:20px}
+.frow{display:grid;grid-template-columns:1.75fr 1fr;gap:20px}
+.fgroup{display:flex;flex-direction:column;gap:7px}
+.flabel{
+  font-family:"Cinzel",serif;font-size:.66rem;
+  letter-spacing:.13em;color:var(--gold);text-transform:uppercase;
+  display:flex;align-items:baseline;gap:8px;
+}
+.flabel-note{
+  font-family:"EB Garamond",serif;text-transform:none;
+  font-style:italic;font-size:.82rem;
+  letter-spacing:.02em;color:var(--cream-faint);
+}
+.freq{color:rgba(201,168,76,.55);font-size:.62rem;margin-left:1px}
+input{
+  background:rgba(255,255,255,.03);
+  color:var(--cream);
+  border:1px solid var(--border);
+  border-radius:2px;
+  padding:11px 14px;
+  font-family:"EB Garamond",serif;font-size:1rem;
+  outline:none;width:100%;
+  transition:border-color .22s,background .22s;
+  line-height:1.4;
+}
+input::placeholder{color:rgba(244,236,215,.16);font-size:.88rem}
+input:focus{
+  border-color:var(--border-med);
+  background:rgba(201,168,76,.035);
+  outline:none;
+}
+
+/* ─────────────────── SUBMIT ─────────────────── */
+.fsubmit{display:flex;justify-content:center;margin-top:28px}
+.btnsubmit{
+  display:inline-flex;align-items:center;gap:14px;
+  background:linear-gradient(130deg, var(--gold) 0%, var(--gold-l) 100%);
+  color:var(--ink);
+  font-family:"Cinzel",serif;font-size:.78rem;
+  font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  padding:14px 48px;border:none;border-radius:2px;
+  cursor:pointer;
+  transition:transform .22s,box-shadow .22s;
+  box-shadow:0 6px 30px rgba(201,168,76,.2);
+}
+.btnsubmit:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.38)}
+.btnsubmit:active{transform:translateY(-1px)}
+.btnorn{opacity:.5;font-size:.62rem}
+
+/* ─────────────────── SUCCESS ─────────────────── */
+.msgsuccess{
+  display:none;margin-top:20px;
+  background:rgba(58,138,74,.08);
+  border:1px solid rgba(58,138,74,.3);
+  border-radius:3px;padding:18px 22px;
+  text-align:center;
+  font-size:.93rem;color:rgba(160,230,170,.9);
+  line-height:1.65;
+}
+
+/* ─────────────────── CONFIRM NOTE ─────────────────── */
+.confirmnote{
+  margin-top:22px;padding:15px 20px;
+  border-left:2px solid var(--border);
+  font-size:.88rem;color:var(--cream-faint);
+  line-height:1.82;font-style:italic;
+}
+
+/* ─────────────────── WARNING ─────────────────── */
+.warnbox{
+  margin-top:18px;padding:18px 22px;
+  background:rgba(92,20,20,.14);
+  border:1px solid rgba(201,168,76,.12);
+  border-left:2px solid var(--red);
+  border-radius:0 3px 3px 0;
+  font-size:.88rem;color:var(--cream-faint);
+  line-height:1.82;
+}
+.warnttl{
+  font-family:"Cinzel",serif;font-size:.65rem;
+  letter-spacing:.18em;color:#cc7070;
+  text-transform:uppercase;margin-bottom:9px;
+}
+.warnbox strong{color:#cc7070}
+
+/* ─────────────────── CLOSING ─────────────────── */
+.closing{margin-top:52px;text-align:center}
+.cl-line1{
+  display:block;font-family:"Cinzel",serif;
+  font-size:1rem;color:var(--gold);
+  letter-spacing:.1em;margin-bottom:8px;
+}
+.cl-line2{
+  display:block;font-family:"Cinzel",serif;
+  font-size:.7rem;color:var(--cream-faint);
+  letter-spacing:.2em;text-transform:uppercase;
+}
+
+/* ─────────────────── FOOTER ─────────────────── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:22px 24px;text-align:center;
+  font-family:"Cinzel",serif;font-size:.63rem;
+  letter-spacing:.1em;color:var(--cream-faint);
+  text-transform:uppercase;
+}
+
+/* ─────────────────── ENTRANCE ANIMATION ─────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.ani{animation:fadeUp .65s ease both}
+.ani-d1{animation-delay:.06s}
+.ani-d2{animation-delay:.14s}
+.ani-d3{animation-delay:.22s}
+.ani-d4{animation-delay:.30s}
+.ani-d5{animation-delay:.38s}
+
+/* ─────────────────── LANG OVERRIDES ─────────────────── */
+/* Vietnamese — Montserrat, targeted (tránh ligature bug với dấu tiếng Việt) */
+.lang-vi body,
+.lang-vi p, .lang-vi span, .lang-vi div,
+.lang-vi h1, .lang-vi h2, .lang-vi h3,
+.lang-vi label, .lang-vi .flabel,
+.lang-vi .copy, .lang-vi .confirmnote, .lang-vi .warnbox,
+.lang-vi .badge, .lang-vi .dateline, .lang-vi .formhead,
+.lang-vi .closing, .lang-vi footer,
+.lang-vi input, .lang-vi select, .lang-vi button,
+.lang-vi .btnsubmit, .lang-vi .msgsuccess,
+.lang-vi .cl-line1, .lang-vi .cl-line2 {
+  font-family:"Montserrat",sans-serif!important;
+  font-feature-settings:"liga" 0,"calt" 0;
+  -webkit-font-feature-settings:"liga" 0,"calt" 0;
+}
+/* Spanish */
+.lang-es .copy,.lang-es .confirmnote,.lang-es .warnbox,
+.lang-es input,.lang-es select,.lang-es .flabel-note{
+  font-family:"Montserrat",sans-serif!important;
+  font-size:.91rem!important;line-height:1.82!important;
+}
+/* Portuguese */
+.lang-pt .copy,.lang-pt .confirmnote,.lang-pt .warnbox,
+.lang-pt input,.lang-pt select,.lang-pt .flabel-note{
+  font-family:"Montserrat",sans-serif!important;
+  font-size:.91rem!important;line-height:1.82!important;
+}
+/* Korean */
+.lang-ko .copy,.lang-ko .confirmnote,.lang-ko .warnbox,
+.lang-ko input,.lang-ko select,.lang-ko .flabel-note{
+  font-family:"Montserrat","Noto Sans KR",sans-serif!important;
+  font-size:.91rem!important;line-height:1.85!important;
+}
+
+/* ─────────────────── SELECT / DROPDOWN ─────────────────── */
+select{
+  background:rgba(255,255,255,.03);
+  color:var(--cream);
+  border:1px solid var(--border);
+  border-radius:2px;
+  padding:11px 36px 11px 14px;
+  font-family:"EB Garamond",serif;font-size:1rem;
+  outline:none;width:100%;
+  appearance:none;-webkit-appearance:none;
+  cursor:pointer;
+  transition:border-color .22s,background .22s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 13px center;
+  line-height:1.4;
+}
+select:focus{border-color:var(--border-med);background-color:rgba(201,168,76,.035)}
+select option{background:#130E1C;color:var(--cream)}
+select option:disabled{color:rgba(244,236,215,.35)}
+
+/* ─────────────────── RESPONSIVE ─────────────────── */
+@media(max-width:580px){
+  nav{padding:0 18px}
+  .nav-tools{gap:8px}
+  .theme-toggle-group{padding-right:8px}
+  .page{padding:42px 18px 72px}
+  .frow{grid-template-columns:1fr}
+  h1{font-size:1.65rem}
+  .dateline{margin-bottom:38px}
+}
+</style>
+</head>
+<body>
+```
+Here is the translation to Portuguese (Português brasileiro):
+
+```html
+<!-- ── NAV ── -->
+<nav>
+<a class="nlogo" href="#">
+<img alt="Logo da Mission Chain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAHgCAYAAAB91L6VAAEAAElEQVR4nOz9d5hkV3Xuj3/23idX6jxZYRRRJAiUQCJnEYzBmGSDbWxMNA7X1+HiCPg6c43B2IAME2x8MTYgm2yyZZQzGkmjOKljxZN2+P5xqnpmBO7m95O5EnA+z1OaVld11alT1efda+213gU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NQ8OxAN9ADU1/y8QovqoO+eOvsMb3z/+dnX34T8LccTPjx9i/bEAzH0eT9znL0qZ8ffHN4VASokQAikESrfWH/O+N4DAjzd8XQES60kKBdoalNHEtmQa6RIcJhtgcFgcpbPCOIvGYbBYYBg6nHPVzzhBicVYMONz4VsPB1gcVoB1Yv3xqgO3TL6UAqSr/gVQQKGCo8+7sAhX/b9zDuXAjl+LEw43/n1vfA5KN7n3O6PchnejN7nEfdvnoabm/yG1ANf8wHOkoB35PQCDAXekuKqjf85UF2jnHI5vv1gL5W/43J3waIH1xFh8xyLcjKa+7TiPPF6Bt6FCRE5ilMIoQeFKlNGiaa1r42gISFyJc5VgahzaWSwCTSWAg7yHEwI7EWEEpbPCuUp0jhBdT1clmMOHr169LHn/upCRqiKhwWlNlQcumZZnJyN5YWfEOMbPm0oMwDcZMRlZkjHorbLaP8agWNXM5qg3eKdkS7SubnQA9k4DEISESCdYa/F9H9/38DwPKSUREdIR0kt67VLo7r+llG7yu0IIoiO0+8hjm/yrEArxlMQoRCUYUSnGgvOESeD18a5HO4E2lm6fv+sqB52vBFubSnB1UX0PrAa8Apri8aPvj2s/1XoAlYZ0o9fHOXdIEJauRE7+XjhU3u87/jycIz4QlIV2L9I8kBTsn7+jv4+YYNPX19aVSLrX0dua+ve/+fnxfoaUPuz80ckBhKNco/o+W94+aH29bPPnv3/8nSL5fq9o5p4A9y+uJ+9wP9dg/9o0rwHNLlO1vfp7Y/3fpQ/m6Pfaet72f6fbuEX+b/yznd1X27eMhejf10xVXfwrF5+3zey+eu0K6a6lWt7/b/h9yO2+o7sW+c76R/rXvO83m7f4nf3H2v/3WD/vON/zDo6h8f8fOgd5U9c5cvsSA/BNRkxGluQcdO+b/RlmAcnZmh/8U1f+9v/ywfe8n71//33o5OgXtf/u/UfFWFBvNr7u/WfZ65HP3m3hP/j4+y8H+3/PffPnyb9zn/nPX/fdXPuam13z+LKkJDg/BhHj8HPHN/s3//z3mT+39P/tv8f+96le58vO6X6qvPxnn10jwP/+zx/U6PeBG/qs3/dxa/6tOXcHrg3M/s3+B4Dx9z/fZONef93/f93XLLvBVY+//dePV5/P2Yk4co0ae/vw59LY8zy45BvVCdl/v/fPe+P/3PfZdd9P9fv/9v+uuiY1hVkbtOa//mj53vd6w+/2d6z//v9W13L+e5v9u/i3rn093+p3Gue9OuY38f+3v85Lf3rL31n2mdtv3c03fs21d80f//j///t8ff+cV94r/q06b6v/+cYd09t/Z/M78TfbzvvO+39oXXz6Lf++G/+m/4NX//OhN/gX8f2FpQB8kxGzkSX5Tjf7M38g/vQ/v39n/mePv5Z/+T9/zWte87w/5OG/X/je/pz8v+L9f70f0eZBwOze3/x/3+y/1/x/2fXq37V/rvr/W75f4Pj//13nt/n/n/z9g7/z/f9bWJ1J++P7OfYw/e/NP//+/M/5r/c//f+//T/f5//Jf7l/r//+/N/zP3/r//R9/R/f+ff/T/j5zTfqR/67/H7/TxC+xfWBP9H72/87/+zf/W/8v11sX/df3fhf+O4/z98qr9x8D7f4P9e+//dz7P0/a97/0ut54PVv/v/v97//17/tT3/69f//Xn+/vxVOCMDfz4l/cxxFdHX+v/YN/P/1/W/+h+L/w4bif4e/nSNdH/5U/39z/73/4/91/7P7LW70T+HP1/++G/vbN/r+YW//f9p7PHS3f87f7t+c72W/9v//3/3l+d//jcb/9+3/+w/82r/17/85YgC+yYjJyJL8cd7l9h/8B/0Pvs//vv05+gf8iQ//Dvvv+ue/1fef/Nn/IP+r/o/t5++43fnfXfK/jnLN//9K38//p//8D/q3/yX/Tv9T/1X+1v/Xf/k/w/9eqsYdwR/vNf+R/XZ/wyvOA/ib/L+j5OC//7/l3+fv+rv+cf3Nv4k/nd/fn8df/m/7u/r/N/iZ/yW/6cY/2vzrN/76P9x7+//sN9kIhz0M/1f+u//3/+b/j//T+q38//0U//QP/PP/3fwtP+u/5z//1/kf/1+5fvp//dv41D/w/7l/4r/8P8z/+f/z/0l/L38s/1h/hN/7B/r7/j/h4v6dyvv4d/1rv4P/j//jb/3//a/+P/w/RQzANxkxGVmSv+p34H+/t/9P9Z/4L/LH/dv+Y/91f+9/33/pf6J/v//s/0X/fv/M/0P/m//N/xP+a/xr/F/43/k/9//3/8f/a/7f9v/S/zr/a//f/TfwP/vf5f//RvZrN/oj/tv5I/ijuc//d/89/y6+rd/Lv+7/pv/R/2l/0f+c/2j/9v+Zf5//gv8N/sv8j/7v/LX/kv/T/1v/p//T/q/7f/9f/b/2t/Pv/vv+l/7//BX/df6v/5f51/kb/Wf+W/6z/tN/w3/Pf8e/w9/67/P3/rf4n/9/+K/+3/9t/s/wX/6//1+b7fh//Cf5v/B/9Ob/Y/+P/If+A//f/3/zz/4//f/z/9f//3/pf/rv/B/+v+J/8f/5/kv/Ov99/x/2H/1v8a/+t/Iv/Pf8F/37/N/4Z/m3/G/+j/xf/l/+P/4/ib/Mf95/9//4/wh/Gv/u/97/2f+Z/47/Fv/j/w/9V//3/Kv/Hv/b/gv/Qf+i/6T/of8T/wf+D/zv+u/wz/zv/m/7v/K/77/P/4P//f+Y/5X/8f+l/+H+J/4f/Wf/p/0f/x/1//RP/X/3f9h/97/Z/9d/9v/Nf6f/gf+i/+l/kP/Lf+W/8z/0n/5v+U/8n/1v+T/03/rf/e/yr/jf99/wH/zf///1t/A/8Z/03/Df8d/03/Lf9t/y3/Hf9d/13/Pf99/33//f/z/wP/A//D/8P/I//D/yP/I//D/yP/I//D/yP/o//j/2P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//j/+P/4//
+```html
+<div class="ls" id="LS">
+<button class="lsbtn" id="LSL" onclick="tgl()">🇬🇧 EN</button>
+<div class="lsdrop">
+<button class="lopt on" onclick="sl('en','🇬🇧 EN',this)">🇬🇧 EN</button>
+<button class="lopt" onclick="sl('es','🇪🇸 ES',this)">🇪🇸 ES</button>
+<button class="lopt" onclick="sl('pt','🇧🇷 PT',this)">🇧🇷 PT</button>
+<button class="lopt" onclick="sl('ko','🇰🇷 KO',this)">🇰🇷 KO</button>
+<button class="lopt" onclick="sl('vi','🇻🇳 VI',this)">🇻🇳 VI</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- ── MAIN ── -->
+<main class="page">
+<!-- Badge -->
+<div class="ani">
+<p class="badge"><span class="bdot"></span><span>Aviso Oficial</span></p>
+</div>
+<!-- Headline -->
+<div class="ani ani-d1">
+<h1>
+<span>Migração e Atualização</span><br/>
+<span class="hl-gold">de Smart Contract</span>
+</h1>
+<p class="dateline">Mission Chain  ·  Abril de 2026</p>
+</div>
+<!-- Divider -->
+<div class="ornrule ani ani-d2">
+<span class="ornrule-line"></span>
+<span class="ornrule-glyph">✦ ✦ ✦</span>
+<span class="ornrule-line"></span>
+</div>
+<!-- Body copy -->
+<div class="copy ani ani-d2">
+<p><strong>Prezados Parceiros e Membros da Comunidade,</strong></p>
+<p>Mission Chain tem o prazer de anunciar um marco significativo e transformador: após um período intensivo de colaboração com nossos parceiros estratégicos, assessoria jurídica, consultores financeiros e arquitetos de tecnologia, concluímos uma revisão abrangente e atualização de nossa infraestrutura central de Smart Contract.</p>
+<p>Para reconhecer e honrar o compromisso de nossos parceiros, Mission Chain processará uma alocação adicional no novo Smart Contract para todos os detentores elegíveis. Além disso, cada pacote MICP adquirido anteriormente será convertido sem custo em uma licença de mineração MICE-NFT equivalente. Por favor, envie seu registro abaixo.</p>
+<p><strong>Prazo final para encerrar a lista de registro:</strong> <strong>25 de abril de 2026, 23:59 Horário de Nova York</strong>.</p>
+</div>
+<!-- Divider -->
+<div class="ornrule ani ani-d3">
+<span class="ornrule-line"></span>
+<span class="ornrule-glyph">✦</span>
+<span class="ornrule-line"></span>
+</div>
+<!-- Form -->
+<div class="ani ani-d3">
+<div class="formhead">Registro</div>
+<form class="fstack" id="REG" onsubmit="sub(event)">
+<!-- Email -->
+<div class="fgroup">
+<label class="flabel" for="fe">
+          E-mail <span class="freq">obrigatório</span>
+</label>
+<input autocomplete="email" id="fe" name="email" placeholder="seu@email.com" required="" type="email"/>
+</div>
+<!-- Country -->
+<div class="fgroup">
+<label class="flabel" for="fc">
+<span>País</span>
+<span class="freq">obrigatório</span>
+</label>
+<select id="fc" name="country" required="">
+<option disabled="" selected="" value="">ex: Argentina, Brasil, Camboja…</option>
+<option value="Argentina">🇦🇷 Argentina</option>
+<option value="Australia">🇦🇺 Austrália</option>
+<option value="Bangladesh">🇧🇩 Bangladesh</option>
+<option value="Brazil">🇧🇷 Brasil</option>
+<option value="Cambodia">🇰🇭 Camboja</option>
+<option value="Canada">🇨🇦 Canadá</option>
+<option value="Chile">🇨🇱 Chile</option>
+<option value="China">🇨🇳 China</option>
+<option value="Colombia">🇨🇴 Colômbia</option>
+<option value="France">🇫🇷 França</option>
+<option value="Germany">🇩🇪 Alemanha</option>
+<option value="Ghana">🇬🇭 Gana</option>
+<option value="Hong Kong">🇭🇰 Hong Kong</option>
+<option value="India">🇮🇳 Índia</option>
+<option value="Indonesia">🇮🇩 Indonésia</option>
+<option value="Italy">🇮🇹 Itália</option>
+<option value="Japan">🇯🇵 Japão</option>
+<option value="Kenya">🇰🇪 Quênia</option>
+<option value="Korea">🇰🇷 Coreia</option>
+<option value="Laos">🇱🇦 Laos</option>
+<option value="Malaysia">🇲🇾 Malásia</option>
+<option value="Mexico">🇲🇽 México</option>
+<option value="Myanmar">🇲🇲 Mianmar</option>
+<option value="Netherlands">🇳🇱 Holanda</option>
+<option value="Nigeria">🇳🇬 Nigéria</option>
+<option value="Pakistan">🇵🇰 Paquistão</option>
+<option value="Peru">🇵🇪 Peru</option>
+<option value="Philippines">🇵🇭 Filipinas</option>
+<option value="Poland">🇵🇱 Polônia</option>
+<option value="Portugal">🇵🇹 Portugal</option>
+<option value="Russia">🇷🇺 Rússia</option>
+<option value="Saudi Arabia">🇸🇦 Arábia Saudita</option>
+<option value="Singapore">🇸🇬 Singapura</option>
+<option value="South Africa">🇿🇦 África do Sul</option>
+<option value="Spain">🇪🇸 Espanha</option>
+<option value="Taiwan">🇹🇼 Taiwan</option>
+<option value="Thailand">🇹🇭 Tailândia</option>
+<option value="Turkey">🇹🇷 Turquia</option>
+<option value="UAE">🇦🇪 EAU</option>
+<option value="Ukraine">🇺🇦 Ucrânia</option>
+<option value="UK">🇬🇧 Reino Unido</option>
+<option value="USA">🇺🇸 Estados Unidos</option>
+<option value="Vietnam">🇻🇳 Vietnã</option>
+<option value="Other">🌍 Outro</option>
+</select>
+</div>
+<!-- MIC wallet + amount -->
+<div class="frow">
+<div class="fgroup">
+<label class="flabel" for="fw">
+<span>Endereço da Carteira MIC (BEP20)</span>
+<span class="freq">obrigatório</span>
+</label>
+<input id="fw" name="mic_wallet" placeholder="0x..." required="" type="text"/>
+</div>
+<div class="fgroup">
+<label class="flabel" for="fq">
+<span>Quantidade de MIC</span>
+</label>
+<input id="fq" min="0" name="mic_qty" placeholder="0" step="any" type="number"/>
+</div>
+</div>
+<!-- Unity wallet -->
+<div class="fgroup">
+<label class="flabel" for="fu">
+<span>Carteira Mission Unity</span>
+<span class="flabel-note">para detentores de pacotes MICP</span>
+</label>
+<input id="fu" name="unity_wallet" placeholder="0x..." type="text"/>
+</div>
+<!-- Submit -->
+<div class="fsubmit">
+<button class="btnsubmit" type="submit">
+<span class="btnorn">✦</span>
+<span>Enviar Registro</span>
+<span class="btnorn">✦</span>
+</button>
+</div>
+</form>
+<!-- Success -->
+<div class="msgsuccess" id="OK">
+      ✓ <strong>Registro Recebido</strong><br/>
+<span>Nossa equipe verificará suas participações na blockchain e enviará instruções detalhadas de migração.</span>
+</div>
+<!-- Confirm note -->
+<p class="confirmnote">Mission Chain verificará todos os envios em relação aos Registros da Blockchain para confirmar as participações e, em seguida, distribuirá novos tokens MIC, licenças de mineração MICE-NFT e instruções detalhadas de migração passo a passo.</p>
+<!-- Warning -->
+<div class="warnbox">
+<p class="warnttl">Aviso Importante</p>
+<span>Mission Chain não se responsabiliza por perdas decorrentes de endereços de carteira incorretos ou falha no registro até <strong>25 de abril de 2026, 23:59 Horário de Nova York</strong>. Por favor, verifique cuidadosamente cada endereço antes de enviar.</span>
+</div>
+</div>
+<!-- Closing -->
+<div class="closing ani ani-d4">
+<span class="cl-line1">Com Gratidão e Propósito,</span>
+<span class="cl-line2">A Equipe Fundadora da Mission Chain</span>
+</div>
+</main>
+<footer>© 2026 Mission Chain  ·  Todos os Direitos Reservados  ·  Aviso de Migração de Smart Contract</footer>
+<script>
+const THEME_KEY = 'missionchain-theme';
+function setTheme(theme){
+  const isLight = theme === 'night';
+  document.body.classList.toggle('theme-light', isLight);
+  document.getElementById('theme-daylight').classList.toggle('active', !isLight);
+  document.getElementById('theme-night').classList.toggle('active', isLight);
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
+const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
+const ANNOUNCEMENT_FORM_CONFIG = {
+  endpoint: 'https://script.google.com/macros/s/AKfycbzeGhqXSp3ca0TxTYz_Xw7Nh4EssifUD88wyrZE4znZZ7TOx9uoYVGiCd8U9DjQPCWBaA/exec',
+  sheet: 'MIC_ANNOUNCEMENT_20260425'
+};
+const FORM_MESSAGES = {
+  en: {
+    micWallet: 'Please enter a valid BEP20 MIC wallet address.',
+    unityWallet: 'Please enter a valid Mission Unity wallet address or leave it blank.',
+    submitError: 'Submission failed. Please try again in a minute.'
+  },
+  vi: {
+    micWallet: 'Vui long nhap dung dia chi vi MIC theo chuan BEP20.',
+    unityWallet: 'Vui long nhap dung dia chi vi Mission Unity hoac de trong.',
+    submitError: 'Gui dang ky that bai. Vui long thu lai sau it phut.'
+  },
+  es: {
+    micWallet: 'Introduzca una direccion de billetera MIC BEP20 valida.',
+    unityWallet: 'Introduzca una direccion de billetera Mission Unity valida o dejela vacia.',
+    submitError: 'No se pudo enviar el registro. Intente nuevamente en unos minutos.'
+  },
+  pt: {
+    micWallet: 'Informe um endereco de carteira MIC BEP20 valido.',
+    unityWallet: 'Informe um endereco de carteira Mission Unity valido ou deixe em branco.',
+    submitError: 'Nao foi possivel enviar o registro. Tente novamente em alguns minutos.'
+  },
+  ko: {
+    micWallet: 'BEP20 MIC 지갑 주소를 올바르게 입력해 주세요.',
+    unityWallet: 'Mission Unity 지갑 주소를 올바르게 입력하거나 비워 두세요.',
+    submitError: '등록 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+  }
+};
+function detectLocale() {
+  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
+  return match ? match[1] : 'en';
+}
+function detectFileName(fallback) {
+  const path = window.location.pathname || '';
+  const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+  const name = cleanPath.split('/').pop();
+  return name || fallback;
+}
+function detectAnnouncementBase() {
+  const path = window.location.pathname || '';
+  if (path === '/announcement' || path.indexOf('/announcement/') === 0) {
+    return '/announcement';
+  }
+  if (path === '/MIC_Announcement' || path.indexOf('/MIC_Announcement/') === 0) {
+    return '/MIC_Announcement';
+  }
+  return '';
+}
+function getLocalizedHref(lang, fallbackFile) {
+  const base = detectAnnouncementBase();
+  const currentLocale = detectLocale();
+  const suffix = window.location.search + window.location.hash;
+  if (base) {
+    return (lang === 'en' ? base + '/' : base + '/translations/' + lang + '/') + suffix;
+  }
+  const file = detectFileName(fallbackFile);
+  if (currentLocale === 'en') {
+    return (lang === 'en' ? file : '../translations/' + lang + '/' + file) + suffix;
+  }
+  return (lang === 'en' ? '../../' + file : '../' + lang + '/' + file) + suffix;
+}
+
+function tgl() { document.getElementById('LS').classList.toggle('open'); }
+document.addEventListener('click', function(e) {
+  var s = document.getElementById('LS');
+  if (s && !s.contains(e.target)) s.classList.remove('open');
+});
+function syncFormLanguageMenu() {
+  var current = detectLocale();
+  document.getElementById('LSL').textContent = LOCALE_LABELS[current] || LOCALE_LABELS.en;
+  document.querySelectorAll('.lopt').forEach(function(o) {
+    o.classList.toggle('on', o.textContent.trim() === (LOCALE_LABELS[current] || LOCALE_LABELS.en));
+  });
+  document.documentElement.lang = current;
+}
+function sl(l, label, el) {
+  document.getElementById('LSL').textContent = label || LOCALE_LABELS[l] || LOCALE_LABELS.en;
+  document.querySelectorAll('.lopt').forEach(function(o) { o.classList.remove('on'); });
+  if (el) el.classList.add('on');
+  document.getElementById('LS').classList.remove('open');
+  window.location.href = getLocalizedHref(l, 'mc_announcement.html');
+}
+function getFormMessage(key) {
+  var locale = detectLocale();
+  return (FORM_MESSAGES[locale] && FORM_MESSAGES[locale][key]) || FORM_MESSAGES.en[key];
+}
+function normalizeWallet(value) {
+  return (value || '').trim();
+}
+function isLikelyBep20Address(value) {
+  return /^0x[a-fA-F0-9]{40}$/.test(value);
+}
+async function sub(e){
+  e.preventDefault();
+  var form=document.getElementById('REG');
+  var ok=document.getElementById('OK');
+  var submitBtn=form.querySelector('button[type="submit"]');
+  var country=document.getElementById('fc');
+  var countryVal=country.options[country.selectedIndex]?country.options[country.selectedIndex].text:'';
+  var locale=detectLocale();
+  var email=document.getElementById('fe').value.trim().toLowerCase();
+  var micWallet=normalizeWallet(document.getElementById('fw').value);
+  var micQty=document.getElementById('fq').value || '';
+  var unityWallet=normalizeWallet(document.getElementById('fu').value);
+  if(!isLikelyBep20Address(micWallet)){
+    alert(getFormMessage('micWallet'));
+    return;
+  }
+  if(unityWallet && !isLikelyBep20Address(unityWallet)){
+    alert(getFormMessage('unityWallet'));
+    return;
+  }
+  var submittedAt=new Date();
+  var row=[
+    submittedAt.toLocaleString(),
+    email,
+    countryVal,
+    micWallet,
+    micQty,
+    unityWallet
+  ];
+  var payload={
+    submitted_at_iso: submittedAt.toISOString(),
+    submitted_at_local: submittedAt.toLocaleString(),
+    locale: locale,
+    page_url: window.location.href,
+    email: email,
+    country_label: countryVal,
+    country_value: country.value || '',
+    mic_wallet: micWallet,
+    mic_qty: micQty,
+    unity_wallet: unityWallet,
+    user_agent: navigator.userAgent,
+    source_form: 'mc_announcement',
+    sheet_key: ANNOUNCEMENT_FORM_CONFIG.sheet,
+    version: '2026-04-09'
+  };
+  if(submitBtn){
+    submitBtn.disabled=true;
+    submitBtn.style.opacity='.6';
+  }
+  try{
+    await fetch(ANNOUNCEMENT_FORM_CONFIG.endpoint,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:ANNOUNCEMENT_FORM_CONFIG.sheet,row:row,payload:payload})
+    });
+  }catch(err){
+    console.log('submit err',err);
+    if(submitBtn){
+      submitBtn.disabled=false;
+      submitBtn.style.opacity='1';
+    }
+    alert(getFormMessage('submitError'));
+    return;
+  }
+  form.style.opacity='.3';
+  form.style.pointerEvents='none';
+  ok.style.display='block';
+  syncFormLanguageMenu();
+  ok.scrollIntoView({behavior:'smooth',block:'center'});
+}
+setTheme(localStorage.getItem(THEME_KEY) || 'daylight');
+syncFormLanguageMenu();
+
+</script>
+```
+```html
+</body>
+</html>
+```
