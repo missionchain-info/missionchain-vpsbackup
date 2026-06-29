@@ -1,0 +1,20 @@
+export { PrismaClient } from "@prisma/client";
+export type {
+  User,
+  Nonce,
+  Purchase,
+  StakingPosition,
+  NFTItem,
+  VestingSchedule,
+  MiningReward,
+  RewardClaim,
+  GroupVolume,
+  DAOProposal,
+  DAOVote,
+  BlockchainEvent,
+  SyncCursor,
+  RoundConfig,
+  AgentGrant,
+  AdminBoard,
+  SystemConfig,
+} from "@prisma/client";

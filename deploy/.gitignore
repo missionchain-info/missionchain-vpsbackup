@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+.next/
+dist/
+out/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.bak*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tsbuildinfo
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# Prisma
+packages/db/prisma/*.db
+
+# Hardhat
+packages/contracts/cache/
+packages/contracts/artifacts/
+packages/contracts/typechain-types/
+packages/contracts/coverage/
+packages/contracts/coverage.json
+
+# Deployment/build snapshots
+standalone/
+out-testnet-bak/
+out_old/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -1,0 +1,750 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Note: Enums stored as String for SQLite compatibility ───────────
+// UserRole: "USER" | "AGENT" | "ADMIN" | "SUPER_ADMIN"
+// AdminLevel (4-tier RBAC): "OBSERVER" | "ANALYST" | "OPERATOR" | "GOVERNOR"
+// PurchaseType: "SEED" | "PRESALE" | "MICE"
+
+// ─── 1. User ─────────────────────────────────────────────────────────
+
+model User {
+  id               String   @id @default(cuid())
+  wallet           String   @unique
+  userId           String   @unique
+  referrer         String?
+  avatarUrl        String?  // base64 data URI or external URL
+  email            String?
+  phone            String?
+  emailVerified    Boolean  @default(false)
+  phoneVerified    Boolean  @default(false)
+  kycStatus        String   @default("none") // none | email_verified | phone_verified | fully_verified
+  // ── Social Connect (Profile page) ─────────────────────────────────
+  telegramHandle      String?
+  telegramChatId      String?
+  telegramVerified    Boolean   @default(false)
+  telegramVerifiedAt  DateTime?
+  whatsappNumber      String?
+  whatsappVerified    Boolean   @default(false)
+  whatsappVerifiedAt  DateTime?
+  termsAccepted    Boolean  @default(false)
+  role             String   @default("USER") // USER | AGENT | ADMIN | SUPER_ADMIN
+  adminLevel       String   @default("OBSERVER") // OBSERVER | ANALYST | OPERATOR | GOVERNOR — only applies when role = ADMIN
+  adminEnabled     Boolean  @default(true)       // SUPER_ADMIN can disable/enable admins
+  seedPurchased    Boolean  @default(false)
+  preSalePurchased Boolean  @default(false)
+  mfpCount         Int      @default(0)
+  gvRank           String   @default("Believer")
+  totalGV          Decimal  @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  nonces           Nonce[]
+  referrals        User[]            @relation("Referrals")
+  referredBy       User?             @relation("Referrals", fields: [referrer], references: [wallet])
+  purchases        Purchase[]
+  stakingPositions StakingPosition[]
+  nftItems         NFTItem[]
+  vestingSchedules VestingSchedule[]
+  miningRewards    MiningReward[]
+  rewardClaims     RewardClaim[]
+  groupVolume      GroupVolume[]
+  daoVotes         DAOVote[]
+
+  @@index([wallet])
+  @@index([userId])
+  @@index([referrer])
+}
+
+// ─── 2. Nonce ────────────────────────────────────────────────────────
+
+model Nonce {
+  id        String   @id @default(cuid())
+  wallet    String
+  nonce     String
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@index([wallet])
+}
+
+// ─── 3. Purchase ─────────────────────────────────────────────────────
+
+model Purchase {
+  id              String       @id @default(cuid())
+  wallet          String
+  type            String       // SEED | PRESALE | MICE
+  packageName     String?
+  usdtAmount      Decimal
+  micAmount       Decimal
+  bnbAmount       Decimal      @default(0)
+  txHash          String?      @unique   // Optional for Phase 1 DB-only purchases
+  blockNumber     Int?                    // Optional for Phase 1 DB-only purchases
+  status          String       @default("CONFIRMED") // CONFIRMED | PENDING | FAILED
+  nftBonusType    String?
+  nftBonusTokenId String?
+  referrerWallet  String?
+  referralPaidF1  Decimal      @default(0)
+  referralPaidF2  Decimal      @default(0)
+  createdAt       DateTime     @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+  distributorEarnings DistributorEarning[]
+
+  @@index([wallet])
+  @@index([type])
+  @@index([blockNumber])
+}
+
+// ─── 4. StakingPosition ──────────────────────────────────────────────
+
+model StakingPosition {
+  id             String   @id @default(cuid())
+  wallet         String
+  stakeId        Int      // on-chain stakeId
+  amount         Decimal
+  weightedAmount Decimal
+  tier           String   // NoNFT | Builder | Maker | Luminary | MFP
+  lockPeriod     String   // Days30 | Days90 | Days180 | Days360
+  stakeTime      DateTime
+  unlockTime     DateTime
+  useLockedMic   Boolean  @default(false)
+  active         Boolean  @default(true)
+  txHash         String   @unique
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@index([wallet])
+  @@index([active])
+}
+
+// ─── 5. NFTItem ──────────────────────────────────────────────────────
+
+model NFTItem {
+  id           String    @id @default(cuid())
+  wallet       String
+  contractType String    // MFP | COMMUNITY
+  tokenId      String
+  tier         String?   // Builder | Maker | Luminary (for Community)
+  mintTxHash   String
+  mintedAt     DateTime
+  expiresAt    DateTime?
+  active       Boolean   @default(true)
+  imageUrl     String?   // base64 data URI from MfpArtwork (for MFP-NFTs)
+  purchaseId   String?   // Linked SEED purchase that granted this NFT
+  serialNumber Int?      // Sequential MFP serial number (MFP-0001, etc.)
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@unique([contractType, tokenId])
+  @@index([wallet])
+  @@index([contractType])
+  @@index([purchaseId])
+}
+
+// ─── 6. VestingSchedule ──────────────────────────────────────────────
+
+model VestingSchedule {
+  id               String   @id @default(cuid())
+  wallet           String
+  source           String   // SEED | PRESALE | AIRDROP | FOUNDERS | COMMUNITY
+  totalAmount      Decimal
+  cliffMonths      Int
+  initialUnlockBps Int
+  monthlyUnlockBps Int
+  startTime        DateTime
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@index([wallet])
+  @@index([source])
+}
+
+// ─── 7. MiningReward ─────────────────────────────────────────────────
+
+model MiningReward {
+  id          String   @id @default(cuid())
+  wallet      String
+  day         Int
+  amount      Decimal
+  miceTokenId String
+  hindex      Decimal
+  poolShare   Decimal
+  txHash      String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@unique([wallet, day])
+  @@index([wallet])
+  @@index([day])
+}
+
+// ─── 8. RewardClaim ──────────────────────────────────────────────────
+
+model RewardClaim {
+  id        String   @id @default(cuid())
+  wallet    String
+  type      String   // REFERRAL_F1 | REFERRAL_F2 | GV_BONUS | STAKING | MINING | INCENTIVE | WEEKLY_NFT | MONTHLY_NFT | LUCKY_DRAW
+  currency  String   @default("USDT") // USDT | MIC
+  status    String   @default("CLAIMED") // PENDING | CLAIMABLE | CLAIMED
+  amount    Decimal
+  txHash    String?  @unique // null when PENDING/CLAIMABLE
+  claimedAt DateTime?  // null when PENDING/CLAIMABLE
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@index([wallet])
+  @@index([type])
+  @@index([wallet, currency, status])
+}
+
+// ─── 9. GroupVolume ──────────────────────────────────────────────────
+
+model GroupVolume {
+  id          String  @id @default(cuid())
+  wallet      String
+  period      String  // Format: "2026-W15" or "2026-04"
+  totalVolume Decimal
+  rank        String
+  bonusRate   Int     // BPS
+  bonusPaid   Decimal @default(0)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [wallet], references: [wallet])
+
+  @@unique([wallet, period])
+  @@index([wallet])
+  @@index([period])
+}
+
+// ─── 10. DAOProposal ─────────────────────────────────────────────────
+
+model DAOProposal {
+  id           String    @id @default(cuid())
+  proposalId   Int       @unique // on-chain proposal ID
+  proposer     String    // wallet address (no User relation)
+  title        String
+  description  String
+  category     String    // PARAMETER | BUDGET | STRUCTURAL | EMERGENCY
+  status       String    // PENDING | ACTIVE | PASSED | REJECTED | EXECUTED
+  forVotes     Decimal   @default(0)
+  againstVotes Decimal   @default(0)
+  createdAt    DateTime
+  expiresAt    DateTime
+  executedAt   DateTime?
+
+  votes DAOVote[]
+
+  @@index([status])
+  @@index([category])
+  @@index([proposalId])
+}
+
+// ─── 11. DAOVote ─────────────────────────────────────────────────────
+
+model DAOVote {
+  id         String   @id @default(cuid())
+  wallet     String
+  proposalId String
+  support    Boolean
+  weight     Decimal
+  txHash     String   @unique
+  createdAt  DateTime @default(now())
+
+  user     User        @relation(fields: [wallet], references: [wallet])
+  proposal DAOProposal @relation(fields: [proposalId], references: [id])
+
+  @@index([wallet])
+  @@index([proposalId])
+}
+
+// ─── 12. BlockchainEvent ─────────────────────────────────────────────
+
+model BlockchainEvent {
+  id           String   @id @default(cuid())
+  contractName String
+  eventName    String
+  txHash       String
+  blockNumber  Int
+  logIndex     Int
+  args         String   // JSON string (SQLite compat)
+  processedAt  DateTime @default(now())
+
+  @@unique([txHash, logIndex])
+  @@index([contractName, eventName])
+  @@index([blockNumber])
+}
+
+// ─── 13. SyncCursor ──────────────────────────────────────────────────
+
+model SyncCursor {
+  id           String   @id @default(cuid())
+  contractName String   @unique
+  lastBlock    Int
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── 14. RoundConfig — Admin controls round state/caps/countdown ─────
+
+model RoundConfig {
+  id              String   @id @default(cuid())
+  roundType       String   @unique // SEED | PRESALE | MICE | MINING | STAKING | DAO
+  status          String   @default("UPCOMING") // UPCOMING | ACTIVE | CLOSED
+  displayCap      Decimal? // Admin-defined cap shown to users (null = use contract cap)
+  totalSold       Decimal  @default(0) // Tracked sold amount
+  countdownStart  DateTime? // Countdown start time (null = no countdown)
+  countdownEnd    DateTime? // Countdown end time
+  unsoldAction    String?  // BURN | LIQUIDITY (what to do with unsold tokens)
+  micPrice        Decimal? // Admin-defined MIC price (before SWAP activation)
+  notes           String?  // Admin notes
+  updatedBy       String?  // Admin wallet who last updated
+  // ── Promotion (bonus MIC %) ──
+  promotionPct    Decimal? // Bonus % (0-15), e.g. 10 = +10% MIC
+  promotionStart  DateTime? // Promotion start time
+  promotionEnd    DateTime? // Promotion end time
+  promotionActive Boolean  @default(false) // Admin toggle
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── 15. AgentGrant — SEED Agent 20% commission tracking ─────────────
+
+model AgentGrant {
+  id              String   @id @default(cuid())
+  agentWallet     String   // Agent receiving the grant
+  grantedBy       String   // Admin wallet who granted
+  seedPurchaseId  String?  // Related SEED purchase (if any)
+  amount          Decimal  // MIC amount (20% of SEED)
+  usdtAmount      Decimal  @default(0) // USDT equivalent
+  status          String   @default("PENDING") // PENDING | APPROVED | PAID | REJECTED
+  txHash          String?  // On-chain tx when paid
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agentWallet])
+  @@index([status])
+}
+
+// ─── 16. Distributor — SEED distribution partners ─────────────────────
+model Distributor {
+  id              String    @id @default(cuid())
+  wallet          String    @unique
+  grantedBy       String
+  commissionRate  Decimal   @default(0.20)
+  isActive        Boolean   @default(true)
+  totalEarned     Decimal   @default(0)
+  totalOrders     Int       @default(0)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  earnings        DistributorEarning[]
+}
+
+// ─── 17. DistributorEarning — Per-purchase commission tracking ────────
+model DistributorEarning {
+  id                  String    @id @default(cuid())
+  distributorWallet   String
+  purchaseId          String
+  buyerWallet         String
+  orderAmount         Decimal
+  commission          Decimal
+  // Status flow: PENDING (no request) → REQUESTED (in open PayoutRequest)
+  //              → PAID (PayoutRequest approved + paid)
+  // On reject: payoutRequestId=null, status returns to PENDING for next request
+  status              String    @default("PENDING")
+  txHash              String?
+  claimedAt           DateTime? // Set when PayoutRequest is approved + paid
+  claimTxHash         String?   // On-chain payout tx hash (admin records after USDT transfer)
+  payoutRequestId     String?   // FK to PayoutRequest if this earning is part of a request
+  createdAt           DateTime  @default(now())
+
+  distributor         Distributor    @relation(fields: [distributorWallet], references: [wallet])
+  purchase            Purchase       @relation(fields: [purchaseId], references: [id])
+  payoutRequest       PayoutRequest? @relation(fields: [payoutRequestId], references: [id])
+
+  @@index([distributorWallet])
+  @@index([purchaseId])
+  @@index([payoutRequestId])
+}
+
+// ─── 17b. PayoutRequest — Distributor commission payout request ───────
+// User clicks "Request Payout" → creates one PayoutRequest grouping all
+// PENDING earnings. Admin reviews and approves (with optional fee 0-10%
+// applied by SUPER_ADMIN), rejects, or marks as PAID with USDT txHash.
+model PayoutRequest {
+  id                String   @id @default(cuid())
+  distributorWallet String
+  // PENDING (waiting admin) | APPROVED (admin OK, awaiting USDT transfer)
+  // | PAID (USDT sent, claimTxHash recorded) | REJECTED (admin denied)
+  status            String   @default("PENDING")
+
+  grossAmount       Decimal  @db.Decimal(65, 30)  // Sum of commissions in this request
+  feeBps            Int      @default(0)           // Withdrawal fee in basis points (0-1000 = 0-10%)
+  feeAmount         Decimal  @default(0) @db.Decimal(65, 30)
+  netAmount         Decimal  @db.Decimal(65, 30)  // grossAmount - feeAmount, what user receives
+
+  earningCount      Int      @default(0)
+  earnings          DistributorEarning[]
+
+  requestedAt       DateTime @default(now())
+  approvedAt        DateTime?
+  approvedBy        String?  // admin wallet
+  rejectedAt        DateTime?
+  rejectedBy        String?
+  rejectedReason    String?
+  paidAt            DateTime?
+  paidBy            String?  // admin wallet who marked paid
+  paidTxHash        String?  // on-chain USDT transfer tx
+
+  @@index([distributorWallet])
+  @@index([status])
+  @@index([requestedAt])
+}
+
+// ─── 18. AdminBoard — DAO Board Members ──────────────────────────────
+
+model AdminBoard {
+  id              String   @id @default(cuid())
+  wallet          String   @unique
+  username        String
+  role            String   // OWNER | ADMIN | SENATOR | COUNCIL | GUARDIAN
+  votePower       Decimal  @default(0) // % of total
+  benefitRate     Decimal  @default(0) // % of pool
+  benefitCap      Decimal  @default(0) // Weekly MIC cap
+  email           String?
+  telegram        String?
+  telegramChatId  String?
+  status          String   @default("ACTIVE") // ACTIVE | PENDING | SUSPENDED
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([role])
+  @@index([status])
+}
+
+// ─── 17. SystemConfig — Key-value platform settings ──────────────────
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "swap_enabled", "nira_bot_name", "alert_threshold"
+  value     String   // JSON string for complex values
+  updatedBy String?  // Admin wallet
+  updatedAt DateTime @updatedAt
+}
+
+// ─── 19. MfpArtwork — Admin-uploaded MFP-NFT design images ───────────
+
+model MfpArtwork {
+  id        String   @id @default(cuid())
+  name      String   // e.g. "Genesis Design #1"
+  imageData String   // base64 data URI
+  active    Boolean  @default(true)
+  usedCount Int      @default(0) // How many NFTs use this artwork
+  createdAt DateTime @default(now())
+
+  @@index([active])
+}
+
+// ─── 18. OtpVerification — Email/Phone OTP for KYC Level 1 ──────────
+
+model OtpVerification {
+  id        String   @id @default(cuid())
+  wallet    String
+  type      String   // email | phone
+  target    String   // email address or phone number
+  code      String   // 6-digit OTP
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([wallet, type])
+  @@index([target, code])
+}
+
+// ─── Community NFT Reward Pool ──────────────────────────────────────
+
+model NftPoolEntry {
+  id            String    @id @default(cuid())
+  wallet        String
+  instanceId    String    @unique
+  tier          String    // Builder | Maker | Luminary
+  weight        Int       // 100 | 250 | 500
+  joinedAt      DateTime
+  expiresAt     DateTime
+  joinTxHash    String    @unique
+  status        String    @default("ACTIVE") // ACTIVE | EXPIRED | BURNED
+  burnTxHash    String?
+  burnedAt      DateTime?
+  totalClaimed  Decimal   @default(0)
+  lastClaimedAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([wallet])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model NftPoolRewardLog {
+  id          String   @id @default(cuid())
+  wallet      String
+  instanceIds String   // JSON array of instance IDs (SQLite doesn't support arrays)
+  amount      Decimal
+  txHash      String
+  claimedAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([wallet])
+}
+
+// ─── MfpGrant: track every MFP-NFT mint allowance grant ──────────────
+//     source: 0 = SEED auto-grant (from SeedSale), 1 = OWNER manual (Founders/partners)
+model MfpGrant {
+  id            String   @id @default(cuid())
+  wallet        String   // Recipient
+  amount        Int      // Number of NFTs granted
+  source        Int      // 0 = SEED, 1 = OWNER
+  grantedBy     String   // msg.sender on-chain (SeedSale or Owner)
+  note          String?  // Admin's optional note (e.g. "Strategic partner pre-launch")
+  txHash        String   @unique
+  blockNumber   Int
+  createdAt     DateTime @default(now())
+
+  @@index([wallet])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// ─── MfpMintRecord: track every MFP-NFT mint with image+verse pair ────
+model MfpMintRecord {
+  id            String   @id @default(cuid())
+  wallet        String   // Owner of the minted NFT
+  tokenId       Int      @unique
+  imageId       Int      // 1..100
+  verseId       Int      // 1..100
+  txHash        String   @unique
+  blockNumber   Int
+  mintedAt      DateTime @default(now())
+
+  @@index([wallet])
+  @@index([imageId])
+  @@index([verseId])
+  @@index([mintedAt])
+}
+
+// ─── OldInvestorRequest: Pending-request workflow for 75M strategic partner allocation ──
+// Lifecycle: PENDING (24h cooldown for review) → DONE (executed on-chain) | CANCELLED.
+// Cooldown = review window (NOT rate limit). After cooldownEnd, server cron auto-executes
+// via SUPER_ADMIN relayer wallet. SUPER_ADMIN can Cancel during cooldown OR "Chuyển ngay"
+// (execute immediately, bypassing the cooldown wait).
+model OldInvestorRequest {
+  id            String    @id @default(cuid())
+  recipient     String    // Strategic partner wallet (lowercase)
+  micAmount     Decimal   @db.Decimal(65, 30)  // 18-dec MIC amount
+  startTime     DateTime  // Vesting start (backdateable)
+  note          String?   // Admin note
+
+  // Lifecycle
+  status        String    @default("PENDING") // PENDING | DONE | CANCELLED
+  requestedBy   String    // Admin wallet (SUPER_ADMIN or ADMIN) who created request
+  cooldownEnd   DateTime  // = createdAt + 24h, when auto-execute eligible
+
+  // On-chain execution (filled when status = DONE)
+  executedAt    DateTime?
+  executedBy    String?   // 'CRON' or wallet ('chuyển ngay' caller — must be SUPER_ADMIN)
+  txHash        String?   @unique
+  blockNumber   Int?
+  executeError  String?   // Last cron retry error (for debugging stuck requests)
+
+  // Cancellation (filled when status = CANCELLED)
+  cancelledAt   DateTime?
+  cancelledBy   String?   // SUPER_ADMIN wallet
+  cancelReason  String?
+
+  createdAt     DateTime  @default(now())
+
+  @@index([status])
+  @@index([cooldownEnd])
+  @@index([recipient])
+  @@index([requestedBy])
+  @@index([createdAt])
+}
+
+// ─── FOUNDERS & MANAGEMENT ALLOCATION (4% pool = 280M MIC) ──────────
+// Admin (GOVERNOR) requests an allocation; OWNER can Cancel or Execute Now
+// within 48h cooldown. After cooldown, CRON auto-executes via
+// FoundersVault.distributeFounder(recipient, micAmount, 0, role).
+// Vesting created on-chain by LockManager: 24m cliff + 10% unlock + 2.5%/month.
+model FounderRequest {
+  id            String    @id @default(cuid())
+  memberId      String    // User.userId (the ID assigned at signup on app.missionchain.io)
+  recipient     String    // User.wallet (auto-filled from memberId, lowercase)
+  micAmount     Decimal   @db.Decimal(65, 30)  // 18-dec MIC amount
+  role          String    // free-text role label, stored on-chain via distributeFounder() arg (e.g. "Founder", "CTO", "Architect")
+  note          String?   // Admin note (off-chain only)
+
+  // Lifecycle
+  status        String    @default("PENDING") // PENDING | DONE | CANCELLED
+  requestedBy   String    // Admin wallet who created the request
+  cooldownEnd   DateTime  // = createdAt + 48h, when auto-execute eligible
+
+  // On-chain execution (filled when status = DONE)
+  executedAt    DateTime?
+  executedBy    String?   // 'CRON' or wallet (Owner who clicked Execute Now)
+  txHash        String?   @unique
+  blockNumber   Int?
+  executeError  String?   // Last cron retry error (for debugging stuck requests)
+
+  // Cancellation (filled when status = CANCELLED)
+  cancelledAt   DateTime?
+  cancelledBy   String?   // Owner wallet who cancelled
+  cancelReason  String?
+
+  createdAt     DateTime  @default(now())
+
+  @@index([status])
+  @@index([cooldownEnd])
+  @@index([memberId])
+  @@index([recipient])
+  @@index([requestedBy])
+  @@index([createdAt])
+}
+
+// ─── STEWARD COUNCIL: master member registry (Phase 2a) ──
+// Owner-only Add/Edit/Delete. Members have voting rights (1-vote-each in Phase 1).
+// MFP-NFT weighted voting deferred to DAO phase.
+model StewardCouncilMember {
+  id          String   @id @default(cuid())
+  memberId    String   @unique
+  wallet      String   @unique
+  role        String
+  rightLabel  String   @default("Admin")
+  note        String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  operationalShare OperationalPoolMember?
+
+  @@index([wallet])
+  @@index([active])
+}
+
+// ─── OPERATIONAL POOL MEMBER: % allocation + weekly maxout (Phase 2a) ──
+// Referenced by wallet to StewardCouncilMember. Sum of sharePctBps across all
+// active members must equal 10000 (= 100% of the 20% pool slice).
+model OperationalPoolMember {
+  id                  String   @id @default(cuid())
+  wallet              String   @unique
+  sharePctBps         Int
+  weeklyMaxoutUsdt    Decimal  @db.Decimal(20, 6)
+  claimableUsdt       Decimal  @default(0) @db.Decimal(20, 6)
+  totalClaimedUsdt    Decimal  @default(0) @db.Decimal(20, 6)
+  totalAllocatedUsdt  Decimal  @default(0) @db.Decimal(20, 6)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  council StewardCouncilMember @relation(fields: [wallet], references: [wallet], onDelete: Cascade)
+
+  weeklyAllocations OperationalPoolWeeklyAllocation[]
+  claims            OperationalPoolClaim[]
+
+  @@index([wallet])
+}
+
+// ─── OPERATIONAL POOL WEEKLY ALLOCATION: tracks per-week allocated amount for maxout cap ──
+// weekIdx = floor((timestamp - epoch_monday_00_gmt) / 7 days)
+model OperationalPoolWeeklyAllocation {
+  id            String   @id @default(cuid())
+  wallet        String
+  weekIdx       Int
+  allocatedUsdt Decimal  @db.Decimal(20, 6)
+  updatedAt     DateTime @updatedAt
+
+  member OperationalPoolMember @relation(fields: [wallet], references: [wallet], onDelete: Cascade)
+
+  @@unique([wallet, weekIdx])
+  @@index([weekIdx])
+}
+
+// ─── OPERATIONAL POOL CLAIM: history of member claim transactions ──
+model OperationalPoolClaim {
+  id          String   @id @default(cuid())
+  wallet      String
+  amountUsdt  Decimal  @db.Decimal(20, 6)
+  txHash      String?  @unique
+  blockNumber Int?
+  createdAt   DateTime @default(now())
+
+  member OperationalPoolMember @relation(fields: [wallet], references: [wallet], onDelete: Cascade)
+
+  @@index([wallet])
+  @@index([createdAt])
+}
+
+// ─── P2POrder: on-chain P2P marketplace order tracking ───────────────
+
+enum P2POrderStatus {
+  PENDING
+  EXECUTED
+  CANCELLED
+  EXPIRED
+}
+
+model P2POrder {
+  id              String          @id @default(uuid())
+  onChainId       BigInt          @unique
+  seller          String          @db.VarChar(42)
+  tokenId         BigInt
+  priceUsdt       Decimal         @db.Decimal(18, 6)
+  status          P2POrderStatus
+  expiresAt       DateTime
+  createdAt       DateTime
+  closedAt        DateTime?
+  buyer           String?         @db.VarChar(42)
+  royaltyAmount   Decimal?        @db.Decimal(18, 6)
+  feeAmount       Decimal?        @db.Decimal(18, 6)
+  sellerNet       Decimal?        @db.Decimal(18, 6)
+  createdTxHash   String?         @db.VarChar(66)
+  executedTxHash  String?         @db.VarChar(66)
+  cancelledTxHash String?         @db.VarChar(66)
+  expiredTxHash   String?         @db.VarChar(66)
+
+  @@index([seller, status])
+  @@index([buyer])
+  @@index([status, expiresAt])
+  @@index([tokenId])
+}
+
+// ─── AdminAuditLog: track all admin state changes for accountability ──
+model AdminAuditLog {
+  id            String   @id @default(cuid())
+  adminWallet   String   // who performed the action
+  adminLevel    String?  // OBSERVER | ANALYST | OPERATOR | GOVERNOR | SUPER_ADMIN at time of action
+  action        String   // e.g. "user.update_role", "round.update", "board.add"
+  target        String?  // wallet/id being acted on (if applicable)
+  payload       String?  // JSON snapshot of change
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([adminWallet])
+  @@index([action])
+  @@index([createdAt])
+}

@@ -39,8 +39,8 @@ Thumbs.db
 # Archive folder for pre-mainnet cleanup (kept local only)
 _archive_pre_mainnet/
 
-# Nested git repo (active dev, has its own remote)
-deploy/
+# Embedded deploy repo metadata (deploy source is now tracked here)
+deploy/.git/
 
 # Large media (108+ files, 1.1GB+ — synced separately to VPS)
 MFP-ART/

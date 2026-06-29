@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MissionChain — Connect Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   CSS CUSTOM PROPERTIES — Matching whitepaper site
+   ======================================== */
+:root {
+  --bg: #0C0812;
+  --bg2: #130A1E;
+  --bg3: #1A0E28;
+  --bg4: #1F1035;
+  --purple: #7B2D8B;
+  --purple2: #C084D4;
+  --blue: #6B1428;
+  --blue2: #9B2C42;
+  --gold: #C9A84C;
+  --gold2: #E8C96A;
+  --green: #A8744A;
+  --teal: #D4A84C;
+  --white: #F0E6D3;
+  --gray: #B09090;
+  --gray2: #7A6070;
+  --border: rgba(200,168,200,.1);
+  --glow-p: rgba(123,45,139,.3);
+  --glow-b: rgba(107,20,40,.2);
+  --sidebar-bg: rgba(6,12,24,.97);
+  --success-green: #4CAF50;
+  --error-red: #E05555;
+
+  /* Fonts — exactly matching whitepaper */
+  --font-d: 'Montserrat', sans-serif;
+  --font-b: 'Inter', sans-serif;
+  --font-m: 'JetBrains Mono', monospace;
+
+  /* Derived */
+  --input-bg: rgba(19,10,30,0.8);
+  --card-bg: rgba(26,14,40,0.6);
+  --card-hover: rgba(31,16,53,0.8);
+  --border-focus: rgba(201,168,76,0.5);
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --glass: rgba(19,10,30,0.85);
+}
+
+[data-theme="light"] {
+  --bg: #F5F0E6;
+  --bg2: #EDE6D8;
+  --bg3: #E5DDD0;
+  --bg4: #DDD4C5;
+  --white: #1A0E28;
+  --gray: #5A4A5A;
+  --gray2: #8A7A8A;
+  --border: rgba(123,45,139,.12);
+  --input-bg: rgba(237,230,216,0.9);
+  --card-bg: rgba(255,255,255,0.8);
+  --card-hover: rgba(255,255,255,0.95);
+  --sidebar-bg: rgba(245,240,230,0.97);
+  --shadow: 0 8px 32px rgba(0,0,0,0.08);
+  --glass: rgba(255,255,255,0.9);
+  --glow-p: rgba(123,45,139,.08);
+  --glow-b: rgba(107,20,40,.05);
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-b);
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ========================================
+   THEME TOGGLE
+   ======================================== */
+.theme-toggle {
+  position: fixed;
+  top: clamp(12px, 2vw, 20px);
+  right: clamp(12px, 2vw, 20px);
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  color: var(--white);
+}
+.theme-toggle:hover {
+  border-color: var(--gold);
+  transform: scale(1.08);
+  box-shadow: 0 0 16px var(--glow-p);
+}
+
+/* ========================================
+   BACKGROUND — Radial glows like whitepaper
+   ======================================== */
+.bg-effects {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(123,45,139,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 25%, rgba(107,20,40,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 50% 80%, rgba(201,168,76,0.05) 0%, transparent 50%);
+}
+[data-theme="light"] .bg-effects {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(123,45,139,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 25%, rgba(107,20,40,0.03) 0%, transparent 55%);
+}
+
+/* ========================================
+   MAIN CONTAINER
+   ======================================== */
+.connect-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+}
+
+.connect-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  width: 100%;
+  max-width: 960px;
+  min-height: 620px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+/* ========================================
+   LEFT PANEL — BRANDING
+   ======================================== */
+.brand-panel {
+  background:
+    radial-gradient(ellipse 100% 80% at 30% 50%, rgba(123,45,139,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(107,20,40,0.15) 0%, transparent 60%),
+    var(--bg2);
+  padding: clamp(24px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+}
+.brand-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%237B2D8B' fill-opacity='0.03'%3E%3Cpath d='M20 18v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.brand-logo-img {
+  width: clamp(72px, 10vw, 100px);
+  height: auto;
+  margin-bottom: 1rem;
+  position: relative;
+  filter: drop-shadow(0 0 20px var(--glow-p));
+  transition: transform 0.3s ease;
+}
+.brand-logo-img:hover { transform: scale(1.05); }
+
+.brand-name {
+  font-family: var(--font-d);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.8vw, 2rem);
+  color: var(--white);
+  letter-spacing: 1px;
+  margin-bottom: 0.3rem;
+  position: relative;
+}
+.brand-name span { color: var(--gold); }
+.brand-tagline {
+  font-family: var(--font-b);
+  font-size: clamp(0.8rem, 1.3vw, 0.92rem);
+  color: var(--gray);
+  max-width: 300px;
+  line-height: 1.6;
+  position: relative;
+  font-weight: 400;
+}
+.brand-stats {
+  display: flex;
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-top: 2rem;
+  position: relative;
+}
+.brand-stat { text-align: center; }
+.brand-stat .num {
+  font-family: var(--font-m);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-weight: 700;
+  color: var(--gold);
+}
+.brand-stat .label {
+  font-family: var(--font-b);
+  font-size: 0.7rem;
+  color: var(--gray2);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+/* ========================================
+   RIGHT PANEL — FORM
+   ======================================== */
+.form-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: clamp(24px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+.form-title {
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  color: var(--white);
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+.form-subtitle {
+  font-family: var(--font-b);
+  color: var(--gray);
+  font-size: clamp(0.82rem, 1.1vw, 0.9rem);
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+/* ========================================
+   STEPS
+   ======================================== */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 0.3rem;
+}
+.step-dot {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-m);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.step-dot.active {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  color: white;
+  box-shadow: 0 0 12px var(--glow-p);
+}
+.step-dot.completed {
+  background: var(--gold);
+  color: var(--bg);
+}
+.step-dot.pending {
+  background: var(--bg3);
+  color: var(--gray2);
+  border: 1px solid var(--border);
+}
+.step-line {
+  flex: 1; height: 2px;
+  background: var(--border);
+  transition: background 0.4s ease;
+}
+.step-line.completed {
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+}
+.steps-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  padding: 0 6px;
+  text-align: left;
+}
+.steps-labels span {
+  font-family: var(--font-b);
+  font-size: 0.68rem;
+  color: var(--gray2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* ========================================
+   FORM FIELDS
+   ======================================== */
+.field { margin-bottom: 1.1rem; }
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-d);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.35rem;
+}
+.field-label .optional {
+  font-family: var(--font-b);
+  font-size: 0.68rem;
+  color: var(--gray2);
+  font-weight: 400;
+}
+.field-label .required {
+  font-family: var(--font-b);
+  color: var(--blue2);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+.input-wrapper { position: relative; }
+.input-wrapper input {
+  width: 100%;
+  padding: 11px 44px 11px 14px;
+  font-family: var(--font-b);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--white);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.input-wrapper input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08), 0 0 12px var(--glow-p);
+}
+.input-wrapper input.error { border-color: var(--error-red); }
+.input-wrapper input.success { border-color: var(--success-green); }
+.input-wrapper input:disabled { opacity: 0.5; cursor: not-allowed; }
+.input-wrapper input::placeholder { color: var(--gray2); font-weight: 300; }
+.input-status {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+}
+.field-hint {
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  color: var(--gray2);
+  margin-top: 0.3rem;
+}
+.field-hint.error { color: var(--error-red); }
+.field-hint.success { color: var(--success-green); }
+.field-hint.warning { color: var(--gold); }
+
+.referrer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 7px 12px;
+  background: rgba(76,175,80,0.08);
+  border: 1px solid rgba(76,175,80,0.2);
+  border-radius: 6px;
+  margin-top: 0.35rem;
+  font-family: var(--font-b);
+  font-size: 0.78rem;
+  color: var(--success-green);
+}
+
+/* ========================================
+   CHECKBOX
+   ======================================== */
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 1.1rem 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.checkbox-box {
+  width: 20px; height: 20px; min-width: 20px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-top: 1px;
+}
+.checkbox-box.checked {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  border-color: var(--purple);
+}
+.checkbox-box.checked::after {
+  content: '\2713';
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.checkbox-text {
+  font-family: var(--font-b);
+  font-size: 0.82rem;
+  color: var(--gray);
+  line-height: 1.5;
+}
+.checkbox-text a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+.checkbox-text a:hover { color: var(--gold2); }
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn {
+  width: 100%;
+  padding: 13px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-d);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  min-height: 48px;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), #5A1E6E);
+  color: white;
+  border: 1px solid rgba(123,45,139,0.3);
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 0 20px var(--glow-p), 0 4px 16px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: var(--bg);
+}
+.btn-gold:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(201,168,76,0.35);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gray);
+  font-weight: 600;
+}
+.btn-outline:hover { border-color: var(--purple2); color: var(--purple2); }
+
+/* ========================================
+   WALLET OPTIONS
+   ======================================== */
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+.wallet-btn {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  transition: all 0.3s ease;
+  min-height: 56px;
+  color: var(--white);
+}
+.wallet-btn:hover {
+  border-color: var(--purple);
+  background: var(--card-hover);
+  box-shadow: 0 0 16px var(--glow-p);
+  transform: translateX(3px);
+}
+.wallet-btn .wallet-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.wallet-btn .wallet-name {
+  font-family: var(--font-d);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+  text-align: left;
+}
+.wallet-btn .wallet-desc {
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  color: var(--gray2);
+  text-align: left;
+}
+
+/* ========================================
+   CONNECTED WALLET CARD
+   ======================================== */
+.wallet-connected {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 9px 12px;
+  background: rgba(76,175,80,0.06);
+  border: 1px solid rgba(76,175,80,0.15);
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+}
+.wallet-connected .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--success-green);
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.wallet-connected .addr {
+  font-family: var(--font-m);
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+.wallet-connected .chain {
+  font-family: var(--font-b);
+  font-size: 0.68rem;
+  color: var(--gray2);
+  margin-left: auto;
+}
+
+/* ========================================
+   SPINNER & ANIMATIONS
+   ======================================== */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========================================
+   SUCCESS SCREEN
+   ======================================== */
+.success-screen { text-align: left; padding: 1.5rem 0; }
+.success-icon {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(76,175,80,0.15), rgba(76,175,80,0.05));
+  border: 1px solid rgba(76,175,80,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 0 1rem 0;
+  animation: scaleIn 0.4s ease;
+}
+@keyframes scaleIn { 0%{transform:scale(0)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+.success-title {
+  font-family: var(--font-d);
+  font-weight: 700;
+  color: var(--white);
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  margin-bottom: 0.4rem;
+}
+.success-address {
+  font-family: var(--font-m);
+  font-size: 0.78rem;
+  color: var(--gold);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 6px;
+  display: inline-block;
+  margin: 0.4rem 0 1.2rem;
+}
+.success-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-b);
+  font-size: 0.82rem;
+  color: var(--gray);
+  justify-content: flex-start;
+  margin: 0.2rem 0;
+}
+.success-detail strong { color: var(--white); font-weight: 600; }
+.success-detail .check { color: var(--success-green); }
+
+.footer-note {
+  text-align: left;
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  color: var(--gray2);
+  margin-top: 1rem;
+}
+
+/* ========================================
+   STEP PANELS
+   ======================================== */
+.step-panel { display: none; animation: fadeIn 0.35s ease; }
+.step-panel.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   MOBILE BRAND
+   ======================================== */
+.mobile-brand { display: none; }
+
+/* ========================================
+   RESPONSIVE — TABLET
+   ======================================== */
+@media (max-width: 1024px) {
+  .connect-layout {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+  }
+  .brand-panel { display: none; }
+  .form-panel { border-radius: 16px; }
+  .mobile-brand {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-brand img { width: 40px; height: 40px; }
+  .mobile-brand .mobile-name {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--white);
+  }
+}
+
+/* ========================================
+   RESPONSIVE — MOBILE
+   ======================================== */
+@media (max-width: 640px) {
+  .connect-container { padding: 0; align-items: stretch; }
+  .connect-layout {
+    max-width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  .form-panel {
+    border-radius: 0;
+    padding: 20px 16px;
+    justify-content: flex-start;
+    padding-top: 56px;
+  }
+}
+
+@media (max-width: 375px) {
+  .form-panel { padding: 16px 12px; padding-top: 52px; }
+  .steps-labels span { font-size: 0.6rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-effects"></div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle Dark/Light Mode">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+</button>
+
+<div class="connect-container">
+  <div class="connect-layout">
+
+    <!-- LEFT: Branding Panel (Desktop) -->
+    <div class="brand-panel">
+      <img src="http://187.77.149.158:3001/images/mission-chain-logo-clear.png" alt="Mission Chain Logo" class="brand-logo-img" onerror="this.style.display='none'">
+      <div class="brand-name">Mission <span>Chain</span></div>
+      <div class="brand-tagline">Faith-powered Web3 ecosystem serving 2.6 billion believers worldwide. Mine, stake, and grow together.</div>
+      <div class="brand-stats">
+        <div class="brand-stat"><div class="num">7B</div><div class="label">MIC Supply</div></div>
+        <div class="brand-stat"><div class="num">100K</div><div class="label">MICE Max</div></div>
+        <div class="brand-stat"><div class="num">BSC</div><div class="label">Network</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Form Panel -->
+    <div class="form-panel">
+
+      <div class="mobile-brand">
+        <img src="http://187.77.149.158:3001/images/mission-chain-logo-clear.png" alt="MC" onerror="this.style.display='none'">
+        <span class="mobile-name">Mission Chain</span>
+      </div>
+
+      <div class="steps">
+        <div class="step-dot active" id="stepDot1">1</div>
+        <div class="step-line" id="stepLine1"></div>
+        <div class="step-dot pending" id="stepDot2">2</div>
+        <div class="step-line" id="stepLine2"></div>
+        <div class="step-dot pending" id="stepDot3">3</div>
+      </div>
+      <div class="steps-labels">
+        <span>Connect</span><span>Register</span><span>Enter</span>
+      </div>
+
+      <!-- STEP 1: CONNECT WALLET -->
+      <div class="step-panel active" id="step1">
+        <div class="form-title">Connect Wallet</div>
+        <div class="form-subtitle">Choose your preferred wallet to get started</div>
+        <div class="wallet-options">
+          <button class="wallet-btn" onclick="connectWallet('MetaMask')">
+            <div class="wallet-icon" style="background:linear-gradient(135deg,#E8821E,#F5A623);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M21.3 2L13 8l1.5-3.5L21.3 2zM2.7 2l8.2 6.1L9.5 4.5 2.7 2zm15.8 14.4l-2.2 3.4 4.7 1.3 1.3-4.6-3.8-.1zm-17.3.1L2.5 21l4.7-1.3-2.2-3.4-3.5.2z"/></svg>
+            </div>
+            <div><div class="wallet-name">MetaMask</div><div class="wallet-desc">Connect using browser extension</div></div>
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('Trust Wallet')">
+            <div class="wallet-icon" style="background:linear-gradient(135deg,#3375BB,#0500FF);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 6v6c0 5.5 3.4 10.7 8 12 4.6-1.3 8-6.5 8-12V6l-8-4z"/></svg>
+            </div>
+            <div><div class="wallet-name">Trust Wallet</div><div class="wallet-desc">Connect using mobile app</div></div>
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('WalletConnect')">
+            <div class="wallet-icon" style="background:linear-gradient(135deg,#3B99FC,#2D6BE0);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M6.5 8.5c3-3 7.5-3 10.5 0l.3.3c.1.2.1.4 0 .5l-1.1 1.1c-.1.1-.2.1-.3 0l-.5-.4c-2-2-5.3-2-7.3 0l-.5.4c-.1.1-.2.1-.3 0L6.2 9.3c-.1-.2-.1-.4 0-.5l.3-.3z"/></svg>
+            </div>
+            <div><div class="wallet-name">WalletConnect</div><div class="wallet-desc">Scan QR code with any wallet</div></div>
+          </button>
+        </div>
+        <p class="footer-note">By connecting, you agree to allow read access to your wallet address on BSC network.</p>
+      </div>
+
+      <!-- STEP 2: REGISTRATION -->
+      <div class="step-panel" id="step2">
+        <div class="form-title">Create Account</div>
+        <div class="form-subtitle">Set up your MissionChain identity</div>
+        <div class="wallet-connected">
+          <div class="dot"></div>
+          <span class="addr" id="connectedAddr">0x7F2c...9A3e</span>
+          <span class="chain">BSC Mainnet</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Referral Code <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <input type="text" id="refInput" placeholder="Enter code (MC-XXXX) or wallet address" oninput="checkReferrer()" autocomplete="off" spellcheck="false">
+            <span class="input-status" id="refStatus"></span>
+          </div>
+          <div class="field-hint" id="refHint">Paste a referral code or referrer's wallet address (0x...)</div>
+          <div class="referrer-info" id="referrerInfo" style="display:none;">
+            <span>&#x1F464;</span>
+            <span>Referred by: <strong id="referrerName"></strong></span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">User ID <span class="required">* Required</span></label>
+          <div class="input-wrapper">
+            <input type="text" id="userIdInput" placeholder="Choose your unique username" oninput="checkUserId()" autocomplete="off" spellcheck="false" maxlength="20">
+            <span class="input-status" id="userIdStatus"></span>
+          </div>
+          <div class="field-hint" id="userIdHint">3-20 characters: lowercase letters, numbers, underscore</div>
+          <div class="field-hint warning" style="margin-top:2px;">Cannot be changed after registration</div>
+        </div>
+        <div class="checkbox-wrapper" onclick="toggleTerms()">
+          <div class="checkbox-box" id="termsBox"></div>
+          <div class="checkbox-text">
+            I have read and agree to the <a href="#" onclick="event.stopPropagation()">Terms &amp; Conditions</a> and <a href="#" onclick="event.stopPropagation()">Privacy Policy</a>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="registerBtn" disabled onclick="register()">Create Account &amp; Sign</button>
+        <button class="btn btn-outline" style="margin-top:0.6rem;" onclick="goToStep(1)">&larr; Back</button>
+      </div>
+
+      <!-- STEP 3: SUCCESS -->
+      <div class="step-panel" id="step3">
+        <div class="success-screen">
+          <div class="success-icon">&#x2713;</div>
+          <div class="success-title">Welcome to Mission Chain!</div>
+          <p style="color:var(--gray);font-size:0.88rem;margin-bottom:0.4rem;">Account created successfully</p>
+          <div class="success-address" id="successAddr">0x7F2c...9A3e</div>
+          <div class="success-detail"><span class="check">&#x2713;</span> User ID: <strong id="successUserId">-</strong></div>
+          <div class="success-detail" id="successRefRow" style="display:none;"><span class="check">&#x2713;</span> Referrer: <strong id="successRef">-</strong></div>
+          <button class="btn btn-gold" style="margin-top:1.5rem;" onclick="enterDashboard()">Enter Dashboard &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStep=1,termsAccepted=false,userIdValid=false,refValid=null,connectedWallet='',selectedUserId='';
+var SHORT_WALLET='0x7F2c...9A3e';
+var urlParams=new URLSearchParams(window.location.search);
+var urlRef=urlParams.get('ref');
+
+function toggleTheme(){
+  var h=document.documentElement,ic=document.getElementById('themeIcon');
+  if(h.getAttribute('data-theme')==='light'){
+    h.removeAttribute('data-theme');
+    ic.innerHTML='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }else{
+    h.setAttribute('data-theme','light');
+    ic.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+}
+
+function goToStep(s){
+  currentStep=s;
+  for(var i=1;i<=3;i++){
+    var d=document.getElementById('stepDot'+i);
+    d.className='step-dot '+(i<s?'completed':i===s?'active':'pending');
+    d.textContent=i<s?'\u2713':i;
+  }
+  document.getElementById('stepLine1').className='step-line'+(s>1?' completed':'');
+  document.getElementById('stepLine2').className='step-line'+(s>2?' completed':'');
+  var ps=document.querySelectorAll('.step-panel');
+  for(var j=0;j<ps.length;j++) ps[j].classList.toggle('active',j+1===s);
+}
+
+function connectWallet(name){
+  var btn=event.currentTarget;
+  var nm=btn.querySelector('.wallet-name'),ds=btn.querySelector('.wallet-desc');
+  nm.textContent='Connecting...';
+  ds.textContent='Approve in your '+name;
+  btn.style.pointerEvents='none';
+  btn.style.borderColor='var(--purple)';
+  setTimeout(function(){
+    connectedWallet='0x7F2c8B1a5D3e9F0C4b6A2d8E1f7C3a9B5D6E9A3e';
+    document.getElementById('connectedAddr').textContent=SHORT_WALLET;
+    if(urlRef){
+      var inp=document.getElementById('refInput');
+      inp.value=urlRef;inp.disabled=true;
+      document.getElementById('refStatus').textContent='\uD83D\uDD12';
+      document.getElementById('refHint').textContent='Referral from link (locked)';
+      document.getElementById('refHint').className='field-hint success';
+      refValid=true;
+      document.getElementById('referrerInfo').style.display='flex';
+      document.getElementById('referrerName').textContent='MissionPioneer';
+    }
+    goToStep(2);
+  },1400);
+}
+
+var refTimer=null;
+function checkReferrer(){
+  var val=document.getElementById('refInput').value.trim();
+  var st=document.getElementById('refStatus'),ht=document.getElementById('refHint'),info=document.getElementById('referrerInfo'),inp=document.getElementById('refInput');
+  if(!val){st.textContent='';ht.textContent="Paste a referral code or referrer's wallet address (0x...)";ht.className='field-hint';info.style.display='none';inp.className='';refValid=null;updateBtn();return;}
+  st.innerHTML='<div class="spinner" style="color:var(--gold);width:14px;height:14px;"></div>';
+  ht.textContent='Checking referrer...';ht.className='field-hint';
+  clearTimeout(refTimer);
+  refTimer=setTimeout(function(){
+    var ok=val.indexOf('0x')===0&&val.length>=10||/^[a-zA-Z0-9_\-]{3,}$/.test(val);
+    if(ok){st.textContent='\u2705';ht.textContent='Valid referrer found!';ht.className='field-hint success';info.style.display='flex';document.getElementById('referrerName').textContent=val.indexOf('0x')===0?val.slice(0,6)+'...'+val.slice(-4):val;inp.className='success';refValid=true;}
+    else{st.textContent='\u274C';ht.textContent='Referrer not found. Check and try again.';ht.className='field-hint error';info.style.display='none';inp.className='error';refValid=false;}
+    updateBtn();
+  },700);
+}
+
+var uidTimer=null;
+function checkUserId(){
+  var inp=document.getElementById('userIdInput');
+  inp.value=inp.value.toLowerCase().replace(/[^a-z0-9_]/g,'');
+  var val=inp.value,st=document.getElementById('userIdStatus'),ht=document.getElementById('userIdHint');
+  if(!val){st.textContent='';ht.textContent='3-20 characters: lowercase letters, numbers, underscore';ht.className='field-hint';inp.className='';userIdValid=false;updateBtn();return;}
+  if(val.length<3){st.textContent='';ht.textContent='Minimum 3 characters';ht.className='field-hint error';inp.className='error';userIdValid=false;updateBtn();return;}
+  st.innerHTML='<div class="spinner" style="color:var(--gold);width:14px;height:14px;"></div>';
+  ht.textContent='Checking availability...';ht.className='field-hint';
+  clearTimeout(uidTimer);
+  uidTimer=setTimeout(function(){
+    var taken=['admin','test','missionchain','root','system','sophia','nira'];
+    if(taken.indexOf(val)>=0){st.textContent='\u274C';ht.textContent='"'+val+'" is taken. Try another.';ht.className='field-hint error';inp.className='error';userIdValid=false;}
+    else{st.textContent='\u2705';ht.textContent='"'+val+'" is available!';ht.className='field-hint success';inp.className='success';userIdValid=true;selectedUserId=val;}
+    updateBtn();
+  },500);
+}
+
+function toggleTerms(){termsAccepted=!termsAccepted;document.getElementById('termsBox').classList.toggle('checked',termsAccepted);updateBtn();}
+function updateBtn(){document.getElementById('registerBtn').disabled=!(userIdValid&&termsAccepted&&refValid!==false);}
+
+function register(){
+  var btn=document.getElementById('registerBtn');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="color:white;"></div> Signing...';
+  setTimeout(function(){
+    document.getElementById('successAddr').textContent=SHORT_WALLET;
+    document.getElementById('successUserId').textContent=selectedUserId;
+    var rv=document.getElementById('refInput').value.trim();
+    if(rv){document.getElementById('successRefRow').style.display='flex';document.getElementById('successRef').textContent=rv.indexOf('0x')===0?rv.slice(0,6)+'...'+rv.slice(-4):rv;}
+    else{document.getElementById('successRefRow').style.display='none';}
+    goToStep(3);
+  },1800);
+}
+
+function enterDashboard(){alert('Redirect to Dashboard \u2192 / (prototype demo)');}
+</script>
+</body>
+</html>

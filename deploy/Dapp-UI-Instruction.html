@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MissionChain DApp — UI Alignment Report v1.0</title>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --purple: #5B2D9E;
+    --bg: #0A0A12;
+    --card: #12121E;
+    --card2: #1A1A2E;
+    --text: #F5F0E8;
+    --muted: #8A8090;
+    --border: rgba(201,168,76,0.15);
+    --green: #2D9E5B;
+    --red: #9E2D2D;
+    --blue: #2D6B9E;
+    --teal: #14B8A6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 2rem;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.4rem;
+    margin: 2rem 0 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid var(--gold);
+  }
+  h3 {
+    color: var(--text);
+    font-size: 1.1rem;
+    margin: 1.5rem 0 0.5rem;
+    font-weight: 600;
+  }
+  .meta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .meta strong { color: var(--gold); }
+  .decision-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .decision-card .label {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.3rem;
+  }
+  .decision-card .value {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .decision-card .reason {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  th {
+    background: var(--card2);
+    color: var(--gold);
+    text-align: left;
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+  td {
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) { background: rgba(26,26,46,0.5); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .badge-gold { background: rgba(201,168,76,0.2); color: var(--gold); }
+  .badge-green { background: rgba(45,158,91,0.2); color: var(--green); }
+  .badge-purple { background: rgba(91,45,158,0.2); color: #9B6FDF; }
+  .badge-red { background: rgba(158,45,45,0.2); color: #E05555; }
+  .badge-blue { background: rgba(45,107,158,0.2); color: #5B9BD5; }
+  .badge-teal { background: rgba(20,184,166,0.2); color: var(--teal); }
+  .danger {
+    background: rgba(158,45,45,0.15);
+    border: 1px solid rgba(158,45,45,0.4);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .danger strong { color: #E05555; }
+  .info {
+    background: rgba(45,107,158,0.15);
+    border: 1px solid rgba(45,107,158,0.4);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .info strong { color: #5B9BD5; }
+  .success {
+    background: rgba(45,158,91,0.15);
+    border: 1px solid rgba(45,158,91,0.4);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .success strong { color: var(--green); }
+  code {
+    font-family: 'Space Mono', monospace;
+    background: var(--card2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: var(--teal);
+  }
+  pre {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+  .page-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+  }
+  .page-card:hover { border-color: var(--gold); }
+  .page-card .route {
+    font-family: 'Space Mono', monospace;
+    color: var(--teal);
+    font-size: 0.85rem;
+  }
+  .page-card .title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 0.3rem 0;
+  }
+  .page-card .desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .sidebar-section {
+    margin: 0.5rem 0;
+  }
+  .sidebar-section .section-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.3rem;
+  }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin: 2px 0;
+    color: var(--muted);
+  }
+  .sidebar-item.active {
+    background: rgba(201,168,76,0.15);
+    color: var(--gold);
+  }
+  .sidebar-item .icon { width: 16px; text-align: center; }
+  .color-swatch {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  .flow-step .num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>MissionChain DApp — UI Alignment Report</h1>
+
+<div class="meta">
+  <strong>Document:</strong> DAPP-UI-ALIGNMENT-REPORT v1.0 &nbsp;|&nbsp;
+  <strong>Domain:</strong> missionchain.io &nbsp;|&nbsp;
+  <strong>App Type:</strong> CSR (Next.js 14) &nbsp;|&nbsp;
+  <strong>Date:</strong> 2026-04-06 &nbsp;|&nbsp;
+  <strong>Status:</strong> <span class="badge badge-green">APPROVED</span><br>
+  <strong>Source Specs:</strong> PHASE1-BLUEPRINT.html (architecture) + missionchain-web3-dapp-users (neu).html (UI detail)<br>
+  <strong>Approved by:</strong> Thani (Co-Founder)
+</div>
+
+<!-- ============================================ -->
+<h2>1. Confirmed Design Decisions</h2>
+<!-- ============================================ -->
+
+<div class="grid-2">
+  <div class="decision-card">
+    <div class="label">Font System</div>
+    <div class="value">Cinzel + Rajdhani + Space Mono</div>
+    <div class="reason">Consistent with missionchain.io public-site brand identity. Cinzel for display/headers, Rajdhani for body/UI, Space Mono for code/formulas.</div>
+  </div>
+  <div class="decision-card">
+    <div class="label">Pages Scope (Phase 1)</div>
+    <div class="value">Full 13 Pages</div>
+    <div class="reason">All pages from DApp spec (neu) included: Dashboard, DAO, Profile, SEED, Pre-Sale, MICE Sale, Mining, NFT Manager, Network, Vesting, Marketplace, Documents, NIRA AI.</div>
+  </div>
+  <div class="decision-card">
+    <div class="label">AI Assistant</div>
+    <div class="value">NIRA AI (DApp) / SOPHIA AI (World)</div>
+    <div class="reason">NIRA AI is the DApp-specific assistant. SOPHIA AI remains the public KOL for missionchain.world. Two distinct AI identities.</div>
+  </div>
+  <div class="decision-card">
+    <div class="label">Wallet Integration</div>
+    <div class="value">RainbowKit + wagmi 2.x + viem 2.x</div>
+    <div class="reason">Production-ready wallet modal. Supports MetaMask, TrustWallet, WalletConnect. BSC mainnet (56) + testnet (97).</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>2. Design System — Final Specification</h2>
+<!-- ============================================ -->
+
+<h3>2.1 Color Palette</h3>
+
+<table>
+  <tr>
+    <th>Role</th><th>Color</th><th>Hex</th><th>Usage</th>
+  </tr>
+  <tr>
+    <td>Primary Gold</td>
+    <td><span class="color-swatch" style="background:#C9A84C"></span></td>
+    <td><code>#C9A84C</code></td>
+    <td>Buttons, headings, active states, CTAs</td>
+  </tr>
+  <tr>
+    <td>Secondary Purple</td>
+    <td><span class="color-swatch" style="background:#5B2D9E"></span></td>
+    <td><code>#5B2D9E</code></td>
+    <td>Accents, gradients, secondary buttons</td>
+  </tr>
+  <tr>
+    <td>Background (Dark)</td>
+    <td><span class="color-swatch" style="background:#0A0A12"></span></td>
+    <td><code>#0A0A12</code></td>
+    <td>Main background</td>
+  </tr>
+  <tr>
+    <td>Card Level 1</td>
+    <td><span class="color-swatch" style="background:#12121E"></span></td>
+    <td><code>#12121E</code></td>
+    <td>Primary cards, sidebar</td>
+  </tr>
+  <tr>
+    <td>Card Level 2</td>
+    <td><span class="color-swatch" style="background:#1A1A2E"></span></td>
+    <td><code>#1A1A2E</code></td>
+    <td>Nested cards, table headers</td>
+  </tr>
+  <tr>
+    <td>Text Primary</td>
+    <td><span class="color-swatch" style="background:#F5F0E8"></span></td>
+    <td><code>#F5F0E8</code></td>
+    <td>Headings, body text</td>
+  </tr>
+  <tr>
+    <td>Text Muted</td>
+    <td><span class="color-swatch" style="background:#8A8090"></span></td>
+    <td><code>#8A8090</code></td>
+    <td>Secondary text, labels, descriptions</td>
+  </tr>
+  <tr>
+    <td>Border (Gold 15%)</td>
+    <td><span class="color-swatch" style="background:rgba(201,168,76,0.15)"></span></td>
+    <td><code>rgba(201,168,76,0.15)</code></td>
+    <td>Card borders, dividers</td>
+  </tr>
+  <tr>
+    <td>Success Green</td>
+    <td><span class="color-swatch" style="background:#2D9E5B"></span></td>
+    <td><code>#2D9E5B</code></td>
+    <td>Positive values, confirmed states</td>
+  </tr>
+  <tr>
+    <td>Error Red</td>
+    <td><span class="color-swatch" style="background:#9E2D2D"></span></td>
+    <td><code>#9E2D2D</code></td>
+    <td>Errors, warnings, negative values</td>
+  </tr>
+  <tr>
+    <td>Info Blue</td>
+    <td><span class="color-swatch" style="background:#2D6B9E"></span></td>
+    <td><code>#2D6B9E</code></td>
+    <td>Information, links, secondary actions</td>
+  </tr>
+  <tr>
+    <td>Teal</td>
+    <td><span class="color-swatch" style="background:#14B8A6"></span></td>
+    <td><code>#14B8A6</code></td>
+    <td>Code, monospace text, technical values</td>
+  </tr>
+</table>
+
+<h3>2.2 Typography</h3>
+
+<table>
+  <tr><th>Role</th><th>Font</th><th>Weights</th><th>Usage</th></tr>
+  <tr><td>Display / Headers</td><td><code>Cinzel</code> (serif)</td><td>400, 600, 700, 900</td><td>Page titles, section headers, brand elements</td></tr>
+  <tr><td>Body / UI</td><td><code>Rajdhani</code> (sans)</td><td>300, 400, 500, 600, 700</td><td>Body text, labels, buttons, navigation</td></tr>
+  <tr><td>Monospace / Code</td><td><code>Space Mono</code> (mono)</td><td>400, 700</td><td>Wallet addresses, formulas, prices, code</td></tr>
+</table>
+
+<h3>2.3 Component Effects</h3>
+
+<table>
+  <tr><th>Effect</th><th>CSS</th></tr>
+  <tr><td>Card Shadow</td><td><code>box-shadow: 0 4px 20px rgba(0,0,0,0.3)</code></td></tr>
+  <tr><td>Gold Glow</td><td><code>box-shadow: 0 0 20px rgba(201,168,76,0.3)</code></td></tr>
+  <tr><td>Glassmorphism</td><td><code>backdrop-filter: blur(10px); background: rgba(18,18,30,0.8)</code></td></tr>
+  <tr><td>Gold Gradient</td><td><code>linear-gradient(135deg, #C9A84C, #D4AF37, #B8962E)</code></td></tr>
+  <tr><td>Purple Gradient</td><td><code>linear-gradient(135deg, #5B2D9E, #7B4FBF)</code></td></tr>
+  <tr><td>Border Radius (cards)</td><td><code>12px</code></td></tr>
+  <tr><td>Border Radius (buttons)</td><td><code>8px</code></td></tr>
+  <tr><td>Transition</td><td><code>all 0.3s ease</code></td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>3. Navigation Structure — Sidebar</h2>
+<!-- ============================================ -->
+
+<div class="grid-2">
+  <div>
+    <h3>Sidebar Layout</h3>
+    <p>Left sidebar (260px, collapsible on mobile). Top: Logo + Brand. Bottom: Wallet status + Theme toggle.</p>
+
+    <div style="background:var(--card); border-radius:8px; padding:1rem; margin-top:1rem;">
+      <div style="color:var(--gold); font-family:Cinzel,serif; font-size:1.2rem; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border);">⛪ MissionChain</div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section .section-label" style="color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:0.3rem;">OVERVIEW</div>
+        <div class="sidebar-item active"><span class="icon">📊</span> Dashboard</div>
+        <div class="sidebar-item"><span class="icon">🏛</span> DAO</div>
+        <div class="sidebar-item"><span class="icon">👤</span> Profile</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div style="color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin:0.8rem 0 0.3rem;">TOKEN SALES</div>
+        <div class="sidebar-item"><span class="icon">🌱</span> SEED Sale</div>
+        <div class="sidebar-item"><span class="icon">🚀</span> Pre-Sale</div>
+        <div class="sidebar-item"><span class="icon">⛏</span> MICE Sale</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div style="color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin:0.8rem 0 0.3rem;">EARN</div>
+        <div class="sidebar-item"><span class="icon">💎</span> Mining</div>
+        <div class="sidebar-item"><span class="icon">🎨</span> NFT Manager</div>
+        <div class="sidebar-item"><span class="icon">🌐</span> Network</div>
+        <div class="sidebar-item"><span class="icon">🔓</span> Vesting</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div style="color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin:0.8rem 0 0.3rem;">EXPLORE</div>
+        <div class="sidebar-item"><span class="icon">🏪</span> Marketplace</div>
+        <div class="sidebar-item"><span class="icon">📄</span> Documents</div>
+        <div class="sidebar-item"><span class="icon">🤖</span> NIRA AI</div>
+      </div>
+
+      <div style="margin-top:1rem; padding-top:0.8rem; border-top:1px solid var(--border); font-size:0.8rem;">
+        <div style="color:var(--muted);">Connected Wallet</div>
+        <div style="color:var(--teal); font-family:'Space Mono',monospace; font-size:0.75rem;">0x1234...5678</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h3>Sidebar Sections (4 groups)</h3>
+    <table>
+      <tr><th>Section</th><th>Pages</th><th>Ghi chú</th></tr>
+      <tr>
+        <td><span class="badge badge-gold">OVERVIEW</span></td>
+        <td>Dashboard, DAO, Profile</td>
+        <td>Dashboard = trang mặc định. DAO = Phase 2 (UI ready, logic sau)</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">TOKEN SALES</span></td>
+        <td>SEED Sale, Pre-Sale, MICE Sale</td>
+        <td>Ba kênh bán chính. SEED có KYC gate. Pre-Sale có Referral.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">EARN</span></td>
+        <td>Mining, NFT Manager, Network, Vesting</td>
+        <td>Core earning features. Mining cần MICE active.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">EXPLORE</span></td>
+        <td>Marketplace, Documents, NIRA AI</td>
+        <td>Marketplace = P2P trading. NIRA AI = chatbot assistant.</td>
+      </tr>
+    </table>
+
+    <h3>Mobile Navigation</h3>
+    <p>Bottom navigation bar (5 icons): Dashboard, Sales (dropdown), Earn (dropdown), Marketplace, NIRA AI. Hamburger menu (☰) cho full sidebar.</p>
+
+    <h3>Top Bar</h3>
+    <p>Notification bell (🔔) + Language selector (5 languages: EN/ES/VI/KO/PT) + Wallet connect button (RainbowKit) + Theme toggle (dark/light).</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>3b. Wallet Connect & Registration Flow</h2>
+<!-- ============================================ -->
+
+<div class="danger">
+  <strong>CRITICAL:</strong> Đây là màn hình đầu tiên user thấy. Phải hoạt động hoàn hảo trên MỌI thiết bị — từ iPhone SE (375px) đến 4K monitor. Tất cả form fields phải responsive, không bị tràn, không bị cắt.
+</div>
+
+<h3>3b.1 Flow tổng quan (3 bước)</h3>
+
+<div class="flow-step"><span class="num">1</span> <strong>Connect Wallet:</strong> RainbowKit modal → MetaMask / TrustWallet / WalletConnect</div>
+<div class="flow-step"><span class="num">2</span> <strong>Registration Form:</strong> Ref. Link/Code (optional) + User ID (unique check) + Terms & Conditions</div>
+<div class="flow-step"><span class="num">3</span> <strong>Sign & Enter:</strong> Sign nonce message → JWT issued → redirect to Dashboard</div>
+
+<div class="info">
+  <strong>Logic:</strong> Nếu wallet đã đăng ký trước đó → skip bước 2, đi thẳng bước 3 (sign → dashboard). Bước 2 chỉ hiện cho user mới lần đầu kết nối.
+</div>
+
+<h3>3b.2 Registration Form — Components</h3>
+
+<table>
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Detail</th></tr>
+  <tr>
+    <td><strong>Ref. Link / Ref. Code</strong></td>
+    <td>Text input</td>
+    <td>Optional</td>
+    <td>Validate format: wallet address (0x...) hoặc code (alphanumeric). Check referrer exists on-chain.</td>
+    <td>Auto-fill nếu user đến qua referral link (<code>?ref=0x...</code> hoặc <code>?ref=CODE123</code>). Nếu đã có trong URL → hiển thị pre-filled + lock (không sửa được). Nếu trống → user có thể tự điền hoặc bỏ qua. <strong>One-time, immutable sau khi đăng ký.</strong></td>
+  </tr>
+  <tr>
+    <td><strong>User ID</strong></td>
+    <td>Text input</td>
+    <td><span class="badge badge-red">REQUIRED</span></td>
+    <td>3–20 ký tự, a-z, 0-9, underscore. Realtime check trùng (debounce 500ms). ✅ Available / ❌ Taken.</td>
+    <td>Tên hiển thị công khai. Unique across toàn hệ thống. Lưu PostgreSQL. <strong>Không thể thay đổi sau đăng ký</strong> (hiển thị warning).</td>
+  </tr>
+  <tr>
+    <td><strong>Terms & Conditions</strong></td>
+    <td>Checkbox</td>
+    <td><span class="badge badge-red">REQUIRED</span></td>
+    <td>Phải checked trước khi submit. Button "Register" disabled nếu unchecked.</td>
+    <td>Text: "I have read and agree to the <a style='color:var(--gold)'>Terms & Conditions</a> and <a style='color:var(--gold)'>Privacy Policy</a>". Link mở modal/new tab với nội dung đầy đủ.</td>
+  </tr>
+  <tr>
+    <td><strong>Register Button</strong></td>
+    <td>Button (gold)</td>
+    <td>—</td>
+    <td>Disabled khi: User ID trống/trùng, T&C unchecked, hoặc đang loading.</td>
+    <td>Click → call API <code>POST /auth/register</code> → lưu user → proceed to sign nonce → JWT → Dashboard.</td>
+  </tr>
+</table>
+
+<h3>3b.3 Responsive Rules (Tối quan trọng)</h3>
+
+<table>
+  <tr><th>Breakpoint</th><th>Layout</th><th>Form Width</th><th>Đặc biệt</th></tr>
+  <tr>
+    <td>Mobile (&lt; 640px)</td>
+    <td>Full-screen overlay, no sidebar</td>
+    <td>100% width, padding 16px</td>
+    <td>Input font-size ≥ 16px (tránh zoom trên iOS). Touch target ≥ 44px. Stack vertical.</td>
+  </tr>
+  <tr>
+    <td>Tablet (640–1024px)</td>
+    <td>Centered card, max-width 480px</td>
+    <td>480px centered</td>
+    <td>Logo + form trong 1 card. Background blur overlay.</td>
+  </tr>
+  <tr>
+    <td>Desktop (1024–1536px)</td>
+    <td>Split layout: Left = branding / Right = form</td>
+    <td>420px form panel</td>
+    <td>Left panel: Logo + tagline + animation. Right panel: form card.</td>
+  </tr>
+  <tr>
+    <td>Ultra-wide (&gt; 1536px)</td>
+    <td>Same as Desktop, max-width 1200px centered</td>
+    <td>420px form panel</td>
+    <td>Thêm padding, font lớn hơn.</td>
+  </tr>
+</table>
+
+<div class="success">
+  <strong>Responsive Principles:</strong><br>
+  • <code>clamp()</code> cho font sizes — không bị quá nhỏ/quá lớn<br>
+  • <code>min(100%, 480px)</code> cho form container — tự co giãn<br>
+  • Input fields: <code>width: 100%</code> — luôn full-width trong container<br>
+  • Touch targets ≥ 44×44px trên mobile<br>
+  • Không horizontal scroll — tuyệt đối không bao giờ<br>
+  • Test trên: iPhone SE (375px), iPhone 14 (390px), iPad (768px), MacBook (1440px), 4K (2560px)
+</div>
+
+<h3>3b.4 API Endpoints (Registration)</h3>
+
+<table>
+  <tr><th>Endpoint</th><th>Method</th><th>Body</th><th>Response</th></tr>
+  <tr>
+    <td><code>/auth/check-userid</code></td>
+    <td>GET</td>
+    <td>?userId=xxx</td>
+    <td><code>{ available: true/false }</code></td>
+  </tr>
+  <tr>
+    <td><code>/auth/check-referrer</code></td>
+    <td>GET</td>
+    <td>?ref=0x... or ?ref=CODE</td>
+    <td><code>{ valid: true/false, referrerName: "..." }</code></td>
+  </tr>
+  <tr>
+    <td><code>/auth/register</code></td>
+    <td>POST</td>
+    <td><code>{ walletAddress, userId, referrer?, termsAccepted }</code></td>
+    <td><code>{ success, nonce }</code> → user signs nonce → <code>/auth/verify</code> → JWT</td>
+  </tr>
+  <tr>
+    <td><code>/auth/nonce</code></td>
+    <td>GET</td>
+    <td>?wallet=0x...</td>
+    <td><code>{ nonce }</code> (for returning users)</td>
+  </tr>
+  <tr>
+    <td><code>/auth/verify</code></td>
+    <td>POST</td>
+    <td><code>{ walletAddress, signature }</code></td>
+    <td><code>{ jwt, user: { userId, wallet, referrer } }</code></td>
+  </tr>
+</table>
+
+<!-- ============================================ -->
+<h2>4. All 13 Pages — Detailed Specification</h2>
+<!-- ============================================ -->
+
+<!-- PAGE 1: Dashboard -->
+<h3>4.1 Dashboard <code>/</code> <span class="badge badge-gold">DEFAULT</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Portfolio overview — everything at a glance. Landing page after wallet connect.</p>
+  <p><strong>Layout:</strong> Grid of KPI cards (top) + Charts/Analytics (middle) + Recent activity (bottom).</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Data Source</th><th>Detail</th></tr>
+  <tr><td>MIC Balance Card</td><td><code>MICToken.balanceOf()</code></td><td>Balance + current price + total value in USD</td></tr>
+  <tr><td>MICE Overview Card</td><td><code>MICELicense.licensesOf()</code></td><td>Active licenses count, next expiry, total mined MIC</td></tr>
+  <tr><td>Staking Position Card</td><td><code>NFTStaking.stakesOf()</code></td><td>Staked amount, lock expiry, NFT tier, accrued rewards</td></tr>
+  <tr><td>Vesting Progress Card</td><td><code>LockManager.getSchedules(addr)</code></td><td>Visual timeline, locked/available balance, next unlock date. No claim needed — auto-unlock.</td></tr>
+  <tr><td>Pending Rewards Card</td><td><code>MiningPool + NFTStaking</code></td><td>Mining rewards + Staking rewards, combined claim button</td></tr>
+  <tr><td>Referral Earnings Card</td><td><code>ReferralRegistry.earningsOf()</code></td><td>F1/F2 total USDT earned, network size</td></tr>
+  <tr><td>SEED/Pre-Sale Progress</td><td><code>SeedSale + PreSale</code></td><td>Sold vs cap progress bars, current round status</td></tr>
+  <tr><td>Emission Analytics</td><td><code>EmissionController</code></td><td>Current E(t) rate, pool depletion %, chart over time</td></tr>
+  <tr><td>Quick Actions Bar</td><td>—</td><td>Buy MICE, Stake, Claim All — floating bottom bar on mobile</td></tr>
+</table>
+
+<!-- PAGE 2: DAO -->
+<h3>4.2 DAO <code>/dao</code> <span class="badge badge-purple">PHASE 2 UI</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Governance voting. UI built in Phase 1 but smart contract logic deferred to Phase 2.</p>
+  <p><strong>Layout:</strong> Active proposals list + Voting interface + Governance stats.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Status</th><th>Detail</th></tr>
+  <tr><td>Proposal List</td><td><span class="badge badge-purple">UI Only</span></td><td>Cards with title, status (Active/Passed/Failed), votes for/against</td></tr>
+  <tr><td>Voting Panel</td><td><span class="badge badge-purple">UI Only</span></td><td>For/Against/Abstain buttons, voting power display (based on MIC staked)</td></tr>
+  <tr><td>Governance Stats</td><td><span class="badge badge-purple">UI Only</span></td><td>Total proposals, participation rate, treasury balance</td></tr>
+  <tr><td>Create Proposal</td><td><span class="badge badge-purple">UI Only</span></td><td>Form with title, description, options, quorum threshold</td></tr>
+</table>
+
+<!-- PAGE 3: Profile -->
+<h3>4.3 Profile <code>/profile</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> User account settings, KYC status, activity history.</p>
+  <p><strong>Layout:</strong> 3 tabs — Account, KYC, Activity.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Wallet Info</td><td>Connected address, chain, balance summary</td></tr>
+  <tr><td>KYC Status Badge</td><td>Verified ✅ / Pending ⏳ / Not Started ❌ — links to Sumsub flow</td></tr>
+  <tr><td>Display Name</td><td>Editable username (stored off-chain in PostgreSQL)</td></tr>
+  <tr><td>Email (optional)</td><td>For notifications, not required</td></tr>
+  <tr><td>Activity History</td><td>All on-chain transactions: purchases, claims, stakes, referral earnings</td></tr>
+  <tr><td>NFT Credentials</td><td>Earned badges, tier display, MFP-NFT count</td></tr>
+</table>
+
+<!-- PAGE 4: SEED Sale -->
+<h3>4.4 SEED Sale <code>/seed</code> <span class="badge badge-red">KYC REQUIRED</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Strategic investor round — $0.0025/MIC, 4 packages, +15% bonus, bundled MFP-NFT.</p>
+  <p><strong>Gate:</strong> KYC verified + Whitelisted. Non-whitelisted users see info page with "Apply" CTA.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>KYC Gate</td><td>If not verified → show "Complete KYC to participate" with Sumsub redirect</td></tr>
+  <tr><td>Whitelist Gate</td><td>If not whitelisted → show "Application pending" or "Apply now"</td></tr>
+  <tr><td>Round Stats</td><td>Total sold / 227.5M cap, participants count, time remaining (if applicable)</td></tr>
+  <tr>
+    <td>Package Cards (4)</td>
+    <td>
+      <strong>EARLY BIRD:</strong> $1,000 → 400K MIC + 20 MFP-NFT<br>
+      <strong>FOUNDING PARTNER I:</strong> $2,500 → 1M MIC + 60 MFP-NFT<br>
+      <strong>FOUNDING PARTNER II:</strong> $5,000 → 2M MIC + 150 MFP-NFT<br>
+      <strong>FOUNDING PARTNER III:</strong> $10,000 → 4M MIC + 350 MFP-NFT<br>
+      All include +15% bonus. Price @ $0.0025/MIC.
+    </td>
+  </tr>
+  <tr><td>Payment Toggle</td><td>USDT or BNB (BNB uses TWAP oracle for conversion)</td></tr>
+  <tr><td>Purchase Button</td><td>Validates KYC + whitelist → approve USDT → SeedSale.purchase() → tx confirmation</td></tr>
+  <tr><td>Vesting Preview</td><td>Visual: 6-month cliff → 10% unlock → 2.5%/month → 42 months total</td></tr>
+  <tr><td>Purchase History</td><td>Table: date, package, MIC amount, MFP-NFT count, vesting status</td></tr>
+</table>
+
+<div class="danger">
+  <strong>⚠ NO REFERRAL in SEED Round.</strong> Referral system is Pre-Sale ONLY. The SEED page must NOT show any referral code input or affiliate links.
+</div>
+
+<!-- PAGE 5: Pre-Sale -->
+<h3>4.5 Pre-Sale <code>/presale</code> <span class="badge badge-green">HAS REFERRAL</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Community sale — $0.005/MIC, min $25, 3 packages with NFT bonus, F1:7%/F2:3% referral.</p>
+  <p><strong>Upcoming:</strong> Q3 2026. UI ready, sale may be paused/not-started.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Round Stats</td><td>Total sold / 315M cap, participant count, referral revenue distributed</td></tr>
+  <tr>
+    <td>Minimum Purchase</td>
+    <td>$25+ → 5,000+ MIC (no NFT bonus, no package required)</td>
+  </tr>
+  <tr>
+    <td>Package Cards (3)</td>
+    <td>
+      <strong>Package Builder:</strong> $1,000 → 200K MIC + Builder NFT (60d)<br>
+      <strong>Package Maker:</strong> $2,500 → 500K MIC + Maker NFT (90d)<br>
+      <strong>Package Luminary:</strong> $5,000 → 1M MIC + Luminary NFT (180d)
+    </td>
+  </tr>
+  <tr><td>Referral Code Input</td><td>Optional — enter referrer wallet address or link. One-time, immutable.</td></tr>
+  <tr><td>Referral Banner</td><td>"Get referred and your referrer earns 7% USDT! You earn bonus too."</td></tr>
+  <tr><td>Payment Toggle</td><td>USDT or BNB</td></tr>
+  <tr><td>Purchase Button</td><td>PreSale.purchaseWithUSDT(amount, referrer) → tx confirmation</td></tr>
+  <tr><td>Vesting Preview</td><td>Same as SEED: 6-month cliff → 10% → 2.5%/month → 42 months</td></tr>
+  <tr><td>3 Tabs</td><td>Packages | My Purchases | Referral Stats</td></tr>
+</table>
+
+<!-- PAGE 6: MICE Sale -->
+<h3>4.6 MICE Sale <code>/mice</code> <span class="badge badge-gold">REVENUE CRITICAL</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Purchase MICE mining licenses — ERC-1155, 5-round fixed $100-$500 (50% MIC burned + 50% USDT), 360 days.</p>
+  <p><strong>Key:</strong> MICE is the gateway to mining. No MICE = no emission.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Pricing Display</td><td>5-round fixed: Round 1 $100 (1-20K), Round 2 $200 (20-40K), Round 3 $300 (40-60K), Round 4 $400 (60-80K), Round 5 $500 (80-100K)</td></tr>
+  <tr><td>Active Licenses Counter</td><td>XX,XXX / 100,000 max — progress bar</td></tr>
+  <tr>
+    <td>License Packages (4)</td>
+    <td>
+      From DApp spec:<br>
+      <strong>Starter:</strong> 1 MICE<br>
+      <strong>Builder:</strong> 5 MICE (small discount)<br>
+      <strong>Accelerator:</strong> 10 MICE (medium discount)<br>
+      <strong>Enterprise:</strong> 25 MICE (best discount)<br>
+      <em>Exact pricing TBD based on dynamic formula</em>
+    </td>
+  </tr>
+  <tr><td>Revenue Split Display</td><td>50% MIC Burned + 50% USDT (35% Marketing / 7.5% Mgmt / 57.5% Net Capital [12.5% DAO + 5% Reserved Staking + 40% LP]) — visual breakdown</td></tr>
+  <tr><td>Purchase Flow</td><td>Select quantity → see total cost → approve USDT → MICELicense.purchase() → confirmation</td></tr>
+  <tr><td>My Licenses</td><td>Table: License ID, activation date, expiry date, MIC mined, status (Active/Expired)</td></tr>
+  <tr><td>Renew Button</td><td>For expiring licenses — pay current price → extend 360 days</td></tr>
+  <tr><td>Affiliate Rewards</td><td>MICE affiliate program (if applicable, distinct from Pre-Sale referral)</td></tr>
+</table>
+
+<!-- PAGE 7: Mining -->
+<h3>4.7 Mining <code>/mining</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Mining dashboard — view active MICE, track rewards, claim MIC, see Hindex score.</p>
+  <p><strong>Prerequisite:</strong> Must own at least 1 active MICE license.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Mining Status</td><td>Active ✅ / No License ❌ — with CTA to buy MICE if none</td></tr>
+  <tr><td>Hindex Score</td><td>Mining weight visualization — formula: Hindex-weighted distribution among all miners</td></tr>
+  <tr><td>Daily Emission Display</td><td>Current E(t) = E_base × D(t) × R(t), your share = Hindex / totalHindex × minerPool</td></tr>
+  <tr><td>Pending Rewards</td><td>Accumulated MIC not yet claimed — large number + Claim button</td></tr>
+  <tr><td>Claim Rewards Button</td><td>MiningPool.claimReward() → shows gas estimate → tx confirmation</td></tr>
+  <tr><td>Mining History</td><td>Chart: daily MIC earned over time. Table: claim transactions.</td></tr>
+  <tr><td>Emission Formula Panel</td><td>Expandable: shows E₀, λ, T_half, D(t), R(t) with current values</td></tr>
+  <tr><td>Pool Depletion</td><td>Progress bar: totalEmitted / 5,950,000,000 MIC (85% mining pool)</td></tr>
+</table>
+
+<!-- PAGE 7b: Mining Dashboard (Advanced) -->
+<h3>4.7b Mining Dashboard <code>/mining/dashboard</code> <span class="badge badge-purple">PHASE 1 ANALYTICS</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Advanced analytics for mining ecosystem — pool progress, daily emission breakdown, active miners, staking tier overview.</p>
+  <p><strong>Audience:</strong> All users — provides transparency into current network state and mining mechanics.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Data Source</th><th>Detail</th></tr>
+  <tr><td>Mining Pool Progress</td><td><code>EmissionController.totalEmitted()</code></td><td>Progress bar: totalEmitted / 5,950,000,000 MIC. Percentage remaining. Warning at 90%+.</td></tr>
+  <tr><td>Today's Emission Rate</td><td><code>EmissionController.currentEmission()</code></td><td>Display current E(t) with formula breakdown: E_base(t) × D(t) × R(t) × W(t). Show each factor separately with hover tooltips.</td></tr>
+  <tr><td>Emission Formula Details</td><td>Contract parameters</td><td>
+    Expandable panel showing:<br>
+    • E₀ = 22,907,500 MIC/day<br>
+    • T_half = 180 days (99% emitted ~3 years)<br>
+    • Current λ decay parameter<br>
+    • Demand factor D(t) range [0.5, 1.5]<br>
+    • ROI regulator R(t) = clamp(250%/ROI, 0.5, 2.0)<br>
+    • Warmup factor W(t) = min(1.0, t/30)
+  </td></tr>
+  <tr><td>Active MICE Miners Count</td><td><code>MICELicense.activeCount()</code></td><td>Total active miners on network. Link to top miners (by Hindex) — honor privacy, show only top 10.</td></tr>
+  <tr><td>Daily Emission Split</td><td><code>EmissionController</code></td><td>Visual breakdown (pie/bar chart):
+    60% Miners (Early 50% during first 90 days)<br>
+    20% Staking (Pure MIC — Early 30% during first 90 days)<br>
+    15% DAO Treasure<br>
+    5% Buyback & Burn
+  </td></tr>
+  <tr><td>Miners Pool Share</td><td><code>MiningPool.totalMined()</code></td><td>MIC allocated to 60% pool. Chart: weekly/monthly trends. Show how much remains in pool.</td></tr>
+  <tr><td>Staking Pool Overview</td><td><code>Staking</code></td><td>Pure MIC staking statistics (NFT-independent):
+    Total staked MIC<br>
+    Active stakers count<br>
+    Average stake per user<br>
+    Breakdown by lock duration: 30d / 90d / 180d / 360d with counts + total staked at each tier
+  </td></tr>
+  <tr><td>Mining Per MICE License</td><td><code>MiningPool.getUserShare()</code></td><td>Formula display: (Your Hindex / Total Network Hindex) × (60% of E(t))</td></tr>
+  <tr><td>DAO Treasury Pool</td><td><code>DAOTreasury</code></td><td>15% allocation showing balance and recent distributions. Link to DAO governance proposals (Phase 2).</td></tr>
+  <tr><td>Buyback & Burn Pool</td><td><code>BuybackBurn</code></td><td>5% allocation showing MIC burned YTD, frequency of buyback executions.</td></tr>
+</table>
+
+<!-- PAGE 8: Market Overview -->
+<h3>4.8 Market Overview <code>/market</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Token distribution status and liquidity overview — transparency for all users.</p>
+  <p><strong>Audience:</strong> Investors, miners, and community — shows macro ecosystem health.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Data Source</th><th>Detail</th></tr>
+  <tr><td>Total Distributed vs Not Yet Distributed</td><td><code>MICToken, SeedSale, PreSale, MICELicense</code></td><td>
+    Large number cards showing:<br>
+    • Total Supply: 7,000,000,000 MIC<br>
+    • Pre-Issued: 1,050,000,000 (15%) — with pie showing 6 categories<br>
+    • Mining Pool: 5,950,000,000 (85%)<br>
+    • Current Outstanding: all released + mined so far<br>
+    • Remaining in Pool: 5,950,000,000 - totalEmitted
+  </td></tr>
+  <tr><td>Locked vs Unlocked by Category</td><td><code>LockManager.getSchedules(), LockManager.lockedOf()</code></td><td>
+    Table or multi-tier bar chart showing each pre-issued category:<br>
+    1. Incentives & Airdrops (0.25%) — locked/unlocked status<br>
+    2. SEED Round (3.25%) — with current vesting progress<br>
+    3. Pre-Sale (4.50%) — with current vesting progress<br>
+    4. DEX/CEX Listing (1.50%) — mostly unlocked<br>
+    5. Founders & Mgmt (4.00%) — 24mo cliff, heavily locked<br>
+    6. Community Funds (+Churches) (1.50%) — 24mo cliff, heavily locked
+  </td></tr>
+  <tr><td>DEX/CEX Liquidity Status</td><td><code>LiquidityPool, PancakeSwap V3 TWAP</code></td><td>
+    • Pool reserves: MIC / USDT ratio<br>
+    • Current spot price from DEX<br>
+    • 24h volume<br>
+    • Liquidity depth visualization (price impact chart)<br>
+    • Price floor alert: $0.001 (circuit breaker CB-3)
+  </td></tr>
+  <tr><td>Reserved Funds Status</td><td><code>LiquidityPool, StakingSustainabilityFund</code></td><td>
+    • Liquidity Pool + Buffer: $6M USDT (from MICE revenue)<br>
+    • Staking Sustainability Fund: $750K MIC auto-buy reserve<br>
+    • DAO Treasury: live balance and allocation breakdown<br>
+    • Next auto-buy execution date (if applicable)
+  </td></tr>
+  <tr><td>Historical Distribution Timeline</td><td>Contract events</td><td>
+    Chart showing cumulative unlock by month/week:<br>
+    • Pre-issued categories over time<br>
+    • Mining emission curve (exponential decay)<br>
+    • Overlay of key events (SEED completion, Pre-Sale milestones, DAO activation)
+  </td></tr>
+  <tr><td>Token Price & Market Cap</td><td>DEX oracle (PancakeSwap V3 TWAP)</td><td>
+    • Current MIC price (USDT)<br>
+    • 24h change %<br>
+    • Market cap = price × outstanding supply<br>
+    • Fully diluted cap = price × 7B<br>
+    • 24h volume from DEX
+  </td></tr>
+</table>
+
+<!-- PAGE 10: NFT Manager -->
+<h3>4.9 NFT Manager <code>/nft</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> View and manage NFTs — MFP-NFT + Community NFT tiers. USDT reward distribution & DAO governance.</p>
+  <p><strong>Key mechanic:</strong> NFT multipliers (×1 to ×10) apply ONLY to USDT reward pools (Community Builder Pool, Monthly NFT Pool, Lucky Draw). Staking is a pure MIC protocol with separate time-lock multipliers (see Staking page).</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>NFT Gallery</td><td>Grid of NFT cards with tier-specific designs (MFP/Luminary/Maker/Builder). Shows ownership count, multiplier, validity period.</td></tr>
+  <tr>
+    <td>NFT Tier Reference</td>
+    <td>
+      <strong>MFP-NFT:</strong> ×10 multiplier (DAO governance, no USDT pool distribution)<br>
+      <strong>Luminary:</strong> ×5.0 multiplier (USDT pools, 180d duration)<br>
+      <strong>Maker:</strong> ×2.5 multiplier (USDT pools, 90d duration)<br>
+      <strong>Builder:</strong> ×1.0 multiplier (USDT pools, 60d duration)
+    </td>
+  </tr>
+  <tr><td>My NFTs Tab</td><td>Display owned NFTs by tier. Show earned date, expiry date, redemption status (active/expired).</td></tr>
+  <tr><td>USDT Reward Distribution Info</td><td>Explain NFT multiplier usage: "Your NFT multiplier determines your share in Community Builder Pool, Monthly NFT Pool, and Lucky Draw. MIC staking rewards are separate and do not use NFT multipliers."</td></tr>
+  <tr><td>Community Builder Pool Status</td><td>Show milestone progress bar, NFTs earned this period, current week's pool total ($), your share based on multiplier, claim button</td></tr>
+  <tr><td>Monthly NFT Pool Status</td><td>Show current month's rewards for NFTs earned this period, claim button</td></tr>
+  <tr><td>Lucky Draw Entries</td><td>Show your NFT serial numbers eligible for this week's draw, prizes breakdown</td></tr>
+  <tr><td>DAO Governance (MFP-NFT only)</td><td>If user holds MFP-NFT: show voting power, active proposals, vote button</td></tr>
+  <tr><td>Claim USDT Rewards</td><td>Combined claim button for all USDT pools earned</td></tr>
+</table>
+
+<!-- PAGE 11: Network (Referral) -->
+<h3>4.10 Network <code>/network</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Referral dashboard — unique link, F1/F2 tree, commission history.</p>
+  <p><strong>Scope:</strong> Pre-Sale & MICE referrals. Shows USDT commissions earned.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Referral Link</td><td>Unique URL + copy button + share buttons (Telegram, Twitter, WhatsApp)</td></tr>
+  <tr><td>Network Tree</td><td>Visual: F1 direct referrals (7% USDT) + F2 second-level (3% USDT)</td></tr>
+  <tr><td>Commission Stats</td><td>Total USDT earned, F1 count, F2 count, average purchase per referral</td></tr>
+  <tr><td>Commission History</td><td>Table: date, referral address, F-level, purchase amount, your commission</td></tr>
+  <tr><td>Bonus Tracker</td><td>Track bonus milestones (if applicable)</td></tr>
+</table>
+
+<!-- PAGE 12: Vesting -->
+<h3>4.11 Vesting <code>/vesting</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> View all vesting schedules, track unlocks, claim released tokens.</p>
+  <p><strong>Multiple schedules:</strong> A user can have SEED + Pre-Sale + Airdrop schedules simultaneously.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Schedule List</td><td>Accordion — expand each schedule (SEED, Pre-Sale, Airdrop, Founders, DAO)</td></tr>
+  <tr>
+    <td>Timeline Visualization</td>
+    <td>
+      Visual bar showing:<br>
+      • Start date → Cliff period (6 or 24 months)<br>
+      • 10% initial unlock marker<br>
+      • Monthly release phase (2.5%/month)<br>
+      • Current progress indicator<br>
+      • Full unlock date
+    </td>
+  </tr>
+  <tr><td>Claimable Amount</td><td>Large number: X MIC available to claim now</td></tr>
+  <tr><td>Available Balance</td><td>Auto-unlocked display — no claim button needed, shows locked vs available</td></tr>
+  <tr><td>Claim History</td><td>Table: date, schedule type, amount claimed, tx hash</td></tr>
+  <tr>
+    <td>Vesting Types</td>
+    <td>
+      SEED/Pre-Sale/Airdrop: 6mo cliff → 10% → 2.5%/mo → 42mo total<br>
+      Founders: 24mo cliff → 10% → 2.5%/mo → 60mo total<br>
+      DAO Treasury: 24mo cliff → 10% → 2.5%/mo → 60mo total
+    </td>
+  </tr>
+</table>
+
+<!-- PAGE 13: Marketplace -->
+<h3>4.12 Marketplace <code>/marketplace</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> P2P trading — MIC, MICE licenses, NFTs. Order book style.</p>
+  <p><strong>Note:</strong> Phase 1 UI with basic trading. Advanced features (limit orders, AMM) in Phase 2.</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>3 Tabs</td><td>MIC Trading | MICE Trading | NFT Trading</td></tr>
+  <tr><td>Order Book</td><td>Buy/Sell orders with price, amount, total — live updates</td></tr>
+  <tr><td>Trade Panel</td><td>Buy/Sell toggle, amount input, price input (or market price), execute button</td></tr>
+  <tr><td>Price Chart</td><td>SVG-based candlestick or line chart (MIC/USDT)</td></tr>
+  <tr><td>My Orders</td><td>Open orders, order history, trade history</td></tr>
+  <tr><td>MICE Listing</td><td>List MICE for sale — set price, duration. Browse available MICE.</td></tr>
+  <tr><td>NFT Listing</td><td>List NFTs by tier — MFP/Platinum/Gold/Silver with holographic cards</td></tr>
+</table>
+
+<!-- PAGE 14: Documents -->
+<h3>4.13 Documents <code>/documents</code></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> Hub linking to White Paper, all appendices, and social channels.</p>
+  <p><strong>Links to:</strong> missionchain.io/frontend/documents/ (external, opens in new tab).</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>White Paper Card</td><td>Link to full White Paper with summary excerpt</td></tr>
+  <tr><td>Appendix Cards</td><td>A through G — each with title, description, external link</td></tr>
+  <tr><td>Social Links</td><td>Telegram, Twitter/X, Discord, YouTube, Medium — icon grid</td></tr>
+  <tr><td>Glossary Link</td><td>Brand terms + formula reference</td></tr>
+</table>
+
+<!-- PAGE 13: NIRA AI -->
+<h3>4.13 NIRA AI <code>/nira</code> <span class="badge badge-teal">AI ASSISTANT</span></h3>
+
+<div class="decision-card">
+  <p><strong>Purpose:</strong> AI chatbot assistant for DApp guidance, portfolio analysis, transaction help.</p>
+  <p><strong>Identity:</strong> NIRA AI (distinct from SOPHIA AI on missionchain.world).</p>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Detail</th></tr>
+  <tr><td>Chat Interface</td><td>Full-page chat with message bubbles, typing indicator, suggestions</td></tr>
+  <tr><td>Suggested Prompts</td><td>Quick buttons: "Analyze my portfolio", "How to stake?", "Explain emission formula"</td></tr>
+  <tr><td>Context Awareness</td><td>NIRA knows user's wallet state — balance, positions, vesting schedules</td></tr>
+  <tr><td>Input Bar</td><td>Text input + send button + voice input (optional Phase 2)</td></tr>
+  <tr><td>Action Suggestions</td><td>NIRA can suggest actions: "You have 50K MIC claimable. Want to claim now?"</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>5. User Flows — Critical Paths</h2>
+<!-- ============================================ -->
+
+<h3>5.1 New User Onboarding</h3>
+<div class="flow-step"><span class="num">1</span> Land on missionchain.io → see Connect Wallet CTA</div>
+<div class="flow-step"><span class="num">2</span> Click Connect → RainbowKit modal → select MetaMask/TrustWallet</div>
+<div class="flow-step"><span class="num">3</span> Sign message (nonce) → Backend verifies → JWT issued</div>
+<div class="flow-step"><span class="num">4</span> Redirect to Dashboard → see empty portfolio with CTAs</div>
+<div class="flow-step"><span class="num">5</span> Prompt: "Complete KYC to join SEED Round" or "Buy MICE to start mining"</div>
+
+<h3>5.2 SEED Purchase Flow</h3>
+<div class="flow-step"><span class="num">1</span> Navigate to /seed → KYC gate check</div>
+<div class="flow-step"><span class="num">2</span> If not verified → redirect to Sumsub KYC flow</div>
+<div class="flow-step"><span class="num">3</span> If verified + whitelisted → show 4 package cards</div>
+<div class="flow-step"><span class="num">4</span> Select package → choose USDT or BNB payment</div>
+<div class="flow-step"><span class="num">5</span> Approve USDT spending → SeedSale.purchase() → tx pending</div>
+<div class="flow-step"><span class="num">6</span> Tx confirmed → show success + vesting schedule created</div>
+
+<h3>5.3 Mining Flow</h3>
+<div class="flow-step"><span class="num">1</span> Navigate to /mice → buy MICE license(s)</div>
+<div class="flow-step"><span class="num">2</span> License activated → navigate to /mining</div>
+<div class="flow-step"><span class="num">3</span> View Hindex score + daily emission share</div>
+<div class="flow-step"><span class="num">4</span> Rewards accumulate daily (EmissionController.distributeDaily via keeper)</div>
+<div class="flow-step"><span class="num">5</span> Click Claim → MiningPool.claimReward() → MIC to wallet</div>
+
+<h3>5.4 Staking Flow — Pure MIC Protocol</h3>
+<div class="flow-step"><span class="num">1</span> Navigate to Staking page (separate from NFT Manager)</div>
+<div class="flow-step"><span class="num">2</span> Enter MIC amount + choose lock period (30/90/180/360 days)</div>
+<div class="flow-step"><span class="num">3</span> See effective weight preview: amount × time-lock multiplier ONLY (×1.0 / ×1.25 / ×1.5 / ×2.0)</div>
+<div class="flow-step"><span class="num">4</span> Approve MIC → Staking.stake() → position created</div>
+<div class="flow-step"><span class="num">5</span> View position card with lock countdown + accrued rewards</div>
+<div class="flow-step"><span class="num">6</span> Claim rewards anytime. Unstake max 10%/day after lock expires.</div>
+
+<div style="background:#f5f5f5;border-left:4px solid #C9A84C;padding:12px;margin:16px 0;font-size:13px;line-height:1.6">
+<strong style="color:#C9A84C">Key Architecture Changes:</strong><br>
+• <strong>Staking is pure MIC:</strong> No NFT multipliers apply to staking. Rewards are based on amount × time-lock multiplier only.<br>
+• <strong>No staking caps:</strong> Users can stake unlimited MIC per address. (Previous per-NFT caps removed.)<br>
+• <strong>Locked MIC support:</strong> Vesting-locked MIC tokens (from SEED/Pre-Sale) can be staked with full time-lock multipliers (no reduction). Staking rewards are unlocked immediately and freely transferable. Minimum staking lock: 360 days.<br>
+• <strong>NFT multipliers moved:</strong> NFT multipliers (×1/×2.5/×5/×10) now apply ONLY to USDT reward pools (Community Builder Pool, Monthly NFT Pool, Lucky Draw), NOT staking.
+</div>
+
+<!-- ============================================ -->
+<h2>6. Wallet & Auth Architecture</h2>
+<!-- ============================================ -->
+
+<pre>
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  User Browser   │     │  Fastify API      │     │  BSC Network    │
+│                 │     │  api.missionchain  │     │  (Smart         │
+│  Next.js 14     │     │  .io               │     │   Contracts)    │
+│  + wagmi 2.x    │     │                    │     │                 │
+│  + RainbowKit   │     │  PostgreSQL        │     │  10 Contracts   │
+│  + viem 2.x     │     │  + Redis cache     │     │                 │
+└────────┬────────┘     └────────┬───────────┘     └────────┬────────┘
+         │                       │                          │
+         │  1. Connect Wallet    │                          │
+         │  (RainbowKit modal)   │                          │
+         │──────────────────────→│                          │
+         │  2. Request nonce     │                          │
+         │←──────────────────────│                          │
+         │  3. Sign nonce        │                          │
+         │  (in wallet)          │                          │
+         │──────────────────────→│                          │
+         │  4. Verify sig → JWT  │                          │
+         │←──────────────────────│                          │
+         │                       │                          │
+         │  5. Read on-chain     │                          │
+         │  (wagmi hooks)        │─────────────────────────→│
+         │←──────────────────────│←─────────────────────────│
+         │                       │                          │
+         │  6. Write txs         │                          │
+         │  (useContractWrite)   │─────────────────────────→│
+         │                       │       ← tx receipt ──────│
+         │  7. Event indexer     │                          │
+         │  (WebSocket)          │←─ event logs ────────────│
+         │←──────────────────────│                          │
+</pre>
+
+<!-- ============================================ -->
+<h2>7. Responsive Breakpoints</h2>
+<!-- ============================================ -->
+
+<table>
+  <tr><th>Breakpoint</th><th>Width</th><th>Layout</th><th>Navigation</th></tr>
+  <tr><td>Mobile</td><td>&lt; 640px</td><td>Single column, stacked cards</td><td>Bottom nav (5 icons) + hamburger</td></tr>
+  <tr><td>Tablet</td><td>640–1024px</td><td>2-column grid, sidebar collapsed</td><td>Collapsed sidebar (icons only)</td></tr>
+  <tr><td>Desktop</td><td>1024–1536px</td><td>Full grid, sidebar expanded</td><td>Full sidebar (260px)</td></tr>
+  <tr><td>Ultra-wide</td><td>&gt; 1536px</td><td>Max-width container, centered</td><td>Full sidebar</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>8. Tech Stack Summary</h2>
+<!-- ============================================ -->
+
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Notes</th></tr>
+  <tr><td>Framework</td><td>Next.js 14 (App Router, CSR)</td><td>Client-side rendering for DApp</td></tr>
+  <tr><td>Blockchain</td><td>BSC (Chain 56 mainnet, 97 testnet)</td><td>BNB Smart Chain</td></tr>
+  <tr><td>Wallet</td><td>wagmi 2.x + viem 2.x + RainbowKit</td><td>MetaMask, TrustWallet, WalletConnect</td></tr>
+  <tr><td>State</td><td>React Query + wagmi hooks</td><td>Server state (on-chain + API), client state (React)</td></tr>
+  <tr><td>Styling</td><td>TailwindCSS + CSS Variables</td><td>Dark mode primary, light mode secondary</td></tr>
+  <tr><td>Backend API</td><td>Fastify + Prisma + PostgreSQL</td><td>api.missionchain.io</td></tr>
+  <tr><td>Auth</td><td>Wallet signature → JWT</td><td>Nonce-based, no password</td></tr>
+  <tr><td>KYC</td><td>Sumsub (off-chain) + on-chain whitelist</td><td>Required for SEED round</td></tr>
+  <tr><td>Contracts</td><td>Solidity 0.8.24, Hardhat, OpenZeppelin</td><td>10 contracts, AccessControl (not Ownable)</td></tr>
+  <tr><td>Oracle</td><td>PancakeSwap V3 TWAP + Chainlink fallback</td><td>For BNB/USD conversion</td></tr>
+  <tr><td>Admin</td><td>DAOGovernor (Standing Committee 3/5 + ≥75% MFP weight)</td><td>DEFAULT_ADMIN_ROLE holder</td></tr>
+  <tr><td>i18n</td><td>5 languages (EN, ES, VI, KO, PT)</td><td>Phase 1. Phase 2 adds SW, PCM, TL</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>9. Smart Contracts — Frontend Integration Map</h2>
+<!-- ============================================ -->
+
+<table>
+  <tr><th>#</th><th>Contract</th><th>Pages Using</th><th>Key Hooks</th></tr>
+  <tr><td>1</td><td>MICToken.sol</td><td>Dashboard, all pages</td><td><code>useBalance</code>, <code>useContractRead(balanceOf)</code></td></tr>
+  <tr><td>2</td><td>LockManager.sol</td><td>Vesting, Dashboard</td><td><code>useContractRead(getSchedules, lockedOf, availableOf)</code></td></tr>
+  <tr><td>3</td><td>SeedSale.sol</td><td>SEED Sale, Dashboard</td><td><code>useContractWrite(purchase)</code>, <code>useContractRead(totalSold)</code></td></tr>
+  <tr><td>4</td><td>ReferralRegistry.sol</td><td>Network, Pre-Sale</td><td><code>useContractRead(earningsOf)</code>, <code>useContractRead(referralTree)</code></td></tr>
+  <tr><td>5</td><td>PreSale.sol</td><td>Pre-Sale, Dashboard</td><td><code>useContractWrite(purchaseWithUSDT)</code></td></tr>
+  <tr><td>6</td><td>AirdropDistributor.sol</td><td>Vesting (claim flow)</td><td><code>useContractWrite(claim)</code> with Merkle proof</td></tr>
+  <tr><td>7</td><td>MICELicense.sol</td><td>MICE Sale, Mining, Dashboard</td><td><code>useContractWrite(purchase, renew)</code>, <code>useContractRead(licensesOf)</code></td></tr>
+  <tr><td>8</td><td>EmissionController.sol</td><td>Mining, Dashboard</td><td><code>useContractRead(currentEmission, totalEmitted)</code></td></tr>
+  <tr><td>9</td><td>MiningPool.sol</td><td>Mining, Dashboard</td><td><code>useContractWrite(claimReward)</code>, <code>useContractRead(pendingReward)</code></td></tr>
+  <tr><td>10</td><td>NFTStaking.sol</td><td>NFT Manager, Dashboard</td><td><code>useContractWrite(stake, unstake, claim)</code></td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>10. Circuit Breakers — UI Indicators</h2>
+<!-- ============================================ -->
+
+<div class="danger">
+  <strong>Circuit breakers must be visible in the UI</strong> — users need to understand why certain actions may be blocked.
+</div>
+
+<table>
+  <tr><th>CB</th><th>Rule</th><th>UI Treatment</th></tr>
+  <tr><td>CB-1</td><td>Cumulative: totalEmitted ≤ 5.95B</td><td>Mining page: pool depletion progress bar with warning at 90%+</td></tr>
+  <tr><td>CB-2</td><td>Daily: E(t) ≤ 2× E_base(t)</td><td>Mining page: daily emission cap indicator</td></tr>
+  <tr><td>CB-3</td><td>Price floor: $0.001 MIC</td><td>Global banner: "Emission paused — MIC below price floor"</td></tr>
+  <tr><td>CB-4</td><td>Unstake: max 10%/day</td><td>NFT Manager: show available unstake amount + countdown to next day</td></tr>
+  <tr><td>CB-5</td><td>Emergency: DAOGovernor (no timelock)</td><td>Global banner: "System paused for maintenance"</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2>11. Implementation Priority</h2>
+<!-- ============================================ -->
+
+<table>
+  <tr><th>Priority</th><th>Pages</th><th>Reason</th></tr>
+  <tr>
+    <td><span class="badge badge-red">P0 — Core</span></td>
+    <td>Dashboard, SEED Sale, MICE Sale, Mining, Vesting, Profile</td>
+    <td>Revenue-generating + essential user journey</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-gold">P1 — Revenue</span></td>
+    <td>Pre-Sale, NFT Manager (Staking), Network (Referral)</td>
+    <td>Second revenue stream + growth engine</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-blue">P2 — Engagement</span></td>
+    <td>Marketplace, Documents, NIRA AI</td>
+    <td>User retention + ecosystem depth</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-purple">P3 — Governance</span></td>
+    <td>DAO</td>
+    <td>UI ready, contract logic Phase 2</td>
+  </tr>
+</table>
+
+<div class="success">
+  <strong>✅ All 13 pages confirmed for Phase 1 build.</strong> Priority order above is for implementation sequence — all will be delivered, but P0 pages ship first for testing.
+</div>
+
+<!-- ============================================ -->
+<h2>12. What's Next</h2>
+<!-- ============================================ -->
+
+<p>With UI alignment confirmed, the next steps are:</p>
+
+<div class="flow-step"><span class="num">1</span> <strong>Monorepo Setup:</strong> Initialize Turborepo with packages/contracts, packages/sdk, apps/web, apps/api</div>
+<div class="flow-step"><span class="num">2</span> <strong>Design System:</strong> Configure Tailwind with MissionChain tokens (colors, fonts, spacing)</div>
+<div class="flow-step"><span class="num">3</span> <strong>Layout Shell:</strong> Build sidebar navigation + top bar + wallet connect (RainbowKit)</div>
+<div class="flow-step"><span class="num">4</span> <strong>P0 Pages:</strong> Dashboard → SEED Sale → MICE Sale → Mining → Vesting → Profile</div>
+<div class="flow-step"><span class="num">5</span> <strong>Smart Contracts:</strong> Deploy to BSC Testnet → wire up wagmi hooks → integration test</div>
+<div class="flow-step"><span class="num">6</span> <strong>P1 Pages:</strong> Pre-Sale → NFT Manager → Network</div>
+<div class="flow-step"><span class="num">7</span> <strong>P2 Pages:</strong> Marketplace → Documents → NIRA AI</div>
+<div class="flow-step"><span class="num">8</span> <strong>P3 Pages:</strong> DAO (UI only, contract Phase 2)</div>
+
+</body>
+</html>

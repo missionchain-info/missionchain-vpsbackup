@@ -1,0 +1,3 @@
+-- Baseline migration: marks all existing tables as applied.
+-- All tables were created via prisma db push before migration workflow was introduced.
+-- This migration is intentionally empty — apply with: prisma migrate resolve --applied 20260502000000_init_baseline
