@@ -477,8 +477,8 @@ function setTheme(theme){
 const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
 const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
 function detectLocale() {
-  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
-  return match ? match[1] : 'en';
+  const match = window.location.pathname.match(/\/documents\/(ES|PT|KO|VI|es|pt|ko|vi)\//);
+  return match ? match[1].toLowerCase() : 'en';
 }
 function detectFileName(fallback) {
   const path = window.location.pathname || '';
@@ -487,13 +487,12 @@ function detectFileName(fallback) {
   return name || fallback;
 }
 function getLocalizedHref(lang, fallbackFile) {
-  const currentLocale = detectLocale();
   const file = detectFileName(fallbackFile);
   const suffix = window.location.search + window.location.hash;
-  if (currentLocale === 'en') {
-    return (lang === 'en' ? file : '../translations/' + lang + '/' + file) + suffix;
+  if (lang === 'en') {
+    return (file === 'index.html' ? '/' : '/documents/' + file) + suffix;
   }
-  return (lang === 'en' ? '../../' + file : '../' + lang + '/' + file) + suffix;
+  return '/documents/' + lang.toUpperCase() + '/' + file + suffix;
 }
 function tgl(){document.getElementById('LS').classList.toggle('open')}
 document.addEventListener('click',function(e){

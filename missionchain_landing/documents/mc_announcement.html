@@ -587,8 +587,8 @@ const FORM_MESSAGES = {
   }
 };
 function detectLocale() {
-  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
-  return match ? match[1] : 'en';
+  const match = window.location.pathname.match(/\/documents\/(ES|PT|KO|VI|es|pt|ko|vi)\//);
+  return match ? match[1].toLowerCase() : 'en';
 }
 function detectFileName(fallback) {
   const path = window.location.pathname || '';
@@ -607,17 +607,12 @@ function detectAnnouncementBase() {
   return '';
 }
 function getLocalizedHref(lang, fallbackFile) {
-  const base = detectAnnouncementBase();
-  const currentLocale = detectLocale();
-  const suffix = window.location.search + window.location.hash;
-  if (base) {
-    return (lang === 'en' ? base + '/' : base + '/translations/' + lang + '/') + suffix;
-  }
   const file = detectFileName(fallbackFile);
-  if (currentLocale === 'en') {
-    return (lang === 'en' ? file : '../translations/' + lang + '/' + file) + suffix;
+  const suffix = window.location.search + window.location.hash;
+  if (lang === 'en') {
+    return (file === 'index.html' ? '/' : '/documents/' + file) + suffix;
   }
-  return (lang === 'en' ? '../../' + file : '../' + lang + '/' + file) + suffix;
+  return '/documents/' + lang.toUpperCase() + '/' + file + suffix;
 }
 
 function tgl() { document.getElementById('LS').classList.toggle('open'); }

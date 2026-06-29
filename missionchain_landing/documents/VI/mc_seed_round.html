@@ -293,7 +293,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22
 </div>
 <div class="ani ani-1">
 <h2 class="sec-title">Tại sao thời điểm này khác biệt</h2>
-<p class="copy">Các nhà đầu tư Seed Round mua MIC với giá tuyệt đối thấp nhất sẽ không bao giờ tồn tại nữa. Bạn không đơn thuần mua một token: bạn đang nắm giữ cổ phần sáng lập trong một giao thức được thiết kế để vận hành qua nhiều thế hệ. Công cụ khai thác MICE, lớp quản trị MFP-NFT, và thuật toán thích ứng Hindex đã được xây dựng và hoạt động. Mỗi ngày bạn chờ đợi, mức giá này càng đi xa vào quá khứ.</p>
+<p class="copy">Những người tham gia Seed Round tiếp cận MIC tại mức giá tuyệt đối thấp nhất sẽ không bao giờ lặp lại. Bạn không chỉ mua một token: bạn đang nắm giữ một vị thế sáng lập trong một giao thức được thiết kế để vận hành qua nhiều thế hệ. MICE participation engine, lớp quản trị MFP-NFT và Hindex adaptive algorithm đã được xây dựng và đang hoạt động. Mỗi ngày bạn chờ đợi, mức giá này càng lùi xa vào quá khứ.</p>
 </div>
 <div class="rule ani ani-2"><span class="rule-line"></span><span class="rule-glyph">✦ ✦ ✦</span><span class="rule-line"></span></div>
 <!-- PACKAGES -->
@@ -375,7 +375,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22
 </div>
 </div>
 </div>
-<p style="margin-top:14px;font-size:.8rem;font-style:italic;color:var(--faint);line-height:1.7">Quyền quản trị MFP-NFT, lợi suất staking và phần thưởng khai thác là bổ sung cho sự tăng giá token và không được bao gồm trong các dự báo này.</p>
+<p style="margin-top:14px;font-size:.8rem;font-style:italic;color:var(--faint);line-height:1.7">Quyền quản trị MFP-NFT, staking allocations và protocol participation allocations là các cơ chế tách biệt với mọi biến động thị trường của token và không được phản ánh trong các số liệu dự phóng này. Không có return nào được hàm ý hoặc bảo đảm.</p>
 </div>
 <div class="rule ani ani-3"><span class="rule-line"></span><span class="rule-glyph">✦ ✦ ✦</span><span class="rule-line"></span></div>
 <!-- HOW TO -->
@@ -476,8 +476,8 @@ function setTheme(theme){
 const SUPPORTED_LOCALES = ['en','es','pt','ko','vi'];
 const LOCALE_LABELS = { en: '🇬🇧 EN', es: '🇪🇸 ES', pt: '🇧🇷 PT', ko: '🇰🇷 KO', vi: '🇻🇳 VI' };
 function detectLocale() {
-  const match = window.location.pathname.match(/\/translations\/(es|pt|ko|vi)(?:\/|$)/);
-  return match ? match[1] : 'en';
+  const match = window.location.pathname.match(/\/documents\/(ES|VI|PT|KO)\/(?:[^\/]+\.html)?$/i) || window.location.pathname.match(/\/translations\/(es|vi|pt|ko)(?:\/|$)/);
+  return match ? match[1].toLowerCase() : 'en';
 }
 function detectFileName(fallback) {
   const path = window.location.pathname || '';
@@ -490,7 +490,7 @@ function getLocalizedHref(lang, fallbackFile) {
   const file = detectFileName(fallbackFile);
   const suffix = window.location.search + window.location.hash;
   if (currentLocale === 'en') {
-    return (lang === 'en' ? file : '../translations/' + lang + '/' + file) + suffix;
+    return (lang === 'en' ? file : lang.toUpperCase() + '/' + file) + suffix;
   }
   return (lang === 'en' ? '../../' + file : '../' + lang + '/' + file) + suffix;
 }
