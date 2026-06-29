@@ -1,0 +1,52 @@
+name: Deploy Stack CI
+
+on:
+  pull_request:
+    paths:
+      - "docker-compose.yml"
+      - "deploy/**"
+      - ".github/workflows/deploy-stack-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "docker-compose.yml"
+      - "deploy/**"
+      - ".github/workflows/deploy-stack-ci.yml"
+
+jobs:
+  validate-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare env files
+        run: |
+          cat > .env <<'EOF'
+          DB_USER=ci_user
+          DB_PASSWORD=ci_password
+          REDIS_PASSWORD=ci_redis_password
+          EOF
+          cp deploy/.env.example deploy/.env
+
+      - name: Validate docker-compose
+        run: docker compose config >/tmp/docker-compose.rendered.yml
+
+  build-images:
+    runs-on: ubuntu-latest
+    needs: validate-compose
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mc-api
+            context: ./deploy
+            dockerfile: apps/api/Dockerfile
+          - name: mc-app
+            context: ./deploy
+            dockerfile: apps/web/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.name }}
+        run: docker build -f "${{ matrix.dockerfile }}" "${{ matrix.context }}" --tag "${{ matrix.name }}:ci"
