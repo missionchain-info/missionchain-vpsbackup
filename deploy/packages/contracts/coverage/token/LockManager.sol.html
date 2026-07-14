@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for token/LockManager.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">token/</a> LockManager.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>22/25</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">75% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>12/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.5% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>7/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85.71% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>24/28</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">207×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">135×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">87×</span>
+<span class="cline-any cline-yes">87×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "../interfaces/ILockManager.sol";
+&nbsp;
+/// @title LockManager — Hybrid Token-Level Lock (replaces VestingManager)
+/// @notice Tracks vesting schedules per address. Does NOT hold tokens.
+///         Tokens go directly to user wallets. lockedOf() is a view function (zero gas).
+///         Each purchase creates a separate schedule with startTime = block.timestamp.
+contract LockManager is ILockManager, AccessControl {
+    bytes32 public constant SCHEDULE_CREATOR_ROLE = keccak256("SCHEDULE_CREATOR");
+&nbsp;
+    /// @dev All schedules for each beneficiary
+    mapping(address =&gt; VestingSchedule[]) private _schedules;
+&nbsp;
+    uint256 private constant MONTH = 30 days;
+    uint256 private constant BPS = 10_000;
+&nbsp;
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+&nbsp;
+    /// @notice Create a new vesting schedule for a beneficiary.
+    /// @param beneficiary The address whose tokens are locked
+    /// @param totalAmount Total MIC amount locked
+    /// @param cliffDuration Seconds until cliff (e.g. 6 months = 15552000)
+    /// @param cliffUnlockBps Basis points unlocked at cliff (1000 = 10%)
+    /// @param monthlyUnlockBps Basis points unlocked per month after cliff (250 = 2.5%)
+    function createSchedule(
+        address beneficiary,
+        uint256 totalAmount,
+        uint256 cliffDuration,
+        uint256 cliffUnlockBps,
+        uint256 monthlyUnlockBps
+    ) external onlyRole(SCHEDULE_CREATOR_ROLE) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(beneficiary != address(0), "LM: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(totalAmount &gt; 0, "LM: zero amount");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(cliffUnlockBps + monthlyUnlockBps &gt; 0, "LM: zero unlock");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(cliffUnlockBps &lt;= BPS, "LM: cliff &gt; 100%");
+&nbsp;
+        _schedules[beneficiary].push(VestingSchedule({
+            totalAmount: totalAmount,
+            startTime: block.timestamp,
+            cliffDuration: cliffDuration,
+            cliffUnlockBps: cliffUnlockBps,
+            monthlyUnlockBps: monthlyUnlockBps
+        }));
+&nbsp;
+        emit ScheduleCreated(beneficiary, totalAmount, cliffDuration, cliffUnlockBps, monthlyUnlockBps);
+    }
+&nbsp;
+    /// @notice Total locked amount for an account (sum of all schedules).
+    ///         View function — zero gas when called externally.
+    function lockedOf(address account) external view returns (uint256 totalLocked) {
+        VestingSchedule[] storage scheds = _schedules[account];
+        for (uint256 i = 0; i &lt; scheds.length; i++) {
+            totalLocked += _lockedForSchedule(scheds[i]);
+        }
+    }
+&nbsp;
+    /// @notice Total available (unlocked) amount for an account.
+<span class="fstat-no" title="function not covered" >    function availableOf(address account) external view returns (uint256 totalAvailable) {</span>
+<span class="cstat-no" title="statement not covered" >        VestingSchedule[] storage scheds = _schedules[account];</span>
+<span class="cstat-no" title="statement not covered" >        for (uint256 i = 0; i &lt; scheds.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            VestingSchedule storage s = scheds[i];</span>
+            totalAvailable += s.totalAmount - _lockedForSchedule(s);
+        }
+    }
+&nbsp;
+    /// @notice Get all schedules for an account.
+    function getSchedules(address account) external view returns (VestingSchedule[] memory) {
+        return _schedules[account];
+    }
+&nbsp;
+    /// @notice Get a single schedule by index.
+    function getScheduleAt(address account, uint256 index) external view returns (VestingSchedule memory) {
+        require(index &lt; _schedules[account].length, "LM: index out of bounds");
+        return _schedules[account][index];
+    }
+&nbsp;
+    /// @notice Number of schedules for an account.
+    function scheduleCount(address account) external view returns (uint256) {
+        return _schedules[account].length;
+    }
+&nbsp;
+    /// @dev Calculate locked amount for a single schedule.
+    function _lockedForSchedule(VestingSchedule storage s) private view returns (uint256) {
+        uint256 elapsed = block.timestamp - s.startTime;
+&nbsp;
+        // Before cliff: 100% locked
+        if (elapsed &lt; s.cliffDuration) {
+            return s.totalAmount;
+        }
+&nbsp;
+        // At and after cliff: calculate unlocked
+        uint256 unlockedBps = s.cliffUnlockBps;
+&nbsp;
+        // Monthly unlock after cliff
+        uint256 monthsAfterCliff = (elapsed - s.cliffDuration) / MONTH;
+        unlockedBps += monthsAfterCliff * s.monthlyUnlockBps;
+&nbsp;
+        // Cap at 100%
+        if (unlockedBps &gt;= BPS) {
+            return 0; // Fully vested
+        }
+&nbsp;
+        uint256 unlocked = (s.totalAmount * unlockedBps) / BPS;
+        return s.totalAmount - unlocked;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

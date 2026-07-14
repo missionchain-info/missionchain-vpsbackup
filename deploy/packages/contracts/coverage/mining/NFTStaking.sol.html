@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for mining/NFTStaking.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">mining/</a> NFTStaking.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">77.42% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>72/93</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">67.11% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>51/76</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">81.25% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>13/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85.87% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>79/92</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">122×</span>
+<span class="cline-any cline-yes">120×</span>
+<span class="cline-any cline-yes">120×</span>
+<span class="cline-any cline-yes">120×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">173×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">173×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">173×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">145×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">144×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48×</span>
+<span class="cline-any cline-yes">48×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">124×</span>
+<span class="cline-any cline-yes">115×</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">124×</span>
+<span class="cline-any cline-yes">115×</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title MICStaking — Pure MIC staking with time-lock multipliers
+/// @notice ARCHITECTURE CHANGE (April 2026): Staking and NFT are now COMPLETELY SEPARATE systems.
+///         - MICStaking: Pure MIC staking, NO NFT involvement
+///         - Anyone stakes any amount, no tier caps
+///         - Reward based on: amount × time-lock multiplier (30d=1×, 90d=1.25×, 180d=1.5×, 360d=2×)
+///         - Locked MIC CAN stake (full rate, rewards unlocked, min 360d lock)
+///         - NFT multipliers: ONLY for USDT reward pool distribution (Weekly, Monthly, Lucky Draw)
+///         - DAO: MFP-NFT + 100K staked MIC + lock ≥360d
+/// @dev Receives 20% of daily emission from EmissionController.
+/// @dev Note: File name remains NFTStaking.sol for backward compatibility,
+///      but contract is now purely MIC staking (renamed MICStaking). Tier constants
+///      are marked deprecated — no longer used for staking. Keep for reference only.
+contract NFTStaking is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
+&nbsp;
+    IERC20 public immutable micToken;
+&nbsp;
+    // DEPRECATED TIER CONSTANTS (for reference only — no longer used for staking)
+    // Staking is now PURE MIC-based, NO NFT involvement. Tier multipliers moved to reward distribution.
+    // Keeping these for backward compatibility and contract reference only.
+    // @deprecated Use time-lock multipliers only
+    uint256 public constant TIER_MFP       = 100000; // ×10  (DEPRECATED — moved to DAO voting weight)
+    uint256 public constant TIER_LUMINARY  = 50000;  // ×5   (DEPRECATED — moved to reward distribution)
+    uint256 public constant TIER_MAKER     = 25000;  // ×2.5 (DEPRECATED — moved to reward distribution)
+    uint256 public constant TIER_BUILDER   = 10000;  // ×1   (DEPRECATED — moved to reward distribution)
+    uint256 public constant TIER_NO_NFT    = 5000;   // ×0.5 (DEPRECATED — no longer applicable)
+&nbsp;
+    // DEPRECATED STAKING CAPS (for reference only — NO LONGER ENFORCED)
+    // Pure MIC staking has no tier-based caps. Anyone stakes any amount.
+    // @deprecated Use unlimited staking
+    uint256 public constant CAP_MFP       = 100_000 ether;  // (DEPRECATED)
+    uint256 public constant CAP_LUMINARY  = 50_000 ether;   // (DEPRECATED)
+    uint256 public constant CAP_MAKER     = 25_000 ether;   // (DEPRECATED)
+    uint256 public constant CAP_BUILDER   = 10_000 ether;   // (DEPRECATED)
+    uint256 public constant CAP_NO_NFT    = type(uint256).max; // (DEPRECATED)
+&nbsp;
+    // Time-lock multipliers (in basis points, 10000 = 1×)
+    uint256 public constant LOCK_30D  = 10000; // 1×
+    uint256 public constant LOCK_90D  = 12500; // 1.25×
+    uint256 public constant LOCK_180D = 15000; // 1.5×
+    uint256 public constant LOCK_360D = 20000; // 2×
+&nbsp;
+    // Circuit breaker: max 10% of pool unstaked per day
+    uint256 public constant MAX_DAILY_UNSTAKE_BPS = 1000; // 10%
+&nbsp;
+    enum Tier { NoNFT, Builder, Maker, Luminary, MFP }
+    enum LockPeriod { Days30, Days90, Days180, Days360 }
+&nbsp;
+    struct StakeInfo {
+        uint256 amount;
+        uint256 weightedAmount; // amount × tierMul × lockMul / 1e8
+        Tier tier;
+        LockPeriod lockPeriod;
+        uint256 stakeTime;
+        uint256 unlockTime;
+        uint256 rewardDebt;
+        bool active;
+        /// @dev If true: locked MIC (vesting tokens). Full multiplier applied.
+        ///      Minimum lock period 360 days enforced at stake time.
+        ///      Rewards are unlocked and freely transferable.
+        bool useLockedMic;
+    }
+&nbsp;
+    // stakeId → StakeInfo
+    mapping(uint256 =&gt; StakeInfo) public stakes;
+    mapping(address =&gt; uint256[]) public userStakes;
+    uint256 public totalStakes;
+&nbsp;
+    // Reward tracking
+    uint256 public totalWeightedStaked;
+    uint256 public accRewardPerShare; // accumulated reward per weighted share (scaled 1e18)
+    uint256 public lastRewardBalance;
+&nbsp;
+    // Daily unstake tracking
+    uint256 public currentDay;
+    uint256 public dailyUnstaked;
+    uint256 public totalStakedAmount;
+&nbsp;
+    // DEPRECATED: User tier assignment (no longer used — kept for backward compatibility)
+    // @deprecated Staking is no longer tier-based. Tiers are only for reward distribution (Weekly, Monthly, Lucky Draw).
+    mapping(address =&gt; Tier) public userTier;
+&nbsp;
+    event Staked(address indexed user, uint256 indexed stakeId, uint256 amount, Tier tier, LockPeriod lock, bool useLockedMic);
+    event Unstaked(address indexed user, uint256 indexed stakeId, uint256 amount);
+    event RewardClaimed(address indexed user, uint256 amount);
+    event TierUpdated(address indexed user, Tier oldTier, Tier newTier);
+&nbsp;
+    constructor(address _micToken, address admin) {
+        require(_micToken != address(0) &amp;&amp; admin != address(0), "Staking: zero address");
+        micToken = IERC20(_micToken);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(ORACLE_ROLE, admin);
+    }
+&nbsp;
+    /// @notice Update reward accounting before any state change
+    function _updateRewards() internal {
+        uint256 currentBalance = micToken.balanceOf(address(this));
+        // New rewards = current balance - total staked - last tracked reward balance
+        // Actually: rewards come from EmissionController, separate from staked tokens
+        // We track reward pool separately
+        if (totalWeightedStaked &gt; 0 &amp;&amp; currentBalance &gt; totalStakedAmount) {
+            uint256 newRewards = currentBalance - totalStakedAmount - _pendingRewardPool();
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (newRewards &gt; 0) {
+                accRewardPerShare += (newRewards * 1e18) / totalWeightedStaked;
+            }
+        }
+        lastRewardBalance = currentBalance;
+    }
+&nbsp;
+    function _pendingRewardPool() internal pure returns (uint256) {
+        // This is a simplification — in production, track reward pool explicitly
+        return 0;
+    }
+&nbsp;
+    /// @notice Stake MIC tokens (both unlocked and locked/vesting tokens)
+    /// @dev PURE MIC STAKING (no NFT involvement)
+    /// @param amount   Amount of MIC to stake (18 decimals)
+    /// @param lockPeriod Lock duration (30/90/180/360 days for stake withdrawal lock)
+    /// @param useLockedMic If true, stake from vesting/locked MIC balance.
+    ///        - Locked MIC CAN participate in staking at FULL MULTIPLIER (no reduction).
+    ///        - Requires minimum 360-day stake lock period to match vesting semantics.
+    ///        - Transfer is allowed because NFTStaking is an approvedStakingContract in MICToken.
+    ///        - Rewards generated are UNLOCKED and freely transferable.
+    ///        - Tracked for analytics — does not change token transfer behavior.
+    /// @notice ARCHITECTURE NOTE: Staking is now completely separate from NFT system.
+    ///         No tier checks, no tier caps. Anyone can stake any amount.
+    function stake(uint256 amount, LockPeriod lockPeriod, bool useLockedMic) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        // Pure MIC staking: no tier involvement, no caps (except for locked MIC minimum lock period)
+        require(amount &gt; 0, "Staking: zero amount");
+        // Locked MIC staking: require minimum 360-day lock period
+        if (useLockedMic) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>require(lockPeriod == LockPeriod.Days360, "Staking: locked MIC requires 360d lock");
+        }
+&nbsp;
+        _updateRewards();
+&nbsp;
+        micToken.safeTransferFrom(msg.sender, address(this), amount);
+&nbsp;
+        // Pure MIC staking: ONLY time-lock multiplier applied (no tier multiplier)
+        uint256 lockMul = _lockMultiplier(lockPeriod);
+        uint256 weighted = (amount * lockMul) / 10000;
+&nbsp;
+        uint256 stakeId = totalStakes++;
+        uint256 lockDuration = _lockDuration(lockPeriod);
+&nbsp;
+        stakes[stakeId] = StakeInfo({
+            amount: amount,
+            weightedAmount: weighted,
+            tier: Tier.NoNFT,  // Pure MIC staking: always NoNFT tier (unused, for backward compat only)
+            lockPeriod: lockPeriod,
+            stakeTime: block.timestamp,
+            unlockTime: block.timestamp + lockDuration,
+            rewardDebt: (weighted * accRewardPerShare) / 1e18,
+            active: true,
+            useLockedMic: useLockedMic
+        });
+&nbsp;
+        userStakes[msg.sender].push(stakeId);
+        totalWeightedStaked += weighted;
+        totalStakedAmount += amount;
+&nbsp;
+        emit Staked(msg.sender, stakeId, amount, Tier.NoNFT, lockPeriod, useLockedMic);
+    }
+&nbsp;
+    /// @notice Unstake after lock period ends
+    function unstake(uint256 stakeId) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        StakeInfo storage s = stakes[stakeId];
+        require(s.active, "Staking: not active");
+        require(_isOwner(msg.sender, stakeId), "Staking: not owner");
+        require(block.timestamp &gt;= s.unlockTime, "Staking: still locked");
+&nbsp;
+        // Circuit breaker: 10%/day unstake limit
+        uint256 today = block.timestamp / 1 days;
+        if (today != currentDay) {
+            currentDay = today;
+            dailyUnstaked = 0;
+        }
+        uint256 maxDaily = (totalStakedAmount * MAX_DAILY_UNSTAKE_BPS) / 10000;
+        require(dailyUnstaked + s.amount &lt;= maxDaily, "Staking: daily unstake limit");
+&nbsp;
+        _updateRewards();
+&nbsp;
+        // Claim pending rewards
+        uint256 pending = (s.weightedAmount * accRewardPerShare / 1e18) - s.rewardDebt;
+&nbsp;
+        s.active = false;
+        totalWeightedStaked -= s.weightedAmount;
+        totalStakedAmount -= s.amount;
+        dailyUnstaked += s.amount;
+&nbsp;
+        micToken.safeTransfer(msg.sender, s.amount);
+        if (pending &gt; 0) {
+            micToken.safeTransfer(msg.sender, pending);
+            emit RewardClaimed(msg.sender, pending);
+        }
+&nbsp;
+        emit Unstaked(msg.sender, stakeId, s.amount);
+    }
+&nbsp;
+    /// @notice Claim staking rewards without unstaking
+    function claimRewards(uint256 stakeId) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        StakeInfo storage s = stakes[stakeId];
+        require(s.active, "Staking: not active");
+        require(_isOwner(msg.sender, stakeId), "Staking: not owner");
+&nbsp;
+        _updateRewards();
+&nbsp;
+        uint256 pending = (s.weightedAmount * accRewardPerShare / 1e18) - s.rewardDebt;
+        require(pending &gt; 0, "Staking: no rewards");
+&nbsp;
+        s.rewardDebt = (s.weightedAmount * accRewardPerShare) / 1e18;
+        micToken.safeTransfer(msg.sender, pending);
+&nbsp;
+        emit RewardClaimed(msg.sender, pending);
+    }
+&nbsp;
+    // --- Oracle: update user tiers ---
+&nbsp;
+    function setUserTier(address user, Tier tier) external onlyRole(ORACLE_ROLE) {
+        Tier old = userTier[user];
+        userTier[user] = tier;
+        emit TierUpdated(user, old, tier);
+    }
+&nbsp;
+    function batchSetTiers(address[] calldata users, Tier[] calldata tiers) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(ORACLE_ROLE) {
+        require(users.length == tiers.length, "Staking: length mismatch");
+        for (uint256 i = 0; i &lt; users.length; i++) {
+            Tier old = userTier[users[i]];
+            userTier[users[i]] = tiers[i];
+            emit TierUpdated(users[i], old, tiers[i]);
+        }
+    }
+&nbsp;
+    // --- View functions ---
+&nbsp;
+    function getUserStakes(address user) external view returns (uint256[] memory) {
+        return userStakes[user];
+    }
+&nbsp;
+    function pendingReward(uint256 stakeId) external view returns (uint256) {
+        StakeInfo storage s = stakes[stakeId];
+        if (!s.active) return 0;
+        return (s.weightedAmount * accRewardPerShare / 1e18) - s.rewardDebt;
+    }
+&nbsp;
+    // --- Internal helpers ---
+&nbsp;
+    function _isOwner(address user, uint256 stakeId) internal view returns (bool) {
+        uint256[] storage ids = userStakes[user];
+        for (uint256 i = 0; i &lt; ids.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (ids[i] == stakeId) return true;
+        }
+        return false;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _userTotalStaked(address user) internal view returns (uint256 total) {</span>
+<span class="cstat-no" title="statement not covered" >        uint256[] storage ids = userStakes[user];</span>
+<span class="cstat-no" title="statement not covered" >        for (uint256 i = 0; i &lt; ids.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            if (stakes[ids[i]].active) total += stakes[ids[i]].amount;</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _tierMultiplier(Tier tier) internal pure returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.MFP) <span class="cstat-no" title="statement not covered" >return TIER_MFP;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Luminary) <span class="cstat-no" title="statement not covered" >return TIER_LUMINARY;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Maker) <span class="cstat-no" title="statement not covered" >return TIER_MAKER;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Builder) <span class="cstat-no" title="statement not covered" >return TIER_BUILDER;</span></span>
+<span class="cstat-no" title="statement not covered" >        return TIER_NO_NFT;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _tierCap(Tier tier) internal pure returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.MFP) <span class="cstat-no" title="statement not covered" >return CAP_MFP;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Luminary) <span class="cstat-no" title="statement not covered" >return CAP_LUMINARY;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Maker) <span class="cstat-no" title="statement not covered" >return CAP_MAKER;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == Tier.Builder) <span class="cstat-no" title="statement not covered" >return CAP_BUILDER;</span></span>
+<span class="cstat-no" title="statement not covered" >        return CAP_NO_NFT;</span>
+    }
+&nbsp;
+    function _lockMultiplier(LockPeriod lock) internal pure returns (uint256) {
+        if (lock == LockPeriod.Days360) return LOCK_360D;
+        if (lock == LockPeriod.Days180) return LOCK_180D;
+        if (lock == LockPeriod.Days90) return LOCK_90D;
+        return LOCK_30D;
+    }
+&nbsp;
+    function _lockDuration(LockPeriod lock) internal pure returns (uint256) {
+        if (lock == LockPeriod.Days360) return 360 days;
+        if (lock == LockPeriod.Days180) return 180 days;
+        if (lock == LockPeriod.Days90) return 90 days;
+        return 30 days;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

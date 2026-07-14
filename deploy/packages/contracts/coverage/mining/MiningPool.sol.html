@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for mining/MiningPool.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">mining/</a> MiningPool.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>33/33</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>38/40</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>7/7</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>40/40</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">67×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">43×</span>
+<span class="cline-any cline-yes">43×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">43×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title MiningPool — Hindex-weighted MIC distribution to MICE holders
+/// @notice Backend submits mining scores via ORACLE_ROLE; miners claim rewards.
+/// @dev Receives 60% of daily emission from EmissionController.
+contract MiningPool is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
+&nbsp;
+    IERC20 public immutable micToken;
+&nbsp;
+    // Epoch-based distribution
+    uint256 public currentEpoch;
+&nbsp;
+    struct EpochData {
+        uint256 totalReward;       // MIC available for this epoch
+        uint256 totalWeightedScore; // sum of all miners' Hindex scores
+        bool finalized;
+    }
+&nbsp;
+    // epoch → EpochData
+    mapping(uint256 =&gt; EpochData) public epochs;
+&nbsp;
+    // epoch → miner → score
+    mapping(uint256 =&gt; mapping(address =&gt; uint256)) public minerScores;
+&nbsp;
+    // epoch → miner → claimed
+    mapping(uint256 =&gt; mapping(address =&gt; bool)) public claimed;
+&nbsp;
+    event EpochStarted(uint256 indexed epoch);
+    event ScoresSubmitted(uint256 indexed epoch, uint256 minerCount);
+    event EpochFinalized(uint256 indexed epoch, uint256 totalReward, uint256 totalScore);
+    event RewardClaimed(uint256 indexed epoch, address indexed miner, uint256 amount);
+&nbsp;
+    constructor(address _micToken, address admin) {
+        require(_micToken != address(0) &amp;&amp; admin != address(0), "Pool: zero address");
+        micToken = IERC20(_micToken);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(ORACLE_ROLE, admin);
+    }
+&nbsp;
+    /// @notice Start a new epoch (oracle/admin)
+    function startEpoch() external onlyRole(ORACLE_ROLE) {
+        if (currentEpoch &gt; 0) {
+            require(epochs[currentEpoch].finalized, "Pool: current epoch not finalized");
+        }
+        currentEpoch++;
+        emit EpochStarted(currentEpoch);
+    }
+&nbsp;
+    /// @notice Submit batch mining scores for current epoch
+    /// @param miners Array of miner addresses
+    /// @param scores Array of Hindex-weighted scores
+    function submitScores(
+        address[] calldata miners,
+        uint256[] calldata scores
+    ) external onlyRole(ORACLE_ROLE) {
+        require(miners.length == scores.length, "Pool: length mismatch");
+        require(currentEpoch &gt; 0, "Pool: no epoch");
+        require(!epochs[currentEpoch].finalized, "Pool: epoch finalized");
+&nbsp;
+        EpochData storage epoch = epochs[currentEpoch];
+        for (uint256 i = 0; i &lt; miners.length; i++) {
+            // If miner already has a score, subtract old from total
+            uint256 oldScore = minerScores[currentEpoch][miners[i]];
+            if (oldScore &gt; 0) {
+                epoch.totalWeightedScore -= oldScore;
+            }
+            minerScores[currentEpoch][miners[i]] = scores[i];
+            epoch.totalWeightedScore += scores[i];
+        }
+&nbsp;
+        emit ScoresSubmitted(currentEpoch, miners.length);
+    }
+&nbsp;
+    /// @notice Finalize current epoch — snapshot the reward pool balance
+    function finalizeEpoch() external onlyRole(ORACLE_ROLE) {
+        require(currentEpoch &gt; 0, "Pool: no epoch");
+        EpochData storage epoch = epochs[currentEpoch];
+        require(!epoch.finalized, "Pool: already finalized");
+&nbsp;
+        // The reward is whatever MIC balance this contract holds (sent by EmissionController)
+        epoch.totalReward = micToken.balanceOf(address(this));
+        epoch.finalized = true;
+&nbsp;
+        emit EpochFinalized(currentEpoch, epoch.totalReward, epoch.totalWeightedScore);
+    }
+&nbsp;
+    /// @notice Claim mining reward for a finalized epoch
+    function claimReward(uint256 epoch) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        EpochData storage e = epochs[epoch];
+        require(e.finalized, "Pool: epoch not finalized");
+        require(!claimed[epoch][msg.sender], "Pool: already claimed");
+&nbsp;
+        uint256 score = minerScores[epoch][msg.sender];
+        require(score &gt; 0, "Pool: no score");
+&nbsp;
+        claimed[epoch][msg.sender] = true;
+&nbsp;
+        uint256 reward = (e.totalReward * score) / e.totalWeightedScore;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(reward &gt; 0, "Pool: zero reward");
+&nbsp;
+        micToken.safeTransfer(msg.sender, reward);
+&nbsp;
+        emit RewardClaimed(epoch, msg.sender, reward);
+    }
+&nbsp;
+    /// @notice View pending reward for a miner in a finalized epoch
+    function pendingReward(uint256 epoch, address miner) external view returns (uint256) {
+        EpochData storage e = epochs[epoch];
+        if (!e.finalized || claimed[epoch][miner] || e.totalWeightedScore == 0) return 0;
+        uint256 score = minerScores[epoch][miner];
+        return (e.totalReward * score) / e.totalWeightedScore;
+    }
+&nbsp;
+    /// @notice Get miner's score for an epoch
+    function getScore(uint256 epoch, address miner) external view returns (uint256) {
+        return minerScores[epoch][miner];
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

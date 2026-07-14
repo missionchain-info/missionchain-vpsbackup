@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for revenue/RevenueRouter.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">revenue/</a> RevenueRouter.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>46/46</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">71.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>43/60</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>63/63</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">141×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">79×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title RevenueRouter — Central 35/7.5/12.5/5/40 USDT Splitter
+/// @notice Receives USDT from PreSale and MICELicense (after referral deduction)
+///         and distributes it across 5 pools according to BPS weights.
+///         BPS values are DAO-adjustable with ±500 BPS per change and 30-day cooldown.
+contract RevenueRouter is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Roles
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Only addresses with this role may call receiveAndDistribute().
+    /// Granted to authorized sale contracts (PreSale, MICELicense).
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — token
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice USDT token address (6 decimals on BSC)
+    IERC20 public immutable usdt;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — recipients
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice RewardDistributor contract — receives Marketing &amp; Sales portion
+    address public marketing;
+&nbsp;
+    /// @notice ManagementPool contract — receives Management &amp; Operational portion
+    address public management;
+&nbsp;
+    /// @notice TreasuryManager contract — receives DAO Treasury portion
+    address public treasury;
+&nbsp;
+    /// @notice Admin wallet — receives Reserved Staking portion.
+    ///         This wallet auto-buys MIC from DEX and deposits via LiquidityPool.depositMIC()
+    address public reservedStaking;
+&nbsp;
+    /// @notice LiquidityPool contract — receives Liquidity Pool &amp; Buffer portion
+    address public liquidity;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — BPS weights (out of 10000)
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    uint256 public bpsMarketing;   // Default 3500 = 35%
+    uint256 public bpsManagement;  // Default  750 = 7.5%
+    uint256 public bpsTreasury;    // Default 1250 = 12.5%
+    uint256 public bpsStaking;     // Default  500 = 5%
+    uint256 public bpsLiquidity;   // Default 4000 = 40%
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — cooldown
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    uint256 public constant BPS_ADJUSTMENT_COOLDOWN = 30 days;
+    uint256 public constant MAX_BPS_CHANGE          = 500;  // ±5% per adjustment
+    uint256 public constant BPS_TOTAL               = 10_000;
+&nbsp;
+    /// @notice Timestamp of the last BPS adjustment (0 = never adjusted)
+    uint256 public lastAdjustmentTime;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Events
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Emitted whenever revenue is distributed across the 5 pools
+    event RevenueDistributed(address indexed caller, uint256 totalAmount);
+&nbsp;
+    /// @notice Emitted when BPS weights are adjusted by DAO
+    event BPSAdjusted(
+        uint256 marketing,
+        uint256 management,
+        uint256 treasury,
+        uint256 staking,
+        uint256 liquidity
+    );
+&nbsp;
+    /// @notice Emitted when a recipient address is updated
+    event RecipientUpdated(string pool, address newAddress);
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constructor
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt            USDT token address
+    /// @param _marketing       RewardDistributor address
+    /// @param _management      ManagementPool address
+    /// @param _treasury        TreasuryManager address
+    /// @param _reservedStaking Admin wallet for reserved staking auto-buys
+    /// @param _liquidity       LiquidityPool address
+    /// @param _admin           DEFAULT_ADMIN_ROLE holder (DAOGovernor)
+    constructor(
+        address _usdt,
+        address _marketing,
+        address _management,
+        address _treasury,
+        address _reservedStaking,
+        address _liquidity,
+        address _admin
+    ) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_usdt           != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_marketing      != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_management     != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_treasury       != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_reservedStaking != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_liquidity      != address(0), "RevenueRouter: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_admin          != address(0), "RevenueRouter: zero address");
+&nbsp;
+        usdt            = IERC20(_usdt);
+        marketing       = _marketing;
+        management      = _management;
+        treasury        = _treasury;
+        reservedStaking = _reservedStaking;
+        liquidity       = _liquidity;
+&nbsp;
+        // Default BPS allocation (must sum to 10000)
+        bpsMarketing  = 3500; // 35%
+        bpsManagement = 750;  // 7.5%
+        bpsTreasury   = 1250; // 12.5%
+        bpsStaking    = 500;  // 5%
+        bpsLiquidity  = 4000; // 40%
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Core Distribution
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Called by authorized sale contracts (PreSale, MICELicense) after
+    ///         referral deduction. Pulls `amount` USDT from caller and splits across 5 pools.
+    /// @param  amount  USDT amount (6 decimals) to distribute
+    function receiveAndDistribute(uint256 amount) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DISTRIBUTOR_ROLE) {
+        require(amount &gt; 0, "RevenueRouter: zero amount");
+&nbsp;
+        // Pull USDT from caller (caller must have approved this contract)
+        usdt.safeTransferFrom(msg.sender, address(this), amount);
+&nbsp;
+        // Calculate splits — last pool (liquidity) absorbs any rounding dust
+        uint256 toMarketing  = (amount * bpsMarketing)  / BPS_TOTAL;
+        uint256 toManagement = (amount * bpsManagement) / BPS_TOTAL;
+        uint256 toTreasury   = (amount * bpsTreasury)   / BPS_TOTAL;
+        uint256 toStaking    = (amount * bpsStaking)    / BPS_TOTAL;
+        uint256 toLiquidity  = amount - toMarketing - toManagement - toTreasury - toStaking;
+&nbsp;
+        // Distribute
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toMarketing &gt; 0)  usdt.safeTransfer(marketing,       toMarketing);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toManagement &gt; 0) usdt.safeTransfer(management,      toManagement);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toTreasury &gt; 0)   usdt.safeTransfer(treasury,        toTreasury);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toStaking &gt; 0)    usdt.safeTransfer(reservedStaking,  toStaking);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toLiquidity &gt; 0)  usdt.safeTransfer(liquidity,        toLiquidity);
+&nbsp;
+        emit RevenueDistributed(msg.sender, amount);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // DAO BPS Adjustment
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice DAO-governed BPS adjustment.
+    ///         Each pool may change by at most ±500 BPS per call.
+    ///         30-day cooldown enforced between adjustments.
+    ///         New values must sum to exactly 10000.
+    /// @param  newMarketing   New BPS for Marketing &amp; Sales
+    /// @param  newManagement  New BPS for Management &amp; Operational
+    /// @param  newTreasury    New BPS for DAO Treasury
+    /// @param  newStaking     New BPS for Reserved Staking
+    /// @param  newLiquidity   New BPS for Liquidity Pool &amp; Buffer
+    function adjustBPS(
+        uint256 newMarketing,
+        uint256 newManagement,
+        uint256 newTreasury,
+        uint256 newStaking,
+        uint256 newLiquidity
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        // Cooldown check
+        require(
+            block.timestamp &gt;= lastAdjustmentTime + BPS_ADJUSTMENT_COOLDOWN,
+            "RevenueRouter: cooldown active"
+        );
+&nbsp;
+        // Total must equal 10000
+        require(
+            newMarketing + newManagement + newTreasury + newStaking + newLiquidity == BPS_TOTAL,
+            "RevenueRouter: total BPS must be 10000"
+        );
+&nbsp;
+        // Each pool must not change by more than MAX_BPS_CHANGE
+        _checkBPSChange(bpsMarketing,  newMarketing);
+        _checkBPSChange(bpsManagement, newManagement);
+        _checkBPSChange(bpsTreasury,   newTreasury);
+        _checkBPSChange(bpsStaking,    newStaking);
+        _checkBPSChange(bpsLiquidity,  newLiquidity);
+&nbsp;
+        bpsMarketing  = newMarketing;
+        bpsManagement = newManagement;
+        bpsTreasury   = newTreasury;
+        bpsStaking    = newStaking;
+        bpsLiquidity  = newLiquidity;
+&nbsp;
+        lastAdjustmentTime = block.timestamp;
+&nbsp;
+        emit BPSAdjusted(newMarketing, newManagement, newTreasury, newStaking, newLiquidity);
+    }
+&nbsp;
+    /// @dev Reverts if the absolute difference between old and new BPS exceeds MAX_BPS_CHANGE.
+    function _checkBPSChange(uint256 oldVal, uint256 newVal) private pure {
+        uint256 diff = oldVal &gt; newVal ? oldVal - newVal : newVal - oldVal;
+        require(diff &lt;= MAX_BPS_CHANGE, "RevenueRouter: BPS change too large");
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Admin — Recipient Address Setters
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Update the Marketing &amp; Sales recipient (RewardDistributor)
+    function setMarketing(address newAddr) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddr != address(0), "RevenueRouter: zero address");
+        marketing = newAddr;
+        emit RecipientUpdated("marketing", newAddr);
+    }
+&nbsp;
+    /// @notice Update the Management &amp; Operational recipient (ManagementPool)
+    function setManagement(address newAddr) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddr != address(0), "RevenueRouter: zero address");
+        management = newAddr;
+        emit RecipientUpdated("management", newAddr);
+    }
+&nbsp;
+    /// @notice Update the DAO Treasury recipient (TreasuryManager)
+    function setTreasury(address newAddr) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddr != address(0), "RevenueRouter: zero address");
+        treasury = newAddr;
+        emit RecipientUpdated("treasury", newAddr);
+    }
+&nbsp;
+    /// @notice Update the Reserved Staking recipient (admin wallet)
+    function setReservedStaking(address newAddr) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddr != address(0), "RevenueRouter: zero address");
+        reservedStaking = newAddr;
+        emit RecipientUpdated("reservedStaking", newAddr);
+    }
+&nbsp;
+    /// @notice Update the Liquidity Pool &amp; Buffer recipient (LiquidityPool)
+    function setLiquidity(address newAddr) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddr != address(0), "RevenueRouter: zero address");
+        liquidity = newAddr;
+        emit RecipientUpdated("liquidity", newAddr);
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

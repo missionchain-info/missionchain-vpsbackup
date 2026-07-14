@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for revenue/SeedBudgetV5b.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">revenue/</a> SeedBudgetV5b.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/38</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/7</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/50</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+interface IPoolReceiver {
+    function receiveAndDistribute(uint256 amount) external;
+}
+&nbsp;
+/// @title SeedBudgetV5b — centralized USDT vault for SEED revenue
+/// @notice
+///   ARCHITECTURE: This contract holds ALL SEED USDT centrally. It splits
+///   incoming amounts into 5 logical slots (Distribution / Operational /
+///   Management Bonus / Liquidity / Reserved) per anh's spec (20+20+10+40+10).
+///
+///   - Liquidity slot (40%) is AUTO-FORWARDED to LiquidityPoolV5 (closed-loop).
+///   - Other 4 slots ACCUMULATE in this contract — no auto-transfer.
+///   - Pool contracts (Operational/MgmtBonus/Reserved/Distribution) are
+///     POLICY ENGINES that hold member registries, votes, requests.
+///   - When a claim/execute is authorized by a pool, that pool calls
+///     `release(slot, recipient, amount)` on this vault. The vault checks
+///     authorization (slotController[slot] == msg.sender), deducts a fee
+///     (configurable BPS) and transfers net to recipient + fee to feeReceiver.
+///
+///   This design matches the existing /payment-requests fee config pattern
+///   used by the Distributor payout flow.
+contract SeedBudgetV5b is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─── Slot indices ────────────────────────────────────────────────────
+    uint8 public constant SLOT_DISTRIBUTION = 0;
+    uint8 public constant SLOT_OPERATIONAL  = 1;
+    uint8 public constant SLOT_MGMT_BONUS   = 2;
+    uint8 public constant SLOT_LIQUIDITY    = 3;
+    uint8 public constant SLOT_RESERVED     = 4;
+&nbsp;
+    // ─── Roles ────────────────────────────────────────────────────────────
+    bytes32 public constant CALLER_ROLE = keccak256("CALLER_ROLE"); // SeedSale
+&nbsp;
+    // ─── BPS allocations ──────────────────────────────────────────────────
+    uint256 public constant BPS_DISTRIBUTION = 2000; // 20%
+    uint256 public constant BPS_OPERATIONAL  = 2000; // 20%
+    uint256 public constant BPS_MGMT_BONUS   = 1000; // 10%
+    uint256 public constant BPS_LIQUIDITY    = 4000; // 40%
+    uint256 public constant BPS_RESERVED     = 1000; // 10%
+&nbsp;
+    // ─── Storage ──────────────────────────────────────────────────────────
+    IERC20 public immutable usdt;
+&nbsp;
+    /// @notice Current USDT balance per slot (held in this contract)
+    mapping(uint8 =&gt; uint256) public slotBalance;
+    /// @notice Cumulative USDT received per slot (lifetime, never decreases)
+    mapping(uint8 =&gt; uint256) public slotTotalReceived;
+    /// @notice Cumulative USDT released per slot (lifetime)
+    mapping(uint8 =&gt; uint256) public slotTotalReleased;
+&nbsp;
+    /// @notice Address authorized to call release(slot, ...). Owner sets per slot.
+    ///         Typically the corresponding pool contract.
+    mapping(uint8 =&gt; address) public slotController;
+&nbsp;
+    /// @notice Liquidity slot auto-forward target (LiquidityPoolV5)
+    address public liquidityPool;
+&nbsp;
+    /// @notice Fee config (consistent with /payment-requests pattern)
+    uint16  public feeBps;       // 0-1000 (0%-10%)
+    address public feeReceiver;
+&nbsp;
+    // ─── Events ───────────────────────────────────────────────────────────
+    event ReceivedAndDistributed(uint256 amount, uint256 d, uint256 o, uint256 m, uint256 l, uint256 r);
+    event Released(uint8 indexed slot, address indexed recipient, uint256 amount, uint256 fee);
+    event SlotControllerUpdated(uint8 indexed slot, address controller);
+    event LiquidityPoolUpdated(address pool);
+    event FeeUpdated(uint16 bps, address receiver);
+&nbsp;
+    // ─── Constructor ──────────────────────────────────────────────────────
+<span class="fstat-no" title="function not covered" >    constructor(address _usdt, address _admin) {</span>
+<span class="cstat-no" title="statement not covered" >        require(_usdt  != address(0), "SBv5b: zero usdt")</span>;
+<span class="cstat-no" title="statement not covered" >        require(_admin != address(0), "SBv5b: zero admin")</span>;
+        usdt = IERC20(_usdt);
+<span class="cstat-no" title="statement not covered" >        _grantRole(DEFAULT_ADMIN_ROLE, _admin)</span>;
+        feeReceiver = _admin; // default — Owner can change
+    }
+&nbsp;
+    // ─── Receive USDT from SeedSale ───────────────────────────────────────
+&nbsp;
+    /// @notice Called by SeedSale on each SEED purchase. Pulls USDT, splits
+    ///         into 5 slots. Liquidity auto-forwards to LiquidityPoolV5.
+<span class="fstat-no" title="function not covered" >    function receiveAndDistribute(uint256 amount)</span>
+        external
+        onlyRole(CALLER_ROLE)
+        nonReentrant
+    {
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "SBv5b: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransferFrom(msg.sender, address(this), amount)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        uint256 d = (amount * BPS_DISTRIBUTION) / 10_000;</span>
+<span class="cstat-no" title="statement not covered" >        uint256 o = (amount * BPS_OPERATIONAL)  / 10_000;</span>
+<span class="cstat-no" title="statement not covered" >        uint256 m = (amount * BPS_MGMT_BONUS)   / 10_000;</span>
+<span class="cstat-no" title="statement not covered" >        uint256 l = (amount * BPS_LIQUIDITY)    / 10_000;</span>
+<span class="cstat-no" title="statement not covered" >        uint256 r = (amount * BPS_RESERVED)     / 10_000;</span>
+&nbsp;
+        slotBalance[SLOT_DISTRIBUTION] += d;
+        slotBalance[SLOT_OPERATIONAL]  += o;
+        slotBalance[SLOT_MGMT_BONUS]   += m;
+        slotBalance[SLOT_RESERVED]     += r;
+&nbsp;
+        slotTotalReceived[SLOT_DISTRIBUTION] += d;
+        slotTotalReceived[SLOT_OPERATIONAL]  += o;
+        slotTotalReceived[SLOT_MGMT_BONUS]   += m;
+        slotTotalReceived[SLOT_LIQUIDITY]    += l;
+        slotTotalReceived[SLOT_RESERVED]     += r;
+&nbsp;
+        // Liquidity auto-forward (closed-loop)
+<span class="cstat-no" title="statement not covered" >        if (liquidityPool != address(0)) {</span>
+<span class="cstat-no" title="statement not covered" >            usdt.forceApprove(liquidityPool, l)</span>;
+<span class="cstat-no" title="statement not covered" >            IPoolReceiver(liquidityPool).receiveAndDistribute(l)</span>;
+        } else {
+            // Hold if not yet configured
+            slotBalance[SLOT_LIQUIDITY] += l;
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        emit ReceivedAndDistributed(amount, d, o, m, l, r);</span>
+    }
+&nbsp;
+    // ─── Release USDT (called by authorized pool controllers) ─────────────
+&nbsp;
+    /// @notice Pool controller releases USDT from a slot to a recipient.
+    ///         Fee is deducted from the gross amount.
+    /// @dev Caller must be slotController[slot]. The Liquidity slot (3)
+    ///      cannot release directly — funds go to LiquidityPoolV5 on receive.
+    /// @param slot      Slot index (0=Distribution, 1=Operational, 2=MgmtBonus, 4=Reserved)
+    /// @param recipient Destination wallet
+    /// @param amount    Gross USDT amount (before fee)
+<span class="fstat-no" title="function not covered" >    function release(uint8 slot, address recipient, uint256 amount)</span>
+        external
+        nonReentrant
+    {
+<span class="cstat-no" title="statement not covered" >        require(msg.sender == slotController[slot], "SBv5b: not controller")</span>;
+<span class="cstat-no" title="statement not covered" >        require(slot != SLOT_LIQUIDITY, "SBv5b: liquidity auto-forward")</span>;
+<span class="cstat-no" title="statement not covered" >        require(recipient != address(0), "SBv5b: zero recipient")</span>;
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "SBv5b: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        require(slotBalance[slot] &gt;= amount, "SBv5b: insufficient slot balance")</span>;
+&nbsp;
+        slotBalance[slot]        -= amount;
+        slotTotalReleased[slot]  += amount;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        uint256 fee = (amount * feeBps) / 10_000;</span>
+<span class="cstat-no" title="statement not covered" >        uint256 net = amount - fee;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransfer(recipient, net)</span>;
+<span class="cstat-no" title="statement not covered" >        if (fee &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >            usdt.safeTransfer(feeReceiver, fee)</span>;
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        emit Released(slot, recipient, net, fee);</span>
+    }
+&nbsp;
+    // ─── Owner config ─────────────────────────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setSlotController(uint8 slot, address controller)</span>
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+<span class="cstat-no" title="statement not covered" >        require(slot != SLOT_LIQUIDITY, "SBv5b: liquidity has no controller")</span>;
+        slotController[slot] = controller;
+<span class="cstat-no" title="statement not covered" >        emit SlotControllerUpdated(slot, controller);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setLiquidityPool(address pool) external onlyRole(DEFAULT_ADMIN_ROLE) {</span>
+        liquidityPool = pool;
+<span class="cstat-no" title="statement not covered" >        emit LiquidityPoolUpdated(pool);</span>
+    }
+&nbsp;
+    /// @notice Owner sets fee config. Mirrors /payment-requests pattern.
+    /// @param bps      Fee in BPS, max 1000 (10%)
+    /// @param receiver Single global fee receiver wallet
+<span class="fstat-no" title="function not covered" >    function setFee(uint16 bps, address receiver)</span>
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+<span class="cstat-no" title="statement not covered" >        require(bps &lt;= 1000, "SBv5b: max 10% fee")</span>;
+<span class="cstat-no" title="statement not covered" >        require(receiver != address(0), "SBv5b: zero receiver")</span>;
+        feeBps = bps;
+        feeReceiver = receiver;
+<span class="cstat-no" title="statement not covered" >        emit FeeUpdated(bps, receiver);</span>
+    }
+&nbsp;
+    // ─── Views ────────────────────────────────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function totalUsdtBalance() external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        return usdt.balanceOf(address(this));</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for infrastructure/LiquidityPoolV5.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">infrastructure/</a> LiquidityPoolV5.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/28</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/36</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/33</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title LiquidityPool v5 — closed-loop USDT/MIC stabilizer
+/// @notice Phase 2c redesign:
+///   - 31.5M MIC initial allocation (vs v4's 105M; the other 73.5M moved to ListingReserveVault).
+///   - USDT received from RevenueRouter / SeedBudget — NEVER withdrawable as USDT (closed-loop).
+///   - Phase 2 (later): swap USDT ↔ MIC inside this pool to stabilize price.
+///   - Existing swapAndBurnMIC for MICE flow KEPT.
+///   - withdrawUSDT REMOVED (closed-loop principle: USDT only flows in or via swap).
+///   - withdrawMICForCEX REMOVED (DEX/CEX listing handled by ListingReserveVault).
+///
+/// @dev Production: admin = DAOGovernor with timelock. On testnet: deployer.
+contract LiquidityPoolV5 is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+    bytes32 public constant DEPOSITOR_ROLE   = keccak256("DEPOSITOR_ROLE");
+    bytes32 public constant BURN_CALLER_ROLE = keccak256("BURN_CALLER_ROLE");
+    bytes32 public constant RATE_SETTER_ROLE = keccak256("RATE_SETTER_ROLE");
+&nbsp;
+    IERC20 public immutable usdt;
+    ERC20Burnable public immutable mic;
+&nbsp;
+    uint256 public micPerUsdtRate;
+    uint256 public totalUsdtForBurn;
+    uint256 public totalMicBurned;
+    uint256 public totalUSDTReceived;
+    uint256 public totalMICDeposited;
+&nbsp;
+    event USDTReceived(address indexed from, uint256 amount);
+    event MICDeposited(address indexed from, uint256 amount);
+    event MicBurnRateUpdated(uint256 oldRate, uint256 newRate);
+    event SwappedAndBurned(address indexed from, uint256 usdtAmount, uint256 micBurned);
+&nbsp;
+<span class="fstat-no" title="function not covered" >    constructor(address _usdt, address _mic, address admin) {</span>
+<span class="cstat-no" title="statement not covered" >        require(_usdt != address(0), "LP5: zero usdt")</span>;
+<span class="cstat-no" title="statement not covered" >        require(_mic != address(0), "LP5: zero mic")</span>;
+<span class="cstat-no" title="statement not covered" >        require(admin != address(0), "LP5: zero admin")</span>;
+        usdt = IERC20(_usdt);
+        mic  = ERC20Burnable(_mic);
+<span class="cstat-no" title="statement not covered" >        _grantRole(DEFAULT_ADMIN_ROLE, admin)</span>;
+<span class="cstat-no" title="statement not covered" >        _grantRole(RATE_SETTER_ROLE, admin)</span>;
+    }
+&nbsp;
+    // ─── Receive USDT (closed-loop) ─────────────────────────────────────
+&nbsp;
+    /// @notice DISTRIBUTOR_ROLE caller pulls USDT into pool. No exit path —
+    ///         USDT can only be consumed via swapAndBurnMIC or future Phase 2 swaps.
+<span class="fstat-no" title="function not covered" >    function receiveAndDistribute(uint256 amount) external onlyRole(DISTRIBUTOR_ROLE) nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "LP5: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransferFrom(msg.sender, address(this), amount)</span>;
+        totalUSDTReceived += amount;
+<span class="cstat-no" title="statement not covered" >        emit USDTReceived(msg.sender, amount);</span>
+    }
+&nbsp;
+    // ─── Reserved Staking — MIC deposit ─────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function depositMIC(uint256 amount) external onlyRole(DEPOSITOR_ROLE) nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "LP5: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        IERC20(address(mic)).safeTransferFrom(msg.sender, address(this), amount)</span>;
+        totalMICDeposited += amount;
+<span class="cstat-no" title="statement not covered" >        emit MICDeposited(msg.sender, amount);</span>
+    }
+&nbsp;
+    // ─── Swap &amp; Burn (MICE deflation) ───────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setMicBurnRate(uint256 newRate) external onlyRole(RATE_SETTER_ROLE) {</span>
+<span class="cstat-no" title="statement not covered" >        require(newRate &gt; 0, "LP5: zero rate")</span>;
+<span class="cstat-no" title="statement not covered" >        emit MicBurnRateUpdated(micPerUsdtRate, newRate);</span>
+        micPerUsdtRate = newRate;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function swapAndBurnMIC(uint256 usdtAmount) external onlyRole(BURN_CALLER_ROLE) nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        require(usdtAmount &gt; 0, "LP5: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        require(micPerUsdtRate &gt; 0, "LP5: rate not set")</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransferFrom(msg.sender, address(this), usdtAmount)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        uint256 micAmount = (usdtAmount * micPerUsdtRate) / 1_000_000;</span>
+<span class="cstat-no" title="statement not covered" >        require(micAmount &gt; 0, "LP5: zero MIC computed")</span>;
+<span class="cstat-no" title="statement not covered" >        require(mic.balanceOf(address(this)) &gt;= micAmount, "LP5: insufficient MIC")</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        mic.burn(micAmount)</span>;
+&nbsp;
+        totalUSDTReceived += usdtAmount;
+        totalUsdtForBurn  += usdtAmount;
+        totalMicBurned    += micAmount;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        emit SwappedAndBurned(msg.sender, usdtAmount, micAmount);</span>
+    }
+&nbsp;
+    // ─── Phase 2 STUBS (closed-loop bidirectional swap) ─────────────────
+&nbsp;
+    /// @notice Reserved for Phase 2 stabilizer: swap USDT → MIC (held in pool).
+    /// @dev Reverts in Phase 1. Activation requires DAO-approved upgrade.
+<span class="fstat-no" title="function not covered" >    function swapUsdtToMic(uint256 /* usdtAmount */) external pure {</span>
+<span class="cstat-no" title="statement not covered" >        revert("LP5: phase 2 not enabled")</span>;
+    }
+&nbsp;
+    /// @notice Reserved for Phase 2 stabilizer: swap MIC → USDT (held in pool).
+<span class="fstat-no" title="function not covered" >    function swapMicToUsdt(uint256 /* micAmount */) external pure {</span>
+<span class="cstat-no" title="statement not covered" >        revert("LP5: phase 2 not enabled")</span>;
+    }
+&nbsp;
+    // ─── Views ──────────────────────────────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function usdtBalance() public view returns (uint256) { <span class="cstat-no" title="statement not covered" >return usdt.balanceOf(address(this));</span> }</span>
+<span class="fstat-no" title="function not covered" >    function micBalance() public view returns (uint256) { <span class="cstat-no" title="statement not covered" >return mic.balanceOf(address(this));</span> }</span>
+<span class="fstat-no" title="function not covered" >    function previewBurn(uint256 usdtAmount) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        if (micPerUsdtRate == 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
+<span class="cstat-no" title="statement not covered" >        return (usdtAmount * micPerUsdtRate) / 1_000_000;</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

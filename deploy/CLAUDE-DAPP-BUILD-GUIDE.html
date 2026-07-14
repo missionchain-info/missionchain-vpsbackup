@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Build Guide — MissionChain DApp (missionchain.io)</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0812;
+    --bg2: #130A1E;
+    --bg3: #1A0E28;
+    --purple: #7B2D8B;
+    --purple2: #C084D4;
+    --gold: #C9A84C;
+    --gold2: #E8C96A;
+    --white: #F0E6D3;
+    --gray: #B09090;
+    --gray2: #7A6070;
+    --border: rgba(200,168,200,.1);
+    --blue2: #9B2C42;
+    --green: #4CAF50;
+    --red: #E05555;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    line-height: 1.7;
+    padding: clamp(16px, 3vw, 40px);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    color: var(--gold);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    margin: 2.5rem 0 0.8rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid var(--purple);
+  }
+  h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--white);
+    font-size: 1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--purple2);
+    font-size: 0.9rem;
+    margin: 1rem 0 0.3rem;
+  }
+  .meta {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+  .meta strong { color: var(--gold); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0;
+    font-size: 0.85rem;
+  }
+  th {
+    background: var(--bg3);
+    color: var(--gold);
+    text-align: left;
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  td {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) { background: rgba(26,14,40,0.3); }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    color: var(--gold2);
+  }
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    margin: 0.8rem 0;
+    color: var(--white);
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .b-gold { background: rgba(201,168,76,0.2); color: var(--gold); }
+  .b-purple { background: rgba(123,45,139,0.2); color: var(--purple2); }
+  .b-red { background: rgba(224,85,85,0.2); color: var(--red); }
+  .b-green { background: rgba(76,175,80,0.2); color: var(--green); }
+  .danger {
+    background: rgba(224,85,85,0.1);
+    border: 1px solid rgba(224,85,85,0.3);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 0.88rem;
+  }
+  .danger strong { color: var(--red); }
+  .info {
+    background: rgba(123,45,139,0.1);
+    border: 1px solid rgba(123,45,139,0.3);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 0.88rem;
+  }
+  .info strong { color: var(--purple2); }
+  .ok {
+    background: rgba(76,175,80,0.1);
+    border: 1px solid rgba(76,175,80,0.3);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 0.88rem;
+  }
+  .ok strong { color: var(--green); }
+  p { margin: 0.4rem 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 0.8rem 0; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1>Claude Build Guide — MissionChain DApp</h1>
+
+<div class="meta">
+  <strong>Target:</strong> missionchain.io — Web3 DApp (CSR) &nbsp;|&nbsp;
+  <strong>Monorepo:</strong> missionchain_app/ &nbsp;|&nbsp;
+  <strong>Framework:</strong> Next.js 14 + wagmi 2.x + RainbowKit &nbsp;|&nbsp;
+  <strong>Version:</strong> 1.0 — 2026-04-06<br>
+  <strong>Ref Specs:</strong> PHASE1-BLUEPRINT.html (architecture) + missionchain-web3-dapp-users (neu).html (UI detail) + Prototype-Connect-Wallet.html (login prototype)<br>
+  <strong>Design Source:</strong> http://187.77.149.158:3001/whitepaper (colors, fonts, logo, style)
+</div>
+
+<!-- ================================================================ -->
+<h2>1. Project Structure — Turborepo Monorepo</h2>
+<!-- ================================================================ -->
+
+<pre>
+missionchain_app/
+├── turbo.json
+├── package.json                    # Workspaces root
+├── .env.example
+│
+├── packages/
+│   ├── contracts/                  # Solidity — Hardhat
+│   │   ├── contracts/              # 10 .sol files
+│   │   ├── test/
+│   │   ├── scripts/
+│   │   └── hardhat.config.ts
+│   │
+│   ├── sdk/                        # Shared TypeScript SDK
+│   │   ├── src/
+│   │   │   ├── abis/               # Contract ABIs (auto-generated)
+│   │   │   ├── constants.ts        # Addresses, chain config
+│   │   │   ├── types.ts            # Shared TypeScript types
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   └── db/                         # Prisma schema
+│       ├── prisma/
+│       │   └── schema.prisma
+│       └── package.json
+│
+├── apps/
+│   ├── web/                        # Next.js 14 DApp frontend ← THIS IS THE MAIN BUILD TARGET
+│   │   ├── app/                    # App Router
+│   │   │   ├── layout.tsx          # Root layout: providers, fonts, theme
+│   │   │   ├── page.tsx            # Dashboard (default route /)
+│   │   │   ├── seed/page.tsx
+│   │   │   ├── presale/page.tsx
+│   │   │   ├── mice/page.tsx
+│   │   │   ├── mining/page.tsx
+│   │   │   ├── nft/page.tsx
+│   │   │   ├── network/page.tsx
+│   │   │   ├── vesting/page.tsx
+│   │   │   ├── marketplace/page.tsx
+│   │   │   ├── documents/page.tsx
+│   │   │   ├── nira/page.tsx
+│   │   │   ├── dao/page.tsx
+│   │   │   └── profile/page.tsx
+│   │   │
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── Sidebar.tsx         # Main navigation sidebar
+│   │   │   │   ├── TopBar.tsx          # Notification, language, wallet, theme
+│   │   │   │   ├── MobileNav.tsx       # Bottom nav (mobile)
+│   │   │   │   └── AppShell.tsx        # Layout wrapper
+│   │   │   │
+│   │   │   ├── auth/
+│   │   │   │   ├── ConnectWallet.tsx   # Step 1: wallet selection
+│   │   │   │   ├── RegisterForm.tsx    # Step 2: ref code, user ID, T&C
+│   │   │   │   └── AuthGate.tsx        # Wrapper: redirect if not connected
+│   │   │   │
+│   │   │   ├── dashboard/             # Dashboard cards & charts
+│   │   │   ├── sales/                 # SEED, Pre-Sale, MICE components
+│   │   │   ├── mining/                # Mining dashboard components
+│   │   │   ├── staking/               # NFT staking components
+│   │   │   ├── vesting/               # Vesting timeline & claim
+│   │   │   ├── referral/              # Network tree, commission
+│   │   │   ├── marketplace/           # Trading, order book
+│   │   │   ├── nira/                  # NIRA AI chatbot
+│   │   │   └── ui/                    # Shared UI primitives
+│   │   │       ├── Button.tsx
+│   │   │       ├── Card.tsx
+│   │   │       ├── Input.tsx
+│   │   │       ├── Badge.tsx
+│   │   │       ├── ProgressBar.tsx
+│   │   │       ├── Table.tsx
+│   │   │       └── Modal.tsx
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useAuth.ts              # JWT + wallet auth
+│   │   │   ├── useContract.ts          # Generic contract reader
+│   │   │   ├── useEmission.ts          # E(t) calculation
+│   │   │   ├── useMICE.ts              # MICE license queries
+│   │   │   ├── useStaking.ts           # NFT staking positions
+│   │   │   ├── useVesting.ts           # Vesting schedules
+│   │   │   └── useReferral.ts          # Referral tree & earnings
+│   │   │
+│   │   ├── lib/
+│   │   │   ├── wagmi.ts                # wagmi + RainbowKit config
+│   │   │   ├── api.ts                  # Fastify API client
+│   │   │   ├── theme.ts                # CSS variables, dark/light toggle
+│   │   │   └── constants.ts            # UI constants
+│   │   │
+│   │   ├── styles/
+│   │   │   └── globals.css             # Tailwind + CSS custom properties
+│   │   │
+│   │   ├── public/
+│   │   │   └── images/
+│   │   │       └── mission-chain-logo-clear.png
+│   │   │
+│   │   ├── next.config.js
+│   │   ├── tailwind.config.ts
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   │
+│   └── api/                        # Fastify backend
+│       ├── src/
+│       │   ├── routes/
+│       │   │   ├── auth.ts             # /auth/register, /auth/nonce, /auth/verify
+│       │   │   ├── users.ts
+│       │   │   └── referrals.ts
+│       │   ├── plugins/
+│       │   ├── services/
+│       │   └── index.ts
+│       ├── prisma/
+│       └── package.json
+│
+└── docs/
+</pre>
+
+<!-- ================================================================ -->
+<h2>2. Design System — MANDATORY (Copy Exactly)</h2>
+<!-- ================================================================ -->
+
+<div class="danger">
+  <strong>CRITICAL:</strong> Toàn bộ colors, fonts, effects phải giống 100% với whitepaper site (http://187.77.149.158:3001/whitepaper). Đây là source of truth cho design. KHÔNG tự sáng tạo màu/font mới.
+</div>
+
+<h3>2.1 CSS Custom Properties (globals.css)</h3>
+
+<pre>
+/* ============================================
+   FILE: apps/web/styles/globals.css
+   DESIGN SYSTEM — COPY EXACTLY, DO NOT MODIFY
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ─── Background Layers ─── */
+  --bg:       #0C0812;       /* Main background */
+  --bg2:      #130A1E;       /* Card level 1 */
+  --bg3:      #1A0E28;       /* Card level 2 */
+  --bg4:      #1F1035;       /* Card level 3 / hover */
+
+  /* ─── Brand Colors ─── */
+  --purple:   #7B2D8B;       /* Primary accent */
+  --purple2:  #C084D4;       /* Light purple */
+  --blue:     #6B1428;       /* Crimson dark */
+  --blue2:    #9B2C42;       /* Crimson light */
+  --gold:     #C9A84C;       /* Gold primary */
+  --gold2:    #E8C96A;       /* Gold light */
+  --green:    #A8744A;       /* Bronze/copper */
+  --teal:     #D4A84C;       /* Warm gold */
+
+  /* ─── Text ─── */
+  --white:    #F0E6D3;       /* Primary text (warm cream) */
+  --gray:     #B09090;       /* Secondary text */
+  --gray2:    #7A6070;       /* Muted text */
+
+  /* ─── UI ─── */
+  --border:       rgba(200,168,200,.1);
+  --border-focus: rgba(201,168,76,0.5);
+  --glow-p:       rgba(123,45,139,.3);
+  --glow-b:       rgba(107,20,40,.2);
+  --sidebar-bg:   rgba(6,12,24,.97);
+  --input-bg:     rgba(19,10,30,0.8);
+  --card-bg:      rgba(26,14,40,0.6);
+  --card-hover:   rgba(31,16,53,0.8);
+  --glass:        rgba(19,10,30,0.85);
+  --shadow:       0 8px 32px rgba(0,0,0,0.5);
+
+  /* ─── Semantic ─── */
+  --success:  #4CAF50;
+  --error:    #E05555;
+  --warning:  #E8C96A;
+  --info:     #C084D4;
+
+  /* ─── Typography ─── */
+  --font-d: 'Montserrat', sans-serif;   /* Display / headers */
+  --font-b: 'Inter', sans-serif;        /* Body / UI */
+  --font-m: 'JetBrains Mono', monospace; /* Code / addresses / numbers */
+}
+
+/* ─── Light Mode Overrides ─── */
+[data-theme="light"] {
+  --bg:         #F5F0E6;
+  --bg2:        #EDE6D8;
+  --bg3:        #E5DDD0;
+  --bg4:        #DDD4C5;
+  --white:      #1A0E28;
+  --gray:       #5A4A5A;
+  --gray2:      #8A7A8A;
+  --border:     rgba(123,45,139,.12);
+  --input-bg:   rgba(237,230,216,0.9);
+  --card-bg:    rgba(255,255,255,0.8);
+  --card-hover: rgba(255,255,255,0.95);
+  --sidebar-bg: rgba(245,240,230,0.97);
+  --shadow:     0 8px 32px rgba(0,0,0,0.08);
+  --glass:      rgba(255,255,255,0.9);
+  --glow-p:     rgba(123,45,139,.08);
+  --glow-b:     rgba(107,20,40,.05);
+}
+
+/* ─── Base Resets ─── */
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-b);
+  overflow-x: hidden;
+}
+</pre>
+
+<h3>2.2 Tailwind Config</h3>
+
+<pre>
+// FILE: apps/web/tailwind.config.ts
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Montserrat', 'sans-serif'],      // var(--font-d)
+        body:    ['Inter', 'sans-serif'],            // var(--font-b)
+        mono:    ['JetBrains Mono', 'monospace'],    // var(--font-m)
+      },
+      colors: {
+        bg:      { DEFAULT: '#0C0812', 2: '#130A1E', 3: '#1A0E28', 4: '#1F1035' },
+        purple:  { DEFAULT: '#7B2D8B', light: '#C084D4' },
+        crimson: { DEFAULT: '#6B1428', light: '#9B2C42' },
+        gold:    { DEFAULT: '#C9A84C', light: '#E8C96A' },
+        cream:   '#F0E6D3',
+        muted:   '#B09090',
+        dim:     '#7A6070',
+      },
+      borderRadius: { card: '12px', btn: '8px' },
+      boxShadow: {
+        card:  '0 8px 32px rgba(0,0,0,0.5)',
+        glow:  '0 0 20px rgba(123,45,139,0.3)',
+        gold:  '0 0 20px rgba(201,168,76,0.3)',
+      },
+    },
+  },
+  plugins: [],
+}
+export default config
+</pre>
+
+<h3>2.3 Font Usage Rules</h3>
+
+<table>
+  <tr><th>Element</th><th>Font</th><th>CSS Class</th><th>Examples</th></tr>
+  <tr><td>Page titles, section headers, brand</td><td>Montserrat</td><td><code>font-display</code></td><td>h1, h2, sidebar title, button labels</td></tr>
+  <tr><td>Body text, labels, descriptions, inputs</td><td>Inter</td><td><code>font-body</code></td><td>Paragraphs, field labels, hints, nav items</td></tr>
+  <tr><td>Wallet addresses, numbers, prices, code</td><td>JetBrains Mono</td><td><code>font-mono</code></td><td>0x7F2c...9A3e, $1,234.56, MIC amounts, formulas</td></tr>
+</table>
+
+<h3>2.4 Logo</h3>
+
+<pre>
+Logo file: public/images/mission-chain-logo-clear.png
+Source:    http://187.77.149.158:3001/images/mission-chain-logo-clear.png
+Usage:    Sidebar top + Mobile header + Login branding panel
+Display:  Logo image NEXT TO "Mission Chain" text (left-aligned)
+          NEVER use a cross (✝) symbol — always the actual logo image
+</pre>
+
+<!-- ================================================================ -->
+<h2>3. Text Alignment — GLOBAL RULE</h2>
+<!-- ================================================================ -->
+
+<div class="danger">
+  <strong>CRITICAL:</strong> Tất cả text trong DApp phải căn lề trái (<code>text-align: left</code>). Đây là quy tắc bắt buộc, không có ngoại lệ.
+</div>
+
+<table>
+  <tr><th>Element</th><th>Alignment</th><th>Ghi chú</th></tr>
+  <tr><td>Page titles, subtitles</td><td><code>text-align: left</code></td><td>Mọi trang</td></tr>
+  <tr><td>Form labels, hints, errors</td><td><code>text-align: left</code></td><td>Bao gồm cả placeholder</td></tr>
+  <tr><td>Buttons (primary, outline, gold)</td><td><code>justify-content: flex-start</code></td><td>Text và icon căn trái</td></tr>
+  <tr><td>Cards content</td><td><code>text-align: left</code></td><td>Titles, values, descriptions</td></tr>
+  <tr><td>Tables</td><td><code>text-align: left</code></td><td>Cả th và td</td></tr>
+  <tr><td>Wallet buttons (MetaMask, Trust...)</td><td><code>text-align: left</code></td><td>Icon + text đều căn trái</td></tr>
+  <tr><td>Sidebar navigation</td><td><code>text-align: left</code></td><td>Icon + label căn trái</td></tr>
+  <tr><td>Success/error messages</td><td><code>text-align: left</code></td><td>Không center bất kỳ message nào</td></tr>
+  <tr><td>Notification panel</td><td><code>text-align: left</code></td><td>Mỗi notification item căn trái</td></tr>
+  <tr><td>Mobile bottom nav</td><td><code>text-align: center</code></td><td><strong>Ngoại lệ DUY NHẤT</strong> — icon trên, label dưới, center cho touch target</td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>4. Responsive Design — 100% MANDATORY</h2>
+<!-- ================================================================ -->
+
+<div class="danger">
+  <strong>CRITICAL:</strong> Mọi page, component, layout phải hoạt động hoàn hảo trên TẤT CẢ thiết bị. Không horizontal scroll. Không bị cắt text. Không bị tràn layout. Test từ iPhone SE (375px) đến 4K (2560px).
+</div>
+
+<h3>4.1 Breakpoints (Tailwind defaults)</h3>
+
+<table>
+  <tr><th>Name</th><th>Min Width</th><th>Layout</th><th>Sidebar</th><th>Navigation</th></tr>
+  <tr>
+    <td><span class="b-red">Mobile</span></td>
+    <td>&lt; 640px</td>
+    <td>Single column, stacked cards</td>
+    <td>Hidden</td>
+    <td>Bottom nav (5 icons)</td>
+  </tr>
+  <tr>
+    <td><span class="b-purple">Tablet</span></td>
+    <td>640 – 1024px</td>
+    <td>2-column grid</td>
+    <td>Collapsed (icons only, 64px)</td>
+    <td>Collapsed sidebar + top bar</td>
+  </tr>
+  <tr>
+    <td><span class="b-gold">Desktop</span></td>
+    <td>1024 – 1536px</td>
+    <td>Full grid</td>
+    <td>Expanded (260px)</td>
+    <td>Full sidebar + top bar</td>
+  </tr>
+  <tr>
+    <td><span class="b-green">Ultra-wide</span></td>
+    <td>&gt; 1536px</td>
+    <td>Max-width 1400px, centered</td>
+    <td>Expanded</td>
+    <td>Same as desktop</td>
+  </tr>
+</table>
+
+<h3>4.2 Responsive Patterns (Mandatory)</h3>
+
+<pre>
+/* ─── FLUID TYPOGRAPHY ─── */
+/* Use clamp() for all font sizes — never fixed px on responsive elements */
+h1 { font-size: clamp(1.2rem, 2.5vw, 1.8rem); }
+h2 { font-size: clamp(1rem, 2vw, 1.4rem); }
+body { font-size: clamp(0.85rem, 1vw, 1rem); }
+
+/* ─── FLUID SPACING ─── */
+.page-content { padding: clamp(12px, 3vw, 32px); }
+.card { padding: clamp(12px, 2vw, 24px); }
+
+/* ─── GRID AUTO-FIT ─── */
+/* Cards grid: auto-collapse on smaller screens */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(8px, 1.5vw, 16px);
+}
+
+/* ─── FORM INPUTS ─── */
+input, select, textarea {
+  width: 100%;                   /* Always full-width in container */
+  font-size: 16px;               /* CRITICAL: prevent iOS zoom */
+  min-height: 44px;              /* Touch target */
+}
+
+/* ─── BUTTONS ─── */
+button, .btn {
+  min-height: 48px;              /* Touch target */
+  padding: 12px 16px;
+  width: 100%;                   /* Full-width on mobile by default */
+}
+@media (min-width: 640px) {
+  button, .btn { width: auto; } /* Auto-width on tablet+ */
+}
+
+/* ─── TABLES ─── */
+.table-wrapper {
+  overflow-x: auto;              /* Horizontal scroll for tables on mobile */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── NO HORIZONTAL SCROLL — EVER ─── */
+html, body { overflow-x: hidden; }
+* { max-width: 100vw; }
+</pre>
+
+<h3>4.3 iOS-Specific Rules</h3>
+
+<table>
+  <tr><th>Rule</th><th>Why</th><th>How</th></tr>
+  <tr>
+    <td>Input font-size &ge; 16px</td>
+    <td>Prevent auto-zoom on focus</td>
+    <td><code>font-size: 16px</code> on all inputs</td>
+  </tr>
+  <tr>
+    <td>Touch targets &ge; 44x44px</td>
+    <td>Apple HIG requirement</td>
+    <td><code>min-height: 44px; min-width: 44px</code></td>
+  </tr>
+  <tr>
+    <td>Safe area insets</td>
+    <td>iPhone notch/home indicator</td>
+    <td><code>padding-bottom: env(safe-area-inset-bottom)</code></td>
+  </tr>
+  <tr>
+    <td>Disable user-scalable</td>
+    <td>Prevent accidental zoom on forms</td>
+    <td><code>maximum-scale=1.0</code> in viewport meta</td>
+  </tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>5. Login & Registration Flow — 3 Steps</h2>
+<!-- ================================================================ -->
+
+<div class="info">
+  <strong>Reference:</strong> Prototype-Connect-Wallet.html trong missionchain_app/ — đây là prototype đã được approved. Build chính xác theo flow và layout này.
+</div>
+
+<h3>5.1 Flow Overview</h3>
+
+<pre>
+User visits missionchain.io
+  │
+  ├─ No wallet connected → Show LOGIN screen (full-page, no sidebar)
+  │   │
+  │   ├─ Step 1: CONNECT WALLET
+  │   │   ├─ RainbowKit modal: MetaMask / TrustWallet / WalletConnect
+  │   │   └─ On success → check if wallet registered
+  │   │       ├─ YES (returning user) → Sign nonce → JWT → Dashboard
+  │   │       └─ NO (new user) → Step 2
+  │   │
+  │   ├─ Step 2: REGISTRATION FORM
+  │   │   ├─ Referral Code (optional) — auto-fill from URL ?ref=...
+  │   │   ├─ User ID (required) — unique check, 3-20 chars, lowercase
+  │   │   ├─ Terms & Conditions checkbox (required)
+  │   │   └─ "Create Account & Sign" button
+  │   │
+  │   └─ Step 3: SUCCESS → Enter Dashboard
+  │
+  └─ Wallet connected + registered → Show DASHBOARD (with sidebar)
+</pre>
+
+<h3>5.2 Registration Form — Field Specifications</h3>
+
+<table>
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>API</th></tr>
+  <tr>
+    <td>Referral Code / Link</td>
+    <td>Text input</td>
+    <td>Optional</td>
+    <td>Wallet address (0x...) or alphanumeric code. Verify referrer exists. If from URL <code>?ref=</code>: auto-fill + lock (disabled).</td>
+    <td><code>GET /auth/check-referrer?ref=xxx</code></td>
+  </tr>
+  <tr>
+    <td>User ID</td>
+    <td>Text input</td>
+    <td><span class="b-red">Required</span></td>
+    <td>3-20 chars, <code>[a-z0-9_]</code> only, force lowercase, realtime unique check (debounce 500ms). Cannot change after registration.</td>
+    <td><code>GET /auth/check-userid?userId=xxx</code></td>
+  </tr>
+  <tr>
+    <td>Terms & Conditions</td>
+    <td>Checkbox</td>
+    <td><span class="b-red">Required</span></td>
+    <td>Must be checked. Register button disabled until checked.</td>
+    <td>—</td>
+  </tr>
+</table>
+
+<h3>5.3 Auth API Endpoints</h3>
+
+<table>
+  <tr><th>Endpoint</th><th>Method</th><th>Request</th><th>Response</th></tr>
+  <tr><td><code>/auth/check-userid</code></td><td>GET</td><td><code>?userId=xxx</code></td><td><code>{ available: boolean }</code></td></tr>
+  <tr><td><code>/auth/check-referrer</code></td><td>GET</td><td><code>?ref=0x... or ?ref=CODE</code></td><td><code>{ valid: boolean, name?: string }</code></td></tr>
+  <tr><td><code>/auth/register</code></td><td>POST</td><td><code>{ wallet, userId, referrer?, termsAccepted }</code></td><td><code>{ success, nonce }</code></td></tr>
+  <tr><td><code>/auth/nonce</code></td><td>GET</td><td><code>?wallet=0x...</code></td><td><code>{ nonce }</code></td></tr>
+  <tr><td><code>/auth/verify</code></td><td>POST</td><td><code>{ wallet, signature }</code></td><td><code>{ jwt, user }</code></td></tr>
+</table>
+
+<h3>5.4 Login Layout — Responsive</h3>
+
+<table>
+  <tr><th>Viewport</th><th>Layout</th><th>Details</th></tr>
+  <tr>
+    <td>Desktop (&gt;1024px)</td>
+    <td>Split: Left branding | Right form</td>
+    <td>Left: Logo + "Mission Chain" + tagline + stats (7B/100K/BSC). Right: step indicator + form. Max-width 960px.</td>
+  </tr>
+  <tr>
+    <td>Tablet (640-1024px)</td>
+    <td>Centered card, max 480px</td>
+    <td>Branding panel hidden. Mini brand header (logo + name) above form. Rounded card with backdrop blur.</td>
+  </tr>
+  <tr>
+    <td>Mobile (&lt;640px)</td>
+    <td>Full-screen, no border-radius</td>
+    <td>Mini brand header top-left. Form fills screen. Padding 16px. Input 16px font (iOS). Touch target 48px.</td>
+  </tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>6. Dashboard Layout — Post-Login</h2>
+<!-- ================================================================ -->
+
+<h3>6.1 AppShell Layout</h3>
+
+<pre>
+┌────────────────────────────────────────────────────────────────┐
+│ TopBar: [Notification 🔔] [Language EN▼] [Wallet 0x...] [☀/🌙]│
+├──────────┬─────────────────────────────────────────────────────┤
+│          │                                                     │
+│ Sidebar  │  Page Content                                       │
+│ (260px)  │  ┌──────────────────────────────────────────────┐   │
+│          │  │  Page Title                                  │   │
+│ OVERVIEW │  │  ┌─────────┐ ┌─────────┐ ┌─────────┐        │   │
+│ Dashboard│  │  │ KPI Card│ │ KPI Card│ │ KPI Card│        │   │
+│ DAO      │  │  └─────────┘ └─────────┘ └─────────┘        │   │
+│ Profile  │  │  ┌─────────────────┐ ┌───────────────┐      │   │
+│          │  │  │  Chart Area     │ │  Activity     │      │   │
+│ SALES    │  │  │                 │ │  Feed         │      │   │
+│ SEED     │  │  └─────────────────┘ └───────────────┘      │   │
+│ Pre-Sale │  └──────────────────────────────────────────────┘   │
+│ MICE     │                                                     │
+│          │                                                     │
+│ EARN     │                                                     │
+│ Mining   │                                                     │
+│ NFT      │                                                     │
+│ Network  │                                                     │
+│ Vesting  │                                                     │
+│          │                                                     │
+│ EXPLORE  │                                                     │
+│ Market   │                                                     │
+│ Docs     │                                                     │
+│ NIRA AI  │                                                     │
+│          │                                                     │
+│──────────│                                                     │
+│ Wallet   │                                                     │
+│ 0x12..AB │                                                     │
+└──────────┴─────────────────────────────────────────────────────┘
+
+Mobile: Sidebar hidden. Bottom nav bar (5 tabs). Hamburger for full menu.
+Tablet: Sidebar collapsed (64px, icons only). Expand on hover/click.
+</pre>
+
+<h3>6.2 Sidebar Sections (4 groups)</h3>
+
+<table>
+  <tr><th>Section</th><th>Pages</th><th>Icons</th></tr>
+  <tr>
+    <td><span class="b-gold">OVERVIEW</span></td>
+    <td>Dashboard, DAO, Profile</td>
+    <td>Chart, Building, User</td>
+  </tr>
+  <tr>
+    <td><span class="b-green">TOKEN SALES</span></td>
+    <td>SEED Sale, Pre-Sale, MICE Sale</td>
+    <td>Seed, Rocket, Pickaxe</td>
+  </tr>
+  <tr>
+    <td><span class="b-purple">EARN</span></td>
+    <td>Mining, NFT Manager, Network, Vesting</td>
+    <td>Diamond, Palette, Globe, Lock</td>
+  </tr>
+  <tr>
+    <td><span class="badge" style="background:rgba(155,44,66,0.2);color:var(--blue2);">EXPLORE</span></td>
+    <td>Marketplace, Documents, NIRA AI</td>
+    <td>Store, File, Bot</td>
+  </tr>
+</table>
+
+<h3>6.3 Sidebar Styling</h3>
+
+<pre>
+.sidebar {
+  width: 260px;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  overflow-y: auto;
+  z-index: 50;
+  transition: width 0.3s ease;
+}
+
+/* Tablet: collapsed */
+@media (max-width: 1024px) {
+  .sidebar { width: 64px; padding: 12px 8px; }
+  .sidebar .nav-label { display: none; }
+  .sidebar .section-label { display: none; }
+}
+
+/* Mobile: hidden, overlay on hamburger click */
+@media (max-width: 640px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    z-index: 100;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 99;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: var(--font-b);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+.nav-item:hover {
+  background: var(--border);
+  color: var(--white);
+}
+.nav-item.active {
+  background: rgba(123,45,139,0.15);
+  color: var(--purple2);
+  font-weight: 600;
+}
+
+.section-label {
+  font-family: var(--font-b);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--gray2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 12px 12px 4px;
+  text-align: left;
+}
+</pre>
+
+<!-- ================================================================ -->
+<h2>7. All 13 Pages — Route Map</h2>
+<!-- ================================================================ -->
+
+<table>
+  <tr><th>#</th><th>Route</th><th>Page</th><th>Priority</th><th>Key Components</th></tr>
+  <tr><td>1</td><td><code>/</code></td><td>Dashboard</td><td><span class="b-red">P0</span></td><td>BalanceCard, MICEOverview, StakingPosition, VestingProgress, PendingRewards, ReferralEarnings, EmissionChart, QuickActions</td></tr>
+  <tr><td>2</td><td><code>/seed</code></td><td>SEED Sale</td><td><span class="b-red">P0</span></td><td>KYCGate, WhitelistGate, PackageCards(4), PaymentToggle, PurchaseButton, VestingPreview, PurchaseHistory. <strong>NO REFERRAL.</strong></td></tr>
+  <tr><td>3</td><td><code>/presale</code></td><td>Pre-Sale</td><td><span class="b-gold">P1</span></td><td>MinPurchase($25), PackageCards(3: Builder/Maker/Luminary with NFT bonus), ReferralCodeInput, PaymentToggle, 3 Tabs (Packages|Purchases|Referral)</td></tr>
+  <tr><td>4</td><td><code>/mice</code></td><td>MICE Sale</td><td><span class="b-red">P0</span></td><td>5-Round Price($100-$500), RoundProgress, ActiveCounter, PaymentSplit(50%USDT+50%MIC burned), MyLicenses, RenewButton</td></tr>
+  <tr><td>5</td><td><code>/mining</code></td><td>Mining</td><td><span class="b-red">P0</span></td><td>MiningStatus, HindexScore, DailyEmission, PendingRewards, ClaimButton, EmissionFormula, PoolDepletion</td></tr>
+  <tr><td>6</td><td><code>/nft</code></td><td>NFT Manager</td><td><span class="b-gold">P1</span></td><td>NFTGallery, TierTable, StakeMICInput, LockPeriodSelector, EffectiveWeight, ActivePositions, UnstakeButton(10%/day)</td></tr>
+  <tr><td>7</td><td><code>/network</code></td><td>Network</td><td><span class="b-gold">P1</span></td><td>ReferralLink, NetworkTree(F1/F2), CommissionStats, CommissionHistory, BonusTracker</td></tr>
+  <tr><td>8</td><td><code>/vesting</code></td><td>Vesting</td><td><span class="b-red">P0</span></td><td>ScheduleList(accordion), Timeline, ClaimableAmount, ClaimButton, ClaimHistory</td></tr>
+  <tr><td>9</td><td><code>/marketplace</code></td><td>Marketplace</td><td><span class="b-purple">P2</span></td><td>3 Tabs (MIC|MICE|NFT), OrderBook, TradePanel, PriceChart, MyOrders</td></tr>
+  <tr><td>10</td><td><code>/documents</code></td><td>Documents</td><td><span class="b-purple">P2</span></td><td>WhitePaperCard, AppendixCards(A-G), SocialLinks, GlossaryLink</td></tr>
+  <tr><td>11</td><td><code>/nira</code></td><td>NIRA AI</td><td><span class="b-purple">P2</span></td><td>ChatInterface, SuggestedPrompts, ContextAwareness, ActionSuggestions</td></tr>
+  <tr><td>12</td><td><code>/dao</code></td><td>DAO</td><td><span class="b-purple">P3</span></td><td>ProposalList, VotingPanel, GovernanceStats. <strong>UI only — contract Phase 2.</strong></td></tr>
+  <tr><td>13</td><td><code>/profile</code></td><td>Profile</td><td><span class="b-red">P0</span></td><td>WalletInfo, KYCStatus, DisplayName, Email, ActivityHistory, NFTCredentials</td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>8. Wallet & Auth — wagmi + RainbowKit Config</h2>
+<!-- ================================================================ -->
+
+<pre>
+// FILE: apps/web/lib/wagmi.ts
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import { bsc, bscTestnet } from 'wagmi/chains'
+
+export const config = getDefaultConfig({
+  appName: 'MissionChain DApp',
+  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID!,
+  chains: [process.env.NEXT_PUBLIC_CHAIN === 'mainnet' ? bsc : bscTestnet],
+  ssr: false, // CSR only
+})
+</pre>
+
+<pre>
+// FILE: apps/web/app/layout.tsx
+'use client'
+import { WagmiProvider } from 'wagmi'
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { config } from '@/lib/wagmi'
+import '@rainbow-me/rainbowkit/styles.css'
+import '@/styles/globals.css'
+
+const queryClient = new QueryClient()
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html lang="en"&gt;
+      &lt;body&gt;
+        &lt;WagmiProvider config={config}&gt;
+          &lt;QueryClientProvider client={queryClient}&gt;
+            &lt;RainbowKitProvider
+              theme={darkTheme({
+                accentColor: '#7B2D8B',
+                accentColorForeground: '#F0E6D3',
+                borderRadius: 'medium',
+                fontStack: 'system',
+              })}
+            &gt;
+              {children}
+            &lt;/RainbowKitProvider&gt;
+          &lt;/QueryClientProvider&gt;
+        &lt;/WagmiProvider&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</pre>
+
+<!-- ================================================================ -->
+<h2>9. Smart Contracts — Frontend Integration</h2>
+<!-- ================================================================ -->
+
+<table>
+  <tr><th>#</th><th>Contract</th><th>Pages</th><th>Key Read Hooks</th><th>Key Write Hooks</th></tr>
+  <tr><td>1</td><td>MICToken</td><td>All pages</td><td><code>balanceOf, totalSupply</code></td><td><code>approve</code></td></tr>
+  <tr><td>2</td><td>LockManager</td><td>Vesting, Dashboard</td><td><code>getSchedules, lockedOf, availableOf</code></td><td>—</td></tr>
+  <tr><td>3</td><td>SeedSale</td><td>SEED, Dashboard</td><td><code>totalSold, isWhitelisted, kycVerified</code></td><td><code>purchase</code></td></tr>
+  <tr><td>4</td><td>ReferralRegistry</td><td>Network, Pre-Sale</td><td><code>earningsOf, referralTree</code></td><td>—</td></tr>
+  <tr><td>5</td><td>PreSale</td><td>Pre-Sale, Dashboard</td><td><code>totalSold</code></td><td><code>purchaseWithUSDT</code></td></tr>
+  <tr><td>6</td><td>AirdropDistributor</td><td>Vesting</td><td><code>hasClaimed</code></td><td><code>claim(proof)</code></td></tr>
+  <tr><td>7</td><td>MICELicense</td><td>MICE, Mining, Dashboard</td><td><code>licensesOf, activeCount, currentPrice</code></td><td><code>purchase, renew</code></td></tr>
+  <tr><td>8</td><td>EmissionController</td><td>Mining, Dashboard</td><td><code>currentEmission, totalEmitted</code></td><td>— (keeper calls)</td></tr>
+  <tr><td>9</td><td>MiningPool</td><td>Mining, Dashboard</td><td><code>pendingReward, hindexOf</code></td><td><code>claimReward</code></td></tr>
+  <tr><td>10</td><td>NFTStaking</td><td>NFT, Dashboard</td><td><code>stakesOf, pendingReward</code></td><td><code>stake, unstake, claim</code></td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>10. Tokenomics — Source of Truth Numbers</h2>
+<!-- ================================================================ -->
+
+<div class="danger">
+  <strong>NEVER</strong> change these numbers. If they appear in UI, they MUST match exactly. Verify against root CLAUDE.md.
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>Value</th></tr>
+  <tr><td>Total Supply</td><td><code>7,000,000,000 MIC</code> (hard cap)</td></tr>
+  <tr><td>Pre-Issued</td><td><code>15% = 1,050,000,000 MIC</code></td></tr>
+  <tr><td>Mining Pool</td><td><code>85% = 5,950,000,000 MIC</code></td></tr>
+  <tr><td>SEED Price</td><td><code>$0.0025/MIC</code>, no MIC bonus, MFP-NFT bundled</td></tr>
+  <tr><td>Pre-Sale Price</td><td><code>$0.005/MIC</code>, min $25, NFT bonus per package (Builder/Maker/Luminary)</td></tr>
+  <tr><td>MICE Price</td><td>5-Round: <code>$100/$200/$300/$400/$500</code> (50% USDT + 50% MIC burned)</td></tr>
+  <tr><td>MICE Max</td><td><code>100,000</code></td></tr>
+  <tr><td>MICE Duration</td><td><code>360 days</code></td></tr>
+  <tr><td>Emission</td><td><code>E(t) = E_base(t) x D(t) x R(t)</code></td></tr>
+  <tr><td>E0</td><td><code>22,907,500 MIC/day</code></td></tr>
+  <tr><td>T_half</td><td><code>180 days</code></td></tr>
+  <tr><td>Referral</td><td><code>F1: 7% USDT / F2: 3% USDT</code> — Pre-Sale & MICE</td></tr>
+  <tr><td>NFT Tiers</td><td>MFP=x10/1M, Plat=x5/500K, Gold=x2.5/250K, Silv=x1/100K, None=x0.5/50K</td></tr>
+  <tr><td>Time-lock</td><td>30d=x1, 90d=x1.25, 180d=x1.5, 360d=x2</td></tr>
+  <tr><td>Unstake limit</td><td><code>10%/day</code></td></tr>
+  <tr><td>Circuit Breakers</td><td>5 (cumulative, daily, price floor, unstake, emergency)</td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2>11. Background Effect — Page-wide</h2>
+<!-- ================================================================ -->
+
+<pre>
+/* Apply to all pages as a fixed background layer */
+.bg-effects {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(123,45,139,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 25%, rgba(107,20,40,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 50% 80%, rgba(201,168,76,0.05) 0%, transparent 50%);
+}
+/* Light mode: reduce glow intensity */
+[data-theme="light"] .bg-effects {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(123,45,139,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 25%, rgba(107,20,40,0.03) 0%, transparent 55%);
+}
+</pre>
+
+<!-- ================================================================ -->
+<h2>12. Component Style Patterns</h2>
+<!-- ================================================================ -->
+
+<h3>12.1 Card Component</h3>
+<pre>
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: clamp(12px, 2vw, 24px);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+.card:hover {
+  border-color: rgba(123,45,139,0.3);
+  box-shadow: 0 0 16px var(--glow-p);
+}
+</pre>
+
+<h3>12.2 Button Variants</h3>
+<pre>
+/* Primary — purple gradient */
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), #5A1E6E);
+  color: white;
+  border: 1px solid rgba(123,45,139,0.3);
+  font-family: var(--font-d);
+  font-weight: 700;
+  justify-content: flex-start;   /* LEFT-ALIGNED text */
+}
+
+/* Gold — for main CTAs */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: var(--bg);
+  font-family: var(--font-d);
+  font-weight: 700;
+  justify-content: flex-start;
+}
+
+/* Outline — secondary actions */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gray);
+  font-family: var(--font-d);
+  font-weight: 600;
+  justify-content: flex-start;
+}
+</pre>
+
+<h3>12.3 Input Field</h3>
+<pre>
+.input {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font-b);
+  font-size: 16px;              /* iOS zoom prevention */
+  color: var(--white);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+.input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08), 0 0 12px var(--glow-p);
+}
+.input.error { border-color: var(--error); }
+.input.success { border-color: var(--success); }
+</pre>
+
+<!-- ================================================================ -->
+<h2>13. Build & Implementation Order</h2>
+<!-- ================================================================ -->
+
+<table>
+  <tr><th>Phase</th><th>Task</th><th>Files</th><th>Est.</th></tr>
+  <tr>
+    <td><span class="b-red">1</span></td>
+    <td>Monorepo init (Turborepo + packages)</td>
+    <td>turbo.json, root package.json, packages/*/package.json</td>
+    <td>1h</td>
+  </tr>
+  <tr>
+    <td><span class="b-red">2</span></td>
+    <td>Design system setup (Tailwind + globals.css + fonts)</td>
+    <td>tailwind.config.ts, globals.css, layout.tsx, public/images/</td>
+    <td>1h</td>
+  </tr>
+  <tr>
+    <td><span class="b-red">3</span></td>
+    <td>UI primitives (Button, Card, Input, Badge, Table, Modal)</td>
+    <td>components/ui/*.tsx</td>
+    <td>2h</td>
+  </tr>
+  <tr>
+    <td><span class="b-red">4</span></td>
+    <td>Login/Registration (3-step flow from prototype)</td>
+    <td>components/auth/*.tsx, auth API routes</td>
+    <td>3h</td>
+  </tr>
+  <tr>
+    <td><span class="b-red">5</span></td>
+    <td>AppShell (Sidebar + TopBar + MobileNav + theme toggle)</td>
+    <td>components/layout/*.tsx</td>
+    <td>3h</td>
+  </tr>
+  <tr>
+    <td><span class="b-red">6</span></td>
+    <td>P0 Pages: Dashboard, SEED, MICE, Mining, Vesting, Profile</td>
+    <td>app/*/page.tsx, components/dashboard|sales|mining|vesting/*.tsx</td>
+    <td>8h</td>
+  </tr>
+  <tr>
+    <td><span class="b-gold">7</span></td>
+    <td>P1 Pages: Pre-Sale, NFT Manager, Network</td>
+    <td>app/*/page.tsx, components/staking|referral/*.tsx</td>
+    <td>5h</td>
+  </tr>
+  <tr>
+    <td><span class="b-purple">8</span></td>
+    <td>P2 Pages: Marketplace, Documents, NIRA AI</td>
+    <td>app/*/page.tsx, components/marketplace|nira/*.tsx</td>
+    <td>4h</td>
+  </tr>
+  <tr>
+    <td><span class="b-purple">9</span></td>
+    <td>P3 Pages: DAO (UI only)</td>
+    <td>app/dao/page.tsx</td>
+    <td>2h</td>
+  </tr>
+  <tr>
+    <td><span class="b-green">10</span></td>
+    <td>wagmi hooks + contract integration</td>
+    <td>hooks/*.ts, lib/wagmi.ts</td>
+    <td>4h</td>
+  </tr>
+  <tr>
+    <td><span class="b-green">11</span></td>
+    <td>Fastify API (auth, users, referrals)</td>
+    <td>apps/api/src/**</td>
+    <td>4h</td>
+  </tr>
+  <tr>
+    <td><span class="b-green">12</span></td>
+    <td>Responsive QA + cross-device testing</td>
+    <td>All files</td>
+    <td>3h</td>
+  </tr>
+</table>
+
+<div class="ok">
+  <strong>Total estimated: ~40 hours.</strong> Phase 1-5 (foundation) = 10h. Phase 6-9 (pages) = 19h. Phase 10-12 (integration + QA) = 11h.
+</div>
+
+<!-- ================================================================ -->
+<h2>14. Critical Rules Checklist</h2>
+<!-- ================================================================ -->
+
+<div class="danger">
+  <strong>NEVER:</strong>
+  <p>- Commit .env or files with secrets/API keys</p>
+  <p>- Use fonts other than Montserrat / Inter / JetBrains Mono</p>
+  <p>- Use colors not in the CSS custom properties above</p>
+  <p>- Center-align text (except mobile bottom nav icons)</p>
+  <p>- Use fixed pixel widths on containers (use %, vw, clamp)</p>
+  <p>- Set input font-size &lt; 16px (iOS zoom)</p>
+  <p>- Add referral to SEED Sale (Pre-Sale ONLY)</p>
+  <p>- Change tokenomics numbers without updating ALL files</p>
+  <p>- Pre-mint the 85% mining pool</p>
+  <p>- Skip ReentrancyGuard on contracts with external calls</p>
+  <p>- Use Ownable (use AccessControl with DAOGovernor)</p>
+  <p>- Create horizontal scrollbars on any viewport</p>
+</div>
+
+<div class="ok">
+  <strong>ALWAYS:</strong>
+  <p>- Text align LEFT everywhere</p>
+  <p>- Use clamp() for responsive sizing</p>
+  <p>- Test on iPhone SE (375px) → 4K (2560px)</p>
+  <p>- Use <code>var(--font-d)</code> for headers, <code>var(--font-b)</code> for body, <code>var(--font-m)</code> for code/numbers</p>
+  <p>- Use the actual logo image, never a cross symbol</p>
+  <p>- Apply <code>backdrop-filter: blur()</code> for glass effects</p>
+  <p>- Include dark + light mode for every component</p>
+  <p>- Use SafeERC20, AccessControl, ERC20Capped in contracts</p>
+  <p>- Handle USDT (6 decimals) vs MIC (18 decimals) carefully</p>
+  <p>- Emit events for all state changes</p>
+  <p>- Logo + "Mission Chain" text side by side, left-aligned</p>
+</div>
+
+</body>
+</html>

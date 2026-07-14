@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for rewards/PeriodicRewards.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">rewards/</a> PeriodicRewards.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>16/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">86.36% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>19/22</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>5/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>20/20</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title PeriodicRewards — Monthly NFT Pool 7.5%
+/// @notice Receives 21.43% (2143 BPS) of the marketing pool from RewardDistributor.
+///         Distributes the Monthly NFT Pool (100% of received) to NFT holders.
+///         Admin triggers distributions off-chain to pre-computed recipient lists.
+///
+/// ### Monthly Pool (5-tier allocation)
+///   Tier 1: 10%, Tier 2: 18%, Tier 3: 22%, Tier 4: 25%, Tier 5: 25%
+///   Admin calls distributeMonthly(recipients, amounts).
+contract PeriodicRewards is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Roles
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Granted to RewardDistributor — the only caller of receiveUSDT().
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constants
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    uint256 public constant BPS_MONTHLY = 10_000; // 100% of received → corresponds to 7.5% of net revenue
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice USDT token (6 decimals on BSC)
+    IERC20 public immutable usdt;
+&nbsp;
+    /// @notice Accumulated USDT available for monthly pool distribution
+    uint256 private _monthlyBalance;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Events
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Emitted when USDT is received for the monthly pool
+    event USDTReceived(uint256 total, uint256 toMonthly);
+&nbsp;
+    /// @notice Emitted when admin distributes the monthly pool
+    event MonthlyDistributed(uint256 totalDistributed);
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constructor
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt   USDT token address
+    /// @param _admin  DEFAULT_ADMIN_ROLE holder (DAOGovernor / deployer)
+    constructor(address _usdt, address _admin) {
+        require(_usdt  != address(0), "PeriodicRewards: zero address");
+        require(_admin != address(0), "PeriodicRewards: zero address");
+&nbsp;
+        usdt = IERC20(_usdt);
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Funding
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Called by RewardDistributor to fund the monthly pool.
+    ///         Pulls `amount` USDT from caller (caller must have approved).
+    /// @param amount USDT amount (6 decimals) to receive
+    function receiveUSDT(uint256 amount) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DISTRIBUTOR_ROLE) {
+        require(amount &gt; 0, "PeriodicRewards: zero amount");
+&nbsp;
+        usdt.safeTransferFrom(msg.sender, address(this), amount);
+&nbsp;
+        _monthlyBalance += amount;
+&nbsp;
+        emit USDTReceived(amount, amount);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Admin — Monthly Distribution
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin distributes the monthly pool to a list of recipients.
+    ///         Off-chain logic assigns 5-tier amounts (10/18/22/25/25%)
+    ///         based on monthly sales volume rankings.
+    ///         Total of `amounts` must not exceed current `monthlyBalance()`.
+    /// @param recipients Array of recipient addresses
+    /// @param amounts    Array of USDT amounts corresponding to each recipient
+    function distributeMonthly(
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(recipients.length &gt; 0, "PeriodicRewards: empty arrays");
+        require(recipients.length == amounts.length, "PeriodicRewards: length mismatch");
+&nbsp;
+        uint256 total = _sumAmounts(amounts);
+        require(total &lt;= _monthlyBalance, "PeriodicRewards: insufficient monthly balance");
+&nbsp;
+        _monthlyBalance -= total;
+&nbsp;
+        for (uint256 i = 0; i &lt; recipients.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (amounts[i] &gt; 0) {
+                usdt.safeTransfer(recipients[i], amounts[i]);
+            }
+        }
+&nbsp;
+        emit MonthlyDistributed(total);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // View Functions
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Returns the current accumulated USDT in the monthly pool
+    function monthlyBalance() external view returns (uint256) {
+        return _monthlyBalance;
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Internal Helpers
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Sums an array of uint256 values.
+    function _sumAmounts(uint256[] calldata amounts) private pure returns (uint256 total) {
+        for (uint256 i = 0; i &lt; amounts.length; i++) {
+            total += amounts[i];
+        }
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

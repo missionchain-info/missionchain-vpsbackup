@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for sales/SeedSale.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">sales/</a> SeedSale.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>25/25</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">89.29% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>25/28</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>5/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>38/38</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">71×</span>
+<span class="cline-any cline-yes">70×</span>
+<span class="cline-any cline-yes">69×</span>
+<span class="cline-any cline-yes">68×</span>
+<span class="cline-any cline-yes">67×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">43×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-yes">40×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">67×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-yes">133×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">70×</span>
+<span class="cline-any cline-yes">70×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "../interfaces/ILockManager.sol";
+&nbsp;
+interface IMFPNFT {
+    function mintBatch(address to, uint256 amount) external;
+}
+&nbsp;
+/// @title SeedSale — SEED Round at $0.0025/MIC, NO referral, KYC whitelist
+/// @notice 3.25% of total supply = 227.5M MIC allocated.
+///         Packages bundle MFP-NFTs (20/60/150/350 per tier).
+///         100% USDT forwarded to SeedBudget via receiveAndDistribute().
+///         MIC transferred directly to buyer wallet (Hybrid Token-Level Lock).
+///         LockManager.createSchedule() enforces 6-month cliff, 10% unlock, 2.5%/month.
+contract SeedSale is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─── Roles ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Role for adding/removing KYC-whitelisted buyers
+    bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
+&nbsp;
+    // ─── Immutables ───────────────────────────────────────────────────────────
+&nbsp;
+    IERC20      public immutable usdt;
+    IERC20      public immutable micToken;
+    ILockManager public immutable lockManager;
+    IMFPNFT     public immutable mfpNFT;
+    address     public immutable seedBudget;
+&nbsp;
+    // ─── Constants ────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Total MIC allocation for SEED round (3.25% of 7B = 227.5M MIC)
+    uint256 public constant ALLOCATION = 227_500_000 ether;
+&nbsp;
+    /// @notice Vesting: 6-month cliff (180 days = 15552000 seconds)
+    uint256 private constant CLIFF_DURATION = 180 days;
+&nbsp;
+    /// @notice Cliff unlock: 10% (1000 BPS)
+    uint256 private constant CLIFF_UNLOCK_BPS = 1000;
+&nbsp;
+    /// @notice Monthly unlock after cliff: 2.5% (250 BPS)
+    uint256 private constant MONTHLY_UNLOCK_BPS = 250;
+&nbsp;
+    // ─── State ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Total MIC sold so far
+    uint256 public totalSold;
+&nbsp;
+    /// @notice Whether the sale is accepting purchases
+    bool public active;
+&nbsp;
+    /// @notice KYC whitelist
+    mapping(address =&gt; bool) public whitelisted;
+&nbsp;
+    // ─── Packages ─────────────────────────────────────────────────────────────
+&nbsp;
+    struct Package {
+        uint256 priceUsdt;  // USDT amount (6 decimals)
+        uint256 micAmount;  // MIC amount (18 decimals)
+        uint256 nftCount;   // Number of MFP-NFTs bundled
+    }
+&nbsp;
+    Package[4] public packages;
+&nbsp;
+    // ─── Events ───────────────────────────────────────────────────────────────
+&nbsp;
+    event SeedPurchase(
+        address indexed buyer,
+        uint256 indexed packageIndex,
+        uint256 priceUsdt,
+        uint256 micAmount,
+        uint256 nftCount
+    );
+    event WhitelistUpdated(address indexed user, bool status);
+    event SaleActivated(bool active);
+&nbsp;
+    // ─── Constructor ──────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt         USDT token address (6 decimals)
+    /// @param _micToken     MIC token address (18 decimals)
+    /// @param _lockManager  LockManager contract (SCHEDULE_CREATOR_ROLE granted externally)
+    /// @param _mfpNFT       MFPNFT contract (MINTER_ROLE granted externally)
+    /// @param _seedBudget   SeedBudget contract — receives 100% USDT
+    /// @param admin         Granted DEFAULT_ADMIN_ROLE + WHITELISTER_ROLE
+    constructor(
+        address _usdt,
+        address _micToken,
+        address _lockManager,
+        address _mfpNFT,
+        address _seedBudget,
+        address admin
+    ) {
+        require(_usdt        != address(0), "Seed: zero usdt");
+        require(_micToken    != address(0), "Seed: zero micToken");
+        require(_lockManager != address(0), "Seed: zero lockManager");
+        require(_mfpNFT      != address(0), "Seed: zero mfpNFT");
+        require(_seedBudget  != address(0), "Seed: zero seedBudget");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(admin        != address(0), "Seed: zero admin");
+&nbsp;
+        usdt        = IERC20(_usdt);
+        micToken    = IERC20(_micToken);
+        lockManager = ILockManager(_lockManager);
+        mfpNFT      = IMFPNFT(_mfpNFT);
+        seedBudget  = _seedBudget;
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(WHITELISTER_ROLE,   admin);
+&nbsp;
+        // Package 0: EARLY BIRD — $1,000 USDT / 400,000 MIC / 20 MFP-NFT
+        packages[0] = Package(1_000e6,  400_000 ether,   20);
+        // Package 1: FOUNDING PARTNER I — $2,500 USDT / 1,000,000 MIC / 60 MFP-NFT
+        packages[1] = Package(2_500e6,  1_000_000 ether, 60);
+        // Package 2: FOUNDING PARTNER II — $5,000 USDT / 2,000,000 MIC / 150 MFP-NFT
+        packages[2] = Package(5_000e6,  2_000_000 ether, 150);
+        // Package 3: FOUNDING PARTNER III — $10,000 USDT / 4,000,000 MIC / 350 MFP-NFT
+        packages[3] = Package(10_000e6, 4_000_000 ether, 350);
+    }
+&nbsp;
+    // ─── Purchase ─────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Purchase a SEED package (MIC + MFP-NFT bundle)
+    /// @param packageIndex 0=Early Bird, 1=FP-I, 2=FP-II, 3=FP-III
+    function buyPackage(uint256 packageIndex) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        require(active,                       "Seed: sale not active");
+        require(whitelisted[msg.sender],      "Seed: not whitelisted");
+        require(packageIndex &lt; 4,             "Seed: invalid package");
+&nbsp;
+        Package memory pkg = packages[packageIndex];
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(totalSold + pkg.micAmount &lt;= ALLOCATION, "Seed: allocation exhausted");
+&nbsp;
+        totalSold += pkg.micAmount;
+&nbsp;
+        // 1. Pull USDT from buyer
+        usdt.safeTransferFrom(msg.sender, address(this), pkg.priceUsdt);
+&nbsp;
+        // 2. Forward 100% USDT to SeedBudget via receiveAndDistribute()
+        //    SeedBudget pulls from this contract, so we approve it first.
+        usdt.forceApprove(seedBudget, pkg.priceUsdt);
+        ISeedBudget(seedBudget).receiveAndDistribute(pkg.priceUsdt);
+&nbsp;
+        // 3. Transfer MIC directly to buyer (Hybrid Token-Level Lock)
+        micToken.safeTransfer(msg.sender, pkg.micAmount);
+&nbsp;
+        // 4. Create vesting schedule: 6-month cliff, 10% unlock, 2.5%/month
+        lockManager.createSchedule(
+            msg.sender,
+            pkg.micAmount,
+            CLIFF_DURATION,
+            CLIFF_UNLOCK_BPS,
+            MONTHLY_UNLOCK_BPS
+        );
+&nbsp;
+        // 5. Mint bundled MFP-NFTs
+        mfpNFT.mintBatch(msg.sender, pkg.nftCount);
+&nbsp;
+        emit SeedPurchase(msg.sender, packageIndex, pkg.priceUsdt, pkg.micAmount, pkg.nftCount);
+    }
+&nbsp;
+    // ─── Whitelist Management ─────────────────────────────────────────────────
+&nbsp;
+    /// @notice Add addresses to the KYC whitelist
+    function addToWhitelist(address[] calldata users)
+        external
+        onlyRole(WHITELISTER_ROLE)
+    {
+        for (uint256 i = 0; i &lt; users.length; i++) {
+            whitelisted[users[i]] = true;
+            emit WhitelistUpdated(users[i], true);
+        }
+    }
+&nbsp;
+    /// @notice Remove addresses from the KYC whitelist
+    function removeFromWhitelist(address[] calldata users)
+        external
+        onlyRole(WHITELISTER_ROLE)
+    {
+        for (uint256 i = 0; i &lt; users.length; i++) {
+            whitelisted[users[i]] = false;
+            emit WhitelistUpdated(users[i], false);
+        }
+    }
+&nbsp;
+    // ─── Admin ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Enable or disable purchasing
+    function setActive(bool _active) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        active = _active;
+        emit SaleActivated(_active);
+    }
+}
+&nbsp;
+/// @dev Minimal interface for SeedBudget.receiveAndDistribute()
+interface ISeedBudget {
+    function receiveAndDistribute(uint256 amount) external;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

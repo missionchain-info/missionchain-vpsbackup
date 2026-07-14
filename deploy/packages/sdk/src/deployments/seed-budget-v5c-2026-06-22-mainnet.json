@@ -1,0 +1,61 @@
+{
+  "network": "bsc-mainnet",
+  "chainId": 56,
+  "deployedAt": "2026-06-22",
+  "deployer": "0xD32e666381b56f979D60C57831838f05F33AD6c2",
+  "contracts": {
+    "SeedBudgetV5c": "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef",
+    "OperationalSalaryPoolV3": "0xB2f318b07B7501f6A03b53066610032418F66b85",
+    "ManagementBonusPoolV3": "0x2bfA50146C01d6c4BFA4A2550385988C2619f033",
+    "ReservedExpensesPoolV3": "0xe04519547F051AE4388FcdE571EA2301dD9e3495",
+    "SeedSaleV7": "0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905"
+  },
+  "dependencies": {
+    "USDT": "0x55d398326f99059fF775485246999027B3197955",
+    "MICToken": "0xf27ec0c311728b923b22828002c992c799326182",
+    "LockManager": "0x6bE58BCe62f526E7751e121CDBa1eb22873471A0",
+    "MFPNFT": "0xAE6F32A6fdf80F5e54ba85441386dBA6a381f565",
+    "StewardCouncil": "0x87723621D50fcc6f6db25d73031E44Bee4081B19"
+  },
+  "constructorArgs": {
+    "SeedBudgetV5c": [
+      "0x55d398326f99059fF775485246999027B3197955",
+      "0xD32e666381b56f979D60C57831838f05F33AD6c2"
+    ],
+    "OperationalSalaryPoolV3": [
+      "0x87723621D50fcc6f6db25d73031E44Bee4081B19",
+      "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef",
+      "0xD32e666381b56f979D60C57831838f05F33AD6c2"
+    ],
+    "ManagementBonusPoolV3": [
+      "0x87723621D50fcc6f6db25d73031E44Bee4081B19",
+      "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef",
+      "0xD32e666381b56f979D60C57831838f05F33AD6c2"
+    ],
+    "ReservedExpensesPoolV3": [
+      "0x87723621D50fcc6f6db25d73031E44Bee4081B19",
+      "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef",
+      "0xD32e666381b56f979D60C57831838f05F33AD6c2"
+    ],
+    "SeedSaleV7": [
+      "0x55d398326f99059fF775485246999027B3197955",
+      "0xf27ec0c311728b923b22828002c992c799326182",
+      "0x6bE58BCe62f526E7751e121CDBa1eb22873471A0",
+      "0xAE6F32A6fdf80F5e54ba85441386dBA6a381f565",
+      "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef",
+      "0xD32e666381b56f979D60C57831838f05F33AD6c2",
+      "6400000000000000000000000"
+    ]
+  },
+  "wiring": {
+    "V5c CALLER_ROLE → V7": "granted",
+    "V5c slot[0] controller → deployer": "set",
+    "V5c slot[1] controller → OSP V3": "set",
+    "V5c slot[2] controller → MBP V3": "set",
+    "V5c slot[3] controller → REP V3": "set",
+    "V5c feeBps": "500",
+    "V5c feeReceiver": "0x6514D6e02370F5987dD61dFb4A9569B7744E2DfC",
+    "LockManager SCHEDULE_CREATOR → V7": "granted",
+    "MFPNFT SEED_GRANTER → V7": "granted"
+  }
+}

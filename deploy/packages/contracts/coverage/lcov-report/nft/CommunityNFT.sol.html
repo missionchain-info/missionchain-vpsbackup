@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for nft/CommunityNFT.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">nft/</a> CommunityNFT.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">49.35% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>38/77</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">41.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>30/72</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">44.44% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>8/18</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">55.29% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>47/85</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">171×</span>
+<span class="cline-any cline-yes">171×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">171×</span>
+<span class="cline-any cline-yes">171×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">76×</span>
+<span class="cline-any cline-yes">50×</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+&nbsp;
+/// @title CommunityNFT — 3-tier Community Credential NFTs
+/// @notice ERC-1155 with auto-expiry staking:
+///         Builder  (×1 multiplier, 60 days)
+///         Maker    (×2.5 multiplier, 90 days)
+///         Luminary (×5 multiplier, 180 days)
+/// @dev Each minted NFT tracks its own expiry. Expired NFTs stop earning staking rewards.
+contract CommunityNFT is ERC1155, AccessControl, ReentrancyGuard {
+    using Strings for uint256;
+&nbsp;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+&nbsp;
+    // Token IDs
+    uint256 public constant BUILDER  = 1;
+    uint256 public constant MAKER    = 2;
+    uint256 public constant LUMINARY = 3;
+&nbsp;
+    // Staking multipliers — adjustable by ADMIN (basis points, 10000 = ×1)
+    uint256 public multBuilder  = 10_000;  // ×1 default
+    uint256 public multMaker    = 25_000;  // ×2.5 default
+    uint256 public multLuminary = 50_000;  // ×5 default
+&nbsp;
+    // Duration per tier — DAO-adjustable, initialized to default values
+    uint256 public durationBuilder  = 60 days;
+    uint256 public durationMaker    = 90 days;
+    uint256 public durationLuminary = 180 days;
+&nbsp;
+    uint256 public constant MIN_DURATION = 30 days;
+    uint256 public constant MAX_DURATION = 720 days;
+&nbsp;
+    // ─── Per-NFT Expiry Tracking ───
+&nbsp;
+    /// @notice Individual NFT instance with expiry
+    struct NFTInstance {
+        uint256 tier;        // BUILDER / MAKER / LUMINARY
+        uint256 mintTime;
+        uint256 expiryTime;
+        address owner;
+        bool active;
+    }
+&nbsp;
+    /// @notice All minted instances
+    mapping(uint256 =&gt; NFTInstance) public instances;
+    uint256 public totalInstances;
+&nbsp;
+    /// @notice User → list of instance IDs
+    mapping(address =&gt; uint256[]) public userInstances;
+&nbsp;
+    /// @notice Supply tracking per tier
+    mapping(uint256 =&gt; uint256) public totalMinted;
+    mapping(uint256 =&gt; uint256) public activeCount;
+&nbsp;
+    /// @notice Base URI for metadata
+    string private _baseURI;
+&nbsp;
+    event CommunityNFTMinted(address indexed to, uint256 indexed instanceId, uint256 tier, uint256 expiryTime);
+    event CommunityNFTExpired(uint256 indexed instanceId, uint256 tier);
+    event BaseURIUpdated(string newBaseURI);
+    event MultipliersUpdated(uint256 builder, uint256 maker, uint256 luminary);
+    event DurationsUpdated(uint256 builder, uint256 maker, uint256 luminary);
+&nbsp;
+    constructor(
+        string memory baseURI_,
+        address admin
+    ) ERC1155(baseURI_) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(admin != address(0), "CNFT: zero admin");
+        _baseURI = baseURI_;
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(MINTER_ROLE, admin);
+    }
+&nbsp;
+    // ─── Minting ───
+&nbsp;
+    /// @notice Mint a Community NFT with auto-expiry
+    /// @param to Recipient
+    /// @param tier BUILDER(1), MAKER(2), or LUMINARY(3)
+    function mint(address to, uint256 tier) external onlyRole(MINTER_ROLE) <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant returns (uint256) {
+        require(to != address(0), "CNFT: zero address");
+        require(tier &gt;= BUILDER &amp;&amp; tier &lt;= LUMINARY, "CNFT: invalid tier");
+&nbsp;
+        uint256 duration = _tierDuration(tier);
+        uint256 instanceId = totalInstances++;
+&nbsp;
+        instances[instanceId] = NFTInstance({
+            tier: tier,
+            mintTime: block.timestamp,
+            expiryTime: block.timestamp + duration,
+            owner: to,
+            active: true
+        });
+&nbsp;
+        userInstances[to].push(instanceId);
+        totalMinted[tier]++;
+        activeCount[tier]++;
+&nbsp;
+        _mint(to, tier, 1, "");
+&nbsp;
+        emit CommunityNFTMinted(to, instanceId, tier, block.timestamp + duration);
+        return instanceId;
+    }
+&nbsp;
+    /// @notice Batch mint same tier to one address
+    function mintBatch(
+        address to,
+        uint256 tier,
+        uint256 amount
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(MINTER_ROLE) <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(to != address(0), "CNFT: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(tier &gt;= BUILDER &amp;&amp; tier &lt;= LUMINARY, "CNFT: invalid tier");
+        require(amount &gt; 0, "CNFT: zero amount");
+&nbsp;
+        uint256 duration = _tierDuration(tier);
+&nbsp;
+        for (uint256 i = 0; i &lt; amount; i++) {
+            uint256 instanceId = totalInstances++;
+            instances[instanceId] = NFTInstance({
+                tier: tier,
+                mintTime: block.timestamp,
+                expiryTime: block.timestamp + duration,
+                owner: to,
+                active: true
+            });
+            userInstances[to].push(instanceId);
+&nbsp;
+            emit CommunityNFTMinted(to, instanceId, tier, block.timestamp + duration);
+        }
+&nbsp;
+        totalMinted[tier] += amount;
+        activeCount[tier] += amount;
+        _mint(to, tier, amount, "");
+    }
+&nbsp;
+    // ─── Expiry Management ───
+&nbsp;
+    /// @notice Mark expired instances as inactive (callable by anyone)
+    /// @param instanceIds Array of instance IDs to check
+    function expireInstances(uint256[] calldata instanceIds) external {
+        for (uint256 i = 0; i &lt; instanceIds.length; i++) {
+            NFTInstance storage inst = instances[instanceIds[i]];
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (inst.active &amp;&amp; block.timestamp &gt;= inst.expiryTime) {
+                inst.active = false;
+                activeCount[inst.tier]--;
+                emit CommunityNFTExpired(instanceIds[i], inst.tier);
+            }
+        }
+    }
+&nbsp;
+    // ─── View Functions ───
+&nbsp;
+    /// @notice Check if a specific instance is still active
+    function isActive(uint256 instanceId) public view returns (bool) {
+        NFTInstance storage inst = instances[instanceId];
+        return inst.active &amp;&amp; block.timestamp &lt; inst.expiryTime;
+    }
+&nbsp;
+    /// @notice Get remaining days for an instance
+<span class="fstat-no" title="function not covered" >    function remainingDays(uint256 instanceId) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        NFTInstance storage inst = instances[instanceId];</span>
+<span class="cstat-no" title="statement not covered" >        if (!inst.active || block.timestamp &gt;= inst.expiryTime) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
+<span class="cstat-no" title="statement not covered" >        return (inst.expiryTime - block.timestamp) / 1 days;</span>
+    }
+&nbsp;
+    /// @notice Get user's active instances with details
+<span class="fstat-no" title="function not covered" >    function getUserInstances(address user) external view returns (uint256[] memory) {</span>
+<span class="cstat-no" title="statement not covered" >        return userInstances[user];</span>
+    }
+&nbsp;
+    /// @notice Count active NFTs per tier for a user
+<span class="fstat-no" title="function not covered" >    function activeCountOf(address user, uint256 tier) external view returns (uint256 count) {</span>
+<span class="cstat-no" title="statement not covered" >        uint256[] storage ids = userInstances[user];</span>
+<span class="cstat-no" title="statement not covered" >        for (uint256 i = 0; i &lt; ids.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            NFTInstance storage inst = instances[ids[i]];</span>
+<span class="cstat-no" title="statement not covered" >            if (inst.tier == tier &amp;&amp; inst.active &amp;&amp; block.timestamp &lt; inst.expiryTime) {</span>
+                count++;
+            }
+        }
+    }
+&nbsp;
+    /// @notice Get highest active tier for a user (for staking multiplier)
+    /// @return 0=None, 1=Builder, 2=Maker, 3=Luminary
+<span class="fstat-no" title="function not covered" >    function highestActiveTier(address user) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        uint256[] storage ids = userInstances[user];</span>
+<span class="cstat-no" title="statement not covered" >        uint256 highest = 0;</span>
+<span class="cstat-no" title="statement not covered" >        for (uint256 i = 0; i &lt; ids.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            NFTInstance storage inst = instances[ids[i]];</span>
+<span class="cstat-no" title="statement not covered" >            if (inst.active &amp;&amp; block.timestamp &lt; inst.expiryTime &amp;&amp; inst.tier &gt; highest) {</span>
+                highest = inst.tier;
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return highest;</span>
+    }
+&nbsp;
+    /// @notice Get multiplier for a tier (basis points)
+<span class="fstat-no" title="function not covered" >    function tierMultiplier(uint256 tier) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        if (tier == LUMINARY) <span class="cstat-no" title="statement not covered" >return multLuminary;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == MAKER) <span class="cstat-no" title="statement not covered" >return multMaker;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == BUILDER) <span class="cstat-no" title="statement not covered" >return multBuilder;</span></span>
+<span class="cstat-no" title="statement not covered" >        return 5000;</span> // ×0.5 for No-NFT
+    }
+&nbsp;
+    /// @notice Get tier duration
+    function tierDuration(uint256 tier) external view returns (uint256) {
+        return _tierDuration(tier);
+    }
+&nbsp;
+    /// @notice Get tier name
+<span class="fstat-no" title="function not covered" >    function tierName(uint256 tier) external pure returns (string memory) {</span>
+<span class="cstat-no" title="statement not covered" >        if (tier == BUILDER) <span class="cstat-no" title="statement not covered" >return "Builder";</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == MAKER) <span class="cstat-no" title="statement not covered" >return "Maker";</span></span>
+<span class="cstat-no" title="statement not covered" >        if (tier == LUMINARY) <span class="cstat-no" title="statement not covered" >return "Luminary";</span></span>
+<span class="cstat-no" title="statement not covered" >        return "None";</span>
+    }
+&nbsp;
+    // ─── Metadata ───
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function uri(uint256 id) public view override returns (string memory) {</span>
+<span class="cstat-no" title="statement not covered" >        require(id &gt;= BUILDER &amp;&amp; id &lt;= LUMINARY, "CNFT: invalid tier")</span>;
+<span class="cstat-no" title="statement not covered" >        return string(abi.encodePacked(_baseURI, id.toString(), ".json"));</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setBaseURI(string calldata newBaseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {</span>
+        _baseURI = newBaseURI;
+<span class="cstat-no" title="statement not covered" >        emit BaseURIUpdated(newBaseURI);</span>
+    }
+&nbsp;
+    /// @notice Adjust tier multipliers
+    /// @param builder Builder multiplier (BPS, e.g., 10000 = ×1)
+    /// @param maker Maker multiplier (BPS)
+    /// @param luminary Luminary multiplier (BPS)
+<span class="fstat-no" title="function not covered" >    function setMultipliers(</span>
+        uint256 builder,
+        uint256 maker,
+        uint256 luminary
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+<span class="cstat-no" title="statement not covered" >        require(builder &gt;= 5000 &amp;&amp; builder &lt;= 20000, "CNFT: builder 0.5x-2x")</span>;
+<span class="cstat-no" title="statement not covered" >        require(maker &gt;= 10000 &amp;&amp; maker &lt;= 50000, "CNFT: maker 1x-5x")</span>;
+<span class="cstat-no" title="statement not covered" >        require(luminary &gt;= 20000 &amp;&amp; luminary &lt;= 100000, "CNFT: luminary 2x-10x")</span>;
+<span class="cstat-no" title="statement not covered" >        require(builder &lt; maker &amp;&amp; maker &lt; luminary, "CNFT: must be ascending")</span>;
+&nbsp;
+        multBuilder = builder;
+        multMaker = maker;
+        multLuminary = luminary;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        emit MultipliersUpdated(builder, maker, luminary);</span>
+    }
+&nbsp;
+    /// @notice Adjust tier durations (DAO-adjustable)
+    /// @param builder Builder duration in seconds (30–720 days)
+    /// @param maker Maker duration in seconds (30–720 days)
+    /// @param luminary Luminary duration in seconds (30–720 days)
+    /// @dev Must be strictly ascending: builder &lt; maker &lt; luminary
+    function setDurations(
+        uint256 builder,
+        uint256 maker,
+        uint256 luminary
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(builder &gt;= MIN_DURATION &amp;&amp; builder &lt;= MAX_DURATION, "CNFT: builder out of range");
+        require(maker &gt;= MIN_DURATION &amp;&amp; maker &lt;= MAX_DURATION,    "CNFT: maker out of range");
+        require(luminary &gt;= MIN_DURATION &amp;&amp; luminary &lt;= MAX_DURATION, "CNFT: luminary out of range");
+        require(builder &lt; maker &amp;&amp; maker &lt; luminary, "CNFT: must be ascending");
+&nbsp;
+        durationBuilder  = builder;
+        durationMaker    = maker;
+        durationLuminary = luminary;
+&nbsp;
+        emit DurationsUpdated(builder, maker, luminary);
+    }
+&nbsp;
+    // ─── Internal ───
+&nbsp;
+    function _tierDuration(uint256 tier) internal view returns (uint256) {
+        if (tier == LUMINARY) return durationLuminary;
+        if (tier == MAKER) return durationMaker;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (tier == BUILDER) return durationBuilder;
+<span class="cstat-no" title="statement not covered" >        revert("CNFT: invalid tier")</span>;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function supportsInterface(bytes4 interfaceId)</span>
+        public view override(ERC1155, AccessControl) returns (bool)
+    {
+<span class="cstat-no" title="statement not covered" >        return super.supportsInterface(interfaceId);</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

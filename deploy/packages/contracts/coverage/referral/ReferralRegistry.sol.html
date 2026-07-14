@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for referral/ReferralRegistry.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">referral/</a> ReferralRegistry.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>38/38</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">97.06% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>33/34</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>39/39</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">202×</span>
+<span class="cline-any cline-yes">200×</span>
+<span class="cline-any cline-yes">200×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201×</span>
+<span class="cline-any cline-yes">199×</span>
+<span class="cline-any cline-yes">198×</span>
+<span class="cline-any cline-yes">196×</span>
+<span class="cline-any cline-yes">196×</span>
+<span class="cline-any cline-yes">196×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">76×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-yes">78×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">55×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title ReferralRegistry — F1/F2 USDT Commission + GV Tracking
+/// @notice Tracks referral relationships (F1/F2) and distributes referral rewards.
+///         Both PreSale AND MICELicense call this contract via CALLER_ROLE.
+///         F1: 7% USDT / F2: 3% USDT — paid instantly on each purchase.
+///         GV (Group Volume) propagates up the ENTIRE upline chain.
+///         GV tier and GV bonus rate are read by ClaimRewards for periodic GV payouts.
+///         SEED has NO referral — only PreSale and MICE.
+contract ReferralRegistry is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    /// @notice Role granted to PreSale and MICELicense contracts
+    bytes32 public constant CALLER_ROLE = keccak256("CALLER_ROLE");
+&nbsp;
+    IERC20 public immutable usdt;
+&nbsp;
+    // Fixed commission rates (immutable per spec)
+    uint256 public constant F1_BPS = 700;  // 7%
+    uint256 public constant F2_BPS = 300;  // 3%
+&nbsp;
+    // GV tier thresholds (USDT 6-decimal format)
+    // Tier 0 (Believer):       $0 – $4,999         → 0 BPS
+    // Tier 1 (Builder):        $5,000 – $19,999     → 300 BPS (3%)
+    // Tier 2 (Connector):      $20,000 – $49,999    → 500 BPS (5%)
+    // Tier 3 (Champion):       $50,000 – $149,999   → 700 BPS (7%)
+    // Tier 4 (Ambassador):     $150,000 – $499,999  → 800 BPS (8%)
+    // Tier 5 (Legend):         $500,000+            → 900 BPS (9%)
+    uint256 public constant TIER1_THRESHOLD =   5_000 * 1e6;
+    uint256 public constant TIER2_THRESHOLD =  20_000 * 1e6;
+    uint256 public constant TIER3_THRESHOLD =  50_000 * 1e6;
+    uint256 public constant TIER4_THRESHOLD = 150_000 * 1e6;
+    uint256 public constant TIER5_THRESHOLD = 500_000 * 1e6;
+&nbsp;
+    // GV bonus rates in BPS per tier (0–5)
+    uint256[6] private GV_RATES = [0, 300, 500, 700, 800, 900];
+&nbsp;
+    /// @notice F1 referrer for each user (one-time, immutable after set)
+    mapping(address =&gt; address) private _referrerOf;
+    mapping(address =&gt; bool)    private _registered;
+&nbsp;
+    /// @notice Cumulative Group Volume per address (USDT 6-decimal)
+    mapping(address =&gt; uint256) public groupVolume;
+&nbsp;
+    /// @notice Monthly GV per address per month index (block.timestamp / 30 days)
+    mapping(address =&gt; mapping(uint256 =&gt; uint256)) public monthlyGV;
+&nbsp;
+    // ── Events ──────────────────────────────────────────────────────────────
+&nbsp;
+    event ReferrerSet(address indexed user, address indexed referrer);
+    event RewardDistributed(
+        address indexed buyer,
+        address indexed f1,
+        uint256 f1Amount,
+        address indexed f2,
+        uint256 f2Amount
+    );
+&nbsp;
+    // ── Constructor ──────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt   USDT token address (6 decimals on BSC)
+    /// @param admin   Admin address — receives DEFAULT_ADMIN_ROLE
+    constructor(address _usdt, address admin) {
+        require(_usdt != address(0) &amp;&amp; admin != address(0), "Ref: zero address");
+        usdt = IERC20(_usdt);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+    }
+&nbsp;
+    // ── External — called by PreSale / MICELicense ───────────────────────────
+&nbsp;
+    /// @notice Register the F1 referrer for a user. One-time and immutable.
+    /// @param user     The buyer address
+    /// @param referrer The direct referrer (F1)
+    function setReferrer(address user, address referrer) external onlyRole(CALLER_ROLE) {
+        require(user != address(0) &amp;&amp; referrer != address(0), "Ref: zero address");
+        require(user != referrer, "Ref: self-referral");
+        require(!_registered[user], "Ref: already registered");
+        _referrerOf[user] = referrer;
+        _registered[user] = true;
+        emit ReferrerSet(user, referrer);
+    }
+&nbsp;
+    /// @notice Distribute F1/F2 referral commissions and update GV for entire upline.
+    /// @dev    Caller (PreSale / MICELicense) must have approved this contract to pull
+    ///         `usdtAmount * (F1_BPS + F2_BPS) / 10000` worth of USDT before calling.
+    ///         If F1 is absent: 7% stays in this contract (admin can recover).
+    ///         If F2 is absent: 3% stays in this contract (admin can recover).
+    ///         GV is updated for every ancestor in the upline chain, not just F1/F2.
+    /// @param buyer       The buyer address
+    /// @param usdtAmount  Total USDT paid by buyer (6 decimals)
+    function distributeReferral(address buyer, uint256 usdtAmount)
+        external
+        onlyRole(CALLER_ROLE)
+        <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant
+    {
+        require(usdtAmount &gt; 0, "Ref: zero amount");
+&nbsp;
+        address f1 = _referrerOf[buyer];
+        uint256 f1Amount = (usdtAmount * F1_BPS) / 10000;
+&nbsp;
+        address f2 = f1 != address(0) ? _referrerOf[f1] : address(0);
+        uint256 f2Amount = (usdtAmount * F2_BPS) / 10000;
+&nbsp;
+        // Determine how much USDT to pull from caller:
+        // - Always pull F1 share (stays in contract if no F1, or pays F1 if present).
+        // - Pull F2 share only when F1 exists (otherwise no referral chain at all).
+        // This ensures:
+        //   No F1  → pull f1Amount only, stays in contract.
+        //   F1, no F2 → pull f1Amount + f2Amount; pay F1, keep F2 in contract.
+        //   F1 + F2   → pull both, pay both.
+        uint256 totalPull = f1 != address(0) ? f1Amount + f2Amount : f1Amount;
+        usdt.safeTransferFrom(msg.sender, address(this), totalPull);
+&nbsp;
+        // Pay F1 (or keep in contract if no F1)
+        if (f1 != address(0) &amp;&amp; f1Amount &gt; 0) {
+            usdt.safeTransfer(f1, f1Amount);
+        }
+&nbsp;
+        // Pay F2 (or keep in contract if no F2)
+        if (f2 != address(0) &amp;&amp; f2Amount &gt; 0) {
+            usdt.safeTransfer(f2, f2Amount);
+        }
+&nbsp;
+        // Update GV for entire upline chain (all generations)
+        _updateGVChain(buyer, usdtAmount);
+&nbsp;
+        emit RewardDistributed(buyer, f1, f1Amount, f2, f2Amount);
+    }
+&nbsp;
+    // ── View functions ────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Returns the F1 referrer for a user (zero address if none)
+    function referrerOf(address user) external view returns (address) {
+        return _referrerOf[user];
+    }
+&nbsp;
+    /// @notice Returns the GV tier (0–5) for an address based on cumulative GV
+    function getTier(address user) public view returns (uint256) {
+        uint256 gv = groupVolume[user];
+        if (gv &gt;= TIER5_THRESHOLD) return 5;
+        if (gv &gt;= TIER4_THRESHOLD) return 4;
+        if (gv &gt;= TIER3_THRESHOLD) return 3;
+        if (gv &gt;= TIER2_THRESHOLD) return 2;
+        if (gv &gt;= TIER1_THRESHOLD) return 1;
+        return 0;
+    }
+&nbsp;
+    /// @notice Returns the GV bonus rate in BPS for an address (0/300/500/700/800/900)
+    function getGVRate(address user) external view returns (uint256) {
+        return GV_RATES[getTier(user)];
+    }
+&nbsp;
+    /// @notice Returns the current month index (block.timestamp / 30 days)
+    function currentMonthIndex() external view returns (uint256) {
+        return _monthIndex();
+    }
+&nbsp;
+    // ── Internal ──────────────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Walk the upline chain starting from the buyer's F1 referrer,
+    ///      adding `amount` to each ancestor's groupVolume and monthlyGV.
+    function _updateGVChain(address buyer, uint256 amount) internal {
+        uint256 monthIdx = _monthIndex();
+        address current = _referrerOf[buyer];
+        while (current != address(0)) {
+            groupVolume[current] += amount;
+            monthlyGV[current][monthIdx] += amount;
+            current = _referrerOf[current];
+        }
+    }
+&nbsp;
+    /// @dev Month index = block.timestamp / (30 days in seconds)
+    function _monthIndex() internal view returns (uint256) {
+        return block.timestamp / 30 days;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,1013 @@
+{
+  "schema": "missionchain-mfp-verse-pool-v1",
+  "totalImages": 100,
+  "totalVerses": 100,
+  "totalPairs": 10000,
+  "source": "MFP-ART/MFP-ART-CATALOG.md",
+  "generatedAt": "2026-04-26",
+  "entries": [
+    {
+      "id": 1,
+      "imageId": 1,
+      "title": "Dove of Genesis",
+      "soulLine": "A white dove ascends through sacred orbit rings, carrying the first spark of life — where every journey of faith begins, in light.",
+      "verse": {
+        "text": "And the Spirit of God moved upon the face of the waters.",
+        "ref": "Genesis 1:2"
+      }
+    },
+    {
+      "id": 2,
+      "imageId": 2,
+      "title": "Star of Bethlehem",
+      "soulLine": "A golden star pierces the violet nebula, marking the cosmos with eternal hope — light has come to those who walk in darkness.",
+      "verse": {
+        "text": "We have seen his star in the east, and are come to worship him.",
+        "ref": "Matthew 2:2"
+      }
+    },
+    {
+      "id": 3,
+      "imageId": 3,
+      "title": "Book of the Stars",
+      "soulLine": "An open book breathes pages of light into the night sky, where every word becomes a constellation — Scripture is not ink on paper, but stars in the soul.",
+      "verse": {
+        "text": "Thy word is a lamp unto my feet, and a light unto my path.",
+        "ref": "Psalm 119:105"
+      }
+    },
+    {
+      "id": 4,
+      "imageId": 4,
+      "title": "Eternal Chalice",
+      "soulLine": "A golden cup burns without ever being consumed, holding the unceasing pour of grace through every generation.",
+      "verse": {
+        "text": "My cup runneth over.",
+        "ref": "Psalm 23:5"
+      }
+    },
+    {
+      "id": 5,
+      "imageId": 5,
+      "title": "City Beneath the Stars",
+      "soulLine": "In the rush of the modern city, the heavens still bloom — faith does not sleep in the rhythm of the metropolis.",
+      "verse": {
+        "text": "Ye are the light of the world. A city that is set on an hill cannot be hid.",
+        "ref": "Matthew 5:14"
+      }
+    },
+    {
+      "id": 6,
+      "imageId": 6,
+      "title": "Mosaic of Peace",
+      "soulLine": "A dove of peace inlaid in gold and gem — the breath of a thousand years of sacred art still rises in this single bird.",
+      "verse": {
+        "text": "Blessed are the peacemakers: for they shall be called the children of God.",
+        "ref": "Matthew 5:9"
+      }
+    },
+    {
+      "id": 7,
+      "imageId": 7,
+      "title": "Starry Night Chapel",
+      "soulLine": "A small chapel glows beneath a swirling cosmos — faith is small, yet never extinguished.",
+      "verse": {
+        "text": "The light shineth in darkness; and the darkness comprehended it not.",
+        "ref": "John 1:5"
+      }
+    },
+    {
+      "id": 8,
+      "imageId": 8,
+      "title": "Chapel on the Hill",
+      "soulLine": "The white sanctuary stands firm above the ocean of time — prayers lift higher than the swirling stars.",
+      "verse": {
+        "text": "How amiable are thy tabernacles, O LORD of hosts!",
+        "ref": "Psalm 84:1"
+      }
+    },
+    {
+      "id": 9,
+      "imageId": 9,
+      "title": "House of Light",
+      "soulLine": "A simple home beneath whirlpools of stars — every lit window is an invitation to come home.",
+      "verse": {
+        "text": "In my Father's house are many mansions.",
+        "ref": "John 14:2"
+      }
+    },
+    {
+      "id": 10,
+      "imageId": 10,
+      "title": "The Way Home",
+      "soulLine": "A winding golden path leads up to the chapel on the hill — to walk toward God is to walk toward yourself.",
+      "verse": {
+        "text": "I am the way, the truth, and the life.",
+        "ref": "John 14:6"
+      }
+    },
+    {
+      "id": 11,
+      "imageId": 11,
+      "title": "Marble Seraph",
+      "soulLine": "A marble angel stands serene beneath violet lightning — divine stillness conceals the storm of cosmic power.",
+      "verse": {
+        "text": "Are they not all ministering spirits, sent forth to minister?",
+        "ref": "Hebrews 1:14"
+      }
+    },
+    {
+      "id": 12,
+      "imageId": 12,
+      "title": "Light of Motherhood",
+      "soulLine": "Beside a sunlit window, a mother cradles her child in golden warmth — the most peaceful moment the human heart will ever know.",
+      "verse": {
+        "text": "Behold, children are a heritage of the LORD.",
+        "ref": "Psalm 127:3"
+      }
+    },
+    {
+      "id": 13,
+      "imageId": 13,
+      "title": "Modern Madonna",
+      "soulLine": "A halo of gold behind her head, an angel asleep in her arms — the beauty of the Sacred Mother never grows old.",
+      "verse": {
+        "text": "Blessed art thou among women, and blessed is the fruit of thy womb.",
+        "ref": "Luke 1:42"
+      }
+    },
+    {
+      "id": 14,
+      "imageId": 14,
+      "title": "Eternal Warmth",
+      "soulLine": "Cheek touches cheek, heart touches heart — the first and final language of love, spoken without words.",
+      "verse": {
+        "text": "As one whom his mother comforteth, so will I comfort you.",
+        "ref": "Isaiah 66:13"
+      }
+    },
+    {
+      "id": 15,
+      "imageId": 15,
+      "title": "Garden of Love",
+      "soulLine": "Among flowers of sunlight, a mother gently holds her child — life blooms inside arms that hold gently.",
+      "verse": {
+        "text": "And now abideth faith, hope, charity, these three; but the greatest of these is charity.",
+        "ref": "1 Corinthians 13:13"
+      }
+    },
+    {
+      "id": 16,
+      "imageId": 16,
+      "title": "Rainbow Covenant",
+      "soulLine": "A pastel rainbow arches over a violet cascade — Heaven's promise that peace will return after every storm.",
+      "verse": {
+        "text": "I do set my bow in the cloud, and it shall be for a token of a covenant.",
+        "ref": "Genesis 9:13"
+      }
+    },
+    {
+      "id": 17,
+      "imageId": 17,
+      "title": "Falls of Mercy",
+      "soulLine": "A great cascade glows in the last light of day, a rainbow embraces the rushing water — nature is a temple without walls or doors.",
+      "verse": {
+        "text": "His mercies are new every morning.",
+        "ref": "Lamentations 3:23"
+      }
+    },
+    {
+      "id": 18,
+      "imageId": 18,
+      "title": "Rose of the Sanctuary",
+      "soulLine": "Looking up from within the cathedral, a rose of glass blooms in the dark — light always finds its way through the smallest cracks.",
+      "verse": {
+        "text": "The LORD is in his holy temple.",
+        "ref": "Habakkuk 2:20"
+      }
+    },
+    {
+      "id": 19,
+      "imageId": 19,
+      "title": "Cosmic Rose Window",
+      "soulLine": "A Gothic rose floats among the stars — sacred architecture meets the boundless cosmos. Faith needs no walls to exist.",
+      "verse": {
+        "text": "The Lord shall reign for ever and ever.",
+        "ref": "Exodus 15:18"
+      }
+    },
+    {
+      "id": 20,
+      "imageId": 20,
+      "title": "Sacred Mountain of Light",
+      "soulLine": "A pure snow-capped peak, a cascade of liquid gold — grace never runs dry; it waits only for those who lift their eyes.",
+      "verse": {
+        "text": "I will lift up mine eyes unto the hills, from whence cometh my help.",
+        "ref": "Psalm 121:1"
+      }
+    },
+    {
+      "id": 21,
+      "imageId": 21,
+      "title": "City of Liberation",
+      "soulLine": "Thousands of doves break their chains and rise above the sunset city — every freed soul is a new star in the heavens.",
+      "verse": {
+        "text": "If the Son therefore shall make you free, ye shall be free indeed.",
+        "ref": "John 8:36"
+      }
+    },
+    {
+      "id": 22,
+      "imageId": 22,
+      "title": "Wings of Glory",
+      "soulLine": "A great dove tears through the wind, feathers shimmering in golden light — a moment of absolute freedom, absolute holiness.",
+      "verse": {
+        "text": "They that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles.",
+        "ref": "Isaiah 40:31"
+      }
+    },
+    {
+      "id": 23,
+      "imageId": 23,
+      "title": "Galaxy Feather",
+      "soulLine": "A golden feather drifts above a spiral galaxy — Heaven's poetry, written in light.",
+      "verse": {
+        "text": "He shall cover thee with his feathers, and under his wings shalt thou trust.",
+        "ref": "Psalm 91:4"
+      }
+    },
+    {
+      "id": 24,
+      "imageId": 24,
+      "title": "Divine Quill",
+      "soulLine": "A quill flies through the cosmos, scattering sparks like unwritten verses — every soul is a page still being written.",
+      "verse": {
+        "text": "Ye are our epistle written in our hearts.",
+        "ref": "2 Corinthians 3:2"
+      }
+    },
+    {
+      "id": 25,
+      "imageId": 25,
+      "title": "Harp of David",
+      "soulLine": "The golden harp of King David hovers among the stars — every trembling string sends a prayer into infinity.",
+      "verse": {
+        "text": "Sing unto him with the psaltery and an instrument of ten strings.",
+        "ref": "Psalm 33:2"
+      }
+    },
+    {
+      "id": 26,
+      "imageId": 26,
+      "title": "Music of the Doves",
+      "soulLine": "A chord rises, and the notes themselves become doves taking flight — true worship is when our prayers become living things.",
+      "verse": {
+        "text": "Let every thing that hath breath praise the LORD.",
+        "ref": "Psalm 150:6"
+      }
+    },
+    {
+      "id": 27,
+      "imageId": 27,
+      "title": "Cosmic Madonna",
+      "soulLine": "A silhouette of mother and child cradled by orbital halos — the eternal Madonna and Child, transcending every age.",
+      "verse": {
+        "text": "Mary kept all these things, and pondered them in her heart.",
+        "ref": "Luke 2:19"
+      }
+    },
+    {
+      "id": 28,
+      "imageId": 28,
+      "title": "Lighthouse of Glory",
+      "soulLine": "A golden lighthouse stands firm in the storm, its beam piercing the darkest cloud — faith is the lamp no wind can quench.",
+      "verse": {
+        "text": "The LORD is my light and my salvation; whom shall I fear?",
+        "ref": "Psalm 27:1"
+      }
+    },
+    {
+      "id": 29,
+      "imageId": 29,
+      "title": "Jacob's Ladder",
+      "soulLine": "White-robed souls climb a golden stair into the galaxy — no journey is ever solitary; one always walks before, one always after.",
+      "verse": {
+        "text": "Behold a ladder set up on the earth, and the top of it reached to heaven.",
+        "ref": "Genesis 28:12"
+      }
+    },
+    {
+      "id": 30,
+      "imageId": 30,
+      "title": "Tree of Covenant",
+      "soulLine": "An ancient tree sends roots like a network into the earth, branches blooming with stars above — where ancient faith meets the new age.",
+      "verse": {
+        "text": "He shall be like a tree planted by the rivers of water.",
+        "ref": "Psalm 1:3"
+      }
+    },
+    {
+      "id": 31,
+      "imageId": 31,
+      "title": "Cross Over the City",
+      "soulLine": "A cross of light tears through the metropolitan sky — even in the rhythm of modern life, He still abides.",
+      "verse": {
+        "text": "And I, if I be lifted up from the earth, will draw all men unto me.",
+        "ref": "John 12:32"
+      }
+    },
+    {
+      "id": 32,
+      "imageId": 32,
+      "title": "The Good Shepherd",
+      "soulLine": "The shepherd carries the lamb home, the flock following beneath the sacred sun — \"I know my sheep, and am known of mine.\"",
+      "verse": {
+        "text": "I am the good shepherd: the good shepherd giveth his life for the sheep.",
+        "ref": "John 10:11"
+      }
+    },
+    {
+      "id": 33,
+      "imageId": 33,
+      "title": "New Jerusalem",
+      "soulLine": "A golden city floats in the cosmos, a river of light pouring upon the earth — \"Behold, I make all things new.\"",
+      "verse": {
+        "text": "And I John saw the holy city, new Jerusalem, coming down from God out of heaven.",
+        "ref": "Revelation 21:2"
+      }
+    },
+    {
+      "id": 34,
+      "imageId": 34,
+      "title": "Kintsugi Soul",
+      "soulLine": "A marble bust glows from its broken cracks — every wound becomes the very place where the light enters.",
+      "verse": {
+        "text": "He healeth the broken in heart, and bindeth up their wounds.",
+        "ref": "Psalm 147:3"
+      }
+    },
+    {
+      "id": 35,
+      "imageId": 35,
+      "title": "Healed Wounds",
+      "soulLine": "Where the marble has broken, gold now flows — what was shattered becomes the source of beauty.",
+      "verse": {
+        "text": "He hath sent me to bind up the brokenhearted.",
+        "ref": "Isaiah 61:1"
+      }
+    },
+    {
+      "id": 38,
+      "imageId": 38,
+      "title": "Vessel of Light",
+      "soulLine": "A marble body filled with rivers of gold — we are clay vessels carrying treasure not our own.",
+      "verse": {
+        "text": "We have this treasure in earthen vessels, that the excellency of the power may be of God.",
+        "ref": "2 Corinthians 4:7"
+      }
+    },
+    {
+      "id": 41,
+      "imageId": 41,
+      "title": "Stone of Promise",
+      "soulLine": "A great rock of marble cracks open with golden lightning — the foundation of faith does not break under storm; it shines.",
+      "verse": {
+        "text": "Upon this rock I will build my church.",
+        "ref": "Matthew 16:18"
+      }
+    },
+    {
+      "id": 42,
+      "imageId": 42,
+      "title": "Resurrection",
+      "soulLine": "A marble form rises through the clouds, pierced by divine light — death has no more dominion; the dust remembers its glory.",
+      "verse": {
+        "text": "I am the resurrection, and the life.",
+        "ref": "John 11:25"
+      }
+    },
+    {
+      "id": 46,
+      "imageId": 46,
+      "title": "Living Stone",
+      "soulLine": "From cold marble, golden veins pulse with life — even stone may breathe when grace flows through it.",
+      "verse": {
+        "text": "Ye also, as lively stones, are built up a spiritual house.",
+        "ref": "1 Peter 2:5"
+      }
+    },
+    {
+      "id": 36,
+      "imageId": 36,
+      "title": "The Pilgrim's Portal",
+      "soulLine": "A traveler stands at the threshold of a golden vortex — every soul must one day step through into the unknown.",
+      "verse": {
+        "text": "Strait is the gate, and narrow is the way, which leadeth unto life.",
+        "ref": "Matthew 7:14"
+      }
+    },
+    {
+      "id": 37,
+      "imageId": 37,
+      "title": "Awakened Spirit",
+      "soulLine": "A figure of pure light stands amid the violet cosmos — when the spirit awakens, the body itself becomes a temple of stars.",
+      "verse": {
+        "text": "Know ye not that ye are the temple of God?",
+        "ref": "1 Corinthians 3:16"
+      }
+    },
+    {
+      "id": 39,
+      "imageId": 39,
+      "title": "Fire of the Spirit",
+      "soulLine": "A robed figure stands within rings of holy fire — to be filled with the Spirit is to burn without being consumed.",
+      "verse": {
+        "text": "Our God is a consuming fire.",
+        "ref": "Hebrews 12:29"
+      }
+    },
+    {
+      "id": 40,
+      "imageId": 40,
+      "title": "Gate of Wonder",
+      "soulLine": "A small soul stands beneath a vast cosmic gate — sometimes faith is simply daring to look up.",
+      "verse": {
+        "text": "Lift up your heads, O ye gates; and be ye lift up, ye everlasting doors.",
+        "ref": "Psalm 24:7"
+      }
+    },
+    {
+      "id": 43,
+      "imageId": 43,
+      "title": "Soul Ascending",
+      "soulLine": "A silhouette burns in concentric rings of holy flame — the soul ascends through fire and is not destroyed.",
+      "verse": {
+        "text": "When thou walkest through the fire, thou shalt not be burned.",
+        "ref": "Isaiah 43:2"
+      }
+    },
+    {
+      "id": 96,
+      "imageId": 96,
+      "title": "Halo of the Horizon",
+      "soulLine": "A great ring of golden fire rises over the landscape at sunset — the gates of glory open at the edges of the visible world.",
+      "verse": {
+        "text": "This is the gate of the LORD.",
+        "ref": "Psalm 118:20"
+      }
+    },
+    {
+      "id": 97,
+      "imageId": 97,
+      "title": "Threshold of Heaven",
+      "soulLine": "A wanderer approaches a ring of golden flame above a vast valley — not every passage is fearful when light marks the way.",
+      "verse": {
+        "text": "I am the door: by me if any man enter in, he shall be saved.",
+        "ref": "John 10:9"
+      }
+    },
+    {
+      "id": 44,
+      "imageId": 44,
+      "title": "The Creator's Brush",
+      "soulLine": "An artist paints galaxies with strokes of gold — every act of creation is a small echo of the first.",
+      "verse": {
+        "text": "In the beginning God created the heaven and the earth.",
+        "ref": "Genesis 1:1"
+      }
+    },
+    {
+      "id": 45,
+      "imageId": 45,
+      "title": "Wonder of Creation",
+      "soulLine": "A figure stands before a cosmic canvas, dwarfed by infinite swirls — to behold is also to worship.",
+      "verse": {
+        "text": "The heavens declare the glory of God; and the firmament sheweth his handywork.",
+        "ref": "Psalm 19:1"
+      }
+    },
+    {
+      "id": 64,
+      "imageId": 64,
+      "title": "Spiral of Creation",
+      "soulLine": "A swirling nebula of violet and gold — the cosmos still turns by the breath of the Creator.",
+      "verse": {
+        "text": "By him were all things created, that are in heaven, and that are in earth.",
+        "ref": "Colossians 1:16"
+      }
+    },
+    {
+      "id": 47,
+      "imageId": 47,
+      "title": "Strings of the Cosmos",
+      "soulLine": "The violinist plays, and the universe swirls around him in ribbons of gold — music is the secret language of creation.",
+      "verse": {
+        "text": "Praise him with stringed instruments and organs.",
+        "ref": "Psalm 150:4"
+      }
+    },
+    {
+      "id": 48,
+      "imageId": 48,
+      "title": "Song of Innocence",
+      "soulLine": "A small musician draws the bow, and the heavens light up with golden particles — out of the mouth of babes comes praise.",
+      "verse": {
+        "text": "Out of the mouth of babes and sucklings hast thou ordained strength.",
+        "ref": "Psalm 8:2"
+      }
+    },
+    {
+      "id": 49,
+      "imageId": 49,
+      "title": "Burning Anthem",
+      "soulLine": "His violin burns with sacred fire — when worship rises from the heart, even flame becomes a melody.",
+      "verse": {
+        "text": "My heart was hot within me, while I was musing the fire burned.",
+        "ref": "Psalm 39:3"
+      }
+    },
+    {
+      "id": 50,
+      "imageId": 50,
+      "title": "Symphony of Light",
+      "soulLine": "A musician at the center of an exploding cosmos — every note is a star being born.",
+      "verse": {
+        "text": "When the morning stars sang together, and all the sons of God shouted for joy.",
+        "ref": "Job 38:7"
+      }
+    },
+    {
+      "id": 70,
+      "imageId": 70,
+      "title": "Song at the Edge",
+      "soulLine": "A violinist plays at the edge of the world — even at the brink, the song does not falter.",
+      "verse": {
+        "text": "I will sing of the mercies of the LORD for ever.",
+        "ref": "Psalm 89:1"
+      }
+    },
+    {
+      "id": 71,
+      "imageId": 71,
+      "title": "Stone and Strings",
+      "soulLine": "She plays on stone, and the cosmos answers in golden sparks — God hears every instrument, and every tongue.",
+      "verse": {
+        "text": "Make a joyful noise unto the LORD, all ye lands.",
+        "ref": "Psalm 100:1"
+      }
+    },
+    {
+      "id": 81,
+      "imageId": 81,
+      "title": "Water Sonata",
+      "soulLine": "He plays his violin in shallow water beneath a sky of falling sparks — every reflection is a worship doubled.",
+      "verse": {
+        "text": "Deep calleth unto deep at the noise of thy waterspouts.",
+        "ref": "Psalm 42:7"
+      }
+    },
+    {
+      "id": 82,
+      "imageId": 82,
+      "title": "Ribbons of Praise",
+      "soulLine": "A violinist stands in still water as golden ribbons unfurl around him — praise weaves the world into song.",
+      "verse": {
+        "text": "Praise ye the LORD: for it is good to sing praises unto our God.",
+        "ref": "Psalm 147:1"
+      }
+    },
+    {
+      "id": 98,
+      "imageId": 98,
+      "title": "Bride of the Song",
+      "soulLine": "A woman in a golden gown plays her violin beneath a sky of light — the soul dressed in praise is a bride awaiting the groom.",
+      "verse": {
+        "text": "I will greatly rejoice in the LORD, my soul shall be joyful in my God.",
+        "ref": "Isaiah 61:10"
+      }
+    },
+    {
+      "id": 99,
+      "imageId": 99,
+      "title": "Spirals of Joy",
+      "soulLine": "Golden ribbons of music coil around her — joy is the music we did not know we knew until it played.",
+      "verse": {
+        "text": "The joy of the LORD is your strength.",
+        "ref": "Nehemiah 8:10"
+      }
+    },
+    {
+      "id": 51,
+      "imageId": 51,
+      "title": "Standing in Awe",
+      "soulLine": "A small silhouette before the swirling vastness — to stand still before God is its own kind of worship.",
+      "verse": {
+        "text": "Be still, and know that I am God.",
+        "ref": "Psalm 46:10"
+      }
+    },
+    {
+      "id": 52,
+      "imageId": 52,
+      "title": "Moonlit Reflection",
+      "soulLine": "A pilgrim sits on a cliff, watching the golden moon rise — peace is the gift given to those who pause and look.",
+      "verse": {
+        "text": "When I consider thy heavens, the work of thy fingers, the moon and the stars.",
+        "ref": "Psalm 8:3"
+      }
+    },
+    {
+      "id": 62,
+      "imageId": 62,
+      "title": "Morning Prayer",
+      "soulLine": "She kneels in the warmth of dawn, hands gathered in silent reverence — every morning begins again with one whispered yes.",
+      "verse": {
+        "text": "My voice shalt thou hear in the morning, O LORD.",
+        "ref": "Psalm 5:3"
+      }
+    },
+    {
+      "id": 63,
+      "imageId": 63,
+      "title": "The Beloved",
+      "soulLine": "A Renaissance portrait, eyes lifted in quiet hope — every soul is the Beloved of God, gazing toward more.",
+      "verse": {
+        "text": "I am my beloved's, and my beloved is mine.",
+        "ref": "Song of Solomon 6:3"
+      }
+    },
+    {
+      "id": 68,
+      "imageId": 68,
+      "title": "Inner Flame",
+      "soulLine": "She sits in stillness as golden energy rises around her — the inner fire is fed not by noise, but by silence.",
+      "verse": {
+        "text": "Commune with your own heart upon your bed, and be still.",
+        "ref": "Psalm 4:4"
+      }
+    },
+    {
+      "id": 53,
+      "imageId": 53,
+      "title": "Father's Embrace",
+      "soulLine": "A father holds his sleeping child close — love wraps the heart with the same warmth God wraps the soul.",
+      "verse": {
+        "text": "Like as a father pitieth his children, so the LORD pitieth them that fear him.",
+        "ref": "Psalm 103:13"
+      }
+    },
+    {
+      "id": 65,
+      "imageId": 65,
+      "title": "Love Eternal",
+      "soulLine": "Two hearts gathered in soft golden light — love is the only language all souls speak fluently.",
+      "verse": {
+        "text": "Love is strong as death.",
+        "ref": "Song of Solomon 8:6"
+      }
+    },
+    {
+      "id": 66,
+      "imageId": 66,
+      "title": "Whispered Vow",
+      "soulLine": "A man and woman lean into each other beneath the window's soft glow — the holiest vows are spoken without sound.",
+      "verse": {
+        "text": "Therefore shall a man leave his father and his mother, and shall cleave unto his wife.",
+        "ref": "Genesis 2:24"
+      }
+    },
+    {
+      "id": 67,
+      "imageId": 67,
+      "title": "Hands Joined",
+      "soulLine": "Hands clasp, hearts lean inward — what God has joined together, time cannot unbind.",
+      "verse": {
+        "text": "What therefore God hath joined together, let not man put asunder.",
+        "ref": "Mark 10:9"
+      }
+    },
+    {
+      "id": 54,
+      "imageId": 54,
+      "title": "Glass of Eternity",
+      "soulLine": "An abstract mosaic of stained glass, each pane a universe of light — every fragment matters in the design of grace.",
+      "verse": {
+        "text": "We see through a glass, darkly; but then face to face.",
+        "ref": "1 Corinthians 13:12"
+      }
+    },
+    {
+      "id": 55,
+      "imageId": 55,
+      "title": "Window of the Soul",
+      "soulLine": "A stained-glass window of glowing orbs and quiet crosses — the light of God filters through every careful pattern of life.",
+      "verse": {
+        "text": "Thou hast covered me in my mother's womb.",
+        "ref": "Psalm 139:13"
+      }
+    },
+    {
+      "id": 56,
+      "imageId": 56,
+      "title": "Reader of Wisdom",
+      "soulLine": "A woman reads by a window of light — the soul that turns its pages in silence will hear what the world cannot say.",
+      "verse": {
+        "text": "Search the scriptures; for in them ye think ye have eternal life.",
+        "ref": "John 5:39"
+      }
+    },
+    {
+      "id": 57,
+      "imageId": 57,
+      "title": "Quiet Devotion",
+      "soulLine": "Sunlight falls upon her open book — devotion is rarely loud; it is simply the heart held still toward God.",
+      "verse": {
+        "text": "Study to shew thyself approved unto God.",
+        "ref": "2 Timothy 2:15"
+      }
+    },
+    {
+      "id": 58,
+      "imageId": 58,
+      "title": "Living Word",
+      "soulLine": "Light pours upon the open page, golden particles dancing in the air — the Word is alive and active in those who read.",
+      "verse": {
+        "text": "For the word of God is quick, and powerful, and sharper than any twoedged sword.",
+        "ref": "Hebrews 4:12"
+      }
+    },
+    {
+      "id": 59,
+      "imageId": 59,
+      "title": "Window of Truth",
+      "soulLine": "She reads beside the stained-glass window, the light coloring her soul as much as her face.",
+      "verse": {
+        "text": "Sanctify them through thy truth: thy word is truth.",
+        "ref": "John 17:17"
+      }
+    },
+    {
+      "id": 72,
+      "imageId": 72,
+      "title": "Book of Wonders",
+      "soulLine": "A book opens, and the world becomes light — the Word is a wonder still, fresh as the first reading.",
+      "verse": {
+        "text": "Open thou mine eyes, that I may behold wondrous things out of thy law.",
+        "ref": "Psalm 119:18"
+      }
+    },
+    {
+      "id": 73,
+      "imageId": 73,
+      "title": "Hand of the Scribe",
+      "soulLine": "She writes, and golden words rise from her hand — to write truth is to participate in creation itself.",
+      "verse": {
+        "text": "Write the vision, and make it plain upon tables.",
+        "ref": "Habakkuk 2:2"
+      }
+    },
+    {
+      "id": 92,
+      "imageId": 92,
+      "title": "Library of Light",
+      "soulLine": "She bends over a glowing book, the library shining around her — wisdom is the gentlest fire that ever warmed a heart.",
+      "verse": {
+        "text": "Wisdom is the principal thing; therefore get wisdom.",
+        "ref": "Proverbs 4:7"
+      }
+    },
+    {
+      "id": 93,
+      "imageId": 93,
+      "title": "Reading the Cosmos",
+      "soulLine": "Light from the book traces galaxies upon her face — those who read the Word read also the heavens.",
+      "verse": {
+        "text": "The unfolding of thy words giveth light.",
+        "ref": "Psalm 119:130"
+      }
+    },
+    {
+      "id": 60,
+      "imageId": 60,
+      "title": "Stairway of the Saints",
+      "soulLine": "A celestial pathway winds through clouds and golden orbs — the road home is brighter than we imagine.",
+      "verse": {
+        "text": "And an highway shall be there, and a way, and it shall be called The way of holiness.",
+        "ref": "Isaiah 35:8"
+      }
+    },
+    {
+      "id": 61,
+      "imageId": 61,
+      "title": "Pond of Peace",
+      "soulLine": "Water lilies float on a sunset pond — beauty needs no audience to bloom, only the courage to open.",
+      "verse": {
+        "text": "Consider the lilies of the field, how they grow.",
+        "ref": "Matthew 6:28"
+      }
+    },
+    {
+      "id": 79,
+      "imageId": 79,
+      "title": "Heaven on Earth",
+      "soulLine": "Stars reflected upon the lake's surface, the cosmos fallen onto a quiet shore — Heaven touches earth in places we forget to look.",
+      "verse": {
+        "text": "The earth is the LORD's, and the fulness thereof.",
+        "ref": "Psalm 24:1"
+      }
+    },
+    {
+      "id": 80,
+      "imageId": 80,
+      "title": "Mountain Vision",
+      "soulLine": "A great spiral of stars turns above mountains and lake — to dwell in nature is to read the Creator's first book.",
+      "verse": {
+        "text": "Before the mountains were brought forth, even from everlasting to everlasting, thou art God.",
+        "ref": "Psalm 90:2"
+      }
+    },
+    {
+      "id": 69,
+      "imageId": 69,
+      "title": "Soul Among Stars",
+      "soulLine": "Her profile dissolves into a galaxy — every soul carries a universe within.",
+      "verse": {
+        "text": "He telleth the number of the stars; he calleth them all by their names.",
+        "ref": "Psalm 147:4"
+      }
+    },
+    {
+      "id": 94,
+      "imageId": 94,
+      "title": "Face of Light",
+      "soulLine": "Her face is mapped with constellations of gold — the soul that loves God carries stars on its skin.",
+      "verse": {
+        "text": "We all, with open face beholding as in a glass the glory of the Lord, are changed into the same image.",
+        "ref": "2 Corinthians 3:18"
+      }
+    },
+    {
+      "id": 95,
+      "imageId": 95,
+      "title": "Glory Within",
+      "soulLine": "A face dissolves into golden cosmos — what we love most begins to look like us, and we begin to look like it.",
+      "verse": {
+        "text": "Christ in you, the hope of glory.",
+        "ref": "Colossians 1:27"
+      }
+    },
+    {
+      "id": 74,
+      "imageId": 74,
+      "title": "Echoes of Eternity",
+      "soulLine": "A single touch upon water sends rings into the night sky — every small act echoes outward, into eternity.",
+      "verse": {
+        "text": "Cast thy bread upon the waters: for thou shalt find it after many days.",
+        "ref": "Ecclesiastes 11:1"
+      }
+    },
+    {
+      "id": 75,
+      "imageId": 75,
+      "title": "Touch of Grace",
+      "soulLine": "A finger meets the surface, and light spreads outward in waves — the smallest gesture of grace can alter the whole sea.",
+      "verse": {
+        "text": "He shall come down like rain upon the mown grass.",
+        "ref": "Psalm 72:6"
+      }
+    },
+    {
+      "id": 76,
+      "imageId": 76,
+      "title": "Standing in the Light",
+      "soulLine": "A figure stands waist-deep in golden water — to be still in the light is itself a prayer.",
+      "verse": {
+        "text": "And the light shineth in darkness.",
+        "ref": "John 1:5"
+      }
+    },
+    {
+      "id": 77,
+      "imageId": 77,
+      "title": "Baptism of Light",
+      "soulLine": "Concentric ripples spread from the body, golden under starlight — every step into faith disturbs the surface of the world.",
+      "verse": {
+        "text": "Buried with him in baptism, wherein also ye are risen with him through the faith.",
+        "ref": "Colossians 2:12"
+      }
+    },
+    {
+      "id": 78,
+      "imageId": 78,
+      "title": "Stillness at Dusk",
+      "soulLine": "A solitary figure rests in the still lake at dusk — peace is the silent music of an emptied heart.",
+      "verse": {
+        "text": "He maketh me to lie down in green pastures: he leadeth me beside the still waters.",
+        "ref": "Psalm 23:2"
+      }
+    },
+    {
+      "id": 85,
+      "imageId": 85,
+      "title": "Beneath the Vortex",
+      "soulLine": "A small figure faces the great spiral — sometimes faith is simply staying still while the cosmos turns.",
+      "verse": {
+        "text": "Be still, and know that I am God.",
+        "ref": "Psalm 46:10"
+      }
+    },
+    {
+      "id": 88,
+      "imageId": 88,
+      "title": "Pilgrim at Sunset",
+      "soulLine": "A pilgrim wades into glowing water as twilight burns above — every ending is also a beginning, in another light.",
+      "verse": {
+        "text": "Weeping may endure for a night, but joy cometh in the morning.",
+        "ref": "Psalm 30:5"
+      }
+    },
+    {
+      "id": 89,
+      "imageId": 89,
+      "title": "Sky of Fire",
+      "soulLine": "A figure stands in a lake beneath an immense cosmic flame — to be small before the holy is to be made whole.",
+      "verse": {
+        "text": "The LORD thy God is a consuming fire.",
+        "ref": "Deuteronomy 4:24"
+      }
+    },
+    {
+      "id": 90,
+      "imageId": 90,
+      "title": "Star Vortex",
+      "soulLine": "Beneath a vortex of stars, a soul stands still — the cosmos turns; the heart finds anchor.",
+      "verse": {
+        "text": "He hath made every thing beautiful in his time.",
+        "ref": "Ecclesiastes 3:11"
+      }
+    },
+    {
+      "id": 91,
+      "imageId": 91,
+      "title": "Threshold of Dawn",
+      "soulLine": "A solitary soul faces the rising sun across the waters — every dawn is a quiet resurrection.",
+      "verse": {
+        "text": "Truly the light is sweet, and a pleasant thing it is for the eyes to behold the sun.",
+        "ref": "Ecclesiastes 11:7"
+      }
+    },
+    {
+      "id": 83,
+      "imageId": 83,
+      "title": "Living Book",
+      "soulLine": "A book lifts off the table, glowing with the breath of the Spirit — Scripture is alive in every age that opens it.",
+      "verse": {
+        "text": "All scripture is given by inspiration of God.",
+        "ref": "2 Timothy 3:16"
+      }
+    },
+    {
+      "id": 84,
+      "imageId": 84,
+      "title": "Galaxies in the Pages",
+      "soulLine": "From the open book, a spiral galaxy rises — Scripture is not contained by paper; it births universes.",
+      "verse": {
+        "text": "By the word of the LORD were the heavens made.",
+        "ref": "Psalm 33:6"
+      }
+    },
+    {
+      "id": 86,
+      "imageId": 86,
+      "title": "Word Above Worlds",
+      "soulLine": "An open book floats among orbiting planets — the Word holds the worlds together, even now.",
+      "verse": {
+        "text": "Upholding all things by the word of his power.",
+        "ref": "Hebrews 1:3"
+      }
+    },
+    {
+      "id": 87,
+      "imageId": 87,
+      "title": "Whirlwind of the Word",
+      "soulLine": "From an open book a whirlwind of fire rises — when truth speaks, it never speaks softly.",
+      "verse": {
+        "text": "Then the LORD answered Job out of the whirlwind.",
+        "ref": "Job 38:1"
+      }
+    },
+    {
+      "id": 100,
+      "imageId": 100,
+      "title": "Eternal Sun",
+      "soulLine": "A great sun pulses in concentric rings — the source of every dawn, the heart of every flame, the center to which all returns.",
+      "verse": {
+        "text": "Thy sun shall no more go down... for the LORD shall be thine everlasting light.",
+        "ref": "Isaiah 60:20"
+      }
+    }
+  ],
+  "series": "MISSION FOUNDING PASS",
+  "imageBaseUrl": "https://api.missionchain.io/static/mfp-art/",
+  "thumbBaseUrl": "https://api.missionchain.io/static/mfp-art/thumb/"
+}

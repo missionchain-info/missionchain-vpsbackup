@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MFP Genesis Collection — Card Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Playfair+Display:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Default: Classic Gold */
+    --gold-bright: #F5D56E;
+    --gold-mid:    #D4A017;
+    --gold-dark:   #8A7050;
+    --gold-faint:  rgba(212, 160, 23, 0.20);
+    --bg-deep:     #1A0B2E;
+    --bg-deeper:   #0A0514;
+    --text-warm:   #E8D8B8;
+    --text-soft:   #D4C098;
+  }
+
+  /* ============= THEME VARIANTS ============= */
+  [data-theme="classic"] {
+    --gold-bright: #F5D56E;
+    --gold-mid:    #D4A017;
+    --gold-dark:   #8A7050;
+    --gold-faint:  rgba(212, 160, 23, 0.20);
+  }
+  [data-theme="deep"] {
+    --gold-bright: #DAA520;
+    --gold-mid:    #B8860B;
+    --gold-dark:   #6B5640;
+    --gold-faint:  rgba(184, 134, 11, 0.22);
+  }
+  [data-theme="bright"] {
+    --gold-bright: #FFE978;
+    --gold-mid:    #FFD700;
+    --gold-dark:   #B8941F;
+    --gold-faint:  rgba(255, 215, 0, 0.20);
+  }
+  [data-theme="rose"] {
+    --gold-bright: #E8B4BC;
+    --gold-mid:    #B76E79;
+    --gold-dark:   #7A4951;
+    --gold-faint:  rgba(183, 110, 121, 0.22);
+  }
+  [data-theme="champagne"] {
+    --gold-bright: #E6D9A8;
+    --gold-mid:    #C9A961;
+    --gold-dark:   #8B7842;
+    --gold-faint:  rgba(201, 169, 97, 0.22);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background:
+      radial-gradient(ellipse at top, #1a0b2e 0%, #050210 70%),
+      #050210;
+    min-height: 100vh;
+    padding: 60px 20px 80px;
+    color: var(--text-warm);
+  }
+
+  /* ============= HEADER ============= */
+  .page-title {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .brand-mission {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 72px;
+    letter-spacing: -2px;
+    background: linear-gradient(90deg,
+      #7B1FA2 0%,
+      #9B1F6A 30%,
+      #B71C5C 50%,
+      #C9526B 70%,
+      var(--gold-mid) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .tagline {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--gold-bright);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .scripture-banner {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold-mid);
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+  }
+  .scripture-banner .ornament {
+    margin: 0 10px;
+    color: var(--gold-bright);
+  }
+
+  /* ============= THEME SWITCHER ============= */
+  .theme-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 28px 0 50px;
+    flex-wrap: wrap;
+  }
+  .theme-btn {
+    padding: 10px 18px;
+    border: 1px solid var(--gold-faint);
+    background: rgba(26, 11, 46, 0.6);
+    color: var(--text-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+  }
+  .theme-btn:hover {
+    border-color: var(--gold-mid);
+    color: var(--gold-bright);
+    transform: translateY(-1px);
+  }
+  .theme-btn.active {
+    background: var(--gold-faint);
+    border-color: var(--gold-mid);
+    color: var(--gold-bright);
+    box-shadow: 0 0 14px var(--gold-faint);
+  }
+  .swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ============= GALLERY ============= */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 40px;
+    max-width: 1900px;
+    margin: 0 auto;
+  }
+
+  /* ============= CARD ============= */
+  .card {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    background:
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deeper) 100%);
+    border-radius: 18px;
+    padding: 22px 26px 18px;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 0 0 1px var(--gold-faint),
+      0 30px 60px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(245, 213, 110, 0.15);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 0 1px var(--gold-mid),
+      0 40px 70px rgba(0, 0, 0, 0.9),
+      0 0 30px var(--gold-faint),
+      inset 0 1px 0 rgba(245, 213, 110, 0.20);
+  }
+
+  /* ============= WATERMARK / SACRED PATTERN ============= */
+  .card .pattern-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image:
+      radial-gradient(circle at 20% 25%, var(--gold-bright) 0px, transparent 1.5px),
+      radial-gradient(circle at 80% 30%, var(--gold-bright) 0px, transparent 1.5px),
+      radial-gradient(circle at 50% 60%, var(--gold-bright) 0px, transparent 1.5px),
+      radial-gradient(circle at 15% 80%, var(--gold-bright) 0px, transparent 1.5px),
+      radial-gradient(circle at 85% 85%, var(--gold-bright) 0px, transparent 1.5px);
+    background-size: 60px 60px;
+  }
+
+  /* SVG Sacred Geometry watermark */
+  .card .geo-watermark {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23F5D56E' stroke-width='0.5'><circle cx='60' cy='60' r='25'/><circle cx='60' cy='35' r='25'/><circle cx='60' cy='85' r='25'/><circle cx='37.5' cy='47.5' r='25'/><circle cx='82.5' cy='47.5' r='25'/><circle cx='37.5' cy='72.5' r='25'/><circle cx='82.5' cy='72.5' r='25'/></g></svg>");
+    background-size: 240px 240px;
+    background-position: center;
+    background-repeat: repeat;
+  }
+
+  /* corner glow */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--gold-faint), transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; right: -100px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--gold-faint), transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ============= CARD HEADER ============= */
+  .card-header {
+    text-align: center;
+    margin-bottom: 14px;
+    z-index: 3;
+    position: relative;
+  }
+  .brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg,
+      #9B5BC9 0%,
+      #C9526B 45%,
+      var(--gold-mid) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 5px;
+  }
+  .serial {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 2.5px;
+    color: var(--gold-dark);
+    font-weight: 500;
+  }
+  .serial .dot {
+    color: var(--gold-mid);
+    margin: 0 6px;
+  }
+
+  /* ============= IMAGE ============= */
+  .image-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1.5px solid var(--gold-faint);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.6),
+      inset 0 0 0 1px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 3;
+  }
+  .image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ============= DIVIDER ============= */
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 6px 0 10px;
+    z-index: 3;
+    position: relative;
+  }
+  .divider .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-faint), transparent);
+  }
+  .divider .star {
+    margin: 0 12px;
+    color: var(--gold-bright);
+    font-size: 10px;
+  }
+
+  /* ============= TITLE ============= */
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold-bright);
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 18px var(--gold-faint);
+    z-index: 3;
+    position: relative;
+  }
+
+  /* ============= SOUL LINE ============= */
+  .soul {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-soft);
+    text-align: center;
+    margin-bottom: 12px;
+    padding: 0 4px;
+    z-index: 3;
+    position: relative;
+  }
+
+  /* ============= MINI DIVIDER ============= */
+  .mini-divider {
+    width: 50px;
+    height: 1px;
+    margin: 0 auto 10px;
+    background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+    z-index: 3;
+    position: relative;
+  }
+
+  /* ============= VERSE ============= */
+  .verse {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--gold-mid);
+    text-align: center;
+    flex-grow: 1;
+    z-index: 3;
+    position: relative;
+  }
+  .verse .ref {
+    display: block;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 10.5px;
+    color: var(--gold-bright);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  /* ============= FOOTER ============= */
+  .footer {
+    text-align: center;
+    font-size: 8.5px;
+    letter-spacing: 3px;
+    color: var(--gold-dark);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gold-faint);
+    z-index: 3;
+    position: relative;
+  }
+  .footer .heart {
+    color: var(--gold-mid);
+    margin: 0 4px;
+  }
+
+  @media (max-width: 480px) {
+    .card { max-width: 100%; }
+    .brand-mission { font-size: 44px; }
+  }
+</style>
+</head>
+<body data-theme="classic">
+
+  <!-- ============= HEADER ============= -->
+  <div class="page-title">
+    <h1 class="brand-mission">MISSION CHAIN</h1>
+    <p class="tagline">"Inspired by Faith. Built for People."</p>
+    <p class="scripture-banner">
+      <span class="ornament">✦</span>
+      You are the light of the world. A city on a hill cannot be hidden. — Matthew 5:14
+      <span class="ornament">✦</span>
+    </p>
+  </div>
+
+  <!-- ============= THEME SWITCHER ============= -->
+  <div class="theme-switcher">
+    <button class="theme-btn active" data-set="classic">
+      <span class="swatch" style="background:#D4A017"></span>Classic Gold
+    </button>
+    <button class="theme-btn" data-set="deep">
+      <span class="swatch" style="background:#B8860B"></span>Deep Gold
+    </button>
+    <button class="theme-btn" data-set="bright">
+      <span class="swatch" style="background:#FFD700"></span>Bright Gold
+    </button>
+    <button class="theme-btn" data-set="rose">
+      <span class="swatch" style="background:#B76E79"></span>Rose Gold
+    </button>
+    <button class="theme-btn" data-set="champagne">
+      <span class="swatch" style="background:#C9A961"></span>Champagne
+    </button>
+  </div>
+
+  <!-- ============= GALLERY ============= -->
+  <div class="gallery">
+
+    <!-- CARDS auto-generated below -->
+
+  </div>
+
+<script>
+  // ============= CARD DATA (18 pieces) =============
+  const cards = [
+    { n:'001', title:'Dove of Genesis',
+      soul:'A white dove ascends through sacred orbit rings, carrying the first spark of life — where every journey of faith begins, in light.',
+      verse:'And the Spirit of God moved upon the face of the waters.', ref:'Genesis 1:2' },
+    { n:'002', title:'Star of Bethlehem',
+      soul:'A golden star pierces the violet nebula, marking the cosmos with eternal hope — light has come to those who walk in darkness.',
+      verse:'We have seen his star in the east, and are come to worship him.', ref:'Matthew 2:2' },
+    { n:'003', title:'Book of the Stars',
+      soul:'An open book breathes pages of light into the night sky, where every word becomes a constellation — Scripture is not ink on paper, but stars in the soul.',
+      verse:'Thy word is a lamp unto my feet, and a light unto my path.', ref:'Psalm 119:105' },
+    { n:'004', title:'Eternal Chalice',
+      soul:'A golden cup burns without ever being consumed, holding the unceasing pour of grace through every generation.',
+      verse:'My cup runneth over.', ref:'Psalm 23:5' },
+    { n:'005', title:'City Beneath the Stars',
+      soul:'In the rush of the modern city, the heavens still bloom — faith does not sleep in the rhythm of the metropolis.',
+      verse:'Ye are the light of the world. A city that is set on an hill cannot be hid.', ref:'Matthew 5:14' },
+    { n:'006', title:'Mosaic of Peace',
+      soul:'A dove of peace inlaid in gold and gem — the breath of a thousand years of sacred art still rises in this single bird.',
+      verse:'Blessed are the peacemakers: for they shall be called the children of God.', ref:'Matthew 5:9' },
+    { n:'007', title:'Starry Night Chapel',
+      soul:'A small chapel glows beneath a swirling cosmos — faith is small, yet never extinguished.',
+      verse:'The light shineth in darkness; and the darkness comprehended it not.', ref:'John 1:5' },
+    { n:'008', title:'Chapel on the Hill',
+      soul:'The white sanctuary stands firm above the ocean of time — prayers lift higher than the swirling stars.',
+      verse:'How amiable are thy tabernacles, O LORD of hosts!', ref:'Psalm 84:1' },
+    { n:'009', title:'House of Light',
+      soul:'A simple home beneath whirlpools of stars — every lit window is an invitation to come home.',
+      verse:'In my Father’s house are many mansions.', ref:'John 14:2' },
+    { n:'010', title:'The Way Home',
+      soul:'A winding golden path leads up to the chapel on the hill — to walk toward God is to walk toward yourself.',
+      verse:'I am the way, the truth, and the life.', ref:'John 14:6' },
+    { n:'011', title:'Marble Seraph',
+      soul:'A marble angel stands serene beneath violet lightning — divine stillness conceals the storm of cosmic power.',
+      verse:'Are they not all ministering spirits, sent forth to minister?', ref:'Hebrews 1:14' },
+    { n:'012', title:'Light of Motherhood',
+      soul:'Beside a sunlit window, a mother cradles her child in golden warmth — the most peaceful moment the human heart will ever know.',
+      verse:'Behold, children are a heritage of the LORD.', ref:'Psalm 127:3' },
+    { n:'013', title:'Modern Madonna',
+      soul:'A halo of gold behind her head, an angel asleep in her arms — the beauty of the Sacred Mother never grows old.',
+      verse:'Blessed art thou among women, and blessed is the fruit of thy womb.', ref:'Luke 1:42' },
+    { n:'014', title:'Eternal Warmth',
+      soul:'Cheek touches cheek, heart touches heart — the first and final language of love, spoken without words.',
+      verse:'As one whom his mother comforteth, so will I comfort you.', ref:'Isaiah 66:13' },
+    { n:'015', title:'Garden of Love',
+      soul:'Among flowers of sunlight, a mother gently holds her child — life blooms inside arms that hold gently.',
+      verse:'And now abideth faith, hope, charity, these three; but the greatest of these is charity.', ref:'1 Corinthians 13:13' },
+    { n:'016', title:'Rainbow Covenant',
+      soul:'A pastel rainbow arches over a violet cascade — Heaven’s promise that peace will return after every storm.',
+      verse:'I do set my bow in the cloud, and it shall be for a token of a covenant.', ref:'Genesis 9:13' },
+    { n:'017', title:'Falls of Mercy',
+      soul:'A great cascade glows in the last light of day, a rainbow embraces the rushing water — nature is a temple without walls or doors.',
+      verse:'His mercies are new every morning.', ref:'Lamentations 3:23' },
+    { n:'018', title:'Rose of the Sanctuary',
+      soul:'Looking up from within the cathedral, a rose of glass blooms in the dark — light always finds its way through the smallest cracks.',
+      verse:'The LORD is in his holy temple.', ref:'Habakkuk 2:20' }
+  ];
+
+  // ============= RENDER =============
+  const gallery = document.querySelector('.gallery');
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      <div class="geo-watermark"></div>
+      <div class="pattern-bg"></div>
+      <div class="card-header">
+        <div class="brand">MISSION CHAIN</div>
+        <div class="serial">MFP #0${c.n} <span class="dot">·</span> GENESIS SERIES</div>
+      </div>
+      <div class="image-wrap">
+        <img src="MFP-ART-${c.n}.png" alt="${c.title}" loading="lazy" />
+      </div>
+      <div class="divider">
+        <div class="line"></div><div class="star">✦</div><div class="line"></div>
+      </div>
+      <div class="title">${c.title}</div>
+      <div class="soul">${c.soul}</div>
+      <div class="mini-divider"></div>
+      <div class="verse">
+        "${c.verse}"
+        <span class="ref">— ${c.ref}</span>
+      </div>
+      <div class="footer">missionchain.io <span class="heart">✦</span> 2026</div>
+    `;
+    gallery.appendChild(el);
+  });
+
+  // ============= THEME SWITCHER =============
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.set;
+      document.body.setAttribute('data-theme', theme);
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

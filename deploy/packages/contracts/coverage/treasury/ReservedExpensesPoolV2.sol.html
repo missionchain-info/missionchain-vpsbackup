@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for treasury/ReservedExpensesPoolV2.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">treasury/</a> ReservedExpensesPoolV2.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/28</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/24</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+interface ISeedBudgetV5b {
+    function release(uint8 slot, address recipient, uint256 amount) external;
+    function slotBalance(uint8 slot) external view returns (uint256);
+}
+&nbsp;
+/// @title ReservedExpensesPoolV2 — Policy contract for SEED Reserved slot (10%)
+/// @notice
+///   Does NOT hold USDT. Owner creates withdrawal requests; after 7-day
+///   cooldown anyone can execute → calls SeedBudgetV5b.release(SLOT_RESERVED, ...).
+///   Owner can cancel any pending request before execution.
+contract ReservedExpensesPoolV2 is ReentrancyGuard {
+    address public immutable owner;
+    ISeedBudgetV5b public immutable seedBudget;
+&nbsp;
+    uint8 public constant SLOT_RESERVED = 4;
+    uint256 public constant COOLDOWN = 7 days;
+&nbsp;
+    enum RequestStatus { PENDING, EXECUTED, CANCELLED }
+&nbsp;
+    struct WithdrawRequest {
+        uint256 id;
+        address recipient;
+        uint256 amount;
+        string  reason;
+        address requester;
+        uint64  createdAt;
+        uint64  cooldownEnd;
+        RequestStatus status;
+        uint64  executedAt;
+    }
+&nbsp;
+    mapping(uint256 =&gt; WithdrawRequest) public requests;
+    uint256 public nextRequestId;
+&nbsp;
+    event WithdrawRequested(uint256 indexed id, address indexed recipient, uint256 amount, uint64 cooldownEnd, string reason);
+    event WithdrawExecuted(uint256 indexed id, address indexed recipient, uint256 amount);
+    event WithdrawCancelled(uint256 indexed id, address indexed by);
+&nbsp;
+<span class="fstat-no" title="function not covered" >    modifier onlyOwner() { <span class="cstat-no" title="statement not covered" >require(msg.sender == owner, "REPv2: not owner")</span>; _; }</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    constructor(address _seedBudget, address _owner) {</span>
+<span class="cstat-no" title="statement not covered" >        require(_seedBudget != address(0), "REPv2: zero seedBudget")</span>;
+<span class="cstat-no" title="statement not covered" >        require(_owner != address(0), "REPv2: zero owner")</span>;
+        seedBudget = ISeedBudgetV5b(_seedBudget);
+        owner = _owner;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function requestWithdraw(address recipient, uint256 amount, string calldata reason)</span>
+        external
+        onlyOwner
+        returns (uint256 id)
+    {
+<span class="cstat-no" title="statement not covered" >        require(recipient != address(0), "REPv2: zero recipient")</span>;
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "REPv2: zero amount")</span>;
+&nbsp;
+        id = ++nextRequestId;
+<span class="cstat-no" title="statement not covered" >        uint64 cooldownEnd = uint64(block.timestamp + COOLDOWN);</span>
+        requests[id] = WithdrawRequest({
+            id:          id,
+            recipient:   recipient,
+            amount:      amount,
+            reason:      reason,
+            requester:   msg.sender,
+            createdAt:   uint64(block.timestamp),
+            cooldownEnd: cooldownEnd,
+            status:      RequestStatus.PENDING,
+            executedAt:  0
+        });
+<span class="cstat-no" title="statement not covered" >        emit WithdrawRequested(id, recipient, amount, cooldownEnd, reason);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function executeWithdraw(uint256 id) external nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        WithdrawRequest storage r = requests[id];</span>
+<span class="cstat-no" title="statement not covered" >        require(r.id == id &amp;&amp; id != 0, "REPv2: invalid id")</span>;
+<span class="cstat-no" title="statement not covered" >        require(r.status == RequestStatus.PENDING, "REPv2: not pending")</span>;
+<span class="cstat-no" title="statement not covered" >        require(block.timestamp &gt;= r.cooldownEnd, "REPv2: cooldown active")</span>;
+<span class="cstat-no" title="statement not covered" >        require(seedBudget.slotBalance(SLOT_RESERVED) &gt;= r.amount, "REPv2: insufficient slot balance")</span>;
+&nbsp;
+        r.status     = RequestStatus.EXECUTED;
+        r.executedAt = uint64(block.timestamp);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        seedBudget.release(SLOT_RESERVED, r.recipient, r.amount)</span>;
+<span class="cstat-no" title="statement not covered" >        emit WithdrawExecuted(id, r.recipient, r.amount);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function cancelWithdraw(uint256 id) external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        WithdrawRequest storage r = requests[id];</span>
+<span class="cstat-no" title="statement not covered" >        require(r.id == id &amp;&amp; id != 0, "REPv2: invalid id")</span>;
+<span class="cstat-no" title="statement not covered" >        require(r.status == RequestStatus.PENDING, "REPv2: not pending")</span>;
+        r.status = RequestStatus.CANCELLED;
+<span class="cstat-no" title="statement not covered" >        emit WithdrawCancelled(id, msg.sender);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getRequest(uint256 id) external view returns (WithdrawRequest memory) { <span class="cstat-no" title="statement not covered" >return requests[id];</span> }</span>
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

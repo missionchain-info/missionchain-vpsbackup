@@ -1,0 +1,268 @@
+/* MFP-NFT Card — pixel-faithful adaptation of MFP-CARD-MOCKUP.html (Classic Gold theme) */
+
+.card {
+  --gold-bright: #F5D56E;
+  --gold-mid:    #D4A017;
+  --gold-dark:   #8A7050;
+  --gold-faint:  rgba(212, 160, 23, 0.20);
+  --bg-deep:     #1A0B2E;
+  --bg-deeper:   #0A0514;
+  --text-warm:   #E8D8B8;
+  --text-soft:   #D4C098;
+
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deeper) 100%);
+  border-radius: 18px;
+  padding: 22px 26px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 0 1px var(--gold-faint),
+    0 30px 60px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(245, 213, 110, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  color: var(--text-warm);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px var(--gold-mid),
+    0 40px 70px rgba(0, 0, 0, 0.9),
+    0 0 30px var(--gold-faint),
+    inset 0 1px 0 rgba(245, 213, 110, 0.20);
+}
+
+/* dot watermark */
+.patternBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image:
+    radial-gradient(circle at 20% 25%, var(--gold-bright) 0px, transparent 1.5px),
+    radial-gradient(circle at 80% 30%, var(--gold-bright) 0px, transparent 1.5px),
+    radial-gradient(circle at 50% 60%, var(--gold-bright) 0px, transparent 1.5px),
+    radial-gradient(circle at 15% 80%, var(--gold-bright) 0px, transparent 1.5px),
+    radial-gradient(circle at 85% 85%, var(--gold-bright) 0px, transparent 1.5px);
+  background-size: 60px 60px;
+}
+
+/* sacred geometry watermark */
+.geoWatermark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23F5D56E' stroke-width='0.5'><circle cx='60' cy='60' r='25'/><circle cx='60' cy='35' r='25'/><circle cx='60' cy='85' r='25'/><circle cx='37.5' cy='47.5' r='25'/><circle cx='82.5' cy='47.5' r='25'/><circle cx='37.5' cy='72.5' r='25'/><circle cx='82.5' cy='72.5' r='25'/></g></svg>");
+  background-size: 240px 240px;
+  background-position: center;
+  background-repeat: repeat;
+}
+
+/* corner glows */
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--gold-faint), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+.card::before { top: -100px;    left: -100px;  }
+.card::after  { bottom: -100px; right: -100px; }
+
+/* header */
+.header {
+  text-align: center;
+  margin-bottom: 14px;
+  z-index: 3;
+  position: relative;
+}
+
+.brand {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 3px;
+  background: linear-gradient(90deg, #9B5BC9 0%, #C9526B 45%, var(--gold-mid) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.serial {
+  font-family: 'Inter', sans-serif;
+  /* "MISSION FOUNDING PASS" is longer than "GENESIS SERIES" — slightly smaller */
+  font-size: 8.5px;
+  letter-spacing: 1.8px;
+  color: var(--gold-dark);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.serialDot {
+  color: var(--gold-mid);
+  margin: 0 6px;
+}
+
+/* image */
+.imageWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1.5px solid var(--gold-faint);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 3;
+  background: #0a0a0a;
+}
+
+.imageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  color: var(--gold-faint);
+}
+
+/* divider */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0 10px;
+  z-index: 3;
+  position: relative;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-faint), transparent);
+}
+
+.dividerStar {
+  margin: 0 12px;
+  color: var(--gold-bright);
+  font-size: 10px;
+}
+
+/* title */
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 18px var(--gold-faint);
+  z-index: 3;
+  position: relative;
+}
+
+/* soul line */
+.soul {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+  z-index: 3;
+  position: relative;
+}
+
+/* mini divider */
+.miniDivider {
+  width: 50px;
+  height: 1px;
+  margin: 0 auto 10px;
+  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  z-index: 3;
+  position: relative;
+}
+
+/* verse */
+.verse {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--gold-mid);
+  text-align: center;
+  flex-grow: 1;
+  z-index: 3;
+  position: relative;
+}
+
+.verseRef {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 10.5px;
+  color: var(--gold-bright);
+  margin-top: 6px;
+  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* footer */
+.footer {
+  text-align: center;
+  font-size: 8.5px;
+  letter-spacing: 3px;
+  color: var(--gold-dark);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--gold-faint);
+  z-index: 3;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+}
+
+.footerStar {
+  color: var(--gold-mid);
+  margin: 0 4px;
+}
+
+/* sizing variants */
+.compact {
+  padding: 14px 16px 10px;
+  border-radius: 12px;
+}
+
+.compact .brand     { font-size: 10px;  letter-spacing: 2px; margin-bottom: 3px; }
+.compact .serial    { font-size: 7px;   letter-spacing: 1.4px; }
+.compact .imageWrap { margin-bottom: 8px; }
+.compact .title     { font-size: 14px;  margin-bottom: 4px; }
+.compact .soul      { font-size: 9.5px; line-height: 1.4; margin-bottom: 6px; }
+.compact .verse     { font-size: 9px;   line-height: 1.4; }
+.compact .verseRef  { font-size: 8.5px; margin-top: 3px; }
+.compact .footer    { font-size: 7px;   letter-spacing: 2px; padding-top: 6px; margin-top: 8px; }
+.compact .imagePlaceholder { font-size: 36px; }

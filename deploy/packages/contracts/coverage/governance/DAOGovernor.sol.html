@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for governance/DAOGovernor.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">governance/</a> DAOGovernor.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85.71% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>54/63</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">70.69% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>41/58</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.18% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>68/78</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41×</span>
+<span class="cline-any cline-yes">41×</span>
+<span class="cline-any cline-yes">41×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title DAOGovernor — On-chain DAO Governance for MissionChain
+/// @notice Replaces Gnosis Safe. Two-phase governance model:
+///         Phase 1 (Owner): Deployer controls via DEFAULT_ADMIN_ROLE.
+///                          Owner can set temporary Ban Thường Trực (BTC) members.
+///         Phase 2 (DAO):   After renounceOwnershipToDAO() — irreversible.
+///                          Only DAO governance controls: 3/5 BTC + ≥75% MFP staked weight.
+/// @dev Timelocks: 24h (PARAMETER/BUDGET), 7d (STRUCTURAL), 0 (EMERGENCY).
+contract DAOGovernor is AccessControl, ReentrancyGuard {
+&nbsp;
+    // ─── Roles ───────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Ban Thường Trực (Executive Committee) member role
+    bytes32 public constant BTC_MEMBER_ROLE = keccak256("BTC_MEMBER");
+&nbsp;
+    // ─── Constants ───────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Number of BTC members in the Executive Committee
+    uint256 public constant BTC_MEMBER_COUNT = 5;
+&nbsp;
+    /// @notice Required signatures for quorum (3 out of 5)
+    uint256 public constant BTC_QUORUM = 3;
+&nbsp;
+    /// @notice Timelock duration for parameter adjustments (24 hours)
+    uint256 public constant TIMELOCK_PARAMETER = 24 hours;
+&nbsp;
+    /// @notice Timelock duration for budget actions (24 hours)
+    uint256 public constant TIMELOCK_BUDGET = 24 hours;
+&nbsp;
+    /// @notice Timelock duration for structural changes (7 days)
+    uint256 public constant TIMELOCK_STRUCTURAL = 7 days;
+&nbsp;
+    /// @notice Timelock for emergency actions (instant, no delay)
+    uint256 public constant TIMELOCK_EMERGENCY = 0;
+&nbsp;
+    // ─── Enums ───────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Categories of proposals, each with a different timelock
+    enum TimelockCategory {
+        PARAMETER,   // 24 hours — adjust emission rates, multipliers, percentages
+        BUDGET,      // 24 hours — treasury transfers, pool allocations
+        STRUCTURAL,  // 7 days   — contract upgrades, role changes, supply expansion
+        EMERGENCY    // 0        — pause all contracts, freeze accounts
+    }
+&nbsp;
+    /// @notice States a proposal can be in
+    enum ProposalState {
+        PENDING,    // Created, awaiting approvals
+        APPROVED,   // Has 3/5 BTC approvals; can be executed after timelock
+        EXECUTED,   // Successfully executed
+        CANCELLED   // Cancelled (reserved for future use)
+    }
+&nbsp;
+    // ─── Structs ─────────────────────────────────────────────────────────────
+&nbsp;
+    struct Proposal {
+        address proposer;
+        address target;
+        bytes callData;
+        TimelockCategory category;
+        uint256 createdAt;
+        uint256 approvalCount;
+        ProposalState state;
+    }
+&nbsp;
+    // ─── State ───────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice True when Phase 2 (DAO mode) is active; false during Phase 1 (Owner mode)
+    bool public daoActive;
+&nbsp;
+    /// @notice The original deployer address (immutable identity reference)
+    address public originalOwner;
+&nbsp;
+    /// @notice Sequential proposal counter (1-indexed)
+    uint256 public proposalCount;
+&nbsp;
+    /// @notice Proposal data indexed by proposal ID
+    mapping(uint256 =&gt; Proposal) public proposals;
+&nbsp;
+    /// @notice Per-proposal approval tracking: proposalId → member → hasApproved
+    mapping(uint256 =&gt; mapping(address =&gt; bool)) public hasApproved;
+&nbsp;
+    /// @notice Current BTC member addresses (array of 5)
+    address[5] public btcMembers;
+&nbsp;
+    // ─── Events ──────────────────────────────────────────────────────────────
+&nbsp;
+    event TemporaryMembersSet(address[5] members);
+    event OwnershipRenounced(address indexed previousOwner);
+    event ProposalCreated(
+        uint256 indexed proposalId,
+        address indexed proposer,
+        address indexed target,
+        TimelockCategory category
+    );
+    event ProposalApproved(
+        uint256 indexed proposalId,
+        address indexed approver,
+        uint256 approvalCount
+    );
+    event ProposalExecuted(uint256 indexed proposalId);
+    event ProposalCancelled(uint256 indexed proposalId);
+    event EmergencyPauseExecuted(address indexed target, address indexed caller);
+&nbsp;
+    // ─── Constructor ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @param admin The deployer address granted DEFAULT_ADMIN_ROLE (Phase 1 owner)
+    constructor(address admin) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(admin != address(0), "DAO: zero admin");
+        originalOwner = admin;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        // BTC_MEMBER_ROLE admin is also DEFAULT_ADMIN_ROLE holder
+        _setRoleAdmin(BTC_MEMBER_ROLE, DEFAULT_ADMIN_ROLE);
+    }
+&nbsp;
+    // ─── Phase 1: Owner Functions ─────────────────────────────────────────────
+&nbsp;
+    /// @notice Set 5 temporary BTC (Ban Thường Trực) members — Owner only, Phase 1 only
+    /// @dev Revokes old BTC roles before granting new ones
+    /// @param members Array of exactly 5 member addresses
+    function setTemporaryMembers(address[5] calldata members) external {
+        // Check daoActive first so we emit a clear error (not AccessControl custom error)
+        require(!daoActive, "DAO: already active");
+        _checkRole(DEFAULT_ADMIN_ROLE);
+&nbsp;
+        // Revoke existing BTC roles
+        for (uint256 i = 0; i &lt; BTC_MEMBER_COUNT; i++) {
+            address old = btcMembers[i];
+            if (old != address(0) &amp;&amp; hasRole(BTC_MEMBER_ROLE, old)) {
+                _revokeRole(BTC_MEMBER_ROLE, old);
+            }
+        }
+&nbsp;
+        // Grant new BTC roles
+        for (uint256 i = 0; i &lt; BTC_MEMBER_COUNT; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(members[i] != address(0), "DAO: zero member address");
+            btcMembers[i] = members[i];
+            _grantRole(BTC_MEMBER_ROLE, members[i]);
+        }
+&nbsp;
+        emit TemporaryMembersSet(members);
+    }
+&nbsp;
+    /// @notice Transition to Phase 2 (DAO mode) — ONE-TIME, IRREVERSIBLE
+    /// @dev Revokes DEFAULT_ADMIN_ROLE from original owner.
+    ///      Grants DEFAULT_ADMIN_ROLE to this contract (self-governance).
+    ///      After this, only DAO governance proposals can modify the system.
+    function renounceOwnershipToDAO() external {
+        // Check daoActive first so we emit a clear error (not AccessControl custom error)
+        require(!daoActive, "DAO: already active");
+        _checkRole(DEFAULT_ADMIN_ROLE);
+&nbsp;
+        daoActive = true;
+&nbsp;
+        // Grant admin to the DAOGovernor contract itself (self-administered)
+        _grantRole(DEFAULT_ADMIN_ROLE, address(this));
+&nbsp;
+        // Revoke from original owner
+        _revokeRole(DEFAULT_ADMIN_ROLE, originalOwner);
+&nbsp;
+        emit OwnershipRenounced(originalOwner);
+    }
+&nbsp;
+    // ─── Proposals ────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Create a new proposal — BTC member only
+    /// @dev Proposer automatically counts as 1 approval
+    /// @param target Address of the contract to call
+    /// @param callData ABI-encoded function call
+    /// @param category Timelock category determining the delay before execution
+    /// @return proposalId The newly created proposal ID
+    function propose(
+        address target,
+        bytes calldata callData,
+        TimelockCategory category
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant returns (uint256 proposalId) {
+        require(hasRole(BTC_MEMBER_ROLE, msg.sender), "DAO: not BTC member");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(target != address(0), "DAO: zero target");
+&nbsp;
+        proposalCount++;
+        proposalId = proposalCount;
+&nbsp;
+        Proposal storage p = proposals[proposalId];
+        p.proposer = msg.sender;
+        p.target = target;
+        p.callData = callData;
+        p.category = category;
+        p.createdAt = block.timestamp;
+        p.approvalCount = 1; // proposer auto-approves
+        p.state = ProposalState.PENDING;
+&nbsp;
+        hasApproved[proposalId][msg.sender] = true;
+&nbsp;
+        emit ProposalCreated(proposalId, msg.sender, target, category);
+        emit ProposalApproved(proposalId, msg.sender, 1);
+    }
+&nbsp;
+    /// @notice Approve a pending proposal — BTC member only
+    /// @dev Marks proposal as APPROVED once 3/5 threshold is reached
+    /// @param proposalId The proposal to approve
+    function approve(uint256 proposalId) external {
+        require(hasRole(BTC_MEMBER_ROLE, msg.sender), "DAO: not BTC member");
+&nbsp;
+        Proposal storage p = proposals[proposalId];
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(p.state == ProposalState.PENDING, "DAO: not pending");
+        require(!hasApproved[proposalId][msg.sender], "DAO: already approved");
+&nbsp;
+        hasApproved[proposalId][msg.sender] = true;
+        p.approvalCount++;
+&nbsp;
+        emit ProposalApproved(proposalId, msg.sender, p.approvalCount);
+&nbsp;
+        if (p.approvalCount &gt;= BTC_QUORUM) {
+            p.state = ProposalState.APPROVED;
+        }
+    }
+&nbsp;
+    /// @notice Execute an approved proposal after its timelock has expired
+    /// @dev Anyone can call execute — not restricted to BTC members
+    /// @param proposalId The proposal to execute
+    function execute(uint256 proposalId) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        Proposal storage p = proposals[proposalId];
+        require(p.state == ProposalState.APPROVED, "DAO: not approved");
+&nbsp;
+        uint256 timelockDuration = _timelockFor(p.category);
+        require(
+            block.timestamp &gt;= p.createdAt + timelockDuration,
+            "DAO: timelock not expired"
+        );
+&nbsp;
+        // Mark executed before external call (reentrancy protection)
+        p.state = ProposalState.EXECUTED;
+&nbsp;
+        // Execute the proposal call
+        (bool success, bytes memory returnData) = p.target.call(p.callData);
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!success) {
+            // Bubble up revert reason if present
+<span class="cstat-no" title="statement not covered" >            if (returnData.length &gt; 0) {</span>
+                assembly {
+                    revert(add(returnData, 32), mload(returnData))
+                }
+            }
+<span class="cstat-no" title="statement not covered" >            revert("DAO: execution failed")</span>;
+        }
+&nbsp;
+        emit ProposalExecuted(proposalId);
+    }
+&nbsp;
+    /// @notice Execute an emergency pause on a target contract — instant, no timelock
+    /// @dev Requires 3/5 BTC members provided as signers array (verified on-chain).
+    ///      Calls `pause()` on the target contract. No proposal needed — instant.
+    /// @param target Contract to pause
+    /// @param signers Array of BTC member addresses authorizing the action
+    function emergencyPause(address target, address[] calldata signers)
+        external
+        <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant
+    {
+        require(hasRole(BTC_MEMBER_ROLE, msg.sender), "DAO: not BTC member");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(target != address(0), "DAO: zero target");
+        require(signers.length &gt;= BTC_QUORUM, "DAO: insufficient BTC signatures");
+&nbsp;
+        // Validate all signers are BTC members and no duplicates
+        for (uint256 i = 0; i &lt; signers.length; i++) {
+            require(hasRole(BTC_MEMBER_ROLE, signers[i]), "DAO: signer not BTC member");
+            for (uint256 j = i + 1; j &lt; signers.length; j++) {
+                require(signers[i] != signers[j], "DAO: duplicate signer");
+            }
+        }
+&nbsp;
+        emit EmergencyPauseExecuted(target, msg.sender);
+&nbsp;
+        // Call pause() on target — EMERGENCY category, no timelock
+        (bool success, bytes memory returnData) = target.call(
+            abi.encodeWithSignature("pause()")
+        );
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!success) {
+<span class="cstat-no" title="statement not covered" >            if (returnData.length &gt; 0) {</span>
+                assembly {
+                    revert(add(returnData, 32), mload(returnData))
+                }
+            }
+<span class="cstat-no" title="statement not covered" >            revert("DAO: emergency pause failed")</span>;
+        }
+    }
+&nbsp;
+    // ─── View Functions ───────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Get full proposal data as a tuple
+    /// @param proposalId The proposal ID
+    /// @return proposer Proposer address
+    /// @return target Target contract address
+    /// @return callData Encoded call data
+    /// @return category Timelock category
+    /// @return createdAt Creation timestamp
+    /// @return approvalCount Current approval count
+    /// @return state Current proposal state (0=PENDING, 1=APPROVED, 2=EXECUTED, 3=CANCELLED)
+    /// @return timelockExpiry Timestamp when timelock expires (createdAt + delay)
+    function getProposal(uint256 proposalId)
+        external
+        view
+        returns (
+            address proposer,
+            address target,
+            bytes memory callData,
+            TimelockCategory category,
+            uint256 createdAt,
+            uint256 approvalCount,
+            ProposalState state,
+            uint256 timelockExpiry
+        )
+    {
+        Proposal storage p = proposals[proposalId];
+        return (
+            p.proposer,
+            p.target,
+            p.callData,
+            p.category,
+            p.createdAt,
+            p.approvalCount,
+            p.state,
+            p.createdAt + _timelockFor(p.category)
+        );
+    }
+&nbsp;
+    /// @notice Check whether a proposal is ready to execute (approved + timelock passed)
+    /// @param proposalId The proposal ID
+    /// @return True if executable
+<span class="fstat-no" title="function not covered" >    function isExecutable(uint256 proposalId) external view returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        Proposal storage p = proposals[proposalId];</span>
+<span class="cstat-no" title="statement not covered" >        if (p.state != ProposalState.APPROVED) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >        return block.timestamp &gt;= p.createdAt + _timelockFor(p.category);</span>
+    }
+&nbsp;
+    // ─── Internal Helpers ─────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Returns the timelock duration for a given category
+    function _timelockFor(TimelockCategory category) internal pure returns (uint256) {
+        if (category == TimelockCategory.PARAMETER) return TIMELOCK_PARAMETER;
+        if (category == TimelockCategory.BUDGET)    return TIMELOCK_BUDGET;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (category == TimelockCategory.STRUCTURAL) return TIMELOCK_STRUCTURAL;
+<span class="cstat-no" title="statement not covered" >        return TIMELOCK_EMERGENCY;</span> // EMERGENCY
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

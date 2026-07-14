@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for sales/PreSale.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">sales/</a> PreSale.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>40/40</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">94% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>47/50</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>3/3</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>47/47</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">86×</span>
+<span class="cline-any cline-yes">85×</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-yes">83×</span>
+<span class="cline-any cline-yes">82×</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-yes">80×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">62×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">59×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">55×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "../interfaces/ILockManager.sol";
+&nbsp;
+/// @dev Minimal interface for CommunityNFT.mint()
+interface ICommunityNFT {
+    function mint(address to, uint256 tier) external returns (uint256);
+}
+&nbsp;
+/// @dev Minimal interface for ReferralRegistry.distributeReferral()
+interface IReferralRegistry {
+    function referrerOf(address user) external view returns (address);
+    function distributeReferral(address buyer, uint256 usdtAmount) external;
+}
+&nbsp;
+/// @dev Minimal interface for RevenueRouter.receiveAndDistribute()
+interface IRevenueRouter {
+    function receiveAndDistribute(uint256 amount) external;
+}
+&nbsp;
+/// @title PreSale — Community Pre-Sale at $0.005/MIC, WITH referral &amp; NFT packages
+/// @notice 4.50% of total supply = 315,000,000 MIC allocated.
+///         3 optional packages bundle CommunityNFTs (Builder/Maker/Luminary).
+///         Minimum purchase: $25 USDT (no package needed).
+///         MIC transferred directly to buyer wallet (Hybrid Token-Level Lock).
+///         LockManager.createSchedule(): 6-month cliff, 10% unlock, 2.5%/month.
+///         F1: 7% USDT / F2: 3% USDT — paid via ReferralRegistry.
+///         Net USDT (90% if referral, 100% if no referrer) → RevenueRouter.
+contract PreSale is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─── Constants ────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Total MIC allocation for Pre-Sale (4.50% of 7B = 315M MIC)
+    uint256 public constant ALLOCATION = 315_000_000 ether;
+&nbsp;
+    /// @notice Hard cap in USDT (6 decimals): 315M MIC × $0.005 = $1,575,000
+    uint256 public constant HARD_CAP = 1_575_000e6;
+&nbsp;
+    /// @notice MIC price: 1 USDT (6-dec) = 200 MIC (18-dec)
+    ///         Conversion: micAmount = usdtAmount * 200 * 1e12
+    uint256 private constant MIC_PER_USDT = 200;
+&nbsp;
+    /// @notice Minimum purchase amount in USDT (6 decimals): $25
+    uint256 private constant MIN_USDT = 25e6;
+&nbsp;
+    /// @notice Vesting cliff: 6 months (180 days in seconds)
+    uint256 private constant CLIFF_DURATION = 180 days;
+&nbsp;
+    /// @notice Cliff unlock: 10% (1000 BPS)
+    uint256 private constant CLIFF_UNLOCK_BPS = 1000;
+&nbsp;
+    /// @notice Monthly unlock after cliff: 2.5% (250 BPS)
+    uint256 private constant MONTHLY_UNLOCK_BPS = 250;
+&nbsp;
+    /// @notice Referral total BPS: F1 7% + F2 3% = 10%
+    uint256 private constant REFERRAL_BPS = 1000;
+&nbsp;
+    // ─── Community NFT tier IDs (matching CommunityNFT.sol constants) ────────
+&nbsp;
+    uint256 private constant BUILDER  = 1;
+    uint256 private constant MAKER    = 2;
+    uint256 private constant LUMINARY = 3;
+&nbsp;
+    // ─── Package definitions ──────────────────────────────────────────────────
+&nbsp;
+    // packageIndex=0: no package — any amount &gt;= $25, no NFT
+    // packageIndex=1: Builder   — min $1,000  / 200,000 MIC / Builder NFT
+    // packageIndex=2: Maker     — min $2,500  / 500,000 MIC / Maker NFT
+    // packageIndex=3: Luminary  — min $5,000  / 1,000,000 MIC / Luminary NFT
+&nbsp;
+    uint256 private constant PKG1_MIN_USDT = 1_000e6;
+    uint256 private constant PKG2_MIN_USDT = 2_500e6;
+    uint256 private constant PKG3_MIN_USDT = 5_000e6;
+&nbsp;
+    // ─── Immutables ───────────────────────────────────────────────────────────
+&nbsp;
+    IERC20           public immutable usdt;
+    IERC20           public immutable micToken;
+    ILockManager     public immutable lockManager;
+    ICommunityNFT    public immutable communityNFT;
+    IReferralRegistry public immutable referralRegistry;
+    IRevenueRouter   public immutable revenueRouter;
+&nbsp;
+    // ─── State ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Total MIC sold so far (18 decimals)
+    uint256 public totalSold;
+&nbsp;
+    /// @notice Total USDT raised so far (6 decimals)
+    uint256 public totalRaised;
+&nbsp;
+    /// @notice Whether the sale is accepting purchases
+    bool public active;
+&nbsp;
+    // ─── Events ───────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Emitted on each successful purchase
+    /// @param buyer         Buyer address
+    /// @param usdtAmount    USDT paid (6 decimals)
+    /// @param micAmount     MIC received (18 decimals)
+    /// @param packageIndex  Package chosen (0=none, 1=Builder, 2=Maker, 3=Luminary)
+    event PreSalePurchase(
+        address indexed buyer,
+        uint256 usdtAmount,
+        uint256 micAmount,
+        uint256 packageIndex
+    );
+&nbsp;
+    /// @notice Emitted when sale is activated or deactivated
+    event SaleActivated(bool active);
+&nbsp;
+    // ─── Constructor ──────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt              USDT token address (6 decimals)
+    /// @param _micToken          MIC token address (18 decimals)
+    /// @param _lockManager       LockManager contract (SCHEDULE_CREATOR_ROLE granted externally)
+    /// @param _communityNFT      CommunityNFT contract (MINTER_ROLE granted externally)
+    /// @param _referralRegistry  ReferralRegistry contract (CALLER_ROLE granted externally)
+    /// @param _revenueRouter     RevenueRouter contract (DISTRIBUTOR_ROLE granted externally)
+    /// @param admin              Granted DEFAULT_ADMIN_ROLE
+    constructor(
+        address _usdt,
+        address _micToken,
+        address _lockManager,
+        address _communityNFT,
+        address _referralRegistry,
+        address _revenueRouter,
+        address admin
+    ) {
+        require(_usdt             != address(0), "PS: zero usdt");
+        require(_micToken         != address(0), "PS: zero micToken");
+        require(_lockManager      != address(0), "PS: zero lockManager");
+        require(_communityNFT     != address(0), "PS: zero communityNFT");
+        require(_referralRegistry != address(0), "PS: zero referralRegistry");
+        require(_revenueRouter    != address(0), "PS: zero revenueRouter");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(admin             != address(0), "PS: zero admin");
+&nbsp;
+        usdt             = IERC20(_usdt);
+        micToken         = IERC20(_micToken);
+        lockManager      = ILockManager(_lockManager);
+        communityNFT     = ICommunityNFT(_communityNFT);
+        referralRegistry = IReferralRegistry(_referralRegistry);
+        revenueRouter    = IRevenueRouter(_revenueRouter);
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        active = false;
+    }
+&nbsp;
+    // ─── Purchase ─────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Purchase MIC in the Pre-Sale round.
+    /// @param usdtAmount   USDT amount to pay (6 decimals, must satisfy package minimum)
+    /// @param packageIndex 0=no package (≥$25), 1=Builder (≥$1K), 2=Maker (≥$2.5K), 3=Luminary (≥$5K)
+    function buy(uint256 usdtAmount, uint256 packageIndex) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        require(active,             "PS: not active");
+        require(usdtAmount &gt; 0,     "PS: zero amount");
+        require(packageIndex &lt;= 3,  "PS: invalid package");
+&nbsp;
+        // ── Validate package minimum ──────────────────────────────────────────
+        if (packageIndex == 0) {
+            require(usdtAmount &gt;= MIN_USDT, "PS: below minimum");
+        } else if (packageIndex == 1) {
+            require(usdtAmount &gt;= PKG1_MIN_USDT, "PS: below package min");
+        } else if (packageIndex == 2) {
+            require(usdtAmount &gt;= PKG2_MIN_USDT, "PS: below package min");
+        } else {
+            // packageIndex == 3
+            require(usdtAmount &gt;= PKG3_MIN_USDT, "PS: below package min");
+        }
+&nbsp;
+        // ── Hard cap check ────────────────────────────────────────────────────
+        require(totalRaised + usdtAmount &lt;= HARD_CAP, "PS: hard cap reached");
+&nbsp;
+        // ── Calculate MIC amount: usdtAmount * 200 * 1e12 ────────────────────
+        // usdtAmount is 6-decimal, MIC is 18-decimal
+        // 1 USDT = 200 MIC → micAmount = usdtAmount × 200 × 10^12
+        uint256 micAmount = usdtAmount * MIC_PER_USDT * 1e12;
+&nbsp;
+        // ── Allocation check ──────────────────────────────────────────────────
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(totalSold + micAmount &lt;= ALLOCATION, "PS: allocation exhausted");
+&nbsp;
+        // ── Update state ──────────────────────────────────────────────────────
+        totalRaised += usdtAmount;
+        totalSold   += micAmount;
+&nbsp;
+        // ── 1. Pull USDT from buyer ───────────────────────────────────────────
+        usdt.safeTransferFrom(msg.sender, address(this), usdtAmount);
+&nbsp;
+        // ── 2. Referral distribution ──────────────────────────────────────────
+        //    Check if buyer has a referrer via ReferralRegistry
+        uint256 netUsdt = usdtAmount;
+        address f1 = referralRegistry.referrerOf(msg.sender);
+        if (f1 != address(0)) {
+            // Referral exists — 10% (F1 7% + F2 3%) goes to ReferralRegistry
+            uint256 refAmount = (usdtAmount * REFERRAL_BPS) / 10000;
+            netUsdt = usdtAmount - refAmount;
+&nbsp;
+            // Approve ReferralRegistry to pull refAmount from this contract
+            usdt.forceApprove(address(referralRegistry), refAmount);
+            referralRegistry.distributeReferral(msg.sender, usdtAmount);
+        }
+&nbsp;
+        // ── 3. Net USDT → RevenueRouter ───────────────────────────────────────
+        usdt.forceApprove(address(revenueRouter), netUsdt);
+        revenueRouter.receiveAndDistribute(netUsdt);
+&nbsp;
+        // ── 4. Transfer MIC to buyer (Hybrid Token-Level Lock) ────────────────
+        micToken.safeTransfer(msg.sender, micAmount);
+&nbsp;
+        // ── 5. Create vesting schedule via LockManager ────────────────────────
+        lockManager.createSchedule(
+            msg.sender,
+            micAmount,
+            CLIFF_DURATION,
+            CLIFF_UNLOCK_BPS,
+            MONTHLY_UNLOCK_BPS
+        );
+&nbsp;
+        // ── 6. Mint Community NFT bonus if package selected ───────────────────
+        if (packageIndex == 1) {
+            communityNFT.mint(msg.sender, BUILDER);
+        } else if (packageIndex == 2) {
+            communityNFT.mint(msg.sender, MAKER);
+        } else if (packageIndex == 3) {
+            communityNFT.mint(msg.sender, LUMINARY);
+        }
+&nbsp;
+        emit PreSalePurchase(msg.sender, usdtAmount, micAmount, packageIndex);
+    }
+&nbsp;
+    // ─── Admin ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Enable or disable purchasing
+    function setActive(bool _active) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        active = _active;
+        emit SaleActivated(_active);
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for sales/MICELicense.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">sales/</a> MICELicense.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">94.67% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>71/75</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">73.21% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>41/56</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88.24% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>15/17</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">97.44% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>76/78</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+interface IReferralRegistry2 {
+    function setReferrer(address user, address referrer) external;
+    /// @dev Pulls (F1_BPS + F2_BPS)% of usdtAmount from msg.sender and pays F1/F2.
+    function distributeReferral(address buyer, uint256 usdtAmount) external;
+    function referrerOf(address user) external view returns (address);
+    function F1_BPS() external view returns (uint256);
+    function F2_BPS() external view returns (uint256);
+}
+&nbsp;
+interface IRevenueRouter2 {
+    /// @dev Pulls `amount` USDT from msg.sender and splits across 5 pools.
+    function receiveAndDistribute(uint256 amount) external;
+}
+&nbsp;
+/// @title MICELicense — ERC-1155 Mining License (5-Round Fixed Pricing)
+/// @notice 100,000 max supply. 5 rounds × 20,000 licenses each.
+///         Round prices: $100 / $200 / $300 / $400 / $500.
+///         Each purchase requires:
+///           50% of price in MIC — burned immediately.
+///           50% of price in USDT — distributed via ReferralRegistry + RevenueRouter.
+///         Referral: F1 7% + F2 3% of USDT portion (same as PreSale).
+///         License duration: 360 days. Expired licenses can be recycled (slot reuse).
+contract MICELicense is ERC1155, AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constants
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    uint256 public constant MAX_SUPPLY = 100_000;
+    uint256 public constant PER_ROUND  = 20_000;
+    uint256 public constant DURATION   = 360 days;
+    uint256 public constant NUM_ROUNDS = 5;
+&nbsp;
+    // Referral BPS — mirrors ReferralRegistry (spec: F1 7%, F2 3%)
+    uint256 public constant F1_BPS = 700;
+    uint256 public constant F2_BPS = 300;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — contracts
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    IERC20             public immutable usdt;
+    ERC20Burnable      public immutable micToken;
+    IReferralRegistry2 public immutable referralRegistry;
+    IRevenueRouter2    public immutable revenueRouter;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — pricing
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Fixed MIC price in USDT (6-decimal units).
+    ///         e.g. 10000 = $0.01/MIC (listing price used for Phase 1 testnet).
+    ///         Used to convert the 50% USDT half into a MIC burn amount.
+    uint256 public micPriceUSDT;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — supply
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Total licenses ever minted (monotonically increasing for new IDs).
+    uint256 public totalMinted;
+&nbsp;
+    /// @notice Recycled license IDs available for re-sale.
+    uint256[] private _recycledIds;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — license data
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    struct LicenseInfo {
+        address owner;
+        uint256 mintTime;
+        uint256 expiryTime;
+    }
+&nbsp;
+    /// @notice licenseId → LicenseInfo
+    mapping(uint256 =&gt; LicenseInfo) public licenses;
+&nbsp;
+    /// @notice owner → list of their license IDs
+    mapping(address =&gt; uint256[]) private _userLicenses;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Events
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    event LicensePurchased(
+        address indexed buyer,
+        uint256 indexed licenseId,
+        uint256 price
+    );
+    event LicenseRecycled(uint256 indexed licenseId);
+    event MicPriceUpdated(uint256 oldPrice, uint256 newPrice);
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constructor
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt              USDT token (6 decimals on BSC)
+    /// @param _micToken          MIC token — must implement ERC20Burnable
+    /// @param _referralRegistry  ReferralRegistry for F1/F2 USDT commissions
+    /// @param _revenueRouter     RevenueRouter — receives net USDT after referral
+    /// @param admin              Address granted DEFAULT_ADMIN_ROLE
+    /// @param _micPriceUSDT      MIC price in USDT units (e.g. 10000 = $0.01/MIC)
+    constructor(
+        address _usdt,
+        address _micToken,
+        address _referralRegistry,
+        address _revenueRouter,
+        address admin,
+        uint256 _micPriceUSDT
+    ) ERC1155("") {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_usdt             != address(0), "MICE: zero usdt");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_micToken         != address(0), "MICE: zero mic");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_referralRegistry != address(0), "MICE: zero referral");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_revenueRouter    != address(0), "MICE: zero router");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(admin             != address(0), "MICE: zero admin");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_micPriceUSDT     &gt;  0,          "MICE: zero mic price");
+&nbsp;
+        usdt             = IERC20(_usdt);
+        micToken         = ERC20Burnable(_micToken);
+        referralRegistry = IReferralRegistry2(_referralRegistry);
+        revenueRouter    = IRevenueRouter2(_revenueRouter);
+        micPriceUSDT     = _micPriceUSDT;
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // External — Purchase (with optional referrer)
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Purchase `quantity` mining licenses with an optional referrer.
+    ///         Caller must have approved MIC and USDT for this contract.
+    ///         If `referrer` is non-zero and the caller has no referrer yet, sets it.
+    /// @param quantity  Number of licenses to purchase (must be ≥ 1)
+    /// @param referrer  Optional referrer address (use address(0) for none)
+    function buyLicense(uint256 quantity, address referrer) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        _buyLicenses(quantity, referrer);
+    }
+&nbsp;
+    /// @notice Purchase `quantity` mining licenses (no referrer).
+    ///         Caller must have approved MIC and USDT for this contract.
+    function buyLicense(uint256 quantity) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        _buyLicenses(quantity, address(0));
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // External — Round &amp; price queries
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Returns the current round (1–5) based on totalMinted.
+    function getCurrentRound() public view returns (uint256) {
+        return _roundForToken(totalMinted);
+    }
+&nbsp;
+    /// @notice Returns the USDT price for the current round (6 decimals).
+    function getCurrentPrice() public view returns (uint256) {
+        return getPriceForRound(getCurrentRound());
+    }
+&nbsp;
+    /// @notice Returns the round (1–5) for a given 0-based token index.
+    function getRoundForToken(uint256 tokenIndex) external pure returns (uint256) {
+        return _roundForToken(tokenIndex);
+    }
+&nbsp;
+    /// @notice Returns the USDT price (6 decimals) for a given round (1–5).
+    function getPriceForRound(uint256 round) public pure returns (uint256) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(round &gt;= 1 &amp;&amp; round &lt;= NUM_ROUNDS, "MICE: invalid round");
+        if (round == 1) return 100 * 1_000_000;
+        if (round == 2) return 200 * 1_000_000;
+        if (round == 3) return 300 * 1_000_000;
+        if (round == 4) return 400 * 1_000_000;
+        return              500 * 1_000_000;
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // External — License status
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Returns true if the license exists and has not expired.
+    function isActive(uint256 licenseId) external view returns (bool) {
+        LicenseInfo storage lic = licenses[licenseId];
+        if (lic.owner == address(0)) return false;
+        return block.timestamp &lt; lic.expiryTime;
+    }
+&nbsp;
+    /// @notice Returns all license IDs for a user.
+    function getUserLicenses(address user) external view returns (uint256[] memory) {
+        return _userLicenses[user];
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // External — Slot recycling
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Mark an expired license for recycling (adds its ID to the free-list).
+    ///         Anyone can call. The recycled ID will be re-used for the next buyer.
+    function recycleLicense(uint256 licenseId) external {
+        LicenseInfo storage lic = licenses[licenseId];
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(lic.owner != address(0), "MICE: license not found");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(block.timestamp &gt;= lic.expiryTime, "MICE: license still active");
+&nbsp;
+        lic.owner = address(0); // invalidate slot
+        _recycledIds.push(licenseId);
+&nbsp;
+        emit LicenseRecycled(licenseId);
+    }
+&nbsp;
+    /// @notice Number of recycled slots available for reuse.
+<span class="fstat-no" title="function not covered" >    function recycledCount() external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        return _recycledIds.length;</span>
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Admin
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Update the fixed MIC price used for burn calculations.
+    function setMicPriceUSDT(uint256 newPrice) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(newPrice &gt; 0, "MICE: zero price");
+        uint256 old = micPriceUSDT;
+        micPriceUSDT = newPrice;
+        emit MicPriceUpdated(old, newPrice);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Internal — Core purchase logic
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Shared purchase logic for both buyLicense overloads.
+    ///
+    ///  Flow per batch of `quantity` licenses:
+    ///  1. Validate inputs and supply cap.
+    ///  2. Optionally register referrer (one-time, immutable).
+    ///  3. Price entire batch at the round of the FIRST license being minted.
+    ///  4. Pull MIC = usdtHalf * 1e12 / micPriceUSDT from buyer, burn it.
+    ///  5. Pull USDT half from buyer.
+    ///  6. If buyer has a referrer: send (F1+F2)% to ReferralRegistry which
+    ///     pays F1/F2; the remaining net goes to RevenueRouter.
+    ///  7. Mint ERC-1155 license tokens (reuse recycled IDs first).
+    function _buyLicenses(uint256 quantity, address referrer) private {
+        require(quantity &gt; 0, "MICE: zero quantity");
+        require(totalMinted + quantity &lt;= MAX_SUPPLY, "MICE: exceeds max supply");
+&nbsp;
+        // ── (2) Register referrer (if provided and not yet set) ──────────────
+        if (referrer != address(0)) {
+            try referralRegistry.setReferrer(msg.sender, referrer) {} catch {}
+        }
+&nbsp;
+        // ── (3) Determine price (round of the first license in this batch) ──
+        uint256 batchRound       = _roundForToken(totalMinted);
+        uint256 pricePerLicense  = getPriceForRound(batchRound);
+        uint256 totalUsdtHalf    = (pricePerLicense / 2) * quantity; // 50% × qty
+&nbsp;
+        // ── (4) Pull MIC and burn ────────────────────────────────────────────
+        uint256 micBurnAmount = _calcMicBurn(totalUsdtHalf);
+        IERC20(address(micToken)).safeTransferFrom(msg.sender, address(this), micBurnAmount);
+        micToken.burn(micBurnAmount);
+&nbsp;
+        // ── (5) Pull USDT half ───────────────────────────────────────────────
+        usdt.safeTransferFrom(msg.sender, address(this), totalUsdtHalf);
+&nbsp;
+        // ── (6) Referral + RevenueRouter routing ─────────────────────────────
+        uint256 netUsdt = totalUsdtHalf;
+&nbsp;
+        address f1 = referralRegistry.referrerOf(msg.sender);
+        if (f1 != address(0)) {
+            // referralRegistry.distributeReferral pulls (F1+F2)% from us via safeTransferFrom.
+            uint256 refAmount = (totalUsdtHalf * (F1_BPS + F2_BPS)) / 10000;
+            usdt.approve(address(referralRegistry), refAmount);
+            referralRegistry.distributeReferral(msg.sender, totalUsdtHalf);
+            netUsdt = totalUsdtHalf - refAmount;
+        }
+&nbsp;
+        // Net USDT → RevenueRouter (router pulls via safeTransferFrom)
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (netUsdt &gt; 0) {
+            usdt.approve(address(revenueRouter), netUsdt);
+            revenueRouter.receiveAndDistribute(netUsdt);
+        }
+&nbsp;
+        // ── (7) Mint licenses ────────────────────────────────────────────────
+        for (uint256 i = 0; i &lt; quantity; i++) {
+            _mintOneLicense(msg.sender, pricePerLicense);
+        }
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Internal helpers
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Returns round 1–5 for a 0-based token index.
+    function _roundForToken(uint256 tokenIndex) private pure returns (uint256) {
+        if (tokenIndex &lt; PER_ROUND)     return 1;
+        if (tokenIndex &lt; 2 * PER_ROUND) return 2;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (tokenIndex &lt; 3 * PER_ROUND) <span class="cstat-no" title="statement not covered" >return 3;</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (tokenIndex &lt; 4 * PER_ROUND) <span class="cstat-no" title="statement not covered" >return 4;</span>
+        return 5;
+    }
+&nbsp;
+    /// @dev Converts a USDT-denominated half-price into the MIC burn amount.
+    ///      USDT is 6 decimals; MIC is 18 decimals.
+    ///      micAmount = usdtHalf * 1e12 / micPriceUSDT
+    ///
+    ///      Example: usdtHalf = 50e6 ($50), micPriceUSDT = 10000 ($0.01/MIC)
+    ///      → micAmount = 50e6 * 1e12 / 10000 = 5e15 = 5,000,000 MIC (18 dec)
+    function _calcMicBurn(uint256 usdtHalf_) private view returns (uint256) {
+        return (usdtHalf_ * 1e12) / micPriceUSDT;
+    }
+&nbsp;
+    /// @dev Mint one license. Reuse a recycled slot if available; otherwise use next new ID.
+    function _mintOneLicense(address to, uint256 price) private {
+        uint256 licenseId;
+&nbsp;
+        if (_recycledIds.length &gt; 0) {
+            licenseId = _recycledIds[_recycledIds.length - 1];
+            _recycledIds.pop();
+        } else {
+            licenseId = totalMinted;
+            totalMinted++;
+        }
+&nbsp;
+        licenses[licenseId] = LicenseInfo({
+            owner:      to,
+            mintTime:   block.timestamp,
+            expiryTime: block.timestamp + DURATION
+        });
+        _userLicenses[to].push(licenseId);
+&nbsp;
+        _mint(to, licenseId, 1, "");
+&nbsp;
+        emit LicensePurchased(to, licenseId, price);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Interface override
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @dev Required override for ERC1155 + AccessControl.
+<span class="fstat-no" title="function not covered" >    function supportsInterface(bytes4 interfaceId)</span>
+        public view override(ERC1155, AccessControl) returns (bool)
+    {
+<span class="cstat-no" title="statement not covered" >        return super.supportsInterface(interfaceId);</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

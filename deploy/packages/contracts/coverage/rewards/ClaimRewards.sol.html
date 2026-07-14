@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for rewards/ClaimRewards.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">rewards/</a> ClaimRewards.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>41/41</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.5% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>42/48</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>8/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>52/52</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-yes">50×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">36×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @dev Minimal interface to mint CommunityNFT from ClaimRewards
+interface ICommunityNFT {
+    function mint(address to, uint256 tier) external returns (uint256);
+}
+&nbsp;
+/// @dev Minimal interface to read GV tier from ReferralRegistry
+interface IReferralRegistry {
+    function getTier(address user) external view returns (uint256);
+    function getGVRate(address user) external view returns (uint256);
+    function monthlyGV(address user, uint256 monthIndex) external view returns (uint256);
+}
+&nbsp;
+/// @title ClaimRewards — Referral Reserve + Milestone + GV Override
+/// @notice Receives 61.43% (6143 BPS) of the marketing pool from RewardDistributor.
+///         Manages 3 reward layers internally:
+///
+///         Layer 1 — Referral Reserve (4651 BPS of 10000):
+///           Accumulates USDT for referral top-up. Admin distributes to specific addresses.
+///
+///         Layer 2 — Milestone Bonus (1163 BPS of 10000):
+///           Sales milestones: $2,500 / $5,000 / $10,000 cumulative cycles.
+///           At each milestone: 5% cash bonus (USDT) + CommunityNFT mint.
+///
+///         Layer 3 — GV Override (4186 BPS of 10000):
+///           GV Bonus paid as override on downline sales.
+///           Admin triggers monthly GV distribution to leaders.
+///
+/// @dev Internal BPS ratios (sum = 10000):
+///      Referral Reserve:  10 / 21.5 * 10000 ≈ 4651
+///      Milestone:          2.5 / 21.5 * 10000 ≈ 1163
+///      GV Override:         9 / 21.5 * 10000 ≈ 4186
+///      (4651 + 1163 + 4186 = 10000)
+contract ClaimRewards is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Roles
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Role for the RewardDistributor contract to call receiveUSDT.
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — addresses
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice USDT token (6 decimals on BSC)
+    IERC20 public immutable usdt;
+&nbsp;
+    /// @notice CommunityNFT — minted to users at milestone trigger
+    ICommunityNFT public immutable communityNFT;
+&nbsp;
+    /// @notice ReferralRegistry — GV tier lookups
+    IReferralRegistry public immutable referralRegistry;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // State — internal pool balances
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Layer 1: Referral Reserve pool balance (USDT 6-decimal)
+    uint256 private _reserveBalance;
+&nbsp;
+    /// @notice Layer 2: Milestone Bonus pool balance (USDT 6-decimal)
+    uint256 private _milestoneBalance;
+&nbsp;
+    /// @notice Layer 3: GV Override pool balance (USDT 6-decimal)
+    uint256 private _gvBalance;
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constants — internal BPS split
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    uint256 public constant BPS_TOTAL     = 10_000;
+&nbsp;
+    /// @notice Referral Reserve: 10 / 21.5 * 10000 ≈ 4651
+    uint256 public constant BPS_RESERVE   = 4651;
+&nbsp;
+    /// @notice Milestone Bonus: 2.5 / 21.5 * 10000 ≈ 1163
+    uint256 public constant BPS_MILESTONE = 1163;
+&nbsp;
+    /// @notice GV Override: remainder after reserve + milestone (absorbs rounding dust)
+    /// Effective: 4186 BPS
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constants — milestone config
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Milestone cycle amounts (USDT 6-decimal): $2,500 / $5,000 / $10,000
+    uint256[3] private MILESTONE_AMOUNTS = [
+        2_500 * 1e6,   // index 0 — $2,500
+        5_000 * 1e6,   // index 1 — $5,000
+        10_000 * 1e6   // index 2 — $10,000
+    ];
+&nbsp;
+    /// @notice Bonus rate: 5% of milestone amount
+    uint256 public constant MILESTONE_BONUS_BPS = 500; // 5%
+&nbsp;
+    /// @notice CommunityNFT tier minted at each milestone index
+    ///         Index 0 ($2,500): Builder (tier 1)
+    ///         Index 1 ($5,000): Maker (tier 2)
+    ///         Index 2 ($10,000): Luminary (tier 3)
+    uint256[3] private MILESTONE_NFT_TIERS = [1, 2, 3];
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Events
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Emitted when USDT is received and split into 3 pools
+    event USDTReceived(
+        uint256 totalAmount,
+        uint256 toReserve,
+        uint256 toMilestone,
+        uint256 toGV
+    );
+&nbsp;
+    /// @notice Emitted when reserve funds are distributed to addresses
+    event ReserveDistributed(uint256 totalAmount);
+&nbsp;
+    /// @notice Emitted when a milestone is triggered for a user
+    event MilestoneTriggered(address indexed user, uint256 indexed milestoneIndex, uint256 bonusAmount);
+&nbsp;
+    /// @notice Emitted when GV override funds are distributed to leaders
+    event GVDistributed(uint256 totalAmount);
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Constructor
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt             USDT token address (6 decimals)
+    /// @param _communityNFT     CommunityNFT contract (MINTER_ROLE must be granted to this contract)
+    /// @param _referralRegistry ReferralRegistry contract for GV tier lookups
+    /// @param _admin            DEFAULT_ADMIN_ROLE holder (DAOGovernor)
+    constructor(
+        address _usdt,
+        address _communityNFT,
+        address _referralRegistry,
+        address _admin
+    ) {
+        require(_usdt             != address(0), "ClaimRewards: zero address");
+        require(_communityNFT     != address(0), "ClaimRewards: zero address");
+        require(_referralRegistry != address(0), "ClaimRewards: zero address");
+        require(_admin            != address(0), "ClaimRewards: zero address");
+&nbsp;
+        usdt             = IERC20(_usdt);
+        communityNFT     = ICommunityNFT(_communityNFT);
+        referralRegistry = IReferralRegistry(_referralRegistry);
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Layer 0 — Receive &amp; Split
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Called by RewardDistributor (DISTRIBUTOR_ROLE).
+    ///         Pulls `amount` USDT from caller and splits into 3 internal pools.
+    ///         GV pool absorbs any rounding dust.
+    /// @param  amount  USDT amount (6 decimals)
+    function receiveUSDT(uint256 amount) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DISTRIBUTOR_ROLE) {
+        require(amount &gt; 0, "ClaimRewards: zero amount");
+&nbsp;
+        // Pull USDT from caller (caller must have approved this contract)
+        usdt.safeTransferFrom(msg.sender, address(this), amount);
+&nbsp;
+        // Split into 3 pools — GV absorbs rounding dust
+        uint256 toReserve   = (amount * BPS_RESERVE)   / BPS_TOTAL;
+        uint256 toMilestone = (amount * BPS_MILESTONE) / BPS_TOTAL;
+        uint256 toGV        = amount - toReserve - toMilestone;
+&nbsp;
+        _reserveBalance   += toReserve;
+        _milestoneBalance += toMilestone;
+        _gvBalance        += toGV;
+&nbsp;
+        emit USDTReceived(amount, toReserve, toMilestone, toGV);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Layer 1 — Referral Reserve
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin distributes from the Referral Reserve to specific addresses.
+    ///         Used as top-up when the referral fund runs low.
+    /// @param  recipients  Array of recipient addresses
+    /// @param  amounts     USDT amounts (6 decimals) corresponding to each recipient
+    function distributeReserve(
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(recipients.length &gt; 0, "ClaimRewards: empty arrays");
+        require(recipients.length == amounts.length, "ClaimRewards: length mismatch");
+&nbsp;
+        uint256 total;
+        for (uint256 i = 0; i &lt; amounts.length; i++) {
+            total += amounts[i];
+        }
+        require(total &lt;= _reserveBalance, "ClaimRewards: insufficient reserve balance");
+&nbsp;
+        _reserveBalance -= total;
+&nbsp;
+        for (uint256 i = 0; i &lt; recipients.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (amounts[i] &gt; 0) {
+                usdt.safeTransfer(recipients[i], amounts[i]);
+            }
+        }
+&nbsp;
+        emit ReserveDistributed(total);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Layer 2 — Milestone Bonus
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin triggers milestone reward for a user.
+    ///         Pays 5% cash bonus (USDT) from milestoneBalance and mints a CommunityNFT.
+    ///         Milestones are repeating cycles ($10K → reset → $2.5K again).
+    /// @param  user            Recipient of the milestone bonus
+    /// @param  milestoneIndex  0 = $2,500 cycle / 1 = $5,000 cycle / 2 = $10,000 cycle
+    function triggerMilestone(
+        address user,
+        uint256 milestoneIndex
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(user != address(0), "ClaimRewards: zero address");
+        require(milestoneIndex &lt; 3, "ClaimRewards: invalid milestone index");
+&nbsp;
+        uint256 milestoneAmount = MILESTONE_AMOUNTS[milestoneIndex];
+        uint256 bonus = (milestoneAmount * MILESTONE_BONUS_BPS) / BPS_TOTAL;
+&nbsp;
+        require(bonus &lt;= _milestoneBalance, "ClaimRewards: insufficient milestone balance");
+&nbsp;
+        _milestoneBalance -= bonus;
+&nbsp;
+        // Pay USDT bonus
+        usdt.safeTransfer(user, bonus);
+&nbsp;
+        // Mint CommunityNFT for the milestone tier
+        uint256 nftTier = MILESTONE_NFT_TIERS[milestoneIndex];
+        communityNFT.mint(user, nftTier);
+&nbsp;
+        emit MilestoneTriggered(user, milestoneIndex, bonus);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // Layer 3 — GV Override
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin distributes GV Override rewards to leaders.
+    ///         Called monthly. Amounts are pre-calculated off-chain using:
+    ///         override = (yourRate - downlineRate) × downline's monthlySales
+    ///         Rates from ReferralRegistry.getGVRate(): 0/300/500/700/800/900 BPS.
+    /// @param  leaders  Array of leader addresses
+    /// @param  amounts  USDT GV override amounts (6 decimals) per leader
+    function distributeGVOverride(
+        address[] calldata leaders,
+        uint256[] calldata amounts
+    ) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(leaders.length &gt; 0, "ClaimRewards: empty arrays");
+        require(leaders.length == amounts.length, "ClaimRewards: length mismatch");
+&nbsp;
+        uint256 total;
+        for (uint256 i = 0; i &lt; amounts.length; i++) {
+            total += amounts[i];
+        }
+        require(total &lt;= _gvBalance, "ClaimRewards: insufficient GV balance");
+&nbsp;
+        _gvBalance -= total;
+&nbsp;
+        for (uint256 i = 0; i &lt; leaders.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (amounts[i] &gt; 0) {
+                usdt.safeTransfer(leaders[i], amounts[i]);
+            }
+        }
+&nbsp;
+        emit GVDistributed(total);
+    }
+&nbsp;
+    // ─────────────────────────────────────────────────────────
+    // View Functions
+    // ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Current Referral Reserve pool balance (USDT 6-decimal)
+    function reserveBalance() external view returns (uint256) {
+        return _reserveBalance;
+    }
+&nbsp;
+    /// @notice Current Milestone Bonus pool balance (USDT 6-decimal)
+    function milestoneBalance() external view returns (uint256) {
+        return _milestoneBalance;
+    }
+&nbsp;
+    /// @notice Current GV Override pool balance (USDT 6-decimal)
+    function gvBalance() external view returns (uint256) {
+        return _gvBalance;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

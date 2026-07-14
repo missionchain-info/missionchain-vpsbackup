@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for treasury/ManagementBonusPool.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">treasury/</a> ManagementBonusPool.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/41</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/60</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/15</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/54</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+interface IStewardCouncil {
+    function isActiveMember(address wallet) external view returns (bool);
+    function activeCount() external view returns (uint256);
+}
+&nbsp;
+/// @title ManagementBonusPool — 10% of SEED revenue, governed by Steward Council vote
+/// @notice
+///   - Receives USDT from SeedBudget via receiveAndDistribute() (no auto-split).
+///   - Council members create bonus orders (recipient, amount, content).
+///   - Council members vote (1 vote each in Phase 1).
+///   - When approval ratio reaches `thresholdBps` (default 7500 = 75%), order
+///     becomes executable. Anyone can call execute() to finalize on-chain transfer.
+///   - Owner can cancel any PENDING order before execution.
+///   - Threshold is configurable by Owner.
+///
+/// @dev Phase 1 = simple member voting. Phase 2 (DAO) will add MFP-NFT weighted votes.
+contract ManagementBonusPool is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    address public immutable owner;
+    address public distributor; // SeedBudget contract — set by owner after deploy
+&nbsp;
+    IERC20 public immutable usdt;
+    IStewardCouncil public immutable council;
+&nbsp;
+    /// @notice Approval threshold in BPS (7500 = 75%). Owner can update.
+    uint16 public thresholdBps = 7500;
+&nbsp;
+    enum OrderStatus { PENDING, EXECUTED, CANCELLED }
+&nbsp;
+    struct BonusOrder {
+        uint256 id;
+        address recipient;
+        uint256 amount;
+        string  content;
+        address requester;
+        uint64  createdAt;
+        OrderStatus status;
+        uint64  executedAt;
+        // approvals tracked separately to avoid struct storage overhead
+    }
+&nbsp;
+    mapping(uint256 =&gt; BonusOrder) public orders;
+    mapping(uint256 =&gt; mapping(address =&gt; bool)) public hasVoted;
+    mapping(uint256 =&gt; uint256) public approvalsCount;
+    uint256 public nextOrderId;
+&nbsp;
+    /// @notice total USDT received from SeedBudget (cumulative)
+    uint256 public totalReceived;
+    /// @notice total USDT executed via approved orders
+    uint256 public totalExecuted;
+&nbsp;
+    event OrderCreated(uint256 indexed id, address indexed requester, address indexed recipient, uint256 amount, string content);
+    event OrderApproved(uint256 indexed id, address indexed voter, uint256 approvalsCount, uint256 activeCouncil);
+    event OrderExecuted(uint256 indexed id, address indexed recipient, uint256 amount);
+    event OrderCancelled(uint256 indexed id, address indexed by);
+    event ThresholdUpdated(uint16 oldBps, uint16 newBps);
+    event DistributorSet(address distributor);
+    event Received(uint256 amount, uint256 totalReceived);
+&nbsp;
+<span class="fstat-no" title="function not covered" >    modifier onlyOwner() {</span>
+<span class="cstat-no" title="statement not covered" >        require(msg.sender == owner, "MBP: not owner")</span>;
+        _;
+    }
+<span class="fstat-no" title="function not covered" >    modifier onlyDistributor() {</span>
+<span class="cstat-no" title="statement not covered" >        require(msg.sender == distributor, "MBP: not distributor")</span>;
+        _;
+    }
+<span class="fstat-no" title="function not covered" >    modifier onlyCouncil() {</span>
+<span class="cstat-no" title="statement not covered" >        require(council.isActiveMember(msg.sender), "MBP: not active council")</span>;
+        _;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    constructor(address _usdt, address _council, address _owner) {</span>
+<span class="cstat-no" title="statement not covered" >        require(_usdt != address(0), "MBP: zero usdt")</span>;
+<span class="cstat-no" title="statement not covered" >        require(_council != address(0), "MBP: zero council")</span>;
+<span class="cstat-no" title="statement not covered" >        require(_owner != address(0), "MBP: zero owner")</span>;
+        usdt    = IERC20(_usdt);
+        council = IStewardCouncil(_council);
+        owner   = _owner;
+    }
+&nbsp;
+    // ─── Owner config ────────────────────────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setDistributor(address _distributor) external onlyOwner {</span>
+        distributor = _distributor;
+<span class="cstat-no" title="statement not covered" >        emit DistributorSet(_distributor);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function setThreshold(uint16 newBps) external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        require(newBps &gt; 0 &amp;&amp; newBps &lt;= 10_000, "MBP: invalid bps")</span>;
+<span class="cstat-no" title="statement not covered" >        emit ThresholdUpdated(thresholdBps, newBps);</span>
+        thresholdBps = newBps;
+    }
+&nbsp;
+    // ─── Distributor: receive USDT from SeedBudget ───────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function receiveAndDistribute(uint256 amount) external onlyDistributor nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "MBP: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransferFrom(msg.sender, address(this), amount)</span>;
+        totalReceived += amount;
+<span class="cstat-no" title="statement not covered" >        emit Received(amount, totalReceived);</span>
+    }
+&nbsp;
+    // ─── Council: create / vote / execute / cancel orders ────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function createOrder(address recipient, uint256 amount, string calldata content)</span>
+        external
+        onlyCouncil
+        returns (uint256 id)
+    {
+<span class="cstat-no" title="statement not covered" >        require(recipient != address(0), "MBP: zero recipient")</span>;
+<span class="cstat-no" title="statement not covered" >        require(amount &gt; 0, "MBP: zero amount")</span>;
+<span class="cstat-no" title="statement not covered" >        require(amount &lt;= usdt.balanceOf(address(this)) + totalExecuted, "MBP: exceeds total received")</span>;
+&nbsp;
+        id = ++nextOrderId;
+        orders[id] = BonusOrder({
+            id:         id,
+            recipient:  recipient,
+            amount:     amount,
+            content:    content,
+            requester:  msg.sender,
+            createdAt:  uint64(block.timestamp),
+            status:     OrderStatus.PENDING,
+            executedAt: 0
+        });
+<span class="cstat-no" title="statement not covered" >        emit OrderCreated(id, msg.sender, recipient, amount, content);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function approveOrder(uint256 id) external onlyCouncil {</span>
+<span class="cstat-no" title="statement not covered" >        BonusOrder storage o = orders[id];</span>
+<span class="cstat-no" title="statement not covered" >        require(o.id == id &amp;&amp; id != 0, "MBP: invalid order")</span>;
+<span class="cstat-no" title="statement not covered" >        require(o.status == OrderStatus.PENDING, "MBP: not pending")</span>;
+<span class="cstat-no" title="statement not covered" >        require(!hasVoted[id][msg.sender], "MBP: already voted")</span>;
+&nbsp;
+        hasVoted[id][msg.sender] = true;
+        approvalsCount[id]++;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        emit OrderApproved(id, msg.sender, approvalsCount[id], council.activeCount());</span>
+    }
+&nbsp;
+    /// @notice Anyone can call this once threshold is reached.
+<span class="fstat-no" title="function not covered" >    function executeOrder(uint256 id) external nonReentrant {</span>
+<span class="cstat-no" title="statement not covered" >        BonusOrder storage o = orders[id];</span>
+<span class="cstat-no" title="statement not covered" >        require(o.id == id &amp;&amp; id != 0, "MBP: invalid order")</span>;
+<span class="cstat-no" title="statement not covered" >        require(o.status == OrderStatus.PENDING, "MBP: not pending")</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        uint256 active = council.activeCount();</span>
+<span class="cstat-no" title="statement not covered" >        require(active &gt; 0, "MBP: no active council")</span>;
+        // approvals * 10000 / active &gt;= thresholdBps
+<span class="cstat-no" title="statement not covered" >        require(approvalsCount[id] * 10_000 &gt;= active * thresholdBps, "MBP: threshold not met")</span>;
+<span class="cstat-no" title="statement not covered" >        require(o.amount &lt;= usdt.balanceOf(address(this)), "MBP: insufficient pool balance")</span>;
+&nbsp;
+        o.status     = OrderStatus.EXECUTED;
+        o.executedAt = uint64(block.timestamp);
+        totalExecuted += o.amount;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        usdt.safeTransfer(o.recipient, o.amount)</span>;
+<span class="cstat-no" title="statement not covered" >        emit OrderExecuted(id, o.recipient, o.amount);</span>
+    }
+&nbsp;
+    /// @notice Owner cancels any PENDING order.
+<span class="fstat-no" title="function not covered" >    function cancelOrder(uint256 id) external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        BonusOrder storage o = orders[id];</span>
+<span class="cstat-no" title="statement not covered" >        require(o.id == id &amp;&amp; id != 0, "MBP: invalid order")</span>;
+<span class="cstat-no" title="statement not covered" >        require(o.status == OrderStatus.PENDING, "MBP: not pending")</span>;
+        o.status = OrderStatus.CANCELLED;
+<span class="cstat-no" title="statement not covered" >        emit OrderCancelled(id, msg.sender);</span>
+    }
+&nbsp;
+    // ─── Views ───────────────────────────────────────────────────────────
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function poolBalance() external view returns (uint256) { <span class="cstat-no" title="statement not covered" >return usdt.balanceOf(address(this));</span> }</span>
+<span class="fstat-no" title="function not covered" >    function getOrder(uint256 id) external view returns (BonusOrder memory) { <span class="cstat-no" title="statement not covered" >return orders[id];</span> }</span>
+<span class="fstat-no" title="function not covered" >    function isApproved(uint256 id, address voter) external view returns (bool) { <span class="cstat-no" title="statement not covered" >return hasVoted[id][voter];</span> }</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function approvalRatioBps(uint256 id) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        uint256 active = council.activeCount();</span>
+<span class="cstat-no" title="statement not covered" >        if (active == 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
+<span class="cstat-no" title="statement not covered" >        return (approvalsCount[id] * 10_000) / active;</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

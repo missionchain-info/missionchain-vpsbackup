@@ -35,3 +35,31 @@ Thumbs.db
 
 # Large images (will add sophia-avatar separately)
 .env.backup.txt
+
+# VPS backup safety — never commit secrets/junk
+backups/
+_archive_pre_mainnet/
+.translate-venv/
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+**/.turbo/
+missionchain_world/data/
+**/.env
+**/.env.*
+**/*.env
+**/*.inspect.json
+**/*.pem
+**/*.key
+**/id_rsa*
+**/*.sql
+**/*.tgz
+**/*.tar.gz
+**/._*
+out-testnet-bak/
+out_old/
+**/out-*bak/
+**/out_old/
+**/*.bak
+**/*.bak.*

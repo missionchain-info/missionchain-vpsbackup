@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dapp",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3003"],
+      "port": 3003,
+      "cwd": "/Users/ledangtuan/Documents/Mission Chain Fullstack/missionchain_app/apps/web"
+    },
+    {
+      "name": "admin",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3004"],
+      "port": 3004,
+      "cwd": "/Users/ledangtuan/Documents/Mission Chain Fullstack/missionchain_app/apps/admin"
+    }
+  ]
+}

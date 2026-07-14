@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for revenue/SeedBudget.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">revenue/</a> SeedBudget.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>51/51</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">75.71% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>53/70</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>16/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>75/75</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">118×</span>
+<span class="cline-any cline-yes">118×</span>
+<span class="cline-any cline-yes">118×</span>
+<span class="cline-any cline-yes">118×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">118×</span>
+<span class="cline-any cline-yes">820×</span>
+<span class="cline-any cline-yes">819×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">117×</span>
+<span class="cline-any cline-yes">117×</span>
+<span class="cline-any cline-yes">117×</span>
+<span class="cline-any cline-yes">117×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">117×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+&nbsp;
+/// @title SeedBudget — SEED Round Revenue Splitter with Agent KPI System
+/// @notice Receives 100% USDT from SeedSale and splits it:
+///   - 50% Operational: Founder 7% + Architect 5% + CTO 3% + Social Media 3%
+///                       + Tech Manager 2% + Agent KPI 20% + Bonus 10%
+///   - 50% Net Capital:  Liquidity 40% + Audit &amp; Legal 5% + Reserved (DAO) 5%
+///
+///   The 7 leadership roles auto-accumulate USDT on each distribution.
+///   Role holders call claimLeadership(roleIndex) to pull their USDT.
+///   The Agent KPI pool (20%) is managed by admin via allocateAgentCommission().
+///
+/// @dev BPS values sum to 10_000:
+///   Operational: 700 + 500 + 300 + 300 + 200 + 2000 + 1000 = 5000
+///   Net Capital: 4000 + 500 + 500 = 5000
+///   Total: 10_000 ✓
+contract SeedBudget is AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+&nbsp;
+    // ─── Roles ────────────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Role granted to SeedSale contract so it can call receiveAndDistribute
+    bytes32 public constant CALLER_ROLE = keccak256("CALLER_ROLE");
+&nbsp;
+    // ─── State ────────────────────────────────────────────────────────────────
+&nbsp;
+    IERC20 public immutable usdt;
+&nbsp;
+    address public liquidityPool;
+    address public auditWallet;
+    address public daoReserve;
+&nbsp;
+    /// @notice 7 leadership wallets indexed 0–6:
+    ///   0 = Founder (7%)
+    ///   1 = Architect (5%)
+    ///   2 = CTO (3%)
+    ///   3 = Social Media (3%)
+    ///   4 = Tech Manager (2%)
+    ///   5 = Agent KPI pool wallet (20%)
+    ///   6 = Bonus pool wallet (10%)
+    address[7] private _leadershipWallets;
+&nbsp;
+    // BPS allocations for each leadership role (out of 10_000)
+    // [Founder=700, Architect=500, CTO=300, SocialMedia=300, TechMgr=200, AgentKPI=2000, Bonus=1000]
+    uint256 private constant BPS_L0 = 700;   // Founder
+    uint256 private constant BPS_L1 = 500;   // Architect
+    uint256 private constant BPS_L2 = 300;   // CTO
+    uint256 private constant BPS_L3 = 300;   // Social Media
+    uint256 private constant BPS_L4 = 200;   // Tech Manager
+    uint256 private constant BPS_L5 = 2000;  // Agent KPI pool
+    uint256 private constant BPS_L6 = 1000;  // Bonus
+&nbsp;
+    /// @notice BPS for Net Capital destinations (out of 10_000)
+    uint256 private constant BPS_LIQUIDITY   = 4000; // 40%
+    uint256 private constant BPS_AUDIT       = 500;  // 5%
+    uint256 private constant BPS_DAO_RESERVE = 500;  // 5%
+&nbsp;
+    /// @notice Accumulated USDT pending claim for each leadership role
+    mapping(uint256 =&gt; uint256) public pendingLeadership;
+&nbsp;
+    /// @notice KPI pool balance — accumulated from Agent KPI slot (index 5),
+    ///         decremented when admin allocates commissions to agents
+    uint256 public kpiPoolBalance;
+&nbsp;
+    // ─── Agent KPI State ──────────────────────────────────────────────────────
+&nbsp;
+    struct AgentInfo {
+        bool active;
+        uint256 commissionBps;  // e.g. 2000 = 20%, 1000 = 10%
+        uint256 totalSales;     // cumulative USDT recorded via recordAgentSale
+    }
+&nbsp;
+    mapping(address =&gt; AgentInfo) private _agents;
+&nbsp;
+    /// @notice Pending USDT commission for each agent (claimable)
+    mapping(address =&gt; uint256) public pendingAgentCommission;
+&nbsp;
+    // ─── Events ───────────────────────────────────────────────────────────────
+&nbsp;
+    event RevenueDistributed(
+        uint256 indexed totalAmount,
+        uint256 liquidityAmount,
+        uint256 auditAmount,
+        uint256 daoReserveAmount
+    );
+    event LeadershipClaimed(uint256 indexed roleIndex, address indexed wallet, uint256 amount);
+    event LeadershipWalletUpdated(uint256 indexed roleIndex, address indexed newWallet);
+&nbsp;
+    event AgentAdded(address indexed agent, uint256 commissionBps);
+    event AgentRemoved(address indexed agent);
+    event AgentSaleRecorded(address indexed agent, uint256 usdtAmount);
+    event AgentCommissionAllocated(address indexed agent, uint256 amount);
+    event AgentCommissionClaimed(address indexed agent, uint256 amount);
+&nbsp;
+    event LiquidityPoolUpdated(address indexed newAddress);
+    event AuditWalletUpdated(address indexed newAddress);
+    event DaoReserveUpdated(address indexed newAddress);
+&nbsp;
+    // ─── Constructor ──────────────────────────────────────────────────────────
+&nbsp;
+    /// @param _usdt          USDT token address (6 decimals)
+    /// @param _liquidityPool Receives 40% of total (Net Capital — Liquidity)
+    /// @param _auditWallet   Receives 5% of total (Net Capital — Audit &amp; Legal)
+    /// @param _daoReserve    Receives 5% of total (Net Capital — Reserved DAO)
+    /// @param _admin         Granted DEFAULT_ADMIN_ROLE
+    /// @param _wallets       7 leadership wallets [Founder, Architect, CTO,
+    ///                       Social Media, Tech Manager, Agent KPI pool, Bonus pool]
+    constructor(
+        address _usdt,
+        address _liquidityPool,
+        address _auditWallet,
+        address _daoReserve,
+        address _admin,
+        address[7] memory _wallets
+    ) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_usdt != address(0), "SeedBudget: zero USDT");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_liquidityPool != address(0), "SeedBudget: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_auditWallet   != address(0), "SeedBudget: zero address");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_daoReserve    != address(0), "SeedBudget: zero address");
+&nbsp;
+        for (uint256 i = 0; i &lt; 7; i++) {
+            require(_wallets[i] != address(0), "SeedBudget: zero wallet");
+            _leadershipWallets[i] = _wallets[i];
+        }
+&nbsp;
+        usdt          = IERC20(_usdt);
+        liquidityPool = _liquidityPool;
+        auditWallet   = _auditWallet;
+        daoReserve    = _daoReserve;
+&nbsp;
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    }
+&nbsp;
+    // ─── Core Distribution ────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Pull USDT from caller and split per allocation table.
+    ///         Net Capital (liquidity + audit + DAO) is forwarded immediately.
+    ///         Operational shares accumulate in pendingLeadership for self-claim.
+    /// @dev Caller must approve this contract for `amount` USDT first.
+    /// @param amount Total USDT amount (6 decimals)
+    function receiveAndDistribute(uint256 amount)
+        external
+        <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant
+        onlyRole(CALLER_ROLE)
+    {
+        require(amount &gt; 0, "SeedBudget: zero amount");
+&nbsp;
+        // Pull USDT from caller
+        usdt.safeTransferFrom(msg.sender, address(this), amount);
+&nbsp;
+        // ── Net Capital: forward immediately ──
+        uint256 liqAmt  = (amount * BPS_LIQUIDITY)   / 10_000;
+        uint256 audAmt  = (amount * BPS_AUDIT)        / 10_000;
+        uint256 daoAmt  = (amount * BPS_DAO_RESERVE)  / 10_000;
+&nbsp;
+        usdt.safeTransfer(liquidityPool, liqAmt);
+        usdt.safeTransfer(auditWallet,   audAmt);
+        usdt.safeTransfer(daoReserve,    daoAmt);
+&nbsp;
+        // ── Operational: accumulate for self-claim ──
+        pendingLeadership[0] += (amount * BPS_L0) / 10_000;
+        pendingLeadership[1] += (amount * BPS_L1) / 10_000;
+        pendingLeadership[2] += (amount * BPS_L2) / 10_000;
+        pendingLeadership[3] += (amount * BPS_L3) / 10_000;
+        pendingLeadership[4] += (amount * BPS_L4) / 10_000;
+        pendingLeadership[5] += (amount * BPS_L5) / 10_000;
+        pendingLeadership[6] += (amount * BPS_L6) / 10_000;
+&nbsp;
+        // The Agent KPI slot (index 5) also feeds the kpiPoolBalance
+        kpiPoolBalance += (amount * BPS_L5) / 10_000;
+&nbsp;
+        emit RevenueDistributed(amount, liqAmt, audAmt, daoAmt);
+    }
+&nbsp;
+    // ─── Leadership Claiming ──────────────────────────────────────────────────
+&nbsp;
+    /// @notice Role holder claims their accumulated USDT allocation.
+    /// @param roleIndex 0=Founder, 1=Architect, 2=CTO, 3=Social Media,
+    ///                  4=Tech Manager, 5=Agent KPI pool, 6=Bonus
+    function claimLeadership(uint256 roleIndex) external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(roleIndex &lt; 7, "SeedBudget: invalid role");
+        require(msg.sender == _leadershipWallets[roleIndex], "SeedBudget: not wallet owner");
+&nbsp;
+        uint256 amount = pendingLeadership[roleIndex];
+        require(amount &gt; 0, "SeedBudget: nothing to claim");
+&nbsp;
+        pendingLeadership[roleIndex] = 0;
+&nbsp;
+        // For the KPI pool slot (index 5): claiming drains the pool wallet share
+        // but kpiPoolBalance tracks the sub-allocation for agents — keep separate
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (roleIndex == 5) {
+            // KPI pool wallet claims only what has NOT yet been allocated to agents
+            // kpiPoolBalance already tracks unallocated; reduce by claim
+            // Note: the claim here is for the pool wallet's direct share;
+            // agent commissions are allocated separately and tracked via kpiPoolBalance
+            // Since we track kpiPoolBalance for agent allocations independently,
+            // we don't double-drain — claimLeadership(5) is for the pool admin wallet.
+        }
+&nbsp;
+        usdt.safeTransfer(_leadershipWallets[roleIndex], amount);
+        emit LeadershipClaimed(roleIndex, _leadershipWallets[roleIndex], amount);
+    }
+&nbsp;
+    // ─── Agent KPI Management ────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin adds an agent with a commission rate.
+    /// @param agent         Agent wallet address
+    /// @param commissionBps Commission in BPS (e.g. 2000 = 20%, 1000 = 10%)
+    function addAgent(address agent, uint256 commissionBps)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        require(agent != address(0), "SeedBudget: zero agent");
+        require(commissionBps &lt;= 10_000, "SeedBudget: invalid BPS");
+&nbsp;
+        _agents[agent] = AgentInfo({
+            active: true,
+            commissionBps: commissionBps,
+            totalSales: 0
+        });
+&nbsp;
+        emit AgentAdded(agent, commissionBps);
+    }
+&nbsp;
+    /// @notice Admin removes an agent (marks inactive).
+    function removeAgent(address agent) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_agents[agent].active, "SeedBudget: not an agent");
+        _agents[agent].active = false;
+        emit AgentRemoved(agent);
+    }
+&nbsp;
+    /// @notice Admin records a sale attributed to an agent (for KPI tracking).
+    /// @param agent      Agent wallet address
+    /// @param usdtAmount USDT amount of the sale (6 decimals)
+    function recordAgentSale(address agent, uint256 usdtAmount)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        require(_agents[agent].active, "SeedBudget: not an agent");
+        _agents[agent].totalSales += usdtAmount;
+        emit AgentSaleRecorded(agent, usdtAmount);
+    }
+&nbsp;
+    /// @notice Admin allocates a commission amount from the KPI pool to an agent.
+    ///         Must not exceed available kpiPoolBalance.
+    /// @param agent  Agent wallet address
+    /// @param amount USDT commission amount (6 decimals)
+    function allocateAgentCommission(address agent, uint256 amount)
+        external
+        <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_agents[agent].active, "SeedBudget: not an agent");
+        require(amount &lt;= kpiPoolBalance, "SeedBudget: exceeds KPI pool");
+&nbsp;
+        kpiPoolBalance -= amount;
+        pendingAgentCommission[agent] += amount;
+&nbsp;
+        emit AgentCommissionAllocated(agent, amount);
+    }
+&nbsp;
+    /// @notice Agent claims their accumulated commission.
+    function claimAgentCommission() external <span class="missing-if-branch" title="else path not taken" >E</span>nonReentrant {
+        uint256 amount = pendingAgentCommission[msg.sender];
+        require(amount &gt; 0, "SeedBudget: nothing to claim");
+&nbsp;
+        pendingAgentCommission[msg.sender] = 0;
+        usdt.safeTransfer(msg.sender, amount);
+&nbsp;
+        emit AgentCommissionClaimed(msg.sender, amount);
+    }
+&nbsp;
+    // ─── View Helpers ─────────────────────────────────────────────────────────
+&nbsp;
+    /// @notice Returns leadership wallet for a given role index.
+    function leadershipWallet(uint256 roleIndex) external view returns (address) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(roleIndex &lt; 7, "SeedBudget: invalid role");
+        return _leadershipWallets[roleIndex];
+    }
+&nbsp;
+    /// @notice Returns agent commission BPS for a given agent address.
+    function agentCommissionBps(address agent) external view returns (uint256) {
+        return _agents[agent].commissionBps;
+    }
+&nbsp;
+    /// @notice Returns whether an agent is currently active.
+    function isActiveAgent(address agent) external view returns (bool) {
+        return _agents[agent].active;
+    }
+&nbsp;
+    /// @notice Returns cumulative USDT sales recorded for an agent.
+    function agentTotalSales(address agent) external view returns (uint256) {
+        return _agents[agent].totalSales;
+    }
+&nbsp;
+    // ─── Admin Configuration ──────────────────────────────────────────────────
+&nbsp;
+    /// @notice Admin updates a leadership wallet address.
+    function setLeadershipWallet(uint256 roleIndex, address newWallet)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        require(roleIndex &lt; 7, "SeedBudget: invalid role");
+        require(newWallet != address(0), "SeedBudget: zero wallet");
+        _leadershipWallets[roleIndex] = newWallet;
+        emit LeadershipWalletUpdated(roleIndex, newWallet);
+    }
+&nbsp;
+    /// @notice Admin updates the liquidity pool address.
+    function setLiquidityPool(address newAddress) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAddress != address(0), "SeedBudget: zero address");
+        liquidityPool = newAddress;
+        emit LiquidityPoolUpdated(newAddress);
+    }
+&nbsp;
+    /// @notice Admin updates the audit wallet address.
+    function setAuditWallet(address newAddress) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(newAddress != address(0), "SeedBudget: zero address");
+        auditWallet = newAddress;
+        emit AuditWalletUpdated(newAddress);
+    }
+&nbsp;
+    /// @notice Admin updates the DAO reserve address.
+    function setDaoReserve(address newAddress) external <span class="missing-if-branch" title="else path not taken" >E</span>onlyRole(DEFAULT_ADMIN_ROLE) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(newAddress != address(0), "SeedBudget: zero address");
+        daoReserve = newAddress;
+        emit DaoReserveUpdated(newAddress);
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2026 13:31:59 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
