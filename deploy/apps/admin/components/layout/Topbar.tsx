@@ -7,7 +7,7 @@ const TITLES: Record<string, string> = {
   '/': 'HOME',
   '/stats': 'DASHBOARD \u2014 Overview',
   '/members': 'MEMBER MANAGEMENT',
-  '/rounds': 'ROUND SALES',
+  '/rounds': 'SALE ROUNDS',
   '/distributors': 'DISTRIBUTOR MANAGEMENT',
   '/building': 'COMMUNITY BUILDING',
   '/funds': 'REVENUE & FUNDS',

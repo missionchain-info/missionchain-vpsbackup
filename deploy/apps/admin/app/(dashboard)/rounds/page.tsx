@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   fetchRoundConfigs, updateRoundConfig,
   fetchSeedSummary, updatePromotion,
@@ -100,7 +102,7 @@ function currentMiceRound(sold: number) {
   return 4;
 }
 
-export default function RoundsPage() {
+function RoundsInner() {
   const { user } = useAuth();
   const isSuperAdmin = isOwnerWallet(user?.wallet);
   const mcUi = useMcUi();
@@ -122,6 +124,10 @@ export default function RoundsPage() {
 
   // Stats for PreSale & MICE
   const [statsData, setStatsData] = useState<any>(null);
+
+  // Sub-round view (seed | presale) driven by ?view= query param
+  const searchParams = useSearchParams();
+  const view = searchParams.get('view') === 'presale' ? 'presale' : 'seed';
 
   const loadData = useCallback(async () => {
     try {
@@ -251,14 +257,35 @@ export default function RoundsPage() {
       <div className="page-hd">
         <div>
           <div className="page-eyebrow">Business &amp; Finance</div>
-          <div className="page-title">Round Sales</div>
+          <div className="page-title">Sale Rounds</div>
           <div className="page-sub">Manage status, promotion, pricing and artwork for all sale rounds</div>
         </div>
       </div>
 
+      {/* Sub-round tabs (mirror the sidebar dropdown) */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 22, borderBottom: '1px solid var(--border)' }}>
+        {[
+          { key: 'seed', label: '🌱 SEED Round' },
+          { key: 'presale', label: '💰 Pre-Sale & MICE-License' },
+        ].map(t => (
+          <Link key={t.key} href={`/rounds?view=${t.key}`} scroll={false}
+            style={{
+              padding: '9px 20px', fontSize: SZ, fontWeight: 700, letterSpacing: '.02em',
+              textDecoration: 'none', borderRadius: '7px 7px 0 0', marginBottom: -1,
+              color: view === t.key ? 'var(--white)' : 'var(--gray)',
+              background: view === t.key ? 'var(--card-bg)' : 'transparent',
+              borderBottom: `2px solid ${view === t.key ? 'var(--p, #7c5cff)' : 'transparent'}`,
+            }}>
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
       {/* ═══════════════════════════════════════════════
-           SECTION 1: SEED ROUND
+           SECTION 1: SEED ROUND  (view: seed)
          ═══════════════════════════════════════════════ */}
+      {view === 'seed' && (
+      <>
       <div className="sep-lbl" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: '1rem' }}>🌱</span> SEED Round
         {seedSummary && (
@@ -374,10 +401,14 @@ export default function RoundsPage() {
            SECTION 1B: OLD INVESTORS — 75M Strategic Partner Grant
          ═══════════════════════════════════════════════ */}
       <OldInvestorsSection isSuperAdmin={isSuperAdmin} showToast={showToast} />
+      </>
+      )}
 
       {/* ═══════════════════════════════════════════════
-           SECTION 2: PRE-SALE
+           SECTION 2: PRE-SALE & MICE-LICENSE  (view: presale)
          ═══════════════════════════════════════════════ */}
+      {view === 'presale' && (
+      <>
       <div className="sep-lbl" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: '1rem' }}>💰</span> Pre-Sale
         {presaleRound && (
@@ -443,8 +474,9 @@ export default function RoundsPage() {
           <div className="info-row"><span className="info-key">Luminary</span><span className="info-val">$5,000 {'\u2192'} 1M MIC + Luminary NFT</span></div>
         </div>
         <div className="card" style={{ padding: 16 }}>
-          <div className="card-title">Revenue Split</div>
-          <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">35%</span></div>
+          <div className="card-title">Revenue Split (of gross)</div>
+          <div className="info-row"><span className="info-key">Referral (F1 + F2)</span><span className="info-val">10%</span></div>
+          <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">25%</span></div>
           <div className="info-row"><span className="info-key">Management</span><span className="info-val">7.5%</span></div>
           <div className="info-row"><span className="info-key">Net Capital</span><span className="info-val">57.5%</span></div>
           <div style={{ marginTop: 8, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
@@ -455,7 +487,7 @@ export default function RoundsPage() {
       </div>
 
       <div className="g2" style={{ marginBottom: 24 }}>
-        <div className="stat-box"><div className="stat-lbl">Marketing Cost</div><div className="stat-val gold">{fmtUsd2(Number(ps.mktCost || 0))}</div><div className="stat-delta">35% of revenue</div></div>
+        <div className="stat-box"><div className="stat-lbl">Marketing Cost</div><div className="stat-val gold">{fmtUsd2(Number(ps.mktCost || 0))}</div><div className="stat-delta">35% (Ref 10% + Mktg 25%)</div></div>
         <div className="stat-box"><div className="stat-lbl">Net Capital</div><div className="stat-val g">{fmtUsd2(Number(ps.fundRaised || 0))}</div><div className="stat-delta">57.5% of revenue</div></div>
       </div>
 
@@ -558,8 +590,9 @@ export default function RoundsPage() {
       {/* MICE revenue split */}
       <div className="g2" style={{ marginBottom: 14 }}>
         <div className="card" style={{ padding: 16 }}>
-          <div className="card-title">USDT Revenue Split (same as PreSale)</div>
-          <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">35%</span></div>
+          <div className="card-title">USDT Revenue Split (same as PreSale · of gross)</div>
+          <div className="info-row"><span className="info-key">Referral (F1 + F2)</span><span className="info-val">10%</span></div>
+          <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">25%</span></div>
           <div className="info-row"><span className="info-key">Management</span><span className="info-val">7.5%</span></div>
           <div className="info-row"><span className="info-key">DAO Treasury</span><span className="info-val">12.5%</span></div>
           <div className="info-row"><span className="info-key">Reserved Staking</span><span className="info-val">5%</span></div>
@@ -574,8 +607,19 @@ export default function RoundsPage() {
         </div>
       </div>
 
+      </>
+      )}
+
       {/* Toast now rendered globally by McUiProvider */}
     </>
+  );
+}
+
+export default function RoundsPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 32, color: 'var(--muted)' }}>Loading sale rounds…</div>}>
+      <RoundsInner />
+    </Suspense>
   );
 }
 
