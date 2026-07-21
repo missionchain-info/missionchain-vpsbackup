@@ -50,7 +50,8 @@ const NAV_ITEMS: NavGroup[] = [
         href: '/rounds', icon: '💎', label: 'Sale Rounds',
         children: [
           { href: '/rounds?view=seed', label: 'SEED Round' },
-          { href: '/rounds?view=presale', label: 'Pre-Sale & MICE-License' },
+          { href: '/rounds?view=presale', label: 'Pre-Sale' },
+          { href: '/rounds?view=mice', label: 'MICE-License' },
         ],
       },
       { href: '/revenue-funds', icon: '💰', label: 'Revenue & Funds' },

@@ -125,9 +125,10 @@ function RoundsInner() {
   // Stats for PreSale & MICE
   const [statsData, setStatsData] = useState<any>(null);
 
-  // Sub-round view (seed | presale) driven by ?view= query param
+  // Sub-round view (seed | presale | mice) driven by ?view= query param
   const searchParams = useSearchParams();
-  const view = searchParams.get('view') === 'presale' ? 'presale' : 'seed';
+  const rawView = searchParams.get('view');
+  const view = rawView === 'presale' ? 'presale' : rawView === 'mice' ? 'mice' : 'seed';
 
   const loadData = useCallback(async () => {
     try {
@@ -266,7 +267,8 @@ function RoundsInner() {
       <div style={{ display: 'flex', gap: 4, marginBottom: 22, borderBottom: '1px solid var(--border)' }}>
         {[
           { key: 'seed', label: '🌱 SEED Round' },
-          { key: 'presale', label: '💰 Pre-Sale & MICE-License' },
+          { key: 'presale', label: '💰 Pre-Sale' },
+          { key: 'mice', label: '🪪 MICE-License' },
         ].map(t => (
           <Link key={t.key} href={`/rounds?view=${t.key}`} scroll={false}
             style={{
@@ -405,7 +407,7 @@ function RoundsInner() {
       )}
 
       {/* ═══════════════════════════════════════════════
-           SECTION 2: PRE-SALE & MICE-LICENSE  (view: presale)
+           SECTION 2: PRE-SALE  (view: presale)
          ═══════════════════════════════════════════════ */}
       {view === 'presale' && (
       <>
@@ -490,10 +492,14 @@ function RoundsInner() {
         <div className="stat-box"><div className="stat-lbl">Marketing Cost</div><div className="stat-val gold">{fmtUsd2(Number(ps.mktCost || 0))}</div><div className="stat-delta">35% (Ref 10% + Mktg 25%)</div></div>
         <div className="stat-box"><div className="stat-lbl">Net Capital</div><div className="stat-val g">{fmtUsd2(Number(ps.fundRaised || 0))}</div><div className="stat-delta">57.5% of revenue</div></div>
       </div>
+      </>
+      )}
 
       {/* ═══════════════════════════════════════════════
-           SECTION 3: MICE LICENSE
+           SECTION 3: MICE LICENSE  (view: mice)
          ═══════════════════════════════════════════════ */}
+      {view === 'mice' && (
+      <>
       <div className="sep-lbl" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: '1rem' }}>🪪</span> MICE License
         {miceRound && (
