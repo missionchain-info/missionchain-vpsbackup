@@ -1315,3 +1315,27 @@ select option { background: var(--bg3); }
 [data-theme="light"] select option {
   background: var(--bg3);
 }
+
+/* ── Royal — professional navy + gold (dark-family theme, added 2026-07-14) ── */
+[data-theme="royal"] {
+  --bg:       #0E2445;
+  --bg2:      #143056;
+  --bg3:      #1B3D68;
+  --bg4:      #254E80;
+  --purple:   #5B86B8;
+  --purple2:  #9CBBE0;
+  --crimson:  #3C6076;
+  --crimson2: #6E96AC;
+  --gold:     #C99A52;
+  --gold2:    #E7CE9E;
+  --copper:   #C79A6A;
+  --white:    #EAF0F7;
+  --gray:     #A9B6C8;
+  --gray2:    #8494A8;
+  --border:   rgba(201,154,82,0.22);
+  --border2:  rgba(201,154,82,0.42);
+  --glow-p:   rgba(78,110,150,.16);
+  --glow-c:   rgba(40,70,110,.20);
+  --grad-p:   linear-gradient(135deg, #22334E, #0B1220);
+  --grad-full: linear-gradient(90deg, #22334E, #0B1220, #C99A52);
+}

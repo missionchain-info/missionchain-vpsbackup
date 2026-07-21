@@ -748,3 +748,27 @@ model AdminAuditLog {
   @@index([action])
   @@index([createdAt])
 }
+
+// ─── MIC Feeds (public feed: AI/tech/finance + Bible + admin) ───────
+model FeedItem {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  type              String    @default("card")       // card | image | carousel | motion
+  pillar            String                            // ai | tech | finance | faith | announcement
+  title             String
+  body              String                            // markdown/rich
+  media             Json?                             // array of media URLs
+  lang              String    @default("en")          // en | vi | es | pt | ko
+  sourceUrl         String?
+  sourceAttribution String?
+  verseRef          String?
+  verseText         String?
+  status            String    @default("published")   // draft|pending_review|approved|published|rejected
+  createdBy         String    @default("admin")
+  pinned            Boolean   @default(false)
+  publishedAt       DateTime?
+
+  @@index([status, pillar])
+  @@index([publishedAt])
+}

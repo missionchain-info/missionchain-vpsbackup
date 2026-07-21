@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const { address, isConnected } = useAccount()
   const { data: bnbBalance } = useBalance({ address })
   const { signMessageAsync } = useSignMessage()
-  const { toggleTheme, isDark } = useTheme()
+  const { toggleTheme, theme } = useTheme()
 
   // ── USDT + MIC balances ──
   const { data: usdtBalance } = useReadContract({
@@ -253,8 +253,8 @@ export default function RegisterPage() {
 
   return (
     <div className="screen screen-register">
-      <button className="theme-toggle" onClick={toggleTheme}>
-        {isDark ? '🌙' : '☀'}
+      <button className="theme-toggle" onClick={toggleTheme} title={`Theme: ${theme}`}>
+        {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
       </button>
 
       <div className="register-container">

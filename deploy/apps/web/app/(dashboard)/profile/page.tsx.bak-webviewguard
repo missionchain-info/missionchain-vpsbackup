@@ -9,7 +9,6 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { QRCodeSVG } from 'qrcode.react'
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from '@/lib/firebase'
 import type { ConfirmationResult } from 'firebase/auth'
-import { isInAppBrowser, openInSystemBrowser, DAPP_URL } from '@/lib/wallet'
 
 interface ProfileData {
   data?: {
@@ -104,11 +103,6 @@ export default function ProfilePage() {
   const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
   const recaptchaContainerRef = useRef<HTMLDivElement>(null)
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null)
-  // In-app browsers (Telegram/FB/Zalo…) block reCAPTCHA → Firebase SMS fails with error-code:-39
-  const [inAppBrowser, setInAppBrowser] = useState(false)
-  const [showBrowserHelp, setShowBrowserHelp] = useState(false)
-  const [copiedLink, setCopiedLink] = useState(false)
-  useEffect(() => { setInAppBrowser(isInAppBrowser()) }, [])
 
   const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('mc-userId') : null
 
@@ -339,23 +333,17 @@ export default function ProfilePage() {
       setKycMsg('SMS code sent to your phone!')
     } catch (err: any) {
       console.error('[Firebase Phone Auth] code:', err.code, 'msg:', err.message, 'full:', err)
-      const raw = `${err.code || ''} ${err.message || ''}`
-      // reCAPTCHA cannot complete inside in-app browsers → Firebase throws an internal
-      // error such as auth/error-code:-39 or captcha-check-failed. Guide the user out.
-      const isRecaptchaBlocked =
-        /error-code:-39|captcha|recaptcha|internal-error/i.test(raw) || isInAppBrowser()
       const msg = err.code === 'auth/invalid-phone-number'
         ? 'Invalid phone number. Use format: +84912345678'
         : err.code === 'auth/too-many-requests'
         ? 'Too many attempts. Try again later.'
-        : isRecaptchaBlocked
-        ? "This in-app browser blocks SMS verification. Please open Mission Chain in Chrome or Safari, then try again."
+        : err.code === 'auth/captcha-check-failed'
+        ? `reCAPTCHA failed [${err.code}]. Ensure Phone Auth is enabled & Firebase is on Blaze plan.`
         : err.code === 'auth/network-request-failed'
         ? 'Network error. Check your connection and try again.'
         : err.code === 'auth/operation-not-allowed'
         ? 'Phone Auth is not enabled. Enable it in Firebase Console > Authentication > Sign-in method.'
         : `Error: ${err.code || ''} — ${err.message || 'Unknown error'}`
-      if (isRecaptchaBlocked) setShowBrowserHelp(true)
       setKycMsg(msg)
       // Clean up reCAPTCHA on error
       if (recaptchaVerifierRef.current) {
@@ -760,42 +748,6 @@ export default function ProfilePage() {
                 <div style={{ fontSize: '0.62rem', color: 'var(--muted)', margin: '4px 0 6px', lineHeight: 1.5 }}>
                   Enter with country code (e.g. +1, +44, +82...). SMS will be sent to this number.
                 </div>
-
-                {/* In-app browser guard: reCAPTCHA (and thus SMS) fails inside embedded browsers */}
-                {(inAppBrowser || showBrowserHelp) && (
-                  <div style={{
-                    margin: '8px 0 10px', padding: '12px 14px', borderRadius: 12,
-                    background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.35)',
-                  }}>
-                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--gold, #C9A84C)', marginBottom: 4 }}>
-                      ⚠ Open in a real browser for SMS
-                    </div>
-                    <div style={{ fontSize: '0.66rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: 10 }}>
-                      You&apos;re in an in-app browser (Telegram, Facebook, Zalo…), which blocks the security
-                      check needed to send the SMS. Open Mission Chain in <strong>Chrome</strong> or <strong>Safari</strong>,
-                      then verify. On iPhone: tap the Share / <strong>•••</strong> button → <strong>Open in Safari</strong>.
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <button type="button" className="prof-kyc-btn" onClick={openInSystemBrowser}>
-                        Open in browser
-                      </button>
-                      <button
-                        type="button"
-                        className="prof-kyc-btn"
-                        style={{ background: 'transparent', border: '1px solid var(--border)' }}
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(DAPP_URL)
-                            setCopiedLink(true)
-                            setTimeout(() => setCopiedLink(false), 2000)
-                          } catch {}
-                        }}
-                      >
-                        {copiedLink ? 'Copied!' : 'Copy link'}
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 {/* reCAPTCHA container (invisible) */}
                 <div id="recaptcha-container" ref={recaptchaContainerRef} />

@@ -14,6 +14,7 @@ import authPlugin from './plugins/auth'
 import { authRoutes } from './routes/auth'
 import { userRoutes } from './routes/user'
 import { dashboardRoutes } from './routes/dashboard'
+import { feedsRoutes } from './routes/feeds'
 import { salesRoutes } from './routes/sales'
 import { stakingRoutes } from './routes/staking'
 import { miningRoutes } from './routes/mining'
@@ -107,6 +108,7 @@ async function start() {
   await app.register(authRoutes, { prefix: '/auth' })
   await app.register(userRoutes, { prefix: '/user' })
   await app.register(dashboardRoutes, { prefix: '/dashboard' })
+  await app.register(feedsRoutes, { prefix: '/feeds' })
   await app.register(salesRoutes, { prefix: '/sales' })
   await app.register(stakingRoutes, { prefix: '/staking' })
   await app.register(miningRoutes, { prefix: '/mining' })

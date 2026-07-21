@@ -33,7 +33,7 @@ interface OverviewData {
 
 export default function Topbar() {
   const pathname = usePathname()
-  const { toggleTheme, isDark } = useTheme()
+  const { toggleTheme, theme } = useTheme()
   const { address } = useAccount()
   const { data: overview } = useApi<OverviewData>('/dashboard/overview')
 
@@ -59,8 +59,8 @@ export default function Topbar() {
           </div>
         </div>
         <button className="topbar-btn" aria-label="Notifications">🔔</button>
-        <button className="topbar-btn" onClick={toggleTheme} aria-label="Toggle theme">
-          {isDark ? '🌙' : '☀'}
+        <button className="topbar-btn" onClick={toggleTheme} aria-label="Toggle theme" title={`Theme: ${theme}`}>
+          {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
         </button>
         <Link href="/" className="topbar-btn" style={{ textDecoration: 'none' }} aria-label="Home">↪</Link>
       </div>

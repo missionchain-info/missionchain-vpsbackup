@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAccount, useDisconnect, useConnect } from 'wagmi'
 import { Copy, ExternalLink, LogOut, ChevronDown, Check, Wallet } from 'lucide-react'
-import MobileWalletSheet from './MobileWalletSheet'
-import { isMobileDevice, hasInjectedProvider } from '@/lib/wallet'
 
 interface ConnectButtonProps {
   className?: string
@@ -16,7 +14,6 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
   const { connect, connectors, isPending } = useConnect()
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [showSheet, setShowSheet] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown on outside click
@@ -42,15 +39,12 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
   }
 
   const handleConnect = () => {
-    // Mobile / installed PWA with no injected wallet: show the wallet sheet
-    // (deep-link into MetaMask/Trust in-app browser, or WalletConnect QR).
-    if (isMobileDevice() && !hasInjectedProvider()) {
-      setShowSheet(true)
-      return
-    }
     const injectedC = connectors.find(c => c.id === 'injected')
     const wcC = connectors.find(c => c.id === 'walletConnect')
-    const hasInjected = hasInjectedProvider()
+    // Use an injected wallet only when one is actually present (desktop extension /
+    // wallet in-app browser). On mobile / installed PWA there is no window.ethereum,
+    // so fall back to WalletConnect (QR + deep-link to MetaMask/Trust/etc.).
+    const hasInjected = typeof window !== 'undefined' && !!(window as any).ethereum
     const connector = (hasInjected && injectedC) ? injectedC : (wcC || injectedC || connectors[0])
     if (connector) {
       connect({ connector })
@@ -59,21 +53,18 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
 
   if (!isConnected || !address) {
     return (
-      <>
-        <button
-          onClick={handleConnect}
-          disabled={isPending}
-          className={`btn btn-primary ${className}`}
-        >
-          {isPending ? (
-            <span className="spinner spinner-sm" />
-          ) : (
-            <Wallet size={16} />
-          )}
-          <span>{isPending ? 'Connecting...' : 'Connect Wallet'}</span>
-        </button>
-        <MobileWalletSheet open={showSheet} onClose={() => setShowSheet(false)} />
-      </>
+      <button
+        onClick={handleConnect}
+        disabled={isPending}
+        className={`btn btn-primary ${className}`}
+      >
+        {isPending ? (
+          <span className="spinner spinner-sm" />
+        ) : (
+          <Wallet size={16} />
+        )}
+        <span>{isPending ? 'Connecting...' : 'Connect Wallet'}</span>
+      </button>
     )
   }
 

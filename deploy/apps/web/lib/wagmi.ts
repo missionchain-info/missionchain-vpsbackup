@@ -16,10 +16,10 @@ export const config = createConfig({
           walletConnect({
             projectId: wcProjectId,
             metadata: {
-              name: 'Mission Chain DApp',
+              name: 'Mission Chain',
               description: 'Faith-powered Web3 ecosystem on BNB Smart Chain',
-              url: 'https://missionchain.io',
-              icons: ['https://missionchain.io/images/logo.png'],
+              url: 'https://app.missionchain.io',
+              icons: ['https://app.missionchain.io/icons/icon-512.png'],
             },
             showQrModal: true,
           }),

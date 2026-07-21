@@ -3392,19 +3392,19 @@ body.light .mobile-nav::before {
 /* ── Horizontal Scroll Stats ── */
 .dash-scroll-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   padding: 4px 2px 8px;
   margin-bottom: 8px;
   animation: dashFadeUp 0.5s ease-out 0.1s both;
 }
 
-/* Very wide desktop: all 8 stats on a single tidy row (laptops stay 4×2 for breathing room) */
-@media (min-width: 1440px) {
-  .dash-scroll-stats { grid-template-columns: repeat(8, 1fr); }
+/* Wide laptop/desktop: keep all 7 stats on a single tidy row */
+@media (min-width: 1120px) {
+  .dash-scroll-stats { grid-template-columns: repeat(7, 1fr); }
 }
 
-/* Phones: 2 per row so boxes stay readable (never a horizontal scroll) */
+/* Phones: lock to 2 per row so boxes stay readable (never a horizontal scroll) */
 @media (max-width: 520px) {
   .dash-scroll-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }

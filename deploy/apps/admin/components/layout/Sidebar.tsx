@@ -33,6 +33,7 @@ const NAV_ITEMS: NavGroup[] = [
       { href: '/distributors', icon: '🤝', label: 'Distributors' },
       { href: '/payment-requests', icon: '💸', label: 'Payment Requests' },
       { href: '/building', icon: '🌐', label: 'Community' },
+      { href: '/feeds', icon: '📰', label: 'Feeds', badge: 'NEW' },
     ],
   },
   {

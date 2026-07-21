@@ -48,6 +48,55 @@
     --shadow-soft: rgba(67,46,18,0.12);
   }
 
+  body.theme-royal {
+    --burgundy: #3E6E90;
+    --deep-purple: #16304C;
+    --gold: #C9A84C;
+    --gold-light: #E8C96B;
+    --cream: #EAF1FB;
+    --white: #FFFFFF;
+    --text-dim: rgba(234,241,251,0.72);
+    --card-bg: rgba(37,78,128,0.10);
+    --border: rgba(201,168,76,0.28);
+    --body-bg: #0E2445;
+    --nav-bg: rgba(11,24,44,0.88);
+    --dropdown-bg: rgba(12,28,52,0.98);
+    --shadow-soft: rgba(0,0,0,0.5);
+  }
+  /* Royal — hardcoded section overrides */
+  body.theme-royal .hero-bg { background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46, 92, 150,0.35) 0%, rgba(22, 48, 86,0.4) 40%, #0a1d38 100%); }
+  body.theme-royal .hero-orb-1 { background: radial-gradient(circle, rgba(46, 92, 150,0.2) 0%, transparent 70%); }
+  body.theme-royal .btn-primary:hover { box-shadow: 0 10px 40px rgba(46, 92, 150,0.5); }
+  body.theme-royal .about-visual img { box-shadow: 0 0 80px rgba(46, 92, 150,0.4); }
+  body.theme-royal .eco-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.3) 50%, #0a1d38 100%); }
+  body.theme-royal .tokenomics-section { background: #081226; }
+  body.theme-royal .rounds-section { background: linear-gradient(180deg, #081226 0%, #0a1d38 100%); }
+  body.theme-royal .mice-box { background: linear-gradient(135deg, rgba(46, 92, 150,0.2), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .roadmap-section { background: #0a1d38; }
+  body.theme-royal .gtm-principles { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.08), transparent 34%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.34), rgba(10, 29, 56,0.92)); }
+  body.theme-royal .gtm-principle-num { background: linear-gradient(135deg, rgba(201,168,76,0.22), rgba(46, 92, 150,0.36)); }
+  body.theme-royal .gov-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .team-section { background: #081226; }
+  body.theme-royal .team-avatar-photo { box-shadow: 0 0 20px rgba(46, 92, 150,0.3); }
+  body.theme-royal .social-section { background: linear-gradient(135deg, rgba(46, 92, 150,0.15) 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .docs-section { background: #081226; }
+  body.theme-royal .market-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(46, 92, 150,0.12) 50%, #0a1d38 100%); }
+  body.theme-royal .market-total { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .seed-pkg.featured { background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .seed-vesting-box { background: rgba(22, 48, 86,0.3); }
+  body.theme-royal .mice-price-panel { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 35%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.55), rgba(10, 29, 56,0.9)); }
+  body.theme-royal .mice-proceeds-wrapper { background: linear-gradient(135deg, rgba(10, 29, 56,0.9) 0%, rgba(22, 48, 86,0.4) 100%); }
+  body.theme-royal .finance-section { background: #081226; }
+  body.theme-royal .finance-total-row { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .risk-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .legal-section { background: #081226; }
+
+
+
   /* Korean language font override */
   .lang-ko body,
   .lang-ko h1, .lang-ko h2, .lang-ko h3, .lang-ko h4,
@@ -224,6 +273,15 @@
   body.theme-light .theme-toggle {
     background: rgba(201,168,76,0.15);
   }
+
+  .theme-toggle.royal .theme-toggle-knob {
+    transform: translateX(13px);
+    background: #3E6E90;
+  }
+  body.theme-royal .theme-toggle {
+    background: rgba(37,78,128,0.20);
+  }
+
 
   /* DROPDOWN */
   .nav-dropdown { position: relative; }
@@ -1475,6 +1533,7 @@
     <a href="#ecosystem">Ecosystem</a>
     <a href="#tokenomics">Tokenomics</a>
     <a href="#roadmap">Roadmap</a>
+    <a href="#feeds">Feeds</a>
     <!-- <a href="#team">Team</a> -->
     <a href="#documents">Documents</a>
     <a href="https://missionchain.world" target="_blank">Mission World</a>
@@ -2115,6 +2174,19 @@
   </div>
 </section>
 
+
+<!-- LATEST FEEDS (widget, additive) -->
+<section id="feeds" class="feeds-section" style="padding:90px 24px;">
+  <div class="section-inner">
+    <span class="section-label">Community Feed</span>
+    <h2 class="section-title">Latest Updates</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">News across AI, technology, and markets — interwoven with reflections from Scripture. Transparent and regular.</p>
+    <div id="mic-feed" data-lang="en" data-viewall="View all"></div>
+  </div>
+</section>
+<script src="/feeds-widget.js?v=20260719" defer></script>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
@@ -2216,40 +2288,32 @@ function getLocalizedHref(lang, fallbackFile) {
   syncLandingLanguageMenu();
 
   function toggleTheme() {
-    var toggle = document.getElementById('themeToggle');
-    var knob = toggle.querySelector('.theme-toggle-knob');
-    var isCurrentlyLight = toggle.classList.contains('light');
-    if (isCurrentlyLight) {
-      toggle.classList.remove('light');
-      toggle.classList.add('dark');
-      knob.textContent = '☾';
-      document.body.classList.remove('theme-light');
-      try { localStorage.setItem('missionchain-theme', 'daylight'); } catch(e) {}
-    } else {
-      toggle.classList.remove('dark');
-      toggle.classList.add('light');
-      knob.textContent = '☀';
-      document.body.classList.add('theme-light');
-      try { localStorage.setItem('missionchain-theme', 'night'); } catch(e) {}
-    }
+    var order = ['dark','light','royal'];
+    var cur = document.body.classList.contains('theme-royal') ? 'royal'
+            : document.body.classList.contains('theme-light') ? 'light' : 'dark';
+    setTheme(order[(order.indexOf(cur) + 1) % order.length]);
   }
 
   function setTheme(theme) {
+    if (theme === 'daylight') theme = 'dark';
+    else if (theme === 'night') theme = 'light';
+    if (theme !== 'dark' && theme !== 'light' && theme !== 'royal') theme = 'dark';
     var toggle = document.getElementById('themeToggle');
     var knob = toggle ? toggle.querySelector('.theme-toggle-knob') : null;
-    var isLight = theme === 'night';
-    document.body.classList.toggle('theme-light', isLight);
-    if (toggle && knob) {
-      toggle.classList.toggle('light', isLight);
-      toggle.classList.toggle('dark', !isLight);
-      knob.textContent = isLight ? '☀' : '☾';
+    document.body.classList.remove('theme-light', 'theme-royal');
+    if (theme === 'light') document.body.classList.add('theme-light');
+    else if (theme === 'royal') document.body.classList.add('theme-royal');
+    if (toggle) {
+      toggle.classList.remove('light', 'dark', 'royal');
+      toggle.classList.add(theme);
     }
+    if (knob) knob.textContent = theme === 'light' ? '☀' : theme === 'royal' ? '✦' : '☾';
     try { localStorage.setItem('missionchain-theme', theme); } catch (e) {}
   }
 
   (function restoreTheme() {
-    var savedTheme = 'daylight';
-    try { savedTheme = localStorage.getItem('missionchain-theme') || 'daylight'; } catch (e) {}
+    var savedTheme = 'dark';
+    try { savedTheme = localStorage.getItem('missionchain-theme') || 'dark'; } catch (e) {}
     setTheme(savedTheme);
   })();
 
@@ -2259,5 +2323,7 @@ function getLocalizedHref(lang, fallbackFile) {
   });
 
 </script>
+<!-- Chatwoot NIRA widget -->
+<script>(function(d,t){var BASE_URL="https://chat.missionchain.io";var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src=BASE_URL+"/packs/js/sdk.js";g.defer=true;g.async=true;s.parentNode.insertBefore(g,s);g.onload=function(){window.chatwootSDK.run({websiteToken:"tL4SgYfVMeFSjPqdpGKw1mA7",baseUrl:BASE_URL})}})(document,"script");</script>
 </body>
 </html>
