@@ -8,24 +8,34 @@ const chain = bsc
 
 const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID || ''
 
+// The device-preview overlay renders the app inside an iframe (?_vp=1). Initializing
+// WalletConnect a SECOND time in that iframe disrupts the main window's wallet session
+// (WalletConnect Core is a singleton). So inside the preview iframe we use an
+// injected-only connector set. The MAIN window config is unchanged.
+const isPreview =
+  typeof window !== 'undefined' &&
+  (new URLSearchParams(window.location.search).has('_vp') || window.self !== window.top)
+
 export const config = createConfig({
-  connectors: [
-    injected(),
-    ...(wcProjectId
-      ? [
-          walletConnect({
-            projectId: wcProjectId,
-            metadata: {
-              name: 'Mission Chain',
-              description: 'Faith-powered Web3 ecosystem on BNB Smart Chain',
-              url: 'https://app.missionchain.io',
-              icons: ['https://app.missionchain.io/icons/icon-512.png'],
-            },
-            showQrModal: true,
-          }),
-        ]
-      : []),
-  ],
+  connectors: isPreview
+    ? [injected()]
+    : [
+        injected(),
+        ...(wcProjectId
+          ? [
+              walletConnect({
+                projectId: wcProjectId,
+                metadata: {
+                  name: 'Mission Chain',
+                  description: 'Faith-powered Web3 ecosystem on BNB Smart Chain',
+                  url: 'https://app.missionchain.io',
+                  icons: ['https://app.missionchain.io/icons/icon-512.png'],
+                },
+                showQrModal: true,
+              }),
+            ]
+          : []),
+      ],
   chains: [chain],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org/'),
