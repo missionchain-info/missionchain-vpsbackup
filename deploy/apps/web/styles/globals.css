@@ -12953,3 +12953,53 @@ body.royal .prof-social-step {
 body.royal .prof-social-input {
   background: rgba(7, 18, 34, 0.6) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   3D DEPTH KIT (2026-08) — elegant glass depth for shared cards.
+   Theme-adaptive shadow via --card-shadow. Applied to shared card classes;
+   cascades across all pages. Elegant intensity (subtle, premium).
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  --card-shadow: 0 12px 26px rgba(0,0,0,.30), 0 3px 7px rgba(0,0,0,.22),
+                 inset 0 1px 0 rgba(255,255,255,.07), inset 0 -12px 22px rgba(0,0,0,.10);
+  --card-shadow-hover: 0 18px 38px rgba(0,0,0,.38), 0 5px 10px rgba(0,0,0,.28),
+                 inset 0 1px 0 rgba(255,255,255,.12);
+}
+body.light {
+  --card-shadow: 0 10px 24px rgba(80,60,130,.12), 0 2px 6px rgba(30,20,60,.07),
+                 inset 0 1px 0 rgba(255,255,255,.75);
+  --card-shadow-hover: 0 16px 34px rgba(80,60,130,.18), 0 3px 8px rgba(30,20,60,.10),
+                 inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+.card, .scroll-stat, .stat-box, .glass-card, .land-card, .package-card,
+.dash-wallet-card, .dash-income-card, .dash-emission, .prof-card, .prof-referral-card,
+.net-section-card, .net-volume-card, .net-income-card, .net-referral-card, .net-earnings-card, .net-tiers-card, .net-community-card, .net-rank-card,
+.seed-pkg, .seed-vesting-card, .seed-orders-card, .seed-hero-bg,
+.pre-pkg, .pre-custom-card, .pre-vesting-card, .pre-orders-card,
+.mice-round-card, .mice-licenses-card, .mice-custom-card, .mice-round-progress-card,
+.nft-pcard, .nft-section-card, .nft-pool-card, .nft-my-card, .nft-type-card,
+.mine-card, .mine-split-card, .mine-engine-card, .mine-licenses-card, .mine-stat-box,
+.stk-tier-card, .stk-lock-card, .stk-hero-stat,
+.vest-section-card, .vest-progress-card,
+.dao-section-card, .dao-proposal-card, .dao-req-card, .dao-timelock-card,
+.info-section-card, .info-doc-card, .info-community-card,
+.p2p-section-card, .p2p-order-card, .p2p-market-item,
+.swap-card, .swap-price-card {
+  box-shadow: var(--card-shadow) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card, .scroll-stat, .land-card, .package-card, .seed-pkg, .pre-pkg,
+  .nft-pcard, .nft-type-card, .stk-tier-card, .dash-income-card, .mine-card,
+  .net-section-card, .p2p-order-card, .info-doc-card {
+    transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease;
+  }
+  .card:hover, .scroll-stat:hover, .land-card:hover, .package-card:hover,
+  .seed-pkg:hover, .pre-pkg:hover, .nft-pcard:hover, .nft-type-card:hover,
+  .stk-tier-card:hover, .dash-income-card:hover, .mine-card:hover,
+  .net-section-card:hover, .p2p-order-card:hover, .info-doc-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover) !important;
+  }
+}
