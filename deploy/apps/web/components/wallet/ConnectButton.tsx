@@ -5,6 +5,7 @@ import { useAccount, useDisconnect, useConnect } from 'wagmi'
 import { Copy, ExternalLink, LogOut, ChevronDown, Check, Wallet } from 'lucide-react'
 import MobileWalletSheet from './MobileWalletSheet'
 import { isMobileDevice, hasInjectedProvider } from '@/lib/wallet'
+import { ensureWalletConnect } from '@/lib/wagmi'
 
 interface ConnectButtonProps {
   className?: string
@@ -41,7 +42,7 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
     }
   }
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     // Mobile / installed PWA with no injected wallet: show the wallet sheet
     // (deep-link into MetaMask/Trust in-app browser, or WalletConnect QR).
     if (isMobileDevice() && !hasInjectedProvider()) {
@@ -49,12 +50,14 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
       return
     }
     const injectedC = connectors.find(c => c.id === 'injected')
-    const wcC = connectors.find(c => c.id === 'walletConnect')
-    const hasInjected = hasInjectedProvider()
-    const connector = (hasInjected && injectedC) ? injectedC : (wcC || injectedC || connectors[0])
-    if (connector) {
-      connect({ connector })
+    if (hasInjectedProvider() && injectedC) {
+      connect({ connector: injectedC })
+      return
     }
+    // No injected wallet (e.g. desktop, no extension) → lazily load WalletConnect (QR modal).
+    const wc = await ensureWalletConnect()
+    if (wc) connect({ connector: wc })
+    else if (injectedC) connect({ connector: injectedC })
   }
 
   if (!isConnected || !address) {
