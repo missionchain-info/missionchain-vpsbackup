@@ -1,7 +1,7 @@
 /* ===== Mission Chain DApp — globals.css ===== */
 /* ALL CSS from HTML template, adapted for Next.js */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 * {
   margin: 0;
@@ -10,7 +10,7 @@
 }
 
 :root {
-  --font-d: 'Fraunces', 'Noto Serif KR', Georgia, serif;
+  --font-d: 'Sora', 'Noto Sans KR', system-ui, sans-serif;
   --font-b: 'Space Grotesk', 'Noto Sans KR', system-ui, sans-serif;
   --font-wordmark: 'Marcellus', 'Noto Serif KR', serif;
   --font-m: 'JetBrains Mono', monospace;
@@ -12960,16 +12960,16 @@ body.royal .prof-social-input {
    cascades across all pages. Elegant intensity (subtle, premium).
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  --card-shadow: 0 12px 26px rgba(0,0,0,.30), 0 3px 7px rgba(0,0,0,.22),
-                 inset 0 1px 0 rgba(255,255,255,.07), inset 0 -12px 22px rgba(0,0,0,.10);
-  --card-shadow-hover: 0 18px 38px rgba(0,0,0,.38), 0 5px 10px rgba(0,0,0,.28),
-                 inset 0 1px 0 rgba(255,255,255,.12);
+  --card-shadow: 0 20px 44px rgba(0,0,0,.46), 0 6px 14px rgba(0,0,0,.34),
+                 inset 0 1px 0 rgba(255,255,255,.10), inset 0 -16px 28px rgba(0,0,0,.16);
+  --card-shadow-hover: 0 30px 62px rgba(0,0,0,.55), 0 9px 18px rgba(0,0,0,.38),
+                 inset 0 1px 0 rgba(255,255,255,.15);
 }
 body.light {
-  --card-shadow: 0 10px 24px rgba(80,60,130,.12), 0 2px 6px rgba(30,20,60,.07),
-                 inset 0 1px 0 rgba(255,255,255,.75);
-  --card-shadow-hover: 0 16px 34px rgba(80,60,130,.18), 0 3px 8px rgba(30,20,60,.10),
+  --card-shadow: 0 16px 38px rgba(70,55,120,.18), 0 4px 10px rgba(30,20,60,.10),
                  inset 0 1px 0 rgba(255,255,255,.85);
+  --card-shadow-hover: 0 26px 54px rgba(70,55,120,.25), 0 7px 14px rgba(30,20,60,.14),
+                 inset 0 1px 0 rgba(255,255,255,.92);
 }
 
 .card, .scroll-stat, .stat-box, .glass-card, .land-card, .package-card,
