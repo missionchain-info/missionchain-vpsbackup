@@ -7,7 +7,6 @@ import { api, authApi } from '@/lib/api'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 import BottomNav from '@/components/layout/BottomNav'
-import DevicePreview from '@/components/DevicePreview'
 
 // Decode JWT payload (no verify — just read wallet field)
 function getJwtWallet(): string | null {
@@ -107,7 +106,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
       <BottomNav />
-      <DevicePreview />
     </div>
   )
 }

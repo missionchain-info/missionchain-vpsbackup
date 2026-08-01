@@ -6,7 +6,6 @@ import { useEffect, useState, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import { McUiProvider } from '@/components/ui/McUi';
-import DevicePreview from '@/components/DevicePreview';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -51,7 +50,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </div>
-      <DevicePreview />
     </McUiProvider>
   );
 }

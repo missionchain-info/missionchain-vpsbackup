@@ -3409,9 +3409,9 @@ body.light .mobile-nav::before {
   animation: dashFadeUp 0.5s ease-out 0.1s both;
 }
 
-/* Very wide desktop: all 8 stats on a single tidy row (laptops stay 4×2 for breathing room) */
+/* All screens keep 4 per row → 2 tidy rows of 4 (no cramped single row, no clipping) */
 @media (min-width: 1440px) {
-  .dash-scroll-stats { grid-template-columns: repeat(8, 1fr); }
+  .dash-scroll-stats { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* Phones: 2 per row so boxes stay readable (never a horizontal scroll) */
