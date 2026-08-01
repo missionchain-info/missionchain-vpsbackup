@@ -1,7 +1,7 @@
 /* ===== Mission Chain DApp — globals.css ===== */
 /* ALL CSS from HTML template, adapted for Next.js */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 * {
   margin: 0;
@@ -10,34 +10,35 @@
 }
 
 :root {
-  --font-d: 'Marcellus', 'Noto Serif KR', Georgia, serif;
-  --font-b: 'Manrope', 'Noto Sans KR', system-ui, sans-serif;
+  --font-d: 'Fraunces', 'Noto Serif KR', Georgia, serif;
+  --font-b: 'Space Grotesk', 'Noto Sans KR', system-ui, sans-serif;
+  --font-wordmark: 'Marcellus', 'Noto Serif KR', serif;
   --font-m: 'JetBrains Mono', monospace;
-  /* Dark mode — brighter palette per Anh Thomas (more contrast text/bg/objects) */
-  --bg: #140A1C;
-  --bg2: #1E1130;
-  --bg3: #2A1740;
-  --bg4: #3A2352;
-  --purple: #6A3A7E;
-  --purple2: #A878BC;
-  --blue: #7A1E38;
-  --blue2: #A64158;
-  --gold: #C99A52;
-  --gold2: #E7CE9E;
-  --cream: #F4EFE9;
-  --white: #F4EFE9;
-  --muted: #C4B6C7;
-  --gray: #C4B6C7;
-  --gray2: #A796A9;
-  --success: #4FA97F;
-  --warning: #D9A441;
-  --error: #C9607A;
-  --info: #6FA8C9;
-  --cyan: #5FB6B0;
+  /* Dark REFRESH (2026-08) — indigo-plum depth, luminous violet + gold, crisper text */
+  --bg: #14102A;
+  --bg2: #1C1740;
+  --bg3: #2A2358;
+  --bg4: #392F70;
+  --purple: #8B6EF0;
+  --purple2: #B9A3FA;
+  --blue: #C24E72;
+  --blue2: #E183A2;
+  --gold: #F3C664;
+  --gold2: #FADFA0;
+  --cream: #F7F5FF;
+  --white: #F7F5FF;
+  --muted: #BBB0DC;
+  --gray: #BBB0DC;
+  --gray2: #9689C2;
+  --success: #45D9A0;
+  --warning: #F0B54A;
+  --error: #F26D8B;
+  --info: #6BB6E8;
+  --cyan: #4FD0C8;
   --build-stamp: "2026-04-26T15:30Z-presale-v2";
-  --border: rgba(201,154,82,0.22);
-  --glow-p: rgba(201,154,82,0.14);
-  --glow-b: rgba(122,30,56,0.20);
+  --border: rgba(160,135,240,0.20);
+  --glow-p: rgba(139,110,240,0.20);
+  --glow-b: rgba(243,198,100,0.16);
   --transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -54,28 +55,37 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Brand wordmark keeps Marcellus (faux-bold) — per Owner */
+.landing-title, .sb-brand-name {
+  font-family: var(--font-wordmark) !important;
+  font-weight: 700;
+  font-synthesis: weight;
+  letter-spacing: 0.06em;
+}
+
 /* ===== LIGHT THEME ===== */
 body.light {
-  --bg: #F4EEE6;
-  --bg2: #FBF7F1;
-  --bg3: #ECE2D4;
-  --bg4: #E3D8C8;
-  --purple: #5A2A6E;
-  --purple2: #7A4A8E;
-  --blue: #6C1830;
-  --blue2: #8A2A44;
-  --gold: #A9803C;
-  --gold2: #8A6A2C;
-  --cream: #241426;
-  --white: #241426;
-  --muted: #6A5A6A;
-  --gray: #6A5A6A;
-  --gray2: #8A7A8A;
-  --success: #2E8B5E;
-  --warning: #B87500;
-  --error: #B0405C;
-  --info: #0277BD;
-  --cyan: #00838F;
+  /* Light MODERN (2026-08) — clean lavender-white, royal violet + gold */
+  --bg: #F6F4FB;
+  --bg2: #FFFFFF;
+  --bg3: #EDE8F7;
+  --bg4: #E1DAF0;
+  --purple: #6D28D9;
+  --purple2: #8B5CF6;
+  --blue: #B23A5C;
+  --blue2: #C85E7E;
+  --gold: #B8862E;
+  --gold2: #98701F;
+  --cream: #1A1230;
+  --white: #1A1230;
+  --muted: #6B5E86;
+  --gray: #6B5E86;
+  --gray2: #8B7EA6;
+  --success: #16A06B;
+  --warning: #C77F00;
+  --error: #D14D6E;
+  --info: #2563EB;
+  --cyan: #0E9AA0;
 }
 
 body.light .screen-landing {
