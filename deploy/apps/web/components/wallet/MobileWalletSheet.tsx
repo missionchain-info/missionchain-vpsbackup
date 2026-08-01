@@ -2,7 +2,6 @@
 
 import { useConnect } from 'wagmi'
 import { openInMetaMask, openInTrust } from '@/lib/wallet'
-import { ensureWalletConnect } from '@/lib/wagmi'
 
 /**
  * Bottom sheet shown when connecting on a phone / installed PWA where there is no
@@ -10,10 +9,10 @@ import { ensureWalletConnect } from '@/lib/wagmi'
  * path on mobile) plus WalletConnect QR as a fallback.
  */
 export default function MobileWalletSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { connect } = useConnect()
+  const { connect, connectors } = useConnect()
   if (!open) return null
 
-  const hasWC = !!process.env.NEXT_PUBLIC_WC_PROJECT_ID
+  const wc = connectors.find((c) => c.id === 'walletConnect')
 
   const overlay: React.CSSProperties = {
     position: 'fixed', inset: 0, zIndex: 9999, display: 'flex',
@@ -54,8 +53,8 @@ export default function MobileWalletSheet({ open, onClose }: { open: boolean; on
 
         <button style={opt} onClick={openInMetaMask}>🦊&nbsp; Open in MetaMask</button>
         <button style={opt} onClick={openInTrust}>🛡️&nbsp; Open in Trust Wallet</button>
-        {hasWC && (
-          <button style={opt} onClick={async () => { const wc = await ensureWalletConnect(); if (wc) connect({ connector: wc }); onClose() }}>
+        {wc && (
+          <button style={opt} onClick={() => { connect({ connector: wc }); onClose() }}>
             🔗&nbsp; WalletConnect (scan QR)
           </button>
         )}
