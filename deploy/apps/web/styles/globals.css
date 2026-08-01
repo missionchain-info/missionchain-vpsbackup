@@ -12960,16 +12960,19 @@ body.royal .prof-social-input {
    cascades across all pages. Elegant intensity (subtle, premium).
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  --card-shadow: 0 20px 44px rgba(0,0,0,.46), 0 6px 14px rgba(0,0,0,.34),
-                 inset 0 1px 0 rgba(255,255,255,.10), inset 0 -16px 28px rgba(0,0,0,.16);
-  --card-shadow-hover: 0 30px 62px rgba(0,0,0,.55), 0 9px 18px rgba(0,0,0,.38),
-                 inset 0 1px 0 rgba(255,255,255,.15);
+  --card-shadow: 0 26px 52px rgba(0,0,0,.58), 0 9px 18px rgba(0,0,0,.44),
+                 0 0 0 1px rgba(255,255,255,.06),
+                 inset 0 2px 0 rgba(255,255,255,.16), inset 0 -22px 36px rgba(0,0,0,.26);
+  --card-shadow-hover: 0 38px 74px rgba(0,0,0,.64), 0 13px 24px rgba(0,0,0,.46),
+                 0 0 0 1px rgba(255,255,255,.10),
+                 inset 0 2px 0 rgba(255,255,255,.24);
 }
 body.light {
-  --card-shadow: 0 16px 38px rgba(70,55,120,.18), 0 4px 10px rgba(30,20,60,.10),
-                 inset 0 1px 0 rgba(255,255,255,.85);
-  --card-shadow-hover: 0 26px 54px rgba(70,55,120,.25), 0 7px 14px rgba(30,20,60,.14),
+  --card-shadow: 0 22px 46px rgba(70,55,120,.22), 0 7px 16px rgba(30,20,60,.13),
+                 0 0 0 1px rgba(30,20,60,.045),
                  inset 0 1px 0 rgba(255,255,255,.92);
+  --card-shadow-hover: 0 32px 62px rgba(70,55,120,.30), 0 11px 22px rgba(30,20,60,.17),
+                 inset 0 1px 0 rgba(255,255,255,.97);
 }
 
 .card, .scroll-stat, .stat-box, .glass-card, .land-card, .package-card,
