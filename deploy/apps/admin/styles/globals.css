@@ -1,31 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 /* ── BRAND TOKENS (exact from whitepaper) ── */
 /* Dark mode brightened per Anh Thomas request — stronger text/bg/object contrast */
 :root {
-  --bg:       #140A1C;
-  --bg2:      #1E1130;
-  --bg3:      #2A1740;
-  --bg4:      #3A2352;
-  --purple:   #6A3A7E;
-  --purple2:  #A878BC;
-  --crimson:  #7A1E38;
-  --crimson2: #A64158;
-  --gold:     #C99A52;
-  --gold2:    #E7CE9E;
-  --copper:   #C79A6A;
-  --white:    #F4EFE9;
-  --gray:     #C4B6C7;
-  --gray2:    #A796A9;
-  --border:   rgba(201,154,82,0.22);
-  --border2:  rgba(201,154,82,0.42);
-  --glow-p:   rgba(201,154,82,.14);
-  --glow-c:   rgba(122,30,56,.20);
-  --font-d:   "Marcellus", "Noto Serif KR", Georgia, serif;
-  --font-b:   "Manrope", "Noto Sans KR", system-ui, sans-serif;
+  --bg:       #14102A;
+  --bg2:      #1C1740;
+  --bg3:      #2A2358;
+  --bg4:      #392F70;
+  --purple:   #8B6EF0;
+  --purple2:  #B9A3FA;
+  --crimson:  #C24E72;
+  --crimson2: #E183A2;
+  --gold:     #F3C664;
+  --gold2:    #FADFA0;
+  --copper:   #E0B98A;
+  --white:    #F7F5FF;
+  --gray:     #BBB0DC;
+  --gray2:    #9689C2;
+  --border:   rgba(160,135,240,0.20);
+  --border2:  rgba(160,135,240,0.38);
+  --glow-p:   rgba(139,110,240,.20);
+  --glow-c:   rgba(243,198,100,.16);
+  --font-d:   "Sora", "Noto Sans KR", system-ui, sans-serif;
+  --font-b:   "Space Grotesk", "Noto Sans KR", system-ui, sans-serif;
+  --font-wordmark: "Marcellus", "Noto Serif KR", serif;
   --font-m:   "JetBrains Mono", monospace;
-  --grad-p:   linear-gradient(135deg, #3A2352, #7A1E38);
-  --grad-g:   linear-gradient(135deg, #C99A52, #E7CE9E);
-  --grad-full: linear-gradient(90deg, #3A2352, #7A1E38, #C99A52);
+  --grad-p:   linear-gradient(135deg, #2A2358, #8B6EF0);
+  --grad-g:   linear-gradient(135deg, #F3C664, #FADFA0);
+  --grad-full: linear-gradient(90deg, #2A2358, #8B6EF0, #F3C664);
   --sidebar-w: 264px;
 }
 
@@ -1110,24 +1111,24 @@ select option { background: var(--bg3); }
    LIGHT THEME
 ════════════════════════════════ */
 [data-theme="light"] {
-  --bg:       #F4EEE6;
-  --bg2:      #ECE2D4;
-  --bg3:      #FBF7F1;
-  --bg4:      #E3D8C8;
-  --purple:   #5A2A6E;
-  --purple2:  #7A4A8E;
-  --crimson:  #6C1830;
-  --crimson2: #8A2238;
-  --gold:     #A9803C;
-  --gold2:    #8A6A2C;
-  --copper:   #8A5C30;
-  --white:    #241426;
-  --gray:     #3A2A40;
-  --gray2:    #6A5A6A;
-  --border:   rgba(42,23,64,.16);
-  --border2:  rgba(42,23,64,.28);
-  --glow-p:   rgba(122,30,56,.10);
-  --glow-c:   rgba(201,154,82,.10);
+  --bg:       #F6F4FB;
+  --bg2:      #EDE8F7;
+  --bg3:      #FFFFFF;
+  --bg4:      #E1DAF0;
+  --purple:   #6D28D9;
+  --purple2:  #8B5CF6;
+  --crimson:  #B23A5C;
+  --crimson2: #C85E7E;
+  --gold:     #B8862E;
+  --gold2:    #98701F;
+  --copper:   #9A7B3E;
+  --white:    #1A1230;
+  --gray:     #2E2038;
+  --gray2:    #6B5E86;
+  --border:   rgba(109,40,217,.15);
+  --border2:  rgba(109,40,217,.28);
+  --glow-p:   rgba(109,40,217,.12);
+  --glow-c:   rgba(184,134,46,.14);
 }
 
 [data-theme="light"] body {
@@ -1338,4 +1339,23 @@ select option { background: var(--bg3); }
   --glow-c:   rgba(40,70,110,.20);
   --grad-p:   linear-gradient(135deg, #22334E, #0B1220);
   --grad-full: linear-gradient(90deg, #22334E, #0B1220, #C99A52);
+}
+
+
+/* ═══ SYNC with Frontend (2026-08): wordmark + 3D depth kit ═══ */
+.sb-brand-name, .login-brand {
+  font-family: var(--font-wordmark) !important;
+  font-weight: 700; font-synthesis: weight; letter-spacing: .05em;
+}
+:root {
+  --card-shadow: 0 22px 44px rgba(0,0,0,.52), 0 8px 16px rgba(0,0,0,.4),
+                 0 0 0 1px rgba(255,255,255,.055),
+                 inset 0 2px 0 rgba(255,255,255,.14), inset 0 -18px 30px rgba(0,0,0,.22);
+}
+[data-theme="light"] {
+  --card-shadow: 0 18px 40px rgba(70,55,120,.18), 0 5px 12px rgba(30,20,60,.10),
+                 0 0 0 1px rgba(30,20,60,.04), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.card, .stat-box, .welcome-banner, .glass-card, .panel-card {
+  box-shadow: var(--card-shadow) !important;
 }
