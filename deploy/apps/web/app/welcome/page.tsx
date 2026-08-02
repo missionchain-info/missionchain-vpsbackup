@@ -92,7 +92,7 @@ export default function WelcomePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { address } = useAccount()
-  const { toggleTheme, isDark } = useTheme()
+  const { toggleTheme, theme } = useTheme()
   const userName = searchParams.get('user') || 'User'
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [copied, setCopied] = useState(false)
@@ -138,8 +138,8 @@ export default function WelcomePage() {
     <div className="screen screen-welcome">
       <canvas ref={canvasRef} className="confetti-canvas" />
 
-      <button className="theme-toggle" onClick={toggleTheme}>
-        {isDark ? '🌙' : '☀'}
+      <button className="theme-toggle" onClick={toggleTheme} title={`Theme: ${theme}`}>
+        {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
       </button>
 
       <div className="welcome-card">

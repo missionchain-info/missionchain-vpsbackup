@@ -263,6 +263,30 @@ export async function updateSystemConfig(data: any) {
   });
 }
 
+// ── Twilio Server KYC (SMS OTP fallback) ──
+export interface TwilioKycView {
+  enabled: boolean;
+  accountSid: string;
+  verifyServiceSid: string;
+  authTokenSet: boolean;
+  updatedBy?: string | null;
+  updatedAt?: string | null;
+}
+export async function fetchTwilioKyc() {
+  return apiFetch<{ data: TwilioKycView }>('/admin/kyc/twilio');
+}
+export async function updateTwilioKyc(data: {
+  enabled: boolean;
+  accountSid: string;
+  verifyServiceSid: string;
+  authToken?: string;
+}) {
+  return apiFetch<{ data: TwilioKycView }>('/admin/kyc/twilio', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
 // ── Menu Config (Frontend Interface)
 export async function fetchMenuConfig() {
   return apiFetch<any>('/menu-config');

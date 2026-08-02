@@ -462,13 +462,13 @@ export default function NetworkPage() {
         </div>
       </div>
 
-      {/* ── Incentives — 2.5% ── */}
+      {/* ── Milestones & Incentives — 1.5% base + overflow ── */}
       <div className="net-section-card">
         <div className="net-section-header">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span className="net-section-title">Incentives Pool — 1.5%</span>
+          <span className="net-section-title">Milestones &amp; Incentives — 1.5%+</span>
         </div>
-        <div className="net-info-note">1.5% of Pre-Sale + MICE USDT revenue. DAO-governed fund for community campaigns, special bonuses, and growth incentives.</div>
+        <div className="net-info-note">1.5% base of Pre-Sale + MICE revenue — a fund for market developers paid in kind (travel, gifts) at the Board of Management&apos;s discretion. It also absorbs unspent referral (no referrer / no F2) and Group-Volume bonus below the 9% tier, so the effective rate is higher than 1.5%.</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
           <div style={{ background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 8, padding: '10px 12px' }}>
             <div style={{ fontSize: '0.6rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Total Distributed</div>

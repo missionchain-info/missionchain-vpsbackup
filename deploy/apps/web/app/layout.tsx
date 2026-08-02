@@ -15,6 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     initTheme()
     setMounted(true)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {})
+    }
   }, [])
 
   return (
@@ -27,6 +30,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <title>Mission Chain DApp</title>
         <meta name="description" content="Mission Chain — Faith-powered Web3 ecosystem on BSC" />
+        {/* PWA — installable on Android & iOS */}
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#140A1C" />
+        <link rel="icon" href="/icons/icon-32.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-180.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Mission Chain" />
         {/* MFP-NFT card fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

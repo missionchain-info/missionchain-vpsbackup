@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, getRoleBadgeClass, getRoleLabel, isOwnerWallet, OwnerCrown } from '@/lib/auth';
 
+interface NavChild {
+  href: string;
+  label: string;
+}
+
 interface NavItem {
   href: string;
   icon: string;
@@ -12,6 +17,7 @@ interface NavItem {
   shortLabel?: string;
   badge?: string;
   ownerOnly?: boolean;
+  children?: NavChild[];
 }
 
 interface NavGroup {
@@ -33,13 +39,21 @@ const NAV_ITEMS: NavGroup[] = [
       { href: '/distributors', icon: '🤝', label: 'Distributors' },
       { href: '/payment-requests', icon: '💸', label: 'Payment Requests' },
       { href: '/building', icon: '🌐', label: 'Community' },
+      { href: '/feeds', icon: '📰', label: 'Feeds', badge: 'NEW' },
     ],
   },
   {
     group: 'Business & Finance',
     items: [
       { href: '/components', icon: '🧩', label: 'Components' },
-      { href: '/rounds', icon: '💎', label: 'Round Sales' },
+      {
+        href: '/rounds', icon: '💎', label: 'Sale Rounds',
+        children: [
+          { href: '/rounds?view=seed', label: 'SEED Round' },
+          { href: '/rounds?view=presale', label: 'Pre-Sale' },
+          { href: '/rounds?view=mice', label: 'MICE-License' },
+        ],
+      },
       { href: '/revenue-funds', icon: '💰', label: 'Revenue & Funds' },
       { href: '/mining', icon: '⛏️', label: 'Mining & Staking' },
       { href: '/p2p', icon: '🔀', label: 'P2P Exchange', shortLabel: 'P2P' },
@@ -78,10 +92,13 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/' || pathname === '';
-    return pathname.startsWith(href);
+    // Compare on the path only (ignore ?query) so sub-view links still match the parent
+    const base = href.split('?')[0];
+    return pathname.startsWith(base);
   };
 
   return (
@@ -110,7 +127,46 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           return (
             <div className="nav-group" key={group.group}>
               <div className="nav-group-label">{group.group}</div>
-              {visibleItems.map((item) => (
+              {visibleItems.map((item) => {
+                // ── Parent with dropdown children (e.g. Sale Rounds) ──
+                if (item.children && item.children.length > 0) {
+                  const active = isActive(item.href);
+                  const expanded = openGroups[item.href] ?? active;
+                  return (
+                    <div key={item.href} className="nav-parent">
+                      <div className={`nav-item ${active ? 'active' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 0, paddingRight: 8 }}>
+                        <Link href={item.children[0].href} style={{ display: 'flex', alignItems: 'center', flex: 1, color: 'inherit', textDecoration: 'none', gap: 0 }}>
+                          <span className="nav-icon">{item.icon}</span>
+                          {item.label}
+                        </Link>
+                        <button
+                          type="button"
+                          aria-label={expanded ? 'Collapse' : 'Expand'}
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenGroups((g) => ({ ...g, [item.href]: !expanded })); }}
+                          style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: 10, lineHeight: 1, padding: '2px 4px', opacity: 0.75 }}
+                        >
+                          {expanded ? '▾' : '▸'}
+                        </button>
+                      </div>
+                      {expanded && (
+                        <div className="nav-children" style={{ display: 'flex', flexDirection: 'column', margin: '2px 0 4px 30px', borderLeft: '1px solid var(--border)', paddingLeft: 8 }}>
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className="nav-subitem"
+                              style={{ padding: '6px 10px', fontSize: '0.85em', color: 'var(--gray)', textDecoration: 'none', borderRadius: 6 }}
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                // ── Regular flat item ──
+                return (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -128,7 +184,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   {item.badge && <span className="nav-badge">{item.badge}</span>}
                   {item.ownerOnly && <span className="nav-owner-only">OWNER</span>}
                 </Link>
-              ))}
+                );
+              })}
             </div>
           );
         })}

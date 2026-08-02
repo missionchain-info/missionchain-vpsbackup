@@ -1,9 +1,9 @@
 'use client'
 
-import { Bell, Menu, Globe, Sun, Moon, LogOut } from 'lucide-react'
+import { Bell, Menu, Globe, Sun, Moon, Sparkles, LogOut } from 'lucide-react'
 import { useAccount, useDisconnect, useBalance, useReadContracts } from 'wagmi'
 import { useState, useCallback, useEffect } from 'react'
-import { toggleTheme, getTheme } from '@/lib/theme'
+import { toggleTheme, getTheme, type Theme } from '@/lib/theme'
 import { CONTRACTS, MIC_LOCK_ABI } from '@/lib/contracts'
 import { fmtCompact, DASH } from '@missionchain/sdk'
 import { formatEther } from 'viem'
@@ -15,7 +15,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
-  const [isDark, setIsDark] = useState(true)
+  const [theme, setTheme] = useState<Theme>('dark')
   const { address } = useAccount()
   const { disconnect } = useDisconnect()
   const { data: bnbBalance } = useBalance({ address })
@@ -50,12 +50,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const micAvailable = tokenData?.[2]?.result ? fmtCompact(formatEther(tokenData[2].result as bigint)) : DASH
 
   useEffect(() => {
-    setIsDark(getTheme() === 'dark')
+    setTheme(getTheme())
   }, [])
 
   const handleToggle = useCallback(() => {
     const next = toggleTheme()
-    setIsDark(next === 'dark')
+    setTheme(next)
   }, [])
 
   return (
@@ -110,17 +110,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <span className="text-xs hide-mobile">EN</span>
         </button>
 
-        {/* Theme Toggle Switch */}
+        {/* Theme cycle: dark → light → royal → dark */}
         <button
           onClick={handleToggle}
-          className="theme-toggle-switch"
+          className="topbar-btn"
           aria-label="Toggle theme"
-          role="switch"
-          aria-checked={!isDark}
+          title={`Theme: ${theme} — click to switch`}
         >
-          <Sun size={12} className="theme-toggle-icon-sun" />
-          <Moon size={12} className="theme-toggle-icon-moon" />
-          <span className="theme-toggle-knob" />
+          {theme === 'dark' ? <Moon size={18} /> : theme === 'light' ? <Sun size={18} /> : <Sparkles size={18} />}
         </button>
 
         {/* Wallet Address + Disconnect */}

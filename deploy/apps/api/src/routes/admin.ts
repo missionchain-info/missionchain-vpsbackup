@@ -539,6 +539,66 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return { data: results }
   })
 
+  // ─── Twilio Server KYC — SMS OTP fallback config ───────────────
+  // Stored in SystemConfig key `twilio_kyc`. The auth token is a secret and is
+  // NEVER returned to the UI (only `authTokenSet` tells whether one is stored).
+  app.get('/kyc/twilio', { preHandler: requireLevel('OPERATOR') }, async () => {
+    const row = await app.prisma.systemConfig.findUnique({ where: { key: 'twilio_kyc' } })
+    let cfg: any = { enabled: false, accountSid: '', authToken: '', verifyServiceSid: '' }
+    if (row?.value) { try { cfg = { ...cfg, ...JSON.parse(row.value) } } catch { /* ignore */ } }
+    return {
+      data: {
+        enabled: Boolean(cfg.enabled),
+        accountSid: cfg.accountSid || '',
+        verifyServiceSid: cfg.verifyServiceSid || '',
+        authTokenSet: Boolean(cfg.authToken),
+        updatedBy: row?.updatedBy || null,
+        updatedAt: row?.updatedAt || null,
+      },
+    }
+  })
+
+  // PUT — save config. The auth token is preserved when omitted/blank so the admin
+  // can edit other fields without re-typing the secret.
+  app.put('/kyc/twilio', { preHandler: requireLevel('OPERATOR') }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const body = req.body as { enabled?: boolean; accountSid?: string; verifyServiceSid?: string; authToken?: string }
+
+    const row = await app.prisma.systemConfig.findUnique({ where: { key: 'twilio_kyc' } })
+    let existing: any = { enabled: false, accountSid: '', authToken: '', verifyServiceSid: '' }
+    if (row?.value) { try { existing = { ...existing, ...JSON.parse(row.value) } } catch { /* ignore */ } }
+
+    const next = {
+      enabled: body.enabled ?? existing.enabled,
+      accountSid: (body.accountSid ?? existing.accountSid ?? '').trim(),
+      verifyServiceSid: (body.verifyServiceSid ?? existing.verifyServiceSid ?? '').trim(),
+      // Only overwrite the token when a new non-empty value is provided.
+      authToken: (body.authToken && body.authToken.trim()) ? body.authToken.trim() : (existing.authToken || ''),
+    }
+
+    // Cannot enable without the full credential set.
+    if (next.enabled && !(next.accountSid && next.verifyServiceSid && next.authToken)) {
+      return reply.status(400).send({
+        error: 'INCOMPLETE',
+        message: 'Account SID, Auth Token and Verify Service SID are all required to enable SMS KYC',
+      })
+    }
+
+    await app.prisma.systemConfig.upsert({
+      where: { key: 'twilio_kyc' },
+      update: { value: JSON.stringify(next), updatedBy: wallet },
+      create: { key: 'twilio_kyc', value: JSON.stringify(next), updatedBy: wallet },
+    })
+    return {
+      data: {
+        enabled: next.enabled,
+        accountSid: next.accountSid,
+        verifyServiceSid: next.verifyServiceSid,
+        authTokenSet: Boolean(next.authToken),
+      },
+    }
+  })
+
   // ═══════════════════════════════════════════════════════════════════════
   // ─── ADMIN BOARD ───────────────────────────────────────────────────────
   // ═══════════════════════════════════════════════════════════════════════

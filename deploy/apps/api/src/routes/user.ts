@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify'
 import crypto from 'crypto'
 import admin from 'firebase-admin'
+import { startPhoneVerification, checkPhoneVerification, twilioConfigured, type TwilioCfg } from '../services/twilioVerify'
 
 // Initialize Firebase Admin (once)
 if (!admin.apps.length) {
@@ -11,6 +12,34 @@ if (!admin.apps.length) {
 
 function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+// ─── Twilio Server KYC config (admin-managed, SystemConfig key `twilio_kyc`) ──
+// Shape: { enabled, accountSid, authToken, verifyServiceSid }. Falls back to env
+// vars when the admin has not saved anything yet. `enabled` gates the SMS path.
+export interface TwilioKycConfig extends TwilioCfg {
+  enabled: boolean
+}
+export async function loadTwilioKyc(prisma: any): Promise<TwilioKycConfig> {
+  let cfg: TwilioKycConfig = { enabled: false, accountSid: '', authToken: '', verifyServiceSid: '' }
+  try {
+    const row = await prisma.systemConfig.findUnique({ where: { key: 'twilio_kyc' } })
+    if (row?.value) cfg = { ...cfg, ...JSON.parse(row.value) }
+  } catch { /* ignore malformed */ }
+  // Env fallback (backward compat): if no SID saved but env has one, use env + treat as enabled.
+  if (!cfg.accountSid && process.env.TWILIO_ACCOUNT_SID) {
+    cfg = {
+      enabled: true,
+      accountSid: process.env.TWILIO_ACCOUNT_SID,
+      authToken: process.env.TWILIO_AUTH_TOKEN || '',
+      verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID || '',
+    }
+  }
+  return cfg
+}
+/** True only when Twilio is both enabled by admin AND fully configured. */
+export function twilioActive(cfg: TwilioKycConfig): boolean {
+  return Boolean(cfg.enabled) && twilioConfigured(cfg)
 }
 
 export const userRoutes: FastifyPluginAsync = async (app) => {
@@ -200,7 +229,7 @@ export const userRoutes: FastifyPluginAsync = async (app) => {
   }, async (req, reply) => {
     const { wallet } = req.user as { wallet: string }
     const { phone, channel, telegramChatId } = req.body as {
-      phone: string; channel?: 'telegram' | 'whatsapp'; telegramChatId?: string
+      phone: string; channel?: 'telegram' | 'whatsapp' | 'sms'; telegramChatId?: string
     }
 
     if (!phone || !/^\+?[1-9]\d{7,14}$/.test(phone.replace(/[\s-]/g, ''))) {
@@ -273,13 +302,28 @@ export const userRoutes: FastifyPluginAsync = async (app) => {
       // For now, log the code (implement with Twilio WhatsApp or Meta Cloud API later)
       console.log(`[OTP] WhatsApp OTP for ${wallet}: ${code} → ${phone} (not yet implemented)`)
       // Still return success — code is stored, user can use devCode in non-production
+    } else if (otpChannel === 'sms') {
+      // Twilio Verify owns the code (generate + send + check) — works inside in-app
+      // browsers, no reCAPTCHA. The DB row above is kept only for rate-limiting.
+      const twCfg = await loadTwilioKyc(app.prisma)
+      if (!twilioActive(twCfg)) {
+        return reply.status(503).send({ error: 'SMS_DISABLED', message: 'SMS verification is not enabled' })
+      }
+      const r = await startPhoneVerification(phone, twCfg)
+      if (!r.ok) {
+        return reply.status(502).send({ error: 'SMS_SEND_FAILED', message: r.error || 'Could not send SMS code' })
+      }
+      console.log(`[OTP] Twilio Verify SMS started for ${wallet} → ${phone}`)
     }
 
     return {
       data: {
         success: true,
-        message: otpChannel === 'telegram' ? 'OTP sent to your Telegram' : 'OTP sent to your WhatsApp',
-        devCode: process.env.NODE_ENV !== 'production' ? code : undefined,
+        message: otpChannel === 'telegram' ? 'OTP sent to your Telegram'
+               : otpChannel === 'sms' ? 'Verification code sent by SMS'
+               : 'OTP sent to your WhatsApp',
+        // Never leak Twilio's code; only the self-managed channels expose devCode in dev.
+        devCode: (process.env.NODE_ENV !== 'production' && otpChannel !== 'sms') ? code : undefined,
       },
     }
   })
@@ -289,10 +333,30 @@ export const userRoutes: FastifyPluginAsync = async (app) => {
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const { wallet } = req.user as { wallet: string }
-    const { phone, code } = req.body as { phone: string; code: string }
+    const { phone, code, channel } = req.body as { phone: string; code: string; channel?: string }
 
     if (!phone || !code) {
       return reply.status(400).send({ error: 'BAD_REQUEST', message: 'phone and code are required' })
+    }
+
+    // ── SMS via Twilio Verify: Twilio checks the code (no DB code lookup) ──
+    if (channel === 'sms') {
+      const twCfg = await loadTwilioKyc(app.prisma)
+      const r = await checkPhoneVerification(phone, code, twCfg)
+      if (!r.approved) {
+        return reply.status(400).send({ error: 'INVALID_OTP', message: 'Invalid or expired code' })
+      }
+      await app.prisma.$transaction([
+        app.prisma.otpVerification.updateMany({
+          where: { wallet, type: 'phone', target: phone, used: false },
+          data: { used: true },
+        }),
+        app.prisma.user.update({
+          where: { wallet },
+          data: { phone, phoneVerified: true, kycStatus: 'fully_verified' },
+        }),
+      ])
+      return { data: { verified: true } }
     }
 
     const otp = await app.prisma.otpVerification.findFirst({
@@ -327,6 +391,16 @@ export const userRoutes: FastifyPluginAsync = async (app) => {
     ])
 
     return { data: { verified: true } }
+  })
+
+  // ─── GET /user/kyc/twilio-status — Is the SMS (Twilio) fallback available? ──
+  // Used by the profile page to offer "Receive code via SMS" when the user is in
+  // a wallet in-app browser where Firebase reCAPTCHA cannot run. No secrets leaked.
+  app.get('/kyc/twilio-status', {
+    preHandler: [app.authenticate],
+  }, async () => {
+    const cfg = await loadTwilioKyc(app.prisma)
+    return { data: { enabled: twilioActive(cfg) } }
   })
 
   // ─── POST /user/kyc/verify-phone-firebase — Verify via Firebase ID token ──

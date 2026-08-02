@@ -7,7 +7,11 @@ node_modules/
 .next/
 dist/
 out/
+out_old/
+out-testnet-bak/
 build/
+standalone/
+*.tsbuildinfo
 
 # Environment
 .env
@@ -20,8 +24,6 @@ build/
 .idea/
 *.swp
 *.swo
-*.tsbuildinfo
-.claude/
 
 # OS
 .DS_Store
@@ -39,11 +41,6 @@ packages/contracts/artifacts/
 packages/contracts/typechain-types/
 packages/contracts/coverage/
 packages/contracts/coverage.json
-
-# Deployment/build snapshots
-standalone/
-out-testnet-bak/
-out_old/
 
 # Debug
 npm-debug.log*

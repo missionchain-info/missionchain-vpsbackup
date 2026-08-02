@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import SubNav, { PROFILE_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
@@ -74,6 +74,22 @@ const IconCamera = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="n
 const IconPhone = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 const IconLock = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 
+// Detect a wallet in-app browser (WebView). Firebase phone auth needs reCAPTCHA,
+// which Google blocks inside these WebViews (auth/error-code:-39) — so on the phone
+// KYC step we either offer the Twilio SMS fallback or tell the user to open a real
+// browser. Kept deliberately narrow so it never affects the wallet-connect flow.
+function isInAppBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  // Known wallet / app WebViews + generic Android WebView marker (`; wv`).
+  if (/MetaMask|Trust\/|TrustWallet|CoinbaseWallet|imToken|TokenPocket|SafePal|Rainbow|OKApp|Bitget|Coin98|MathWallet/i.test(ua)) return true
+  if (/; wv\)/.test(ua)) return true
+  // iOS WKWebView: iPhone/iPad UA without "Safari" (in-app browsers strip it).
+  const isIOS = /iPhone|iPad|iPod/i.test(ua)
+  if (isIOS && !/Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS/i.test(ua)) return true
+  return false
+}
+
 export default function ProfilePage() {
   const { address } = useAccount()
   const { data: resp, loading, refetch } = useApi<ProfileData>('/user/profile', { enabled: !!address })
@@ -103,6 +119,28 @@ export default function ProfilePage() {
   const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
   const recaptchaContainerRef = useRef<HTMLDivElement>(null)
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null)
+  // Phone-KYC environment: WebView (reCAPTCHA blocked) + Twilio SMS fallback status.
+  const inAppBrowser = useMemo(() => isInAppBrowser(), [])
+  const [twilioAvail, setTwilioAvail] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
+  useEffect(() => {
+    api<{ data?: { enabled?: boolean } }>('/user/kyc/twilio-status')
+      .then((r) => setTwilioAvail(!!r?.data?.enabled))
+      .catch(() => {})
+  }, [])
+  // When in a wallet WebView AND Twilio is enabled, route phone OTP through the
+  // server-side SMS path (no reCAPTCHA). Otherwise use the Firebase path.
+  const usePhoneSms = inAppBrowser && twilioAvail
+  const copyProfileLink = useCallback(() => {
+    const url = 'https://app.missionchain.io/profile'
+    const done = () => { setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000) }
+    try {
+      navigator.clipboard?.writeText(url).then(done).catch(() => {
+        const t = document.createElement('textarea'); t.value = url; document.body.appendChild(t)
+        t.select(); try { document.execCommand('copy') } catch {} ; document.body.removeChild(t); done()
+      })
+    } catch { done() }
+  }, [])
 
   const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('mc-userId') : null
 
@@ -296,8 +334,39 @@ export default function ProfilePage() {
     setKycLoading('')
   }
 
+  // ── Twilio SMS path (server-side OTP; works inside wallet WebViews) ──
+  const fmtPhone = () => (kycPhone.trim().startsWith('+') ? kycPhone.trim() : `+${kycPhone.trim()}`)
+
+  const sendPhoneOtpSms = async () => {
+    setKycLoading('send-phone')
+    setKycMsg('')
+    try {
+      await api('/user/kyc/send-phone-otp', { method: 'POST', body: { phone: fmtPhone(), channel: 'sms' } })
+      setPhoneOtpSent(true)
+      setKycMsg('SMS code sent to your phone!')
+    } catch (err: any) {
+      setKycMsg(err?.message || 'Could not send SMS code. Try again.')
+    }
+    setKycLoading('')
+  }
+
+  const verifyPhoneSms = async () => {
+    if (!phoneOtp) return
+    setKycLoading('verify-phone')
+    setKycMsg('')
+    try {
+      await api('/user/kyc/verify-phone', { method: 'POST', body: { phone: fmtPhone(), code: phoneOtp, channel: 'sms' } })
+      setKycMsg('Phone verified!')
+      refetch()
+    } catch (err: any) {
+      setKycMsg(err?.message || 'Invalid or expired code.')
+    }
+    setKycLoading('')
+  }
+
   const sendPhoneOtp = async () => {
     if (!kycPhone) return
+    if (usePhoneSms) { await sendPhoneOtpSms(); return }
     setKycLoading('send-phone')
     setKycMsg('')
     try {
@@ -357,6 +426,7 @@ export default function ProfilePage() {
   }
 
   const verifyPhone = async () => {
+    if (usePhoneSms) { await verifyPhoneSms(); return }
     if (!phoneOtp || !firebaseConfirmation) return
     setKycLoading('verify-phone')
     setKycMsg('')
@@ -727,6 +797,39 @@ export default function ProfilePage() {
             </div>
             {emailVerified && !phoneVerified && (
               <div className="prof-kyc-step-form">
+                {/* WebView notice: Firebase reCAPTCHA can't run in a wallet in-app
+                    browser. Non-blocking (input stays usable in case of a false
+                    positive); Twilio SMS path bypasses this entirely when enabled. */}
+                {inAppBrowser && !twilioAvail && (
+                  <div style={{
+                    background: 'rgba(243,198,100,0.10)', border: '1px solid rgba(243,198,100,0.35)',
+                    borderRadius: 10, padding: '10px 12px', marginBottom: 10, fontSize: '0.66rem',
+                    color: 'var(--white)', lineHeight: 1.55,
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: 3 }}>⚠️ Open in Safari / Chrome to verify your phone</div>
+                    <div style={{ color: 'var(--muted)' }}>
+                      Phone verification uses reCAPTCHA, which does not run inside your wallet&apos;s in-app browser.
+                      Copy the link, open it in Safari or Chrome, sign in, then verify.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={copyProfileLink}
+                      className="prof-kyc-btn"
+                      style={{ marginTop: 8, width: '100%' }}
+                    >
+                      {copiedLink ? '✓ Link copied' : 'Copy verification link'}
+                    </button>
+                  </div>
+                )}
+                {usePhoneSms && (
+                  <div style={{
+                    background: 'rgba(139,110,240,0.10)', border: '1px solid rgba(139,110,240,0.30)',
+                    borderRadius: 10, padding: '8px 12px', marginBottom: 10, fontSize: '0.64rem',
+                    color: 'var(--muted)', lineHeight: 1.5,
+                  }}>
+                    {'\u{1F4E9}'} A verification code will be sent to your phone by SMS.
+                  </div>
+                )}
                 {/* Phone number input + Send SMS */}
                 <div className="prof-kyc-input-row">
                   <input

@@ -7,7 +7,7 @@ const TITLES: Record<string, string> = {
   '/': 'HOME',
   '/stats': 'DASHBOARD \u2014 Overview',
   '/members': 'MEMBER MANAGEMENT',
-  '/rounds': 'ROUND SALES',
+  '/rounds': 'SALE ROUNDS',
   '/distributors': 'DISTRIBUTOR MANAGEMENT',
   '/building': 'COMMUNITY BUILDING',
   '/funds': 'REVENUE & FUNDS',
@@ -24,9 +24,13 @@ const TITLES: Record<string, string> = {
   '/resources': 'DOCUMENTS & LINKS',
 };
 
-function getStoredTheme(): 'dark' | 'light' {
+type AdminTheme = 'dark' | 'light' | 'royal';
+const THEME_ORDER: AdminTheme[] = ['dark', 'light', 'royal'];
+
+function getStoredTheme(): AdminTheme {
   if (typeof window === 'undefined') return 'dark';
-  return (localStorage.getItem('mc-admin-theme') as 'dark' | 'light') || 'dark';
+  const t = localStorage.getItem('mc-admin-theme') as AdminTheme | null;
+  return t && THEME_ORDER.includes(t) ? t : 'dark';
 }
 
 interface TopbarProps {
@@ -43,7 +47,7 @@ export default function Topbar({ onToggleSidebar }: TopbarProps) {
     router.push('/login');
   }, [router]);
   const [time, setTime] = useState('');
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<AdminTheme>('dark');
 
   // Initialize theme from localStorage
   useEffect(() => {
@@ -62,7 +66,7 @@ export default function Topbar({ onToggleSidebar }: TopbarProps) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    const next = theme === 'dark' ? 'light' : 'dark';
+    const next = THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('mc-admin-theme', next);
@@ -89,10 +93,10 @@ export default function Topbar({ onToggleSidebar }: TopbarProps) {
       <button
         className="theme-toggle"
         onClick={toggleTheme}
-        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={`Theme: ${theme} \u2014 click to switch`}
         type="button"
       >
-        {theme === 'dark' ? '\u2600\uFE0F' : '\u{1F319}'}
+        {theme === 'dark' ? '\u{1F319}' : theme === 'light' ? '\u2600\uFE0F' : '\u2726'}
       </button>
       <div className="topbar-bell">
         {'\u{1F514}'}

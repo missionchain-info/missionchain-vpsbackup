@@ -72,6 +72,14 @@ function fmt(n: number | string | undefined, fallback: string = '-'): string {
   return num.toString()
 }
 
+function fmtUsdCompact(n: number | undefined): string {
+  if (!n || isNaN(n) || n <= 0) return '-'
+  if (n >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B'
+  if (n >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M'
+  if (n >= 1_000) return '$' + (n / 1_000).toFixed(1) + 'K'
+  return '$' + n.toFixed(0)
+}
+
 function fmtUsd(n: number | string | undefined): string {
   if (n === undefined || n === null || n === '') return '-'
   const num = typeof n === 'string' ? parseFloat(n) : n
@@ -156,6 +164,11 @@ export default function DashboardPage() {
   const pool = d.miningPool || 0
   const emissionPct = pool > 0 && emitted > 0 ? ((emitted / pool) * 100).toFixed(2) : '-'
   const es = d.emissionSplit || {}
+  const marketCap = (() => {
+    const circ = parseFloat(d.circulatingSupply || '0')
+    const price = parseFloat(d.micPrice || '0')
+    return circ > 0 && price > 0 ? circ * price : 0
+  })()
 
   return (
     <div className="dash-page">
@@ -256,6 +269,16 @@ export default function DashboardPage() {
           <div className="scroll-stat-info">
             <div className="scroll-stat-label">Burned</div>
             <div className="scroll-stat-value">{fmt(d.totalBurned, '-')}</div>
+          </div>
+        </div>
+        <div className="scroll-stat gold">
+          <div className="scroll-stat-icon-wrap gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div className="scroll-stat-info">
+            <div className="scroll-stat-label">Market Cap</div>
+            <div className="scroll-stat-value">{fmtUsdCompact(marketCap)}</div>
+            <div className="scroll-stat-sub">circulating × price</div>
           </div>
         </div>
       </div>

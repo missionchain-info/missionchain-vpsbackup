@@ -7,6 +7,8 @@ import { useTheme } from '@/hooks/useTheme'
 import { useApi } from '@/hooks/useApi'
 import { api, authApi } from '@/lib/api'
 import { fmtCompact, fmtUsd } from '@missionchain/sdk'
+import MobileWalletSheet from '@/components/wallet/MobileWalletSheet'
+import { isMobileDevice, hasInjectedProvider } from '@/lib/wallet'
 
 interface DashboardOverview {
   data: {
@@ -34,11 +36,12 @@ export default function LandingPage() {
   const { connectAsync, connectors } = useConnect()
   const { disconnectAsync } = useDisconnect()
   const { signMessageAsync } = useSignMessage()
-  const { toggleTheme, isDark } = useTheme()
+  const { toggleTheme, theme } = useTheme()
   const { data: resp } = useApi<DashboardOverview>('/dashboard/overview')
   const stats = resp?.data
 
   const [connecting, setConnecting] = useState(false)
+  const [showSheet, setShowSheet] = useState(false)
 
   // Auto-redirect if already authenticated
   useEffect(() => {
@@ -47,6 +50,13 @@ export default function LandingPage() {
       router.push('/dashboard')
     }
   }, [isConnected, address, router])
+
+  // Anti-hang: never leave "Connecting..." stuck forever (e.g. abandoned WalletConnect).
+  useEffect(() => {
+    if (!connecting) return
+    const t = setTimeout(() => setConnecting(false), 45000)
+    return () => clearTimeout(t)
+  }, [connecting])
 
   // ── Check membership → sign → get JWT → redirect ──
   const checkAndRedirect = async (walletAddress: string) => {
@@ -76,8 +86,19 @@ export default function LandingPage() {
   // ── CONNECT WALLET FLOW ──
   // ALWAYS: open wallet picker → connect → check membership → redirect
   const handleConnect = async () => {
-    // Save connector reference BEFORE disconnect
-    const connector = connectors[0]
+    // Mobile / installed PWA with no injected wallet: show the wallet sheet
+    // (deep-link into MetaMask/Trust in-app browser, or WalletConnect QR). This avoids the
+    // iOS-standalone-PWA WalletConnect deep-link round-trip that hangs on "Connecting...".
+    if (isMobileDevice() && !hasInjectedProvider()) {
+      setShowSheet(true)
+      return
+    }
+    // Pick connector: injected only when a wallet is actually present (desktop extension /
+    // wallet in-app browser).
+    const injectedC = connectors.find(c => c.id === 'injected')
+    const wcC = connectors.find(c => c.id === 'walletConnect')
+    const hasInjected = typeof window !== 'undefined' && !!(window as any).ethereum
+    const connector = (hasInjected && injectedC) ? injectedC : (wcC || injectedC || connectors[0])
     if (!connector) {
       window.open('https://metamask.io/download/', '_blank')
       return
@@ -106,8 +127,8 @@ export default function LandingPage() {
 
   return (
     <div className="screen screen-landing">
-      <button className="theme-toggle" onClick={toggleTheme}>
-        {isDark ? '🌙' : '☀'}
+      <button className="theme-toggle" onClick={toggleTheme} title={`Theme: ${theme}`}>
+        {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
       </button>
 
       <div className="landing-content">
@@ -336,6 +357,7 @@ export default function LandingPage() {
             SafePal, TokenPocket, Bitget Wallet, and other BNB Smart Chain compatible wallets.
           </p>
         </div>
+        <MobileWalletSheet open={showSheet} onClose={() => setShowSheet(false)} />
       </div>
     </div>
   )

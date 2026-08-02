@@ -1,0 +1,67 @@
+'use client'
+
+import { useConnect } from 'wagmi'
+import { openInMetaMask, openInTrust } from '@/lib/wallet'
+import { ensureWalletConnect } from '@/lib/wagmi'
+
+/**
+ * Bottom sheet shown when connecting on a phone / installed PWA where there is no
+ * injected wallet. Offers deep-links into the wallet's in-app browser (the reliable
+ * path on mobile) plus WalletConnect QR as a fallback.
+ */
+export default function MobileWalletSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { connect } = useConnect()
+  if (!open) return null
+
+  const hasWC = !!process.env.NEXT_PUBLIC_WC_PROJECT_ID
+
+  const overlay: React.CSSProperties = {
+    position: 'fixed', inset: 0, zIndex: 9999, display: 'flex',
+    alignItems: 'flex-end', justifyContent: 'center',
+    background: 'rgba(0,0,0,.55)', backdropFilter: 'blur(2px)',
+  }
+  const sheet: React.CSSProperties = {
+    width: '100%', maxWidth: 440, background: 'var(--bg2, #14102A)',
+    border: '1px solid var(--border, rgba(201,168,76,.25))', borderBottom: 'none',
+    borderRadius: '20px 20px 0 0', padding: '20px 18px calc(20px + env(safe-area-inset-bottom))',
+    boxShadow: '0 -8px 40px rgba(0,0,0,.5)', animation: 'mwUp .22s ease-out',
+  }
+  const title: React.CSSProperties = {
+    color: 'var(--white, #F5E8CC)', fontWeight: 800, fontSize: 15,
+    textAlign: 'center', marginBottom: 4,
+  }
+  const hint: React.CSSProperties = {
+    color: 'var(--gray2, #9FB0C8)', fontSize: 12, textAlign: 'center', margin: '2px 0 16px',
+  }
+  const opt: React.CSSProperties = {
+    width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+    padding: '14px 16px', marginBottom: 10, borderRadius: 14, cursor: 'pointer',
+    background: 'var(--bg3, #2A1B3F)', border: '1px solid var(--border, rgba(201,168,76,.25))',
+    color: 'var(--white, #F5E8CC)', fontSize: 15, fontWeight: 600, textAlign: 'left',
+  }
+  const cancel: React.CSSProperties = {
+    width: '100%', padding: '12px', marginTop: 4, borderRadius: 12, cursor: 'pointer',
+    background: 'transparent', border: '1px solid var(--border, rgba(201,168,76,.25))',
+    color: 'var(--gray, #C9B0E0)', fontSize: 14, fontWeight: 600,
+  }
+
+  return (
+    <div style={overlay} onClick={onClose}>
+      <style>{`@keyframes mwUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
+      <div style={sheet} onClick={(e) => e.stopPropagation()}>
+        <div style={title}>Connect a wallet</div>
+        <div style={hint}>On phone, open in your wallet's browser — most reliable.</div>
+
+        <button style={opt} onClick={openInMetaMask}>🦊&nbsp; Open in MetaMask</button>
+        <button style={opt} onClick={openInTrust}>🛡️&nbsp; Open in Trust Wallet</button>
+        {hasWC && (
+          <button style={opt} onClick={async () => { const wc = await ensureWalletConnect(); if (wc) connect({ connector: wc }); onClose() }}>
+            🔗&nbsp; WalletConnect (scan QR)
+          </button>
+        )}
+
+        <button style={cancel} onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  )
+}

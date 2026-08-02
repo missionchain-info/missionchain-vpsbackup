@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useAccount } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
 import { useTheme } from '@/hooks/useTheme'
 import { useApi } from '@/hooks/useApi'
 import Link from 'next/link'
@@ -33,9 +33,19 @@ interface OverviewData {
 
 export default function Topbar() {
   const pathname = usePathname()
-  const { toggleTheme, isDark } = useTheme()
+  const { toggleTheme, theme } = useTheme()
   const { address } = useAccount()
+  const { disconnect } = useDisconnect()
   const { data: overview } = useApi<OverviewData>('/dashboard/overview')
+
+  const handleDisconnect = () => {
+    try {
+      localStorage.removeItem('mc-jwt')
+      localStorage.removeItem('mc-userId')
+    } catch {}
+    disconnect()
+    window.location.href = '/'
+  }
 
   const micPrice = overview?.data?.micPrice ?? '--'
   const title = PAGE_TITLES[pathname] || 'Dashboard'
@@ -59,10 +69,19 @@ export default function Topbar() {
           </div>
         </div>
         <button className="topbar-btn" aria-label="Notifications">🔔</button>
-        <button className="topbar-btn" onClick={toggleTheme} aria-label="Toggle theme">
-          {isDark ? '🌙' : '☀'}
+        <button className="topbar-btn" onClick={toggleTheme} aria-label="Toggle theme" title={`Theme: ${theme}`}>
+          {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
         </button>
         <Link href="/" className="topbar-btn" style={{ textDecoration: 'none' }} aria-label="Home">↪</Link>
+        <button
+          className="topbar-btn"
+          onClick={handleDisconnect}
+          aria-label="Disconnect wallet"
+          title="Disconnect"
+          style={{ color: 'var(--error)', borderColor: 'color-mix(in srgb, var(--error) 40%, transparent)' }}
+        >
+          ⏻
+        </button>
       </div>
     </div>
   )
