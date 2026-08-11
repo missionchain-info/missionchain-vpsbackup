@@ -249,7 +249,7 @@ export default function P2pPage() {
           price ceiling is $0.000001, so it cannot accept a real listing until it
           is redeployed. */}
       <MicP2PPanel address={connectedAddr} />
-        <P2pComingSoon platformFee={platformFee} />
+        {/* The MIC market above is live; the old placeholder was removed with it. */}
       </>
     )
   }

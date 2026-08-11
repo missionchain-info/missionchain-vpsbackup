@@ -47,6 +47,7 @@ const ERC20_ABI = [
   'function allowance(address,address) view returns (uint256)',
   'function approve(address,uint256) returns (bool)',
   'function balanceOf(address) view returns (uint256)',
+  'function lockedBalanceOf(address) view returns (uint256)',
 ]
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`
@@ -70,7 +71,9 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
 
   const [amount, setAmount] = useState('')
+  /** Price for ONE MIC. The contract prices the whole lot; the multiply happens on submit. */
   const [price, setPrice] = useState('')
+  const [tradable, setTradable] = useState<string | null>(null)
   const [days, setDays] = useState('7')
 
   const load = useCallback(async () => {
@@ -86,6 +89,21 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           r.ok ? r.json() : null,
         )
         if (m) setMine(m.data)
+
+        // What this wallet can actually offer. MIC under vesting cannot leave the wallet at
+        // all, so listing it would fail inside the token with an error nobody could read.
+        try {
+          const { BrowserProvider, Contract, formatUnits } = await import('ethers')
+          const eth = (window as any).ethereum
+          if (eth) {
+            const prov = new BrowserProvider(eth)
+            const t = new Contract(MIC, ERC20_ABI, prov)
+            const bal: bigint = await t.balanceOf(address)
+            let locked = 0n
+            try { locked = await t.lockedBalanceOf(address) } catch { /* no lock manager wired */ }
+            setTradable(formatUnits(bal > locked ? bal - locked : 0n, 18))
+          }
+        } catch { setTradable(null) }
       }
     } catch {
       setMsg({ ok: false, text: 'Could not reach the marketplace. Check your connection and retry.' })
@@ -137,7 +155,10 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       async () => {
         const { Contract, parseUnits } = await import('ethers')
         const amt = parseUnits(amount || '0', 18)
-        const px = parseUnits(price || '0', 18)
+        // The contract takes one total for the lot; the seller thinks in price per MIC.
+        // Multiply in 18-decimal fixed point rather than in JS floats, which would round
+        // a long price and quietly list at a figure the seller never typed.
+        const px = (parseUnits(price || '0', 18) * amt) / 10n ** 18n
         await ensureAllowance(MIC, amt)
         const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
         const tx = await c.createOrder(amt, px, BigInt(Number(days) * 86400))
@@ -183,10 +204,10 @@ export default function MicP2PPanel({ address }: { address?: string }) {
     return <div className="nft-pool-note">Loading the MIC marketplace…</div>
   }
 
-  const total = Number(price || 0)
+  const total = Number(price || 0) * Number(amount || 0)
   const fee = (total * cfg.feeBps) / 10_000
   const net = total - fee
-  const perMic = Number(amount) > 0 ? total / Number(amount) : 0
+  const overBalance = tradable !== null && Number(amount || 0) > Number(tradable)
 
   return (
     <div className="nft-section-card">
@@ -198,6 +219,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         Trade MIC directly with another member at a price you both agree. The contract holds the
         seller&apos;s MIC and settles both sides in one transaction, so neither side has to go first.
         Fee {cfg.feePct}%, paid by the seller out of the sale.
+      </div>
+      <div className="nft-pool-note">
+        <strong>Buying?</strong> Every open offer below has a Buy button — pay the asking price in
+        USDT and the MIC arrives in the same transaction. Posting your own bid at a price you
+        choose is not available yet; today a buyer takes an existing offer.
       </div>
 
       {cfg.paused ? (
@@ -213,12 +239,26 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       {/* ── Sell ─────────────────────────────────────────────── */}
       <div className="p2p-form">
         <label>
-          <span>MIC to sell</span>
+          <span>
+            MIC to sell
+            {tradable !== null ? (
+              <>
+                {' · '}
+                <button
+                  type="button"
+                  className="p2p-max"
+                  onClick={() => setAmount(tradable)}
+                >
+                  max {num(tradable)}
+                </button>
+              </>
+            ) : null}
+          </span>
           <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="1000" inputMode="decimal" />
         </label>
         <label>
-          <span>Total price (USDT)</span>
-          <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="5.00" inputMode="decimal" />
+          <span>Price per MIC (USDT)</span>
+          <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.008" inputMode="decimal" />
         </label>
         <label>
           <span>Expires in</span>
@@ -231,7 +271,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         </label>
         <button
           className="nft-claim-btn"
-          disabled={!address || cfg.paused || busy === 'create' || !amount || !price}
+          disabled={!address || cfg.paused || busy === 'create' || !amount || !price || overBalance}
           onClick={createOrder}
         >
           {busy === 'create' ? 'Listing…' : !address ? 'Connect wallet' : 'List for sale'}
@@ -240,10 +280,15 @@ export default function MicP2PPanel({ address }: { address?: string }) {
 
       {total > 0 ? (
         <div className="nft-pool-note">
-          {perMic > 0 ? <>${num(String(perMic), 6)} per MIC · </> : null}
-          you receive <strong>${num(String(net), 2)}</strong> after the {cfg.feePct}% fee (${num(String(fee), 2)}).
+          Total <strong>${num(String(total), 4)}</strong> for {num(amount)} MIC · you receive{' '}
+          <strong>${num(String(net), 4)}</strong> after the {cfg.feePct}% fee (${num(String(fee), 4)}).
           {total < Number(cfg.minPriceUsdt) ? (
-            <> <span style={{ color: '#ff8f8f' }}>Below the ${cfg.minPriceUsdt} minimum.</span></>
+            <> <span style={{ color: '#ff8f8f' }}>Below the ${cfg.minPriceUsdt} minimum for a listing.</span></>
+          ) : null}
+          {overBalance ? (
+            <> <span style={{ color: '#ff8f8f' }}>
+              You only have {num(tradable!)} MIC available — the rest is locked by vesting and cannot be sold.
+            </span></>
           ) : null}
         </div>
       ) : null}

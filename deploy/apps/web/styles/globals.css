@@ -13316,3 +13316,16 @@ body.light {
   color: var(--gray2, #8b8b9a);
   cursor: not-allowed;
 }
+
+.p2p-max {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: .62rem;
+  letter-spacing: .06em;
+  color: var(--gold, #F0B54A);
+  cursor: pointer;
+  text-transform: none;
+}
+.p2p-max:hover { text-decoration: underline; }
