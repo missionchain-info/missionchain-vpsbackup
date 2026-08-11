@@ -26,7 +26,7 @@
  *
  * ─── What the weekly limits do and do not guarantee ──────────────────────────────────
  *
- * The caps (1 per wallet per week; 10 Builder / 5 Maker / 2 Luminary system-wide per week)
+ * The caps (3 per wallet per week; 10 Builder / 5 Maker / 2 Luminary system-wide per week)
  * exist only in this file. They are not on chain and cannot be. `CommunityNFTv2.mint`
  * checks `MINTER_ROLE` and nothing else; `ClaimRewardsV2.mintRankBonus` checks
  * `CREDITOR_ROLE` and a 20-per-call batch ceiling. Neither counts grants per week, per
@@ -57,7 +57,13 @@ export const TIERS = [
 ] as const
 
 /** One NFT per recipient wallet per week, whatever the tier. */
-const PER_WALLET_WEEKLY_LIMIT = 1
+/**
+ * Grants one wallet may receive in a week. Three, not one — Owner's decision.
+ *
+ * The per-tier caps still bind independently: Luminary is capped at 2 a week across the
+ * whole platform, so a wallet cannot reach three of those however this reads.
+ */
+const PER_WALLET_WEEKLY_LIMIT = 3
 
 export type GrantStatus = 'PENDING' | 'MINTED'
 
@@ -120,7 +126,7 @@ export function evaluateGrant(
       allowed: false,
       reason: walletUsed > 0
         ? `This wallet already has ${walletUsed} NFT(s) granted this week. The operational limit is ${PER_WALLET_WEEKLY_LIMIT} per wallet per week.`
-        : `Quantity ${quantity} exceeds the operational limit of ${PER_WALLET_WEEKLY_LIMIT} NFT per wallet per week.`,
+        : `Quantity ${quantity} exceeds the operational limit of ${PER_WALLET_WEEKLY_LIMIT} NFTs per wallet per week.`,
     }
   }
 
