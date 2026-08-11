@@ -533,10 +533,6 @@ export default function ComponentsPage() {
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
-                </div>
               </div>
             </div>
 
@@ -559,10 +555,6 @@ export default function ComponentsPage() {
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
-                </div>
               </div>
             </div>
 
@@ -584,10 +576,6 @@ export default function ComponentsPage() {
                     <div className="nft-stat-l">STATUS</div>
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
-                </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
                 </div>
               </div>
             </div>
