@@ -770,7 +770,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <ul class="dot-list">
         <li>Maximum supply: 100,000 MICE credentials.</li>
         <li>Credential duration: 360 days from activation.</li>
-        <li>Payment structure: 50% USDT + 50% MIC using 7-day TWAP on activation day.</li>
+        <li>Payment structure: 50% USDT + 50% MIC. The MIC portion is priced at purchase using whichever is lower of the spot price and the 7-day TWAP. Until the liquidity pool is seeded, a fixed bootstrap price of $0.01 applies.</li>
         <li>Recycling policy: expired credentials are recycled by protocol; DAO governs reissuance terms.</li>
       </ul>
     </div>
@@ -1400,7 +1400,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     </table>
   </div>
   <div class="callout gold">
-    <p><strong>Payment Structure:</strong> Each MICE purchase is settled as <strong>50% USDT + 50% MIC (Burned)</strong>. The USDT portion flows to the Revenue Router; the MIC portion is burned on-chain, reducing total circulating supply. The MIC amount is calculated at activation time using the 7-day TWAP to ensure the 50/50 USD-value split. This dual-payment mechanism creates natural buy-burn pressure on MIC while the protocol receives stable liquidity in USDT.</p>
+    <p><strong>Payment Structure:</strong> Each MICE purchase is settled as <strong>50% USDT + 50% MIC (Burned)</strong>. The USDT portion flows to the Revenue Router; the MIC portion is burned on-chain, reducing total circulating supply. The MIC amount is calculated at the moment of purchase, using whichever is lower of the spot price and the 7-day TWAP, to ensure the 50/50 USD-value split. Taking the lower of the two prevents a short-lived price spike from reducing the MIC burned. Until the liquidity pool is seeded, a fixed bootstrap price of $0.01 is used instead. This dual-payment mechanism creates natural buy-burn pressure on MIC while the protocol receives stable liquidity in USDT.</p>
   </div>
 
   <h3 class="sub-title">C.4 Protocol Participation Rules</h3>
