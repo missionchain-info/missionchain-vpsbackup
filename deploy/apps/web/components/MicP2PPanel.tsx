@@ -57,6 +57,26 @@ const ERC20_ABI = [
 ]
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`
+
+/**
+ * Group the integer part for display: 1234567.89 reads as 1,234,567.89.
+ *
+ * The value in state stays unformatted. Storing the grouped string and stripping it later
+ * is how a stray comma ends up inside parseUnits, and a price that silently loses a digit
+ * is exactly the class of mistake this marketplace cannot afford.
+ */
+function grouped(raw: string) {
+  if (!raw) return ''
+  const [int, dec] = raw.split('.')
+  const g = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return dec !== undefined ? `${g}.${dec}` : g
+}
+
+/** Accept only digits and a single dot; ignore the commas the display puts back in. */
+function onNumeric(v: string, set: (s: string) => void) {
+  const cleaned = v.replace(/,/g, '')
+  if (cleaned === '' || /^\d*\.?\d*$/.test(cleaned)) set(cleaned)
+}
 const num = (v: string, dp = 4) =>
   Number(v).toLocaleString('en-US', { maximumFractionDigits: dp })
 
@@ -84,6 +104,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const [side, setSide] = useState<'sell' | 'buy'>('sell')
   const [bids, setBids] = useState<Order[]>([])
   const [locked, setLocked] = useState<string | null>(null)
+  const [usdtBal, setUsdtBal] = useState<string | null>(null)
   const [days, setDays] = useState('7')
 
   const load = useCallback(async () => {
@@ -107,6 +128,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         const b = await fetch(`${API}/p2p-mic/balance/${address}`).then((r) => (r.ok ? r.json() : null))
         setTradable(b ? b.data.tradable : null)
         setLocked(b ? b.data.locked : null)
+        setUsdtBal(b ? b.data.usdt : null)
       }
     } catch {
       setMsg({ ok: false, text: 'Could not reach the marketplace. Check your connection and retry.' })
@@ -306,6 +328,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const fee = (total * cfg.feeBps) / 10_000
   const net = total - fee
   const overBalance = tradable !== null && Number(amount || 0) > Number(tradable)
+  const overUsdt = usdtBal !== null && total > Number(usdtBal)
 
   return (
     <div className="nft-section-card">
@@ -354,32 +377,21 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       <div className="p2p-form">
         <label>
           <span>{side === 'sell' ? 'MIC to sell' : 'MIC to buy'}</span>
-          <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="1000" inputMode="decimal" />
-          <small className="p2p-hint">
-            {side === 'buy' ? (
-              'You pay in USDT; the MIC arrives when a seller fills your bid.'
-            ) : !address ? (
-              'Connect your wallet to see how much MIC you can sell'
-            ) : tradable === null ? (
-              'Could not read your MIC balance — check that your wallet is connected to BSC'
-            ) : (
-              <>
-                Available to sell:{' '}
-                <button type="button" className="p2p-max" onClick={() => setAmount(tradable)}>
-                  {num(tradable)} MIC
-                </button>
-                {Number(tradable) === 0
-                  ? ' — nothing spendable in this wallet'
-                  : Number(locked || 0) > 0
-                    ? ` (${num(locked!)} MIC is locked by vesting and cannot be sold)`
-                    : ''}
-              </>
-            )}
-          </small>
+          <input
+            value={grouped(amount)}
+            onChange={(e) => onNumeric(e.target.value, setAmount)}
+            placeholder="1,000"
+            inputMode="decimal"
+          />
         </label>
         <label>
           <span>Price per MIC (USDT)</span>
-          <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.008" inputMode="decimal" />
+          <input
+            value={grouped(price)}
+            onChange={(e) => onNumeric(e.target.value, setPrice)}
+            placeholder="0.008"
+            inputMode="decimal"
+          />
         </label>
         <label>
           <span>Expires in</span>
@@ -394,15 +406,48 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           className="nft-claim-btn"
           disabled={
             !address || cfg.paused || busy === 'create' || !amount || !price ||
-            (side === 'sell' && overBalance)
+            (side === 'sell' && overBalance) || (side === 'buy' && overUsdt)
           }
           onClick={side === 'sell' ? createOrder : createBid}
         >
           {busy === 'create'
             ? side === 'sell' ? 'Listing…' : 'Posting…'
             : !address ? 'Connect wallet'
-            : side === 'sell' ? 'List for sale' : 'Post bid'}
+            : side === 'sell' ? 'List for Sale' : 'Post Bid'}
         </button>
+      </div>
+
+      {/* Below the row, not inside a cell: a hint tucked into one label stretched that
+          column and knocked the four fields out of alignment. */}
+      <div className="p2p-hint">
+        {!address ? (
+          side === 'sell'
+            ? 'Connect your wallet to see how much MIC you can sell'
+            : 'Connect your wallet to see how much USDT you can commit'
+        ) : side === 'sell' ? (
+          tradable === null ? (
+            'Could not read your MIC balance — check that your wallet is connected to BSC'
+          ) : (
+            <>
+              Available to sell:{' '}
+              <button type="button" className="p2p-max" onClick={() => setAmount(tradable)}>
+                {num(tradable)} MIC
+              </button>
+              {Number(tradable) === 0
+                ? ' — nothing spendable in this wallet'
+                : Number(locked || 0) > 0
+                  ? ` (${num(locked!)} MIC is locked by vesting and cannot be sold)`
+                  : ''}
+            </>
+          )
+        ) : usdtBal === null ? (
+          'Could not read your USDT balance — check that your wallet is connected to BSC'
+        ) : (
+          <>
+            Available to buy: <strong>{num(usdtBal, 2)} USDT</strong>
+            {Number(usdtBal) === 0 ? ' — nothing spendable in this wallet' : ' in this wallet'}
+          </>
+        )}
       </div>
 
       {total > 0 ? (
@@ -415,6 +460,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           )}
           {total < Number(cfg.minPriceUsdt) ? (
             <> <span style={{ color: '#ff8f8f' }}>Below the ${cfg.minPriceUsdt} minimum for a listing.</span></>
+          ) : null}
+          {side === 'buy' && overUsdt ? (
+            <> <span style={{ color: '#ff8f8f' }}>
+              That is more than the {num(usdtBal!, 2)} USDT in your wallet.
+            </span></>
           ) : null}
           {side === 'sell' && overBalance ? (
             <> <span style={{ color: '#ff8f8f' }}>

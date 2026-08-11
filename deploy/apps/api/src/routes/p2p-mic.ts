@@ -171,6 +171,16 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
       new JsonRpcProvider(rpc()),
     )
 
+    // A bidder escrows USDT, so they need the same "what can I actually commit" figure a
+    // seller gets. Read both in one call rather than making the page ask twice.
+    const usdtAddr = (getActiveAddresses() as Record<string, string>).USDT
+      || '0x55d398326f99059fF775485246999027B3197955'
+    const usdtToken = new Contract(
+      usdtAddr,
+      ['function balanceOf(address) view returns (uint256)'],
+      new JsonRpcProvider(rpc()),
+    )
+
     const balance = (await mic.balanceOf(wallet)) as bigint
     // Older MIC deployments predate the lock manager; treat a missing getter as nothing
     // locked rather than failing the whole read.
@@ -182,12 +192,20 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
     }
     const tradable = balance > locked ? balance - locked : 0n
 
+    let usdtBalance = 0n
+    try {
+      usdtBalance = (await usdtToken.balanceOf(wallet)) as bigint
+    } catch {
+      usdtBalance = 0n
+    }
+
     return {
       data: {
         wallet,
         balance: formatUnits(balance, 18),
         locked: formatUnits(locked, 18),
         tradable: formatUnits(tradable, 18),
+        usdt: formatUnits(usdtBalance, 18),
       },
     }
   })

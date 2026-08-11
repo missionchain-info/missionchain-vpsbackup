@@ -13352,3 +13352,13 @@ body.light {
   border-color: transparent;
   color: #141018;
 }
+
+
+/* The four fields share one row and one baseline; the hint sits under the row. Aligning the
+   label and hint to the input's text inset is what makes the numbers read as a column. */
+.p2p-form { align-items: end; }
+.p2p-form label span { padding-left: 10px; }
+.p2p-form input,
+.p2p-form select { text-align: left; font-variant-numeric: tabular-nums; }
+.p2p-form .nft-claim-btn { height: 38px; }
+.p2p-hint { display: block; padding-left: 10px; margin-top: 8px; }
