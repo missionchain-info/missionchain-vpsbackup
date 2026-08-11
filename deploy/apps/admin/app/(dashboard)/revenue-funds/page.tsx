@@ -1102,7 +1102,7 @@ function OperationalPoolPanel({ isOwner }: { isOwner: boolean }) {
   const addDisabledReason = !isOwner
     ? 'Owner wallet only.'
     : loadErr
-      ? 'Cannot reach OperationalSalaryPoolV3 on-chain right now.'
+      ? loadErr
       : availableCouncil.length === 0
         ? 'Every active Steward Council member is already enrolled. Add a new member on the Steward Council page first.'
         : null;
