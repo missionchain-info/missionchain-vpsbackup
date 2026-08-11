@@ -28,7 +28,17 @@ const BSC_MAINNET: ChainInfo = {
   chainIdHex: '0x38',
   name: 'BSC Mainnet',
   shortName: 'BSC',
+  /**
+   * Read endpoints for the browser, fastest first.
+   *
+   * Measured from the VPS: publicnode answers `eth_blockNumber` in ~0.14s against
+   * ~0.31s for the Binance dataseed. The dashboard makes seven calls on load, so the
+   * difference is over a second of spinner on every visit. The dataseeds stay as
+   * fallbacks — publicnode is unreliable for transaction receipts, which is why the
+   * server-side keepers use an archive endpoint rather than this list.
+   */
   rpcUrls: [
+    'https://bsc-rpc.publicnode.com',
     'https://bsc-dataseed.binance.org/',
     'https://bsc-dataseed1.binance.org/',
     'https://bsc-dataseed2.binance.org/',

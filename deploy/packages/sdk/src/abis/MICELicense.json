@@ -23,18 +23,13 @@
       },
       {
         "internalType": "address",
-        "name": "_liquidityPool",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "admin",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "_micPriceUSDT",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_liquidityPool",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -209,6 +204,31 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint256",
+        "name": "licenseId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "expiryTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseActivated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "buyer",
         "type": "address"
@@ -240,25 +260,6 @@
       }
     ],
     "name": "LicenseRecycled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "oldPrice",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "MicPriceUpdated",
     "type": "event"
   },
   {
@@ -431,6 +432,19 @@
   },
   {
     "inputs": [],
+    "name": "ACTIVATION_DELAY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -510,6 +524,45 @@
   {
     "inputs": [],
     "name": "PER_ROUND",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "licenseId",
+        "type": "uint256"
+      }
+    ],
+    "name": "activate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "licenseIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "activateBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "activeLicenses",
     "outputs": [
       {
         "internalType": "uint256",
@@ -751,6 +804,25 @@
         "type": "uint256"
       }
     ],
+    "name": "isActivatable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "licenseId",
+        "type": "uint256"
+      }
+    ],
     "name": "isActive",
     "outputs": [
       {
@@ -808,7 +880,17 @@
       },
       {
         "internalType": "uint256",
+        "name": "activatedAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "expiryTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pricePaid",
         "type": "uint256"
       }
     ],
@@ -820,22 +902,9 @@
     "name": "liquidityPool",
     "outputs": [
       {
-        "internalType": "contract ILiquidityPoolBurn",
+        "internalType": "contract ILiquidityPoolV6",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "micPriceUSDT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -852,6 +921,38 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "quantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteMicRequired",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "licenseIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "recycleBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1022,19 +1123,6 @@
       }
     ],
     "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "setMicPriceUSDT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

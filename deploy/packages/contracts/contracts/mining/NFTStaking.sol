@@ -44,11 +44,15 @@ contract NFTStaking is AccessControl, ReentrancyGuard {
     uint256 public constant CAP_BUILDER   = 10_000 ether;   // (DEPRECATED)
     uint256 public constant CAP_NO_NFT    = type(uint256).max; // (DEPRECATED)
 
-    // Time-lock multipliers (in basis points, 10000 = 1×)
+    // Time-lock multipliers (in basis points, 10000 = 1×).
+    // Steepened 2026-08-05: the flat 1→2× curve gave almost no reason to pick a long
+    // term, so most stake would sit at 30 days and barely reduce sell pressure.
+    // Removing MIC from circulation for a full year is what the protocol actually
+    // needs, so the 360-day term now pays 5× the 30-day term.
     uint256 public constant LOCK_30D  = 10000; // 1×
-    uint256 public constant LOCK_90D  = 12500; // 1.25×
-    uint256 public constant LOCK_180D = 15000; // 1.5×
-    uint256 public constant LOCK_360D = 20000; // 2×
+    uint256 public constant LOCK_90D  = 16000; // 1.6×
+    uint256 public constant LOCK_180D = 26000; // 2.6×
+    uint256 public constant LOCK_360D = 50000; // 5×
 
     // Circuit breaker: max 10% of pool unstaked per day
     uint256 public constant MAX_DAILY_UNSTAKE_BPS = 1000; // 10%

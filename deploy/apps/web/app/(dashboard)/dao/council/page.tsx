@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, type CSSProperties } from 'react'
 import { useAccount } from 'wagmi'
 import { BrowserProvider, Contract, parseUnits } from 'ethers'
 import { api } from '@/lib/api'
+import { USDT_DECIMALS } from '@missionchain/sdk'
 
 // OperationalSalaryPoolV3 — Phase 2c-pivot (centralized vault, policy-only pool)
 const OPERATIONAL_POOL_V3 = '0xB2f318b07B7501f6A03b53066610032418F66b85' as const
@@ -12,7 +13,9 @@ const OPERATIONAL_POOL_V3_ABI = [
   { type: 'function', name: 'claimable', inputs: [{ name: '', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const
 
-// ManagementBonusPoolV3 — Phase 2c-pivot (Council vote 75% threshold)
+// ManagementBonusPoolV3 — Phase 2c-pivot. The approval threshold is read from chain
+// (data.thresholdBps), never hardcoded here: it was lowered 75% → 60% on 2026-08-08 so
+// five seats pass at three votes, matching DAOGovernor's fixed quorum of 3.
 const MGMT_BONUS_POOL_V3 = '0x2bfA50146C01d6c4BFA4A2550385988C2619f033' as const
 const MGMT_BONUS_POOL_V3_ABI = [
   'function createOrder(address recipient, uint256 amount, string content) returns (uint256)',
@@ -210,7 +213,7 @@ export default function StewardCouncilPage() {
       if (claimableRaw === 0n) {
         throw new Error('Nothing to claim right now')
       }
-      const amountUsdt = Number(claimableRaw) / 1e6
+      const amountUsdt = Number(claimableRaw) / 10 ** USDT_DECIMALS
 
       setToast(`Sign wallet to claim $${amountUsdt} USDT...`)
       const tx = await pool.claim()
@@ -291,8 +294,8 @@ export default function StewardCouncilPage() {
           </div>
         </div>
         <div style={{ fontSize: '0.55rem', color: 'var(--gray2)', textAlign: 'right', lineHeight: 1.5 }}>
-          Phase 1 voting: 1 member = 1 vote<br />
-          Phase 2 (DAO): MFP-NFT weighted (coming)
+          One member = one vote<br />
+          No token, stake or NFT weighting
         </div>
       </div>
 
@@ -588,7 +591,7 @@ function FundsTab({
 
 // ─── PROPOSALS TAB ─────────────────────────────────────────────────────
 // ManagementBonusPoolV3 wired Phase 2c-pivot. Council members create bonus
-// orders → 1 vote each → ≥75% → anyone can execute (releases USDT from
+// orders → 1 vote each → threshold read from chain → anyone can execute (releases USDT from
 // SeedBudgetV5c slot[2] via release()).
 
 function ProposalsTab({

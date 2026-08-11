@@ -4,41 +4,40 @@ import {
   PreSale,
   MICToken,
   LockManager,
-  CommunityNFT,
+  CommunityNFTv2,
   ReferralRegistry,
   RevenueRouter,
   MockUSDT,
+  MockRewardReceiver,
 } from "../../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const USDT_6 = 1_000_000n; // 1 USDT in 6-decimal
+// 1 USDT. BSC-USD is an 18-decimal token; the name is kept so the diff stays small.
+const USDT_6 = 10n ** 18n;
 
 // Purchase: $5,000 Luminary package
-const PURCHASE_USDT = 5_000n * USDT_6; // 5_000_000_000 (6-dec)
+const PURCHASE_USDT = 5_000n * USDT_6;
 
-// Referral split: 10% total (F1=7%, F2=3%) of $5,000 = $500
-const REFERRAL_TOTAL = (PURCHASE_USDT * 1000n) / 10000n; // $500
-const F1_USDT        = (PURCHASE_USDT * 700n)  / 10000n; // $350 = 350_000_000
-const F2_USDT        = (PURCHASE_USDT * 300n)  / 10000n; // $150 = 150_000_000
-
-// Net to RevenueRouter after referral deduction: 90% of $5,000 = $4,500
-const NET_USDT = PURCHASE_USDT - REFERRAL_TOTAL; // 4_500_000_000
-
-// RevenueRouter splits of $4,500:
-//   Marketing  (35%):  $1,575 = 1_575_000_000
-//   Management (7.5%): $337.50 = 337_500_000
-//   Treasury  (12.5%): $562.50 = 562_500_000
-//   Staking    (5%):   $225   = 225_000_000
-//   Liquidity  (40%):  $1,800 = 1_800_000_000
-const EXPECTED_MARKETING  = (NET_USDT * 3500n) / 10000n; // 1_575_000_000
-const EXPECTED_MANAGEMENT = (NET_USDT * 750n)  / 10000n; // 337_500_000
-const EXPECTED_TREASURY   = (NET_USDT * 1250n) / 10000n; // 562_500_000
-const EXPECTED_STAKING    = (NET_USDT * 500n)  / 10000n; // 225_000_000
-// Liquidity absorbs any rounding dust
+// Revenue model V2 (2026-07): the sale sends the FULL GROSS to RevenueRouter, which splits
+// 6 ways — every % is of GROSS, nothing is taken off the top:
+//   Referral   10%  → ReferralRegistry ($500)   → F1 7% ($350) + F2 3% ($150)
+//   Marketing  25%  → RewardDistributorV2       ($1,250)
+//   Management  7.5%                            ($375)
+//   Treasury   12.5%                            ($625)
+//   Staking     5%                              ($250)
+//   Liquidity  40%  (absorbs rounding dust)     ($2,000)
+const EXPECTED_REFERRAL   = (PURCHASE_USDT * 1000n) / 10000n; 
+const EXPECTED_MARKETING  = (PURCHASE_USDT * 2500n) / 10000n; 
+const EXPECTED_MANAGEMENT = (PURCHASE_USDT * 750n)  / 10000n; 
+const EXPECTED_TREASURY   = (PURCHASE_USDT * 1250n) / 10000n; 
+const EXPECTED_STAKING    = (PURCHASE_USDT * 500n)  / 10000n; 
 const EXPECTED_LIQUIDITY  =
-  NET_USDT - EXPECTED_MARKETING - EXPECTED_MANAGEMENT - EXPECTED_TREASURY - EXPECTED_STAKING;
-// = 1_800_000_000
+  PURCHASE_USDT - EXPECTED_REFERRAL - EXPECTED_MARKETING
+  - EXPECTED_MANAGEMENT - EXPECTED_TREASURY - EXPECTED_STAKING; 
+
+const F1_USDT = (PURCHASE_USDT * 700n) / 10000n; // $350
+const F2_USDT = (PURCHASE_USDT * 300n) / 10000n; // $150
 
 const ALLOCATION = 315_000_000n * 10n ** 18n; // 315M MIC (18-dec)
 
@@ -48,7 +47,7 @@ interface Fixture {
   preSale:          PreSale;
   micToken:         MICToken;
   lockManager:      LockManager;
-  communityNFT:     CommunityNFT;
+  communityNFT:     CommunityNFTv2;
   referralRegistry: ReferralRegistry;
   revenueRouter:    RevenueRouter;
   usdt:             MockUSDT;
@@ -56,26 +55,18 @@ interface Fixture {
   buyer:            SignerWithAddress;
   f1:               SignerWithAddress;
   f2:               SignerWithAddress;
-  // RevenueRouter recipient wallets (EOA — simple balance checks)
-  marketing:        SignerWithAddress;
-  management:       SignerWithAddress;
-  treasury:         SignerWithAddress;
-  reservedStaking:  SignerWithAddress;
-  liquidity:        SignerWithAddress;
+  // Router sinks — CONTRACTS: the router calls receiveAndDistribute()/receiveUSDT()
+  // on them, so EOAs cannot stand in.
+  marketing:        MockRewardReceiver;
+  management:       MockRewardReceiver;
+  treasury:         MockRewardReceiver;
+  reservedStaking:  MockRewardReceiver;
+  liquidity:        MockRewardReceiver;
+  miPool:           MockRewardReceiver;   // Milestones & Incentives (referral overflow sink)
 }
 
 async function deployFixture(): Promise<Fixture> {
-  const [
-    admin,
-    buyer,
-    f1,
-    f2,
-    marketing,
-    management,
-    treasury,
-    reservedStaking,
-    liquidity,
-  ] = await ethers.getSigners();
+  const [admin, buyer, f1, f2] = await ethers.getSigners();
 
   // ── MockUSDT ──────────────────────────────────────────────────────────────
   const USDTFactory = await ethers.getContractFactory("MockUSDT");
@@ -89,12 +80,9 @@ async function deployFixture(): Promise<Fixture> {
   const LMFactory = await ethers.getContractFactory("LockManager");
   const lockManager = await LMFactory.deploy() as unknown as LockManager;
 
-  // ── CommunityNFT ──────────────────────────────────────────────────────────
-  const CNFTFactory = await ethers.getContractFactory("CommunityNFT");
-  const communityNFT = await CNFTFactory.deploy(
-    "https://meta.missionchain.io/cnft/",
-    admin.address,
-  ) as unknown as CommunityNFT;
+  // ── CommunityNFTv2 ────────────────────────────────────────────────────────
+  const CNFTFactory = await ethers.getContractFactory("CommunityNFTv2");
+  const communityNFT = await CNFTFactory.deploy(admin.address) as unknown as CommunityNFTv2;
 
   // ── ReferralRegistry ──────────────────────────────────────────────────────
   const RegFactory = await ethers.getContractFactory("ReferralRegistry");
@@ -103,15 +91,27 @@ async function deployFixture(): Promise<Fixture> {
     admin.address,
   ) as unknown as ReferralRegistry;
 
-  // ── RevenueRouter — uses EOA addresses for pool recipients ────────────────
+  // ── Router sinks ──────────────────────────────────────────────────────────
+  const MRFactory = await ethers.getContractFactory("MockRewardReceiver");
+  const newSink = async () =>
+    await MRFactory.deploy(await usdt.getAddress()) as unknown as MockRewardReceiver;
+  const marketing       = await newSink();
+  const management      = await newSink();
+  const treasury        = await newSink();
+  const reservedStaking = await newSink();
+  const liquidity       = await newSink();
+  const miPool          = await newSink();
+
+  // ── RevenueRouter — 8 args, referral slice pushed to the registry ─────────
   const RouterFactory = await ethers.getContractFactory("RevenueRouter");
   const revenueRouter = await RouterFactory.deploy(
     await usdt.getAddress(),
-    marketing.address,
-    management.address,
-    treasury.address,
-    reservedStaking.address,
-    liquidity.address,
+    await referralRegistry.getAddress(),
+    await marketing.getAddress(),
+    await management.getAddress(),
+    await treasury.getAddress(),
+    await reservedStaking.getAddress(),
+    await liquidity.getAddress(),
     admin.address,
   ) as unknown as RevenueRouter;
 
@@ -128,20 +128,17 @@ async function deployFixture(): Promise<Fixture> {
   ) as unknown as PreSale;
 
   // ── Wire roles ────────────────────────────────────────────────────────────
-  // LockManager: grant SCHEDULE_CREATOR_ROLE to PreSale
   const SCHEDULE_CREATOR_ROLE = await lockManager.SCHEDULE_CREATOR_ROLE();
   await lockManager.connect(admin).grantRole(SCHEDULE_CREATOR_ROLE, await preSale.getAddress());
 
-  // CommunityNFT: grant MINTER_ROLE to PreSale
   const MINTER_ROLE = await communityNFT.MINTER_ROLE();
   await communityNFT.connect(admin).grantRole(MINTER_ROLE, await preSale.getAddress());
 
-  // ReferralRegistry: grant CALLER_ROLE to PreSale (and admin for setup)
   const CALLER_ROLE = await referralRegistry.CALLER_ROLE();
   await referralRegistry.connect(admin).grantRole(CALLER_ROLE, await preSale.getAddress());
   await referralRegistry.connect(admin).grantRole(CALLER_ROLE, admin.address);
+  await referralRegistry.connect(admin).setIncentivePool(await miPool.getAddress());
 
-  // RevenueRouter: grant DISTRIBUTOR_ROLE to PreSale
   const DISTRIBUTOR_ROLE = await revenueRouter.DISTRIBUTOR_ROLE();
   await revenueRouter.connect(admin).grantRole(DISTRIBUTOR_ROLE, await preSale.getAddress());
 
@@ -153,9 +150,7 @@ async function deployFixture(): Promise<Fixture> {
   await preSale.connect(admin).setActive(true);
 
   // ── Set up referral chain: f2 ← f1 ← buyer ───────────────────────────────
-  // f1's referrer is f2
   await referralRegistry.connect(admin).setReferrer(f1.address, f2.address);
-  // buyer's referrer is f1
   await referralRegistry.connect(admin).setReferrer(buyer.address, f1.address);
 
   // ── Mint USDT for buyer and approve PreSale ───────────────────────────────
@@ -165,13 +160,13 @@ async function deployFixture(): Promise<Fixture> {
   return {
     preSale, micToken, lockManager, communityNFT, referralRegistry, revenueRouter,
     usdt, admin, buyer, f1, f2,
-    marketing, management, treasury, reservedStaking, liquidity,
+    marketing, management, treasury, reservedStaking, liquidity, miPool,
   };
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
+describe("Integration — Revenue Routing 10/25/7.5/12.5/5/40 (all % of GROSS)", function () {
 
   describe("$5K Luminary purchase — full routing with F1+F2 referral", () => {
     let f: Fixture;
@@ -179,10 +174,6 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
 
     before(async () => {
       f = await deployFixture();
-
-      // Snapshot balances BEFORE purchase
-      // (done inline per assertion below for clarity)
-
       txReceipt = await f.preSale.connect(f.buyer).buy(PURCHASE_USDT, 3);
     });
 
@@ -196,42 +187,45 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
       expect(await f.usdt.balanceOf(f.f2.address)).to.equal(F2_USDT);
     });
 
+    it("F1 + F2 together consume the entire 10% referral slice (no overflow)", async () => {
+      expect(F1_USDT + F2_USDT).to.equal(EXPECTED_REFERRAL);
+      expect(await f.miPool.received()).to.equal(0n);
+    });
+
     // ── RevenueRouter splits ──────────────────────────────────────────────
 
-    it("Marketing (RewardDistributor) receives 35% of net $4,500 = $1,575", async () => {
-      expect(await f.usdt.balanceOf(f.marketing.address)).to.equal(EXPECTED_MARKETING);
+    it("Marketing (RewardDistributorV2) receives 25% of gross $5,000 = $1,250", async () => {
+      expect(await f.marketing.received()).to.equal(EXPECTED_MARKETING);
     });
 
-    it("Management (ManagementPool) receives 7.5% of net $4,500 = $337.50", async () => {
-      // $337.50 = 337_500_000 in 6-decimal USDT
-      expect(await f.usdt.balanceOf(f.management.address)).to.equal(EXPECTED_MANAGEMENT);
+    it("Management (ManagementPool) receives 7.5% of gross = $375", async () => {
+      expect(await f.management.received()).to.equal(EXPECTED_MANAGEMENT);
     });
 
-    it("Treasury (TreasuryManager) receives 12.5% of net $4,500 = $562.50", async () => {
-      expect(await f.usdt.balanceOf(f.treasury.address)).to.equal(EXPECTED_TREASURY);
+    it("Treasury (TreasuryManager) receives 12.5% of gross = $625", async () => {
+      expect(await f.treasury.received()).to.equal(EXPECTED_TREASURY);
     });
 
-    it("Reserved Staking (admin wallet) receives 5% of net $4,500 = $225", async () => {
-      expect(await f.usdt.balanceOf(f.reservedStaking.address)).to.equal(EXPECTED_STAKING);
+    it("Listing Reserve receives 5% of gross = $250", async () => {
+      expect(await f.reservedStaking.received()).to.equal(EXPECTED_STAKING);
     });
 
-    it("Liquidity Pool receives 40% of net $4,500 = $1,800 (absorbs rounding dust)", async () => {
-      expect(await f.usdt.balanceOf(f.liquidity.address)).to.equal(EXPECTED_LIQUIDITY);
+    it("Liquidity Pool receives 40% of gross = $2,000 (absorbs rounding dust)", async () => {
+      expect(await f.liquidity.received()).to.equal(EXPECTED_LIQUIDITY);
     });
 
     // ── Conservation check ────────────────────────────────────────────────
 
     it("total USDT distributed equals full purchase amount (no leakage)", async () => {
-      const f1Balance          = await f.usdt.balanceOf(f.f1.address);
-      const f2Balance          = await f.usdt.balanceOf(f.f2.address);
-      const marketingBalance   = await f.usdt.balanceOf(f.marketing.address);
-      const managementBalance  = await f.usdt.balanceOf(f.management.address);
-      const treasuryBalance    = await f.usdt.balanceOf(f.treasury.address);
-      const stakingBalance     = await f.usdt.balanceOf(f.reservedStaking.address);
-      const liquidityBalance   = await f.usdt.balanceOf(f.liquidity.address);
-
-      const totalOut = f1Balance + f2Balance + marketingBalance + managementBalance
-        + treasuryBalance + stakingBalance + liquidityBalance;
+      const totalOut =
+        await f.usdt.balanceOf(f.f1.address)
+        + await f.usdt.balanceOf(f.f2.address)
+        + await f.marketing.received()
+        + await f.management.received()
+        + await f.treasury.received()
+        + await f.reservedStaking.received()
+        + await f.liquidity.received()
+        + await f.miPool.received();
 
       expect(totalOut).to.equal(PURCHASE_USDT);
     });
@@ -269,10 +263,10 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
         .withArgs(f.buyer.address, PURCHASE_USDT, expectedMIC, 3n);
     });
 
-    it("emits RevenueDistributed event with net $4,500", async () => {
+    it("emits RevenueDistributed with the GROSS $5,000 (not a net amount)", async () => {
       await expect(txReceipt)
         .to.emit(f.revenueRouter, "RevenueDistributed")
-        .withArgs(await f.preSale.getAddress(), NET_USDT);
+        .withArgs(await f.preSale.getAddress(), PURCHASE_USDT);
     });
 
     it("emits ReferralRegistry RewardDistributed event with correct F1/F2 amounts", async () => {
@@ -284,7 +278,7 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
 
   // ─── Exact numeric verification ──────────────────────────────────────────
 
-  describe("Exact numeric assertions (6-decimal USDT)", () => {
+  describe("Exact numeric assertions (18-decimal USDT)", () => {
     let f: Fixture;
 
     before(async () => {
@@ -292,51 +286,50 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
       await f.preSale.connect(f.buyer).buy(PURCHASE_USDT, 3);
     });
 
-    it("EXPECTED_MARKETING  = 1_575_000_000 (1,575.000000 USDT)", async () => {
-      expect(EXPECTED_MARKETING).to.equal(1_575_000_000n);
-      expect(await f.usdt.balanceOf(f.marketing.address)).to.equal(1_575_000_000n);
+    it("EXPECTED_MARKETING = $1,250", async () => {
+      expect(EXPECTED_MARKETING).to.equal(1_250n * USDT_6);
+      expect(await f.marketing.received()).to.equal(1_250n * USDT_6);
     });
 
-    it("EXPECTED_MANAGEMENT = 337_500_000 (337.500000 USDT)", async () => {
-      expect(EXPECTED_MANAGEMENT).to.equal(337_500_000n);
-      expect(await f.usdt.balanceOf(f.management.address)).to.equal(337_500_000n);
+    it("EXPECTED_MANAGEMENT = $375", async () => {
+      expect(EXPECTED_MANAGEMENT).to.equal(375n * USDT_6);
+      expect(await f.management.received()).to.equal(375n * USDT_6);
     });
 
-    it("EXPECTED_TREASURY   = 562_500_000 (562.500000 USDT)", async () => {
-      expect(EXPECTED_TREASURY).to.equal(562_500_000n);
-      expect(await f.usdt.balanceOf(f.treasury.address)).to.equal(562_500_000n);
+    it("EXPECTED_TREASURY = $625", async () => {
+      expect(EXPECTED_TREASURY).to.equal(625n * USDT_6);
+      expect(await f.treasury.received()).to.equal(625n * USDT_6);
     });
 
-    it("EXPECTED_STAKING    = 225_000_000 (225.000000 USDT)", async () => {
-      expect(EXPECTED_STAKING).to.equal(225_000_000n);
-      expect(await f.usdt.balanceOf(f.reservedStaking.address)).to.equal(225_000_000n);
+    it("EXPECTED_STAKING = $250", async () => {
+      expect(EXPECTED_STAKING).to.equal(250n * USDT_6);
+      expect(await f.reservedStaking.received()).to.equal(250n * USDT_6);
     });
 
-    it("EXPECTED_LIQUIDITY  = 1_800_000_000 (1,800.000000 USDT)", async () => {
-      expect(EXPECTED_LIQUIDITY).to.equal(1_800_000_000n);
-      expect(await f.usdt.balanceOf(f.liquidity.address)).to.equal(1_800_000_000n);
+    it("EXPECTED_LIQUIDITY = $2,000", async () => {
+      expect(EXPECTED_LIQUIDITY).to.equal(2_000n * USDT_6);
+      expect(await f.liquidity.received()).to.equal(2_000n * USDT_6);
     });
 
-    it("F1_USDT = 350_000_000 (350.000000 USDT)", async () => {
-      expect(F1_USDT).to.equal(350_000_000n);
-      expect(await f.usdt.balanceOf(f.f1.address)).to.equal(350_000_000n);
+    it("F1_USDT = $350", async () => {
+      expect(F1_USDT).to.equal(350n * USDT_6);
+      expect(await f.usdt.balanceOf(f.f1.address)).to.equal(350n * USDT_6);
     });
 
-    it("F2_USDT = 150_000_000 (150.000000 USDT)", async () => {
-      expect(F2_USDT).to.equal(150_000_000n);
-      expect(await f.usdt.balanceOf(f.f2.address)).to.equal(150_000_000n);
+    it("F2_USDT = $150", async () => {
+      expect(F2_USDT).to.equal(150n * USDT_6);
+      expect(await f.usdt.balanceOf(f.f2.address)).to.equal(150n * USDT_6);
     });
   });
 
-  // ─── No referrer case — 100% to RevenueRouter ────────────────────────────
+  // ─── No referrer — referral 10% overflows to Milestones & Incentives ─────
 
-  describe("$5K purchase with NO referrer — 100% routes to RevenueRouter", () => {
+  describe("$5K purchase with NO referrer — the 10% referral slice overflows to M&I", () => {
     let f: Fixture;
     let noReferrerBuyer: Awaited<ReturnType<typeof ethers.getSigner>>;
 
     before(async () => {
       f = await deployFixture();
-      // Use a fresh signer with no referrer set
       const signers = await ethers.getSigners();
       noReferrerBuyer = signers[9]; // safe index not used in fixture
 
@@ -345,18 +338,16 @@ describe("Integration — Revenue Routing 35/7.5/12.5/5/40", function () {
       await f.preSale.connect(noReferrerBuyer).buy(PURCHASE_USDT, 3);
     });
 
-    it("Marketing receives 35% of full $5,000 = $1,750 (no referral deduction)", async () => {
-      const expected = (PURCHASE_USDT * 3500n) / 10000n; // 1_750_000_000
-      expect(await f.usdt.balanceOf(f.marketing.address)).to.equal(expected);
+    it("Marketing still receives 25% of gross $5,000 = $1,250", async () => {
+      expect(await f.marketing.received()).to.equal(EXPECTED_MARKETING);
     });
 
-    it("Liquidity receives 40% of full $5,000 = $2,000", async () => {
-      const toMarketing  = (PURCHASE_USDT * 3500n) / 10000n;
-      const toManagement = (PURCHASE_USDT * 750n)  / 10000n;
-      const toTreasury   = (PURCHASE_USDT * 1250n) / 10000n;
-      const toStaking    = (PURCHASE_USDT * 500n)  / 10000n;
-      const toLiquidity  = PURCHASE_USDT - toMarketing - toManagement - toTreasury - toStaking;
-      expect(await f.usdt.balanceOf(f.liquidity.address)).to.equal(toLiquidity);
+    it("Liquidity still receives 40% of gross = $2,000", async () => {
+      expect(await f.liquidity.received()).to.equal(EXPECTED_LIQUIDITY);
+    });
+
+    it("the entire 10% ($500) lands in the M&I pool", async () => {
+      expect(await f.miPool.received()).to.equal(EXPECTED_REFERRAL);
     });
 
     it("F1 and F2 addresses receive nothing", async () => {

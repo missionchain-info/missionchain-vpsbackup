@@ -41,14 +41,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setReady(true)
   }, [router])
 
-  // Only clear session + redirect when wallet is fully disconnected (not reconnecting/connecting)
+  // Only clear session + redirect when wallet is fully disconnected (not reconnecting/connecting).
+  // A network switch (chainChanged) or a brief reconnect can momentarily flash
+  // 'disconnected'; clearing the session on that blip logs the user out on every
+  // chain switch. So we DEBOUNCE: only clear if the wallet is STILL disconnected
+  // ~1.5s later (checked via a ref holding the latest status).
+  const statusRef = useRef(status)
+  statusRef.current = status
   useEffect(() => {
     if (status !== 'disconnected') return
     if (typeof window === 'undefined') return
-    localStorage.removeItem('mc-jwt')
-    localStorage.removeItem('mc-userId')
-    localStorage.removeItem('mc-wallet')
-    router.replace('/')
+    const t = setTimeout(() => {
+      if (statusRef.current !== 'disconnected') return // recovered (e.g. chain switch) — keep session
+      localStorage.removeItem('mc-jwt')
+      localStorage.removeItem('mc-userId')
+      localStorage.removeItem('mc-wallet')
+      router.replace('/')
+    }, 1500)
+    return () => clearTimeout(t)
   }, [status, router])
 
   // Layer C: Auto-reauth if connected wallet differs from JWT wallet

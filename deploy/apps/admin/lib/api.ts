@@ -77,6 +77,22 @@ export async function fetchMembers(params?: { page?: number; limit?: number; sea
   return apiFetch<any>(`/admin/users${qs ? '?' + qs : ''}`);
 }
 
+/**
+ * Wallets cleared to buy the SEED round, with what each has purchased.
+ *
+ * Goes through apiFetch like everything else so it carries the admin JWT from
+ * localStorage — a raw fetch() with credentials: 'include' gets a 401, because the
+ * console authenticates with a Bearer header and not a cookie.
+ */
+export async function fetchSeedWhitelist(params?: { page?: number; pageSize?: number; search?: string }) {
+  const query = new URLSearchParams();
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.pageSize) query.set('pageSize', String(params.pageSize));
+  if (params?.search) query.set('search', params.search);
+  const qs = query.toString();
+  return apiFetch<any>('/admin/seed/whitelist' + (qs ? '?' + qs : ''));
+}
+
 export async function fetchMemberDetail(wallet: string) {
   return apiFetch<any>(`/admin/users/${wallet}`);
 }
@@ -258,6 +274,76 @@ export async function fetchSystemConfig() {
 
 export async function updateSystemConfig(data: any) {
   return apiFetch<any>('/admin/system-config', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+// ── Twilio Server KYC (SMS OTP fallback) ──
+export interface TwilioKycView {
+  enabled: boolean;
+  accountSid: string;
+  verifyServiceSid: string;
+  authTokenSet: boolean;
+  updatedBy?: string | null;
+  updatedAt?: string | null;
+}
+export async function fetchTwilioKyc() {
+  return apiFetch<{ data: TwilioKycView }>('/admin/kyc/twilio');
+}
+export async function updateTwilioKyc(data: {
+  enabled: boolean;
+  accountSid: string;
+  verifyServiceSid: string;
+  authToken?: string;
+}) {
+  return apiFetch<{ data: TwilioKycView }>('/admin/kyc/twilio', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+// ── System Lookup (monitoring & expiry alerts)
+export interface LookupWallet {
+  label: string;
+  address: string;
+  minBnb: number;
+  note?: string;
+  bnb: number | null;
+  status: 'ok' | 'warning' | 'critical' | 'unknown';
+}
+export interface LookupService {
+  label: string;
+  kind: string;
+  expiresAt: string;
+  url?: string;
+  renewUrl?: string;
+  note?: string;
+  probed?: boolean;
+  daysLeft: number | null;
+  status: 'ok' | 'warning' | 'critical' | 'expired' | 'unknown';
+}
+export interface SystemLookupView {
+  warnDays: number;
+  criticalDays: number;
+  wallets: LookupWallet[];
+  services: LookupService[];
+  overall: string;
+  alerts: number;
+  updatedBy?: string | null;
+  updatedAt?: string | null;
+  checkedAt: string;
+}
+export async function fetchSystemLookup() {
+  return apiFetch<{ data: SystemLookupView }>('/admin/system/lookup');
+}
+export async function updateSystemLookup(data: {
+  warnDays?: number;
+  criticalDays?: number;
+  wallets?: Array<{ label: string; address: string; minBnb: number; note?: string }>;
+  services?: Array<{ label: string; kind: string; expiresAt: string; url?: string; renewUrl?: string; note?: string }>;
+}) {
+  return apiFetch<{ data: any }>('/admin/system/lookup', {
     method: 'PUT',
     body: JSON.stringify(data),
   });
@@ -714,3 +800,29 @@ export async function claimOperationalPool() {
     data: { claimId: string; amountUsdt: number; offChain: boolean; message: string };
   }>('/admin/seed-budget/operational/claim', { method: 'POST' });
 }
+
+/** Referral milestones that have been earned and not yet minted. Read-only — signing
+ *  happens in the operator's wallet, because minting is irreversible and the key that
+ *  authorises it should not live on a server. */
+export const fetchNftRewardMilestones = () => apiFetch<any>('/admin/nft-rewards/milestones');
+
+/** Balances of the two emission-funded NFT reward pools, and how the MIC would split
+ *  across current holders. */
+export const fetchNftRewardPools = () => apiFetch<any>('/admin/nft-rewards/pools');
+
+// ─── Community NFT discretionary grants (Path 2) ───────────────────────────
+//
+// The Owner authorises an NFT outside the automated KPI programmes and the recipient
+// mints it themselves. Nothing is minted by these calls; they only move the allowance.
+//
+// The weekly limits these endpoints enforce are operational, not on-chain — see
+// apps/api/src/routes/community-grants.ts for why that distinction matters.
+
+export const fetchCommunityGrants = () => apiFetch<any>('/admin/community-grants');
+
+export const precheckCommunityGrant = (body: { wallet: string; tier: number; quantity: number }) =>
+  apiFetch<any>('/admin/community-grants/precheck', { method: 'POST', body: JSON.stringify(body) });
+
+export const issueCommunityGrant = (body: {
+  wallet: string; tier: number; quantity: number; note: string;
+}) => apiFetch<any>('/admin/community-grants', { method: 'POST', body: JSON.stringify(body) });

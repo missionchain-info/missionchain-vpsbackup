@@ -158,7 +158,7 @@ export default function StewardCouncilPage() {
             Master council member registry. {isOwner ? 'Owner can Add / Edit / Delete members.' : 'View-only.'}
           </div>
           <div style={{ fontSize: '0.55rem', color: 'var(--gray2)', marginTop: 6 }}>
-            Phase 1 voting: 1 member = 1 vote. MFP-NFT weighted voting deferred to DAO phase.
+            One member = one vote. Governance is by head — no token, stake or NFT weighting.
           </div>
         </div>
         {isOwner && (

@@ -8,7 +8,20 @@ import { formatUnits } from 'ethers'
 export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── GET /mining/network-stats — Global on-chain mining data ────
+  /**
+   * Emission state and pool figures, cached for a minute.
+   *
+   * This reads a dozen contracts per request and was timing out at the 60-second
+   * gateway limit. None of it is per-user, and none of it moves faster than the daily
+   * emission it describes — so a minute of staleness is invisible, while the burst it
+   * removes is what made the page unusable.
+   */
+  let statsCache: { at: number; body: any } | null = null
+  const STATS_TTL_MS = 60_000
+
   app.get('/network-stats', async (req, reply) => {
+    if (statsCache && Date.now() - statsCache.at < STATS_TTL_MS) return statsCache.body
+
     const bc = app.blockchain
 
     try {
@@ -21,12 +34,17 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
         currentRound,
         eBaseRaw,
         demandFactorRaw,
-        roiFactorRaw,
+        coverageHRaw,
+        currentLRaw,
+        trendFactorRaw,
+        adoptionFactorRaw,
+        brakeOn,
         warmUpFactorRaw,
         minersBps,
         stakingBps,
         daoBps,
         communityNftBps,
+        mfpRewardBps,
         lastDistributionRaw,
         currentEpoch,
       ] = await Promise.all([
@@ -38,12 +56,17 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
         bc.miceLicense.getCurrentRound().catch(() => 0n),
         bc.emissionController.eBase().catch(() => 0n),
         bc.emissionController.demandFactor().catch(() => 10000n),
-        bc.emissionController.roiFactor().catch(() => 10000n),
+        bc.emissionController.coverageH().catch(() => 0n),
+        bc.emissionController.currentL().catch(() => 10000n),
+        bc.emissionController.trendFactor().catch(() => 10000n),
+        bc.emissionController.adoptionFactor().catch(() => 10000n),
+        bc.emissionController.brakeEngaged().catch(() => false),
         bc.emissionController.warmUpFactor().catch(() => 10000n),
-        bc.emissionController.minersBps().catch(() => 6000n),
+        bc.emissionController.minersBps().catch(() => 5900n),
         bc.emissionController.stakingBps().catch(() => 2500n),
         bc.emissionController.daoBps().catch(() => 1000n),
         bc.emissionController.communityNFTBps().catch(() => 500n),
+        bc.emissionController.mfpRewardBps().catch(() => 100n),
         bc.emissionController.lastDistribution().catch(() => 0n),
         bc.miningPool.currentEpoch().catch(() => 0n),
       ])
@@ -59,7 +82,7 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
       const dailyEmission = parseFloat(formatUnits(dailyEmissionRaw, 18))
       const totalEmitted = parseFloat(formatUnits(totalEmittedRaw, 18))
 
-      return {
+      const body = {
         data: {
           // Live counter data
           dailyEmission,
@@ -81,14 +104,26 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
           // Emission factors (BPS = basis points, 10000 = 1.0)
           factors: {
             eBase: parseFloat(formatUnits(eBaseRaw, 18)),
-            demandFactor: Number(demandFactorRaw) / 10000,
-            roiFactor: Number(roiFactorRaw) / 10000,
-            warmUpFactor: Number(warmUpFactorRaw) / 10000,
+            // Every factor comes back in 1e18 scale — `demandFactor` returns
+            // `5e17 + active * 1e18 / MAX_MICE`, and the rest follow it. Dividing by
+            // 10,000 left them 10^14 times too large, which is why the dashboard showed
+            // a demand factor of fifty trillion against a documented range of 0.5–1.5.
+            demandFactor: Number(demandFactorRaw) / 1e18,
+            // The ROI regulator was removed on 2026-08-05. Issuance is now governed by
+            // liquidity coverage L(H), damped by the trend factor G and scaled by
+            // adoption A(N) — see the MICE·MINING·SWAP spec.
+            coverageDays: Number(coverageHRaw),
+            coverageFactor: Number(currentLRaw) / 1e18,
+            trendFactor: Number(trendFactorRaw) / 1e18,
+            adoptionFactor: Number(adoptionFactorRaw) / 1e18,
+            brakeEngaged: Boolean(brakeOn),
+            warmUpFactor: Number(warmUpFactorRaw) / 1e18,
           },
 
           // Emission split (BPS)
           split: {
             miners: Number(minersBps) / 100,
+            mfpReward: Number(mfpRewardBps) / 100,
             staking: Number(stakingBps) / 100,
             dao: Number(daoBps) / 100,
             communityNft: Number(communityNftBps) / 100,
@@ -99,6 +134,9 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
           lastDistribution: lastDist,
         },
       }
+
+      statsCache = { at: Date.now(), body }
+      return body
     } catch (err: any) {
       app.log.error('[mining/network-stats] Error:', err.message)
       return {
@@ -114,8 +152,10 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
           totalMiceMinted: 0,
           currentRound: 1,
           maxMice: 100_000,
-          factors: { eBase: 0, demandFactor: 1, roiFactor: 1, warmUpFactor: 0 },
-          split: { miners: 60, staking: 25, dao: 10, communityNft: 5 },
+          factors: { eBase: 0, demandFactor: 1, coverageFactor: 1, warmUpFactor: 0 },
+          // 59/25/10/5/1 since 2026-08-05. MFP-NFT is its own pool, not part of
+          // Community NFT — the two have different holders and different rules.
+          split: { miners: 59, staking: 25, dao: 10, communityNft: 5, mfpReward: 1 },
           currentEpoch: 0,
           lastDistribution: 0,
         },

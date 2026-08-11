@@ -9,7 +9,7 @@
  * V5c/V3 cutover (Jun 23, 2026): replaces V5b/V2 trio + V6.
  */
 import { Contract, JsonRpcProvider, formatUnits } from 'ethers'
-import { getActiveAddresses, isMainnet } from '@missionchain/sdk'
+import { getActiveAddresses, isMainnet, USDT_DECIMALS } from '@missionchain/sdk'
 
 const TESTNET_RPC_FALLBACK = [
   'https://bsc-dataseed.binance.org/',
@@ -118,9 +118,9 @@ export async function readSeedBudgetSlot(slot: SlotIdx) {
     sb.slotTotalReleased(slot) as Promise<bigint>,
   ])
   return {
-    balance:        Number(formatUnits(balance, 6)),
-    totalReceived:  Number(formatUnits(totalReceived, 6)),
-    totalReleased:  Number(formatUnits(totalReleased, 6)),
+    balance:        Number(formatUnits(balance, USDT_DECIMALS)),
+    totalReceived:  Number(formatUnits(totalReceived, USDT_DECIMALS)),
+    totalReleased:  Number(formatUnits(totalReleased, USDT_DECIMALS)),
   }
 }
 
@@ -137,9 +137,9 @@ export async function readSeedBudgetAllSlots() {
   const results = await Promise.all(calls) as bigint[]
 
   const slot = (i: number) => ({
-    balance:       Number(formatUnits(results[i * 3] ?? 0n, 6)),
-    totalReceived: Number(formatUnits(results[i * 3 + 1] ?? 0n, 6)),
-    totalReleased: Number(formatUnits(results[i * 3 + 2] ?? 0n, 6)),
+    balance:       Number(formatUnits(results[i * 3] ?? 0n, USDT_DECIMALS)),
+    totalReceived: Number(formatUnits(results[i * 3 + 1] ?? 0n, USDT_DECIMALS)),
+    totalReleased: Number(formatUnits(results[i * 3 + 2] ?? 0n, USDT_DECIMALS)),
   })
 
   return {
@@ -172,8 +172,8 @@ export async function readOperationalPoolMember(wallet: string): Promise<OspMemb
     osp.currentWeekIdx() as Promise<bigint>,
   ])
   const sharePctBps = Number(m[0])
-  const weeklyMaxoutUsdt = Number(formatUnits(m[1], 6))
-  const totalClaimed = Number(formatUnits(m[2], 6))
+  const weeklyMaxoutUsdt = Number(formatUnits(m[1], USDT_DECIMALS))
+  const totalClaimed = Number(formatUnits(m[2], USDT_DECIMALS))
   const enrolled = m[3]
   if (!enrolled) return null
 
@@ -188,7 +188,7 @@ export async function readOperationalPoolMember(wallet: string): Promise<OspMemb
     sharePctBps,
     weeklyMaxoutUsdt,
     totalClaimed,
-    claimable: Number(formatUnits(claimable, 6)),
+    claimable: Number(formatUnits(claimable, USDT_DECIMALS)),
     allocatedThisWeek,
   }
 }
@@ -277,7 +277,7 @@ export async function readMgmtBonusState(): Promise<MgmtBonusState> {
   const baseState: Omit<MgmtBonusState, 'orders'> = {
     thresholdBps:       Number(thresholdBps),
     activeCouncilCount: Number(activeCount),
-    slotBalance:        Number(formatUnits(slotBalanceWei, 6)),
+    slotBalance:        Number(formatUnits(slotBalanceWei, USDT_DECIMALS)),
   }
   if (totalOrders === 0) {
     return { ...baseState, orders: [] }
@@ -294,7 +294,7 @@ export async function readMgmtBonusState(): Promise<MgmtBonusState> {
   const orders: MgmtBonusOrderOnChain[] = all.map(([o, approvals, ratioBps]) => ({
     id:               Number(o[0]),
     recipient:        (o[1] as string).toLowerCase(),
-    amount:           Number(formatUnits(o[2] as bigint, 6)),
+    amount:           Number(formatUnits(o[2] as bigint, USDT_DECIMALS)),
     content:          o[3] as string,
     requester:        (o[4] as string).toLowerCase(),
     createdAt:        Number(o[5]),

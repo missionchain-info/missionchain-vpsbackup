@@ -241,23 +241,43 @@ export const stewardCouncilRoutes: FastifyPluginAsync = async (app) => {
     const wallet = req.params.wallet.toLowerCase()
 
     // Step 1 — remove on-chain first.
-    let txHash: string
+    //
+    // "SC: not member" is not a failure. It means the row exists only in the DB and was
+    // never written to the contract — rows like that predate the on-chain-first policy,
+    // and refusing to delete them left the Owner with no way to clear them from any
+    // screen. There is nothing on-chain to remove, so the removal is already true and the
+    // DB row can go. Every other revert still blocks: swallowing those would hide a real
+    // contract failure behind a cheerful success.
+    let txHash: string | null = null
+    let notOnChain = false
     try {
       const r = await submitRemoveCouncilMember(wallet)
       txHash = r.txHash
     } catch (e: any) {
-      app.log.error({ err: e?.message, wallet }, 'steward-council on-chain removeMember failed')
-      return reply.status(502).send({
-        error: 'CHAIN_ERROR',
-        message: `On-chain removeMember reverted: ${extractRevertReason(e)}`,
-      })
+      const reason = extractRevertReason(e) || ''
+      if (/not member/i.test(reason)) {
+        notOnChain = true
+        app.log.warn({ wallet, reason }, 'steward-council row was never on-chain — removing the DB row only')
+      } else {
+        app.log.error({ err: e?.message, wallet }, 'steward-council on-chain removeMember failed')
+        return reply.status(502).send({
+          error: 'CHAIN_ERROR',
+          message: `On-chain removeMember reverted: ${reason || e?.message}`,
+        })
+      }
     }
 
     // Step 2 — mirror to DB.
     try {
       await app.prisma.stewardCouncilMember.delete({ where: { wallet } })
-      auditLog(app, auditCtx(req, 'steward.council.delete', wallet, { txHash }))
-      return reply.send({ success: true, txHash })
+      auditLog(app, auditCtx(req, 'steward.council.delete', wallet, { txHash, notOnChain }))
+      return reply.send({
+        success: true,
+        txHash,
+        ...(notOnChain && {
+          warning: 'This member was not on-chain — only the database row was removed.',
+        }),
+      })
     } catch (e: any) {
       if (e?.code === 'P2025') {
         // On-chain succeeded; DB already missing the row. Idempotent — treat as success.

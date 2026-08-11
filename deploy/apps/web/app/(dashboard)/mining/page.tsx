@@ -19,8 +19,12 @@ interface NetworkStats {
   totalMiceMinted: number
   currentRound: number
   maxMice: number
-  factors: { eBase: number; demandFactor: number; roiFactor: number; warmUpFactor: number }
-  split: { miners: number; staking: number; dao: number; communityNft: number }
+  factors: {
+    eBase: number; demandFactor: number; warmUpFactor: number
+    coverageDays: number; coverageFactor: number; trendFactor: number
+    adoptionFactor: number; brakeEngaged: boolean
+  }
+  split: { miners: number; staking: number; dao: number; communityNft: number; mfpReward: number }
   currentEpoch: number
   lastDistribution: number
 }
@@ -180,13 +184,21 @@ export default function MiningPage() {
       const signer = await provider.getSigner()
       const miningContract = new ethers.Contract(CONTRACTS.mining, MINING_ABI, signer)
 
-      const epoch = n.currentEpoch || 0
-      const tx = await miningContract.claimReward(epoch)
+      // Settle every licence that is currently mining, plus anything already banked from
+      // a licence that expired or was sold on. Passing the ids is what lets the contract
+      // move each licence's earnings into the caller's balance in one transaction.
+      const activeIds = (myMice?.licenses || [])
+        .filter((l) => l.inMining)
+        .map((l) => BigInt(l.id))
+
+      const tx = activeIds.length > 0
+        ? await miningContract.claim(activeIds)
+        : await miningContract.claimAccrued()
       const receipt = await tx.wait()
 
       await api('/mining/record-claim', {
         method: 'POST',
-        body: JSON.stringify({ txHash: receipt.hash, epoch }),
+        body: JSON.stringify({ txHash: receipt.hash, licenceIds: activeIds.map(String) }),
       }).catch(() => {})
 
       setActionResult({ ok: true, msg: `Claimed ${unclaimedNum.toLocaleString()} MIC to your wallet. Tx: ${receipt.hash.slice(0, 10)}...` })
@@ -196,7 +208,7 @@ export default function MiningPage() {
     } finally {
       setClaiming(false)
     }
-  }, [n.currentEpoch, unclaimedNum, loadData])
+  }, [myMice, unclaimedNum, loadData])
 
   if (loading && !net) return <LoadingSpinner />
 
@@ -253,13 +265,14 @@ export default function MiningPage() {
             <span className="mine-section-title">Emission Split (85% Mining Pool = 5.95B MIC)</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24, justifyContent: 'center', padding: '12px 0' }}>
-            <EmissionRing split={n.split || { miners: 60, staking: 25, dao: 10, communityNft: 5 }} />
+            <EmissionRing split={n.split || { miners: 59, staking: 25, dao: 10, communityNft: 5, mfpReward: 1 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
                 { k: 'miners', c: '#C9A84C', l: 'Miners (MICE)' },
                 { k: 'staking', c: '#00BCD4', l: 'Staking Rewards' },
                 { k: 'dao', c: '#C084D4', l: 'DAO Treasury' },
                 { k: 'communityNft', c: '#CD7F32', l: 'Community NFT Pool' },
+                { k: 'mfpReward', c: '#E8C468', l: 'MFP-NFT Pool' },
               ].map(s => (
                 <div key={s.k} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: s.c }} />
@@ -401,7 +414,13 @@ export default function MiningPage() {
                   <span className="mine-f-op"> {'\u00D7'} </span>
                   <span className="mine-f-fn">D</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
                   <span className="mine-f-op"> {'\u00D7'} </span>
-                  <span className="mine-f-fn">R</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
+                  {/* R(t), the ROI regulator, was removed on 2026-08-05 and replaced by
+                      L(H) · G · A(N). The formula still showed R and omitted all three. */}
+                  <span className="mine-f-fn">L</span><span className="mine-f-paren">(</span><span className="mine-f-var">H</span><span className="mine-f-paren">)</span>
+                  <span className="mine-f-op"> {'\u00D7'} </span>
+                  <span className="mine-f-fn">G</span>
+                  <span className="mine-f-op"> {'\u00D7'} </span>
+                  <span className="mine-f-fn">A</span><span className="mine-f-paren">(</span><span className="mine-f-var">N</span><span className="mine-f-paren">)</span>
                   <span className="mine-f-op"> {'\u00D7'} </span>
                   <span className="mine-f-fn">W</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
                 </div>
@@ -409,10 +428,12 @@ export default function MiningPage() {
 
               <div className="mine-params">
                 {[
-                  { sym: 'E_base(t)', color: 'var(--gold)', desc: `Base emission ~${fmtBig(n.factors?.eBase || 22907500)} MIC/day, exponential decay`, icon: '\u26A1' },
-                  { sym: 'D(t)', color: 'var(--cyan)', desc: `Demand factor = ${(n.factors?.demandFactor || 1).toFixed(2)} [0.5 — 1.5]`, icon: '\uD83D\uDCC8' },
-                  { sym: 'R(t)', color: 'var(--purple2)', desc: `ROI regulator = ${(n.factors?.roiFactor || 1).toFixed(2)} clamp(250%/ROI, 0.5, 2.0)`, icon: '\u2696\uFE0F' },
-                  { sym: 'W(t)', color: 'var(--gold2)', desc: `Warm-up factor = ${(n.factors?.warmUpFactor || 0).toFixed(2)} min(1.0, t/30)`, icon: '\uD83D\uDD25' },
+                  { sym: 'E_base(t)', color: 'var(--gold)', desc: `Base emission ~${fmtBig(n.factors?.eBase || 750000)} MIC/day, 8-year half-life`, icon: '\u26A1' },
+                  { sym: 'D(t)', color: 'var(--cyan)', desc: `Demand factor = ${(n.factors?.demandFactor ?? 1).toFixed(2)} [0.5 — 1.5]`, icon: '\uD83D\uDCC8' },
+                  { sym: 'L(H)', color: 'var(--purple2)', desc: `Coverage regulator = ${(n.factors?.coverageFactor ?? 1).toFixed(2)} · H = ${n.factors?.coverageDays ?? 0} days, target 110 · clamp(H/110, 0.02, 2.0)`, icon: '\u2696\uFE0F' },
+                  { sym: 'G', color: 'var(--purple2)', desc: `Trend damper = ${(n.factors?.trendFactor ?? 1).toFixed(2)} clamp(TWAP7/TWAP30, 0.25, 1.0) — slows issuance only, never raises it`, icon: '\uD83D\uDCC9' },
+                  { sym: 'A(N)', color: 'var(--cyan)', desc: `Adoption factor = ${(n.factors?.adoptionFactor ?? 1).toFixed(2)} min(1, \u221A(N/10,000))${(n.factors?.adoptionFactor ?? 1) === 0 ? ' — zero while no licence is active, which halts issuance entirely' : ''}`, icon: '\uD83D\uDC65' },
+                  { sym: 'W(t)', color: 'var(--gold2)', desc: `Warm-up factor = ${(n.factors?.warmUpFactor ?? 0).toFixed(4)} min(1.0, t/30)`, icon: '\uD83D\uDD25' },
                 ].map(p => (
                   <div className="mine-param-row" key={p.sym}>
                     <div className="mine-param-icon">{p.icon}</div>
@@ -427,7 +448,10 @@ export default function MiningPage() {
               <div className="mine-halflife">
                 <div className="mine-halflife-icon">{'\u23F3'}</div>
                 <div className="mine-halflife-text">
-                  <strong>Half-life:</strong> 180 days &mdash; ~3 years to 99% emitted
+                  {/* The contract's HALF_LIFE is 2,922 days. This card said 180 days
+                      while its own E_base line said "8-year half-life" — the two sat
+                      three rows apart. */}
+                  <strong>Half-life:</strong> 2,922 days (8 years) &mdash; issuance halves every 8 years
                 </div>
               </div>
             </>
@@ -488,12 +512,13 @@ function ActionStatCard({ icon, label, value, unit, color, sub, btnLabel, btnDis
   )
 }
 
-function EmissionRing({ split }: { split: { miners: number; staking: number; dao: number; communityNft: number } }) {
+function EmissionRing({ split }: { split: { miners: number; staking: number; dao: number; communityNft: number; mfpReward: number } }) {
   const segments = [
     { pct: split.miners, color: '#C9A84C' },
     { pct: split.staking, color: '#00BCD4' },
     { pct: split.dao, color: '#C084D4' },
     { pct: split.communityNft, color: '#CD7F32' },
+    { pct: split.mfpReward, color: '#E8C468' },
   ]
   const r = 60, sw = 14, circ = 2 * Math.PI * r
   let offset = 0

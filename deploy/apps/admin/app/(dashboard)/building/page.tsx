@@ -70,13 +70,13 @@ export default function CommunityBuildingPage() {
   const [gvTiers, setGvTiers] = useState<GvTier[]>(DEFAULT_GV_TIERS);
   const [gvOverride, setGvOverride] = useState(true); // earn only difference from downline
 
-  // ── Weekly Growth Reward (5%) ──
-  const [cbPoolRate, setCbPoolRate] = useState('5');
+  // ── Weekly Growth Reward (5.5% = Community NFT 5% + MFP 0.5%) ──
+  const [cbPoolRate, setCbPoolRate] = useState('5.5');
   const [cbMilestones, setCbMilestones] = useState<Milestone[]>(DEFAULT_MILESTONES);
   const [cbResetOnLuminary, setCbResetOnLuminary] = useState(true);
 
-  // ── Monthly Community Reward (7.5%) ──
-  const [monthlyPoolRate, setMonthlyPoolRate] = useState('7.5');
+  // ── Monthly Community Reward (8% = Community NFT 7.5% + MFP 0.5%) ──
+  const [monthlyPoolRate, setMonthlyPoolRate] = useState('8');
 
   // ── Lucky Draw (1%) ──
   const [luckyDrawRate, setLuckyDrawRate] = useState('1');
@@ -86,8 +86,8 @@ export default function CommunityBuildingPage() {
   const [luckyDrawPrize3, setLuckyDrawPrize3] = useState('5');
   const [luckyDrawConsolation, setLuckyDrawConsolation] = useState('2.5');
 
-  // ── Incentives Pool (2.5%) ──
-  const [incentivesRate, setIncentivesRate] = useState('2.5');
+  // ── Milestones & Incentives (1.5% base; + referral & GV overflow → effective > 1.5%) ──
+  const [incentivesRate, setIncentivesRate] = useState('1.5');
 
   // ── NFT Multipliers ──
   const [nftMultBuilder, setNftMultBuilder] = useState('1');
@@ -168,8 +168,10 @@ export default function CommunityBuildingPage() {
     }
   };
 
-  /* ── Revenue allocation summary ── */
-  const totalMarketingPct = parseFloat(f1Rate) + parseFloat(f2Rate) + parseFloat(cbPoolRate) + parseFloat(luckyDrawRate) + parseFloat(monthlyPoolRate) + parseFloat(gvTotalRate) + parseFloat(incentivesRate);
+  /* ── Revenue allocation summary (all % of GROSS) ── */
+  const referralPct = parseFloat(f1Rate) + parseFloat(f2Rate); // 10% — separate, paid instantly
+  // Marketing & Sales = 25% (referral is NOT part of it, per revised model 2026-07)
+  const totalMarketingPct = parseFloat(cbPoolRate) + parseFloat(luckyDrawRate) + parseFloat(monthlyPoolRate) + parseFloat(gvTotalRate) + parseFloat(incentivesRate);
 
   /* ── Read-only mode for non-owner (only owner-wallet can edit) ── */
   const { user } = useAuth();
@@ -227,7 +229,7 @@ export default function CommunityBuildingPage() {
       )}
 
       {/* ═══ REVENUE ALLOCATION SUMMARY ═══ */}
-      <div className="sep-lbl">Revenue Allocation (35%)</div>
+      <div className="sep-lbl">Revenue Allocation — of gross (Referral 10% + Marketing 25%)</div>
       <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: 16 }}>
         <div className="tbl-wrap">
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -238,31 +240,35 @@ export default function CommunityBuildingPage() {
               </tr>
             </thead>
             <tbody>
+              {/* Referral — separate top-level bucket (paid instantly, NOT part of the 25%) */}
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <td style={tdStyle}>Referral Commission (F1 + F2) — instant, separate</td>
+                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-m)', color: 'var(--gold)' }}>{referralPct}%</td>
+              </tr>
               {[
-                { label: 'Referral Commission (F1 + F2)', pct: parseFloat(f1Rate) + parseFloat(f2Rate) },
-                { label: 'Weekly Growth Reward', pct: parseFloat(cbPoolRate) },
-                { label: 'GV Bonus', pct: parseFloat(gvTotalRate) },
-                { label: 'Monthly Community Reward', pct: parseFloat(monthlyPoolRate) },
+                { label: 'Community Growth Award (GV)', pct: parseFloat(gvTotalRate) },
+                { label: 'Milestones & Incentives (in-kind · Board of Mgmt; + overflow)', pct: parseFloat(incentivesRate) },
+                { label: 'Weekly Growth Reward (NFT 5% + MFP 0.5%)', pct: parseFloat(cbPoolRate) },
+                { label: 'Monthly Community Reward (NFT 7.5% + MFP 0.5%)', pct: parseFloat(monthlyPoolRate) },
                 { label: 'Weekly Lucky Draw', pct: parseFloat(luckyDrawRate) },
-                { label: 'Incentives Pool', pct: parseFloat(incentivesRate) },
               ].map(r => (
                 <tr key={r.label} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={tdStyle}>{r.label}</td>
+                  <td style={{ ...tdStyle, paddingLeft: 24 }}>{r.label}</td>
                   <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-m)', color: 'var(--gold)' }}>{r.pct}%</td>
                 </tr>
               ))}
               <tr style={{ background: 'var(--bg4)' }}>
-                <td style={{ ...tdStyle, fontWeight: 700 }}>Total</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-d)', fontWeight: 800, color: totalMarketingPct === 35 ? '#50c878' : '#ff5050' }}>
+                <td style={{ ...tdStyle, fontWeight: 700 }}>Marketing &amp; Sales Total</td>
+                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-d)', fontWeight: 800, color: totalMarketingPct === 25 ? '#50c878' : '#ff5050' }}>
                   {totalMarketingPct.toFixed(1)}%
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        {totalMarketingPct !== 35 && (
+        {totalMarketingPct !== 25 && (
           <div style={{ padding: '8px 14px', background: 'rgba(255,80,80,.08)', fontSize: SZ, color: '#ff5050' }}>
-            Total should be 35%. Please adjust the rates.
+            Marketing &amp; Sales total should be 25%. Please adjust the rates.
           </div>
         )}
       </div>
@@ -410,7 +416,7 @@ export default function CommunityBuildingPage() {
       <div className="sep-lbl">NFT Multipliers (for USDT Distribution)</div>
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
         <div className="callout" style={{ marginBottom: 16, fontSize: SZ }}>
-          NFT multipliers are used <strong>ONLY</strong> for distributing USDT reward pools (Weekly Growth Reward 5%, Monthly Community Reward 7.5%, Lucky Draw 1%). They do NOT affect MIC staking rewards. Staking and NFT are completely separate systems.
+          NFT multipliers are used <strong>ONLY</strong> for distributing USDT reward pools (Weekly Growth Reward 5.5%, Monthly Community Reward 8%, Lucky Draw 1%). They do NOT affect MIC staking rewards. Staking and NFT are completely separate systems.
         </div>
         <div className="g4">
           {[
@@ -500,21 +506,21 @@ export default function CommunityBuildingPage() {
       </div>
 
       {/* ═══ INCENTIVES POOL ═══ */}
-      <div className="sep-lbl">Incentives Pool ({incentivesRate}%)</div>
+      <div className="sep-lbl">Milestones &amp; Incentives ({incentivesRate}% base + overflow)</div>
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
         <div className="g2">
           <div>
             <div className="callout" style={{ marginBottom: 12, fontSize: SZ }}>
-              DAO-governed fund for community campaigns, special bonuses, and growth incentives. Managed via IncentivePool.sol.
+              Discretionary fund for market developers \u2014 paid IN KIND (travel, gifts, etc.) at the Board of Management&apos;s discretion. Also absorbs UNSPENT referral (no referrer / no F2) and GV below the 9% tier, so the effective rate is higher than the {incentivesRate}% base. Managed via ClaimRewardsV2.sol.
             </div>
-            <div className="input-label" style={{ marginBottom: 6 }}>Pool Rate (%)</div>
+            <div className="input-label" style={{ marginBottom: 6 }}>Base Rate (%)</div>
             <input type="number" step="0.5" value={incentivesRate} onChange={e => { setIncentivesRate(e.target.value); markDirty(); }} style={{ padding: '5px 10px', borderRadius: 6, background: 'var(--card-bg)', color: 'var(--white)', border: '1px solid var(--border)', fontSize: SZ, fontFamily: 'var(--font-m)', width: '100%' }} readOnly={readOnly} />
           </div>
           <div>
-            <div className="info-row"><span className="info-key">Governance</span><span className="info-val" style={{ fontSize: SZ }}>DAO Controlled</span></div>
-            <div className="info-row"><span className="info-key">Contract</span><span className="info-val" style={{ fontFamily: 'var(--font-m)', fontSize: SZ }}>IncentivePool.sol</span></div>
-            <div className="info-row"><span className="info-key">Usage</span><span className="info-val" style={{ fontSize: SZ }}>Campaigns, Bonuses, Growth</span></div>
-            <div className="info-row"><span className="info-key">Total Distributed</span><span className="info-val gold" style={{ fontSize: SZ, fontFamily: 'var(--font-m)' }}>{'\u2014'}</span></div>
+            <div className="info-row"><span className="info-key">Decided by</span><span className="info-val" style={{ fontSize: SZ }}>Board of Management</span></div>
+            <div className="info-row"><span className="info-key">Contract</span><span className="info-val" style={{ fontFamily: 'var(--font-m)', fontSize: SZ }}>ClaimRewardsV2.sol</span></div>
+            <div className="info-row"><span className="info-key">Payout</span><span className="info-val" style={{ fontSize: SZ }}>In-kind (travel, gifts)</span></div>
+            <div className="info-row"><span className="info-key">Also absorbs</span><span className="info-val" style={{ fontSize: SZ }}>Referral + GV overflow</span></div>
           </div>
         </div>
       </div>

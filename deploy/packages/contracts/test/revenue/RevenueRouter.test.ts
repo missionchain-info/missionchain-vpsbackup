@@ -9,17 +9,19 @@ describe("RevenueRouter", function () {
   let admin: SignerWithAddress;
   let distributor: SignerWithAddress; // authorized sale contract
   let stranger: SignerWithAddress;
-  let marketing: SignerWithAddress;
-  let management: SignerWithAddress;
-  let treasury: SignerWithAddress;
-  let reservedStaking: SignerWithAddress;
-  let liquidity: SignerWithAddress;
+  let marketing: any;                 // RewardDistributorV2 (router CALLS receiveAndDistribute)
+  let referral: SignerWithAddress;    // ReferralRegistry (push)
+  let management: any;                // pools — router CALLS receiveUSDT (split internally)
+  let treasury: any;
+  let reservedStaking: any;
+  let liquidity: any;
 
   const DISTRIBUTOR_ROLE = ethers.keccak256(ethers.toUtf8Bytes("DISTRIBUTOR_ROLE"));
   const DEFAULT_ADMIN_ROLE = ethers.ZeroHash;
 
-  // BPS constants
-  const BPS_MARKETING   = 3500n; // 35%
+  // BPS of GROSS (100% input). Referral is fixed; the 5 below sum to 9000.
+  const BPS_REFERRAL    = 1000n; // 10% (fixed)
+  const BPS_MARKETING   = 2500n; // 25%
   const BPS_MANAGEMENT  = 750n;  // 7.5%
   const BPS_TREASURY    = 1250n; // 12.5%
   const BPS_STAKING     = 500n;  // 5%
@@ -34,22 +36,31 @@ describe("RevenueRouter", function () {
   }
 
   beforeEach(async () => {
-    [admin, distributor, stranger, marketing, management, treasury, reservedStaking, liquidity] =
-      await ethers.getSigners();
+    [admin, distributor, stranger, referral] = await ethers.getSigners();
 
     // Deploy MockUSDT
     const MockUSDTFactory = await ethers.getContractFactory("MockUSDT");
     usdt = await MockUSDTFactory.deploy();
 
-    // Deploy RevenueRouter
+    // Marketing + the 4 infra pools are CONTRACTS — the router calls receiveAndDistribute /
+    // receiveUSDT on them (they split internally). Only referral is a push (EOA here).
+    const MockRcv = await ethers.getContractFactory("MockRewardReceiver");
+    marketing       = await MockRcv.deploy(await usdt.getAddress());
+    management      = await MockRcv.deploy(await usdt.getAddress());
+    treasury        = await MockRcv.deploy(await usdt.getAddress());
+    reservedStaking = await MockRcv.deploy(await usdt.getAddress());
+    liquidity       = await MockRcv.deploy(await usdt.getAddress());
+
+    // Deploy RevenueRouter (6-way: referral + marketing + 4 pools)
     const RouterFactory = await ethers.getContractFactory("RevenueRouter");
     router = await RouterFactory.deploy(
       await usdt.getAddress(),
-      marketing.address,
-      management.address,
-      treasury.address,
-      reservedStaking.address,
-      liquidity.address,
+      referral.address,                    // ReferralRegistry (push)
+      await marketing.getAddress(),        // RewardDistributorV2 (call)
+      await management.getAddress(),
+      await treasury.getAddress(),
+      await reservedStaking.getAddress(),
+      await liquidity.getAddress(),
       admin.address,
     );
 
@@ -76,25 +87,28 @@ describe("RevenueRouter", function () {
     });
 
     it("sets correct recipient addresses", async () => {
-      expect(await router.marketing()).to.equal(marketing.address);
-      expect(await router.management()).to.equal(management.address);
-      expect(await router.treasury()).to.equal(treasury.address);
-      expect(await router.reservedStaking()).to.equal(reservedStaking.address);
-      expect(await router.liquidity()).to.equal(liquidity.address);
+      expect(await router.referral()).to.equal(referral.address);
+      expect(await router.marketing()).to.equal(await marketing.getAddress());
+      expect(await router.management()).to.equal(await management.getAddress());
+      expect(await router.treasury()).to.equal(await treasury.getAddress());
+      expect(await router.reservedStaking()).to.equal(await reservedStaking.getAddress());
+      expect(await router.liquidity()).to.equal(await liquidity.getAddress());
     });
 
     it("grants DEFAULT_ADMIN_ROLE to admin", async () => {
       expect(await router.hasRole(DEFAULT_ADMIN_ROLE, admin.address)).to.be.true;
     });
 
-    it("BPS total equals 10000", async () => {
+    it("adjustable BPS sum to 9000 (+ fixed referral 1000 = 10000)", async () => {
       const total =
         (await router.bpsMarketing()) +
         (await router.bpsManagement()) +
         (await router.bpsTreasury()) +
         (await router.bpsStaking()) +
         (await router.bpsLiquidity());
-      expect(total).to.equal(BPS_TOTAL);
+      expect(total).to.equal(9000n);
+      expect(await router.BPS_REFERRAL()).to.equal(BPS_REFERRAL);
+      expect(total + (await router.BPS_REFERRAL())).to.equal(BPS_TOTAL);
     });
   });
 
@@ -102,29 +116,24 @@ describe("RevenueRouter", function () {
   // receiveAndDistribute
   // ─────────────────────────────────────────────────────────
   describe("receiveAndDistribute", () => {
-    it("splits 10,000 USDT exactly across 5 pools", async () => {
+    it("splits 10,000 USDT exactly across 6 destinations (gross %)", async () => {
       const amount = 10_000n * 10n ** 6n; // 10,000 USDT (6 decimals)
-
-      const marketingBefore    = await usdt.balanceOf(marketing.address);
-      const managementBefore   = await usdt.balanceOf(management.address);
-      const treasuryBefore     = await usdt.balanceOf(treasury.address);
-      const stakingBefore      = await usdt.balanceOf(reservedStaking.address);
-      const liquidityBefore    = await usdt.balanceOf(liquidity.address);
 
       await router.connect(distributor).receiveAndDistribute(amount);
 
-      const expectedMarketing  = (amount * BPS_MARKETING) / BPS_TOTAL;  // 3,500
+      const expectedReferral   = (amount * BPS_REFERRAL)   / BPS_TOTAL; // 1,000 (10%)
+      const expectedMarketing  = (amount * BPS_MARKETING)  / BPS_TOTAL; // 2,500 (25%)
       const expectedManagement = (amount * BPS_MANAGEMENT) / BPS_TOTAL; // 750
-      const expectedTreasury   = (amount * BPS_TREASURY) / BPS_TOTAL;   // 1,250
-      const expectedStaking    = (amount * BPS_STAKING) / BPS_TOTAL;    // 500
-      // Liquidity gets the remainder to avoid dust
-      const expectedLiquidity  = amount - expectedMarketing - expectedManagement - expectedTreasury - expectedStaking; // 4,000
+      const expectedTreasury   = (amount * BPS_TREASURY)   / BPS_TOTAL; // 1,250
+      const expectedStaking    = (amount * BPS_STAKING)    / BPS_TOTAL; // 500
+      const expectedLiquidity  = amount - expectedReferral - expectedMarketing - expectedManagement - expectedTreasury - expectedStaking; // 4,000
 
-      expect(await usdt.balanceOf(marketing.address)).to.equal(marketingBefore + expectedMarketing);
-      expect(await usdt.balanceOf(management.address)).to.equal(managementBefore + expectedManagement);
-      expect(await usdt.balanceOf(treasury.address)).to.equal(treasuryBefore + expectedTreasury);
-      expect(await usdt.balanceOf(reservedStaking.address)).to.equal(stakingBefore + expectedStaking);
-      expect(await usdt.balanceOf(liquidity.address)).to.equal(liquidityBefore + expectedLiquidity);
+      expect(await usdt.balanceOf(referral.address)).to.equal(expectedReferral);      // push
+      expect(await marketing.received()).to.equal(expectedMarketing);                 // call
+      expect(await management.received()).to.equal(expectedManagement);
+      expect(await treasury.received()).to.equal(expectedTreasury);
+      expect(await reservedStaking.received()).to.equal(expectedStaking);
+      expect(await liquidity.received()).to.equal(expectedLiquidity);
     });
 
     it("no dust left in router after distribution", async () => {
@@ -138,16 +147,16 @@ describe("RevenueRouter", function () {
       // 1_000_003 units — does not divide evenly by 10000
       const amount = 1_000_003n;
 
-      const liquidityBefore = await usdt.balanceOf(liquidity.address);
       await router.connect(distributor).receiveAndDistribute(amount);
 
-      const expected4 = (amount * BPS_MARKETING) / BPS_TOTAL;
-      const expected3 = (amount * BPS_MANAGEMENT) / BPS_TOTAL;
-      const expected2 = (amount * BPS_TREASURY) / BPS_TOTAL;
-      const expected1 = (amount * BPS_STAKING) / BPS_TOTAL;
-      const expectedLiquid = amount - expected4 - expected3 - expected2 - expected1;
+      const eRef = (amount * BPS_REFERRAL) / BPS_TOTAL;
+      const e4 = (amount * BPS_MARKETING) / BPS_TOTAL;
+      const e3 = (amount * BPS_MANAGEMENT) / BPS_TOTAL;
+      const e2 = (amount * BPS_TREASURY) / BPS_TOTAL;
+      const e1 = (amount * BPS_STAKING) / BPS_TOTAL;
+      const expectedLiquid = amount - eRef - e4 - e3 - e2 - e1;
 
-      expect(await usdt.balanceOf(liquidity.address)).to.equal(liquidityBefore + expectedLiquid);
+      expect(await liquidity.received()).to.equal(expectedLiquid);
       // Confirm no dust in router
       expect(await usdt.balanceOf(await router.getAddress())).to.equal(0n);
     });
@@ -176,14 +185,13 @@ describe("RevenueRouter", function () {
 
     it("multiple distributions accumulate correctly", async () => {
       const amount = 5_000n * 10n ** 6n;
-      const marketingBefore = await usdt.balanceOf(marketing.address);
 
       await router.connect(distributor).receiveAndDistribute(amount);
       await router.connect(distributor).receiveAndDistribute(amount);
 
       const totalSent = amount * 2n;
       const expectedMarketing = (totalSent * BPS_MARKETING) / BPS_TOTAL;
-      expect(await usdt.balanceOf(marketing.address)).to.equal(marketingBefore + expectedMarketing);
+      expect(await marketing.received()).to.equal(expectedMarketing);
     });
   });
 
@@ -191,71 +199,70 @@ describe("RevenueRouter", function () {
   // BPS Adjustment
   // ─────────────────────────────────────────────────────────
   describe("adjustBPS", () => {
+    // Defaults: Marketing 2500 · Mgmt 750 · Treasury 1250 · Staking 500 · Liquidity 4000 (sum 9000)
     it("DAO can adjust BPS within +-500 per pool", async () => {
       // Increase marketing by 500, decrease liquidity by 500
-      await router.connect(admin).adjustBPS(4000, 750, 1250, 500, 3500);
+      await router.connect(admin).adjustBPS(3000, 750, 1250, 500, 3500);
 
-      expect(await router.bpsMarketing()).to.equal(4000n);
+      expect(await router.bpsMarketing()).to.equal(3000n);
       expect(await router.bpsLiquidity()).to.equal(3500n);
     });
 
     it("reverts if any pool changes by more than 500 BPS", async () => {
-      // marketing change: 3500 -> 4001 = +501, exceeds limit
+      // marketing change: 2500 -> 3001 = +501, exceeds limit
       await expect(
-        router.connect(admin).adjustBPS(4001, 750, 1249, 500, 3500)
+        router.connect(admin).adjustBPS(3001, 750, 1250, 500, 3499)
       ).to.be.revertedWith("RevenueRouter: BPS change too large");
     });
 
-    it("reverts if new total != 10000", async () => {
-      // sum = 3500 + 750 + 1250 + 500 + 3999 = 9999
+    it("reverts if adjustable total != 9000", async () => {
+      // sum = 2500 + 750 + 1250 + 500 + 3999 = 8999
       await expect(
-        router.connect(admin).adjustBPS(3500, 750, 1250, 500, 3999)
-      ).to.be.revertedWith("RevenueRouter: total BPS must be 10000");
+        router.connect(admin).adjustBPS(2500, 750, 1250, 500, 3999)
+      ).to.be.revertedWith("RevenueRouter: adjustable BPS must be 9000");
     });
 
     it("enforces 30-day cooldown between adjustments", async () => {
-      // First adjustment (valid)
-      await router.connect(admin).adjustBPS(4000, 750, 1250, 500, 3500);
-
+      await router.connect(admin).adjustBPS(3000, 750, 1250, 500, 3500);
       // Immediate second adjustment should fail
       await expect(
-        router.connect(admin).adjustBPS(3500, 750, 1250, 500, 4000)
+        router.connect(admin).adjustBPS(2500, 750, 1250, 500, 4000)
       ).to.be.revertedWith("RevenueRouter: cooldown active");
     });
 
     it("allows second adjustment after 30-day cooldown passes", async () => {
-      await router.connect(admin).adjustBPS(4000, 750, 1250, 500, 3500);
+      await router.connect(admin).adjustBPS(3000, 750, 1250, 500, 3500);
 
       await increaseTime(THIRTY_DAYS + 1);
 
-      await router.connect(admin).adjustBPS(3500, 750, 1250, 500, 4000);
-      expect(await router.bpsMarketing()).to.equal(3500n);
+      await router.connect(admin).adjustBPS(2500, 750, 1250, 500, 4000);
+      expect(await router.bpsMarketing()).to.equal(2500n);
       expect(await router.bpsLiquidity()).to.equal(4000n);
     });
 
     it("reverts if caller is not admin", async () => {
       await expect(
-        router.connect(stranger).adjustBPS(4000, 750, 1250, 500, 3500)
+        router.connect(stranger).adjustBPS(3000, 750, 1250, 500, 3500)
       ).to.be.revertedWithCustomError(router, "AccessControlUnauthorizedAccount");
     });
 
     it("emits BPSAdjusted event", async () => {
-      await expect(router.connect(admin).adjustBPS(4000, 750, 1250, 500, 3500))
+      await expect(router.connect(admin).adjustBPS(3000, 750, 1250, 500, 3500))
         .to.emit(router, "BPSAdjusted")
-        .withArgs(4000, 750, 1250, 500, 3500);
+        .withArgs(3000, 750, 1250, 500, 3500);
     });
 
     it("allows decrease by exactly 500 BPS", async () => {
-      // marketing: 3500 -> 3000 = -500, liquidity: 4000 -> 4500 = +500
-      await router.connect(admin).adjustBPS(3000, 750, 1250, 500, 4500);
-      expect(await router.bpsMarketing()).to.equal(3000n);
+      // marketing: 2500 -> 2000 = -500, liquidity: 4000 -> 4500 = +500
+      await router.connect(admin).adjustBPS(2000, 750, 1250, 500, 4500);
+      expect(await router.bpsMarketing()).to.equal(2000n);
       expect(await router.bpsLiquidity()).to.equal(4500n);
     });
 
     it("reverts if decrease exceeds 500 BPS", async () => {
-      // marketing: 3500 -> 2999 = -501
+      // marketing: 2500 -> 1999 = -501
       await expect(
-        router.connect(admin).adjustBPS(2999, 750, 1501, 500, 4250)
+        router.connect(admin).adjustBPS(1999, 750, 1250, 500, 4501)
       ).to.be.revertedWith("RevenueRouter: BPS change too large");
     });
   });

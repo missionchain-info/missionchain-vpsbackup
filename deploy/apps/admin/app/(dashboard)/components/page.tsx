@@ -1,5 +1,10 @@
 'use client';
 
+import { getActiveAddresses } from '@missionchain/sdk'
+/** Read from the SDK: the literal here named a different contract entirely. */
+const MFP_ADDR = (getActiveAddresses() as Record<string, string>).MFPNFT ?? ''
+
+
 import { useState, useEffect } from 'react';
 import { JsonRpcProvider, Contract } from 'ethers';
 import { fetchDashboardOverview, fetchPoolStats, fetchPoolAdminEntries, fetchPoolActivity, fetchAdminAccess } from '@/lib/api';
@@ -63,7 +68,7 @@ const MFP_HARD_CAP = 2_500;
 export default function ComponentsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
-  const tabs = ['MICE Licenses', 'MFP-NFT', 'Community NFTs', 'Community Pool', 'MIC Founders, Management'];
+  const tabs = ['MICE Licenses', 'MFP-NFTs', 'Community NFTs', 'Community Pool', 'MIC Founders, Management'];
 
   /* ── API state ── */
   const [dashboard, setDashboard] = useState<any>(null);
@@ -388,7 +393,7 @@ export default function ComponentsPage() {
                 </div>
 
                 <div style={{ fontSize: 12, color: '#D4C098', marginBottom: 14, lineHeight: 1.5 }}>
-                  All minted MFP-NFTs read directly from contract <code style={{ background: 'rgba(245,213,110,0.10)', padding: '1px 6px', borderRadius: 3, color: '#F5D56E', fontSize: 11 }}>0x4d5147aC...4BD8c</code>. Click any Token ID to view on BSCScan.
+                  All minted MFP-NFTs read directly from the MFPNFT contract <code style={{ background: 'rgba(245,213,110,0.10)', padding: '1px 6px', borderRadius: 3, color: '#F5D56E', fontSize: 11 }}>{MFP_ADDR.slice(0, 10)}…{MFP_ADDR.slice(-6)}</code>. Click any Token ID to view on BSCScan.
                 </div>
 
                 {mfpTokensLoading ? (
@@ -596,42 +601,51 @@ export default function ComponentsPage() {
         </>
       )}
 
-      {/* ── NFT Configuration (shared for Tab 1 & Tab 2) ── */}
-      {(activeTab === 1 || activeTab === 2) && (
+      {/*
+        This card used to hold four controls that did nothing: two `<select>` elements
+        with no `value` and no `onChange`, a drop-zone with no upload handler, and a
+        "Save Configuration" button with no `onClick`. Nothing was stored, nothing was
+        read, and one of the fields — "Community NFT re-verification period" — described
+        a mechanism that exists nowhere in the contracts.
+        Replaced with a statement of how minting actually works.
+      */}
+      {activeTab === 1 && (
         <div className="card card-g">
-          <div className="card-title">NFT Configuration Parameters</div>
-          <div className="g2">
-            <div>
-              <div className="input-wrap">
-                <div className="input-label">Series Number Generation</div>
-                <select><option>Auto-generate unique hash on minting</option><option>Sequential numbering</option></select>
-              </div>
-              {activeTab === 2 && (
-                <div className="input-wrap">
-                  <div className="input-label">Design Upload Pool (minting picks random)</div>
-                  <div style={{ border: '1px dashed var(--border2)', borderRadius: 10, padding: 20, textAlign: 'center', color: 'var(--gray2)', fontSize: 12, cursor: 'pointer' }}>
-                    {'\u{1F4C1}'} Drop images here or click to upload<br />
-                    <span style={{ fontSize: 10, fontFamily: 'var(--font-m)' }}>PNG &middot; SVG &middot; WebP &mdash; random selection at mint</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="input-wrap">
-                <div className="input-label">Staking Required to Vote?</div>
-                <ToggleRow defaultOn label={'Yes \u2014 zero stake means zero governance rights'} />
-              </div>
-              <div className="input-wrap">
-                <div className="input-label">Community NFT Re-verification Period</div>
-                <select><option>Annual re-verification required</option><option>Never (permanent)</option><option>Custom...</option></select>
-              </div>
-            </div>
-          </div>
-          <button className="btn btn-primary">Save Configuration</button>
+          <div className="card-title">How MFP-NFTs are issued</div>
+          <p style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--gray2)', margin: 0 }}>
+            MFP-NFTs are minted from an allowance, not sold directly. A SEED purchase or an
+            Owner grant credits an allowance to a wallet, and the holder mints it themselves
+            from the DApp when they choose. Each pass is permanent — it has no expiry and
+            needs no renewal.
+            <br /><br />
+            Artwork is drawn from the uploaded pool and paired at random with a scripture
+            line at the moment of minting, so no two passes are assembled the same way.
+          </p>
         </div>
       )}
 
-      {/* ── Tab 3: Community Pool (unchanged — already uses API) ── */}
+      {activeTab === 2 && (
+        <div className="card card-g">
+          <div className="card-title">How Community NFTs are issued</div>
+          <p style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--gray2)', margin: 0 }}>
+            Community NFTs are minted automatically the moment a condition is met — a
+            Pre-Sale package purchase, a referral milestone, or a Community Growth Award
+            rank. They arrive directly in the member&rsquo;s wallet and start their term
+            from that second.
+            <br /><br />
+            <strong style={{ color: 'var(--text1)' }}>There is no artwork to upload.</strong>{' '}
+            CommunityNFTv2 is ERC-721 and draws its own image on-chain from the tier and the
+            serial number — the contract has no <code>baseURI</code>, so nothing external is
+            ever referenced. The image cannot go missing, and it cannot be changed after the
+            fact.
+            <br /><br />
+            Each tier expires on its own schedule — Builder 60 days, Maker 90, Luminary 180 —
+            enforced by the contract. Nothing has to be re-verified or renewed; an expired
+            credential simply stops counting.
+          </p>
+        </div>
+      )}
+
       {activeTab === 3 && <CommunityPoolTab />}
 
       {/* ── Tab 4: MIC Founders, Management — 280M MIC, 48h cooldown ── */}

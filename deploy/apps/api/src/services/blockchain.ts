@@ -7,8 +7,7 @@
  */
 
 import { JsonRpcProvider, Contract, formatUnits } from 'ethers'
-import {
-  ADDRESSES,
+import { ADDRESSES,
   MICTokenABI,
   LockManagerABI,
   NFTStakingABI,
@@ -24,15 +23,17 @@ import {
   RevenueRouterABI,
   MICE_MAX_SUPPLY,
   MICE_ROUND_PRICES_USD,
-  MICE_PER_ROUND,
-} from '@missionchain/sdk'
+  MICE_PER_ROUND, USDT_DECIMALS } from '@missionchain/sdk'
 
 // ─── Configuration (mainnet-only as of 2026-05-06) ───────────────────
 
 const BSC_MAINNET_RPC = 'https://bsc-dataseed.binance.org/'
 
 function getRpcUrl(): string {
-  return process.env.BSC_RPC_URL || BSC_MAINNET_RPC
+  // INDEXER_RPC_URL first. `BSC_RPC_URL` points at a public endpoint that throttles
+  // under a burst, and this service fires a dozen reads per request — one throttled
+  // response stalls the whole `Promise.all` until the gateway gives up at 60 seconds.
+  return process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || BSC_MAINNET_RPC
 }
 
 function getAddresses() {
@@ -220,9 +221,11 @@ export class BlockchainService {
 
   async getMiningInfo(wallet: string): Promise<MiningInfo> {
     try {
-      const [dailyEmission, totalMinted, currentEpochRaw] = await Promise.all([
+      const [dailyEmission, activeLicenses, currentEpochRaw] = await Promise.all([
         this.emissionController.dailyEmission() as Promise<bigint>,
-        this.miceLicense.totalMinted() as Promise<bigint>,
+        // activeLicenses, not totalMinted: a licence that expired or was recycled is still
+        // counted in totalMinted, so the emission denominator would drift upward forever.
+        this.miceLicense.activeLicenses() as Promise<bigint>,
         this.miningPool.currentEpoch().catch(() => 0n) as Promise<bigint>,
       ])
 
@@ -248,7 +251,7 @@ export class BlockchainService {
         pending: formatUnits(pendingTotal, 18),
         hindex: hindex.toString(),
         dailyEmission: formatUnits(dailyEmission, 18),
-        activeMice: Number(totalMinted),
+        activeMice: Number(activeLicenses),
       }
     } catch (err) {
       console.error('[BlockchainService] getMiningInfo error:', err)
@@ -264,7 +267,7 @@ export class BlockchainService {
       const gvRaw = await this.referralRegistry.groupVolume(wallet) as bigint
 
       // Group volume is in USDT (6 decimals)
-      const gvFloat = parseFloat(formatUnits(gvRaw, 6))
+      const gvFloat = parseFloat(formatUnits(gvRaw, USDT_DECIMALS))
       const rank = gvRankFromTotal(gvFloat)
 
       // F1/F2 counts are not directly stored on ReferralRegistry in this design;
@@ -273,7 +276,7 @@ export class BlockchainService {
         referrer: referrer === '0x0000000000000000000000000000000000000000' ? null : referrer,
         f1Count: 0,
         f2Count: 0,
-        gvTotal: formatUnits(gvRaw, 6),
+        gvTotal: formatUnits(gvRaw, USDT_DECIMALS),
         gvRank: rank,
       }
     } catch (err) {
@@ -395,7 +398,7 @@ export class BlockchainService {
           remaining: formatUnits(seedRemaining > 0n ? seedRemaining : 0n, 18),
         },
         preSale: {
-          raised: formatUnits(preSaleRaised, 6), // USDT 6 decimals
+          raised: formatUnits(preSaleRaised, USDT_DECIMALS), // USDT, 18 decimals (BSC-USD)
           remaining: formatUnits(preSaleRemaining > 0n ? preSaleRemaining : 0n, 18),
         },
       }

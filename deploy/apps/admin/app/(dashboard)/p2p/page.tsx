@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserProvider, Contract, parseUnits } from 'ethers';
+import { BrowserProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useMcUi } from '@/components/ui/McUi';
 import { isOwnerWallet } from '@/lib/auth';
+import { USDT_DECIMALS } from '@missionchain/sdk';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -178,8 +179,10 @@ export default function P2pAdminPage() {
       const bps = Number(feeBps);
       setChainFeeBps(bps);
       setFeeInput((bps / 100).toFixed(2));
-      // cancellationFeeUsdt is stored in 6-decimal USDT
-      const cancelUsd = Number(cancelFee) / 1_000_000;
+      // BSC-USD is 18 decimals. This read said 6 while the write below already used
+      // USDT_DECIMALS (18), so the page disagreed with itself: saving $10 stored 10e18
+      // and this line would then have rendered it as $10,000,000,000,000.
+      const cancelUsd = Number(formatUnits(cancelFee as bigint, USDT_DECIMALS));
       setChainCancelFee(cancelUsd.toFixed(2));
       setCancelFeeInput(cancelUsd.toFixed(2));
       const addr = recipient as string;
@@ -329,7 +332,7 @@ export default function P2pAdminPage() {
     try {
       mcUi.toast({ type: 'info', message: `Sign setCancellationFee($${usdt}) in wallet...` });
       const p2p = await getP2pContract();
-      const tx = await p2p.setCancellationFee(parseUnits(usdt.toFixed(6), 6));
+      const tx = await p2p.setCancellationFee(parseUnits(usdt.toFixed(6), USDT_DECIMALS));
       mcUi.toast({ type: 'info', message: 'Waiting for confirmation...' });
       const receipt = await tx.wait(1);
       if (!receipt || receipt.status !== 1) throw new Error('setCancellationFee() reverted');

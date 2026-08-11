@@ -10,7 +10,7 @@
 import { Contract, Interface, JsonRpcProvider, Wallet, formatUnits } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
 import type { FastifyBaseLogger } from 'fastify'
-import { getActiveAddresses, isMainnet } from '@missionchain/sdk'
+import { getActiveAddresses, isMainnet, USDT_DECIMALS } from '@missionchain/sdk'
 import { getLogProvider, P2P_EVENT_ABI } from './p2pTreasury.js'
 
 const POLL_INTERVAL_MS = 30_000
@@ -179,7 +179,7 @@ export class P2PEventSync {
       const id = BigInt(parsed.args[0])
       const seller = (parsed.args[1] as string).toLowerCase()
       const tokenId = parsed.args[2] as bigint
-      const priceUsdt = Number(formatUnits(parsed.args[3] as bigint, 6))
+      const priceUsdt = Number(formatUnits(parsed.args[3] as bigint, USDT_DECIMALS))
       const expiresAt = Number(parsed.args[4])
       await this.prisma.p2POrder.upsert({
         where: { onChainId: id },
@@ -199,9 +199,9 @@ export class P2PEventSync {
     else if (parsed.name === 'OrderExecuted') {
       const id = BigInt(parsed.args[0])
       const buyer = (parsed.args[1] as string).toLowerCase()
-      const royaltyAmount = Number(formatUnits(parsed.args[3] as bigint, 6))
-      const feeAmount = Number(formatUnits(parsed.args[4] as bigint, 6))
-      const sellerNet = Number(formatUnits(parsed.args[5] as bigint, 6))
+      const royaltyAmount = Number(formatUnits(parsed.args[3] as bigint, USDT_DECIMALS))
+      const feeAmount = Number(formatUnits(parsed.args[4] as bigint, USDT_DECIMALS))
+      const sellerNet = Number(formatUnits(parsed.args[5] as bigint, USDT_DECIMALS))
       await this.prisma.p2POrder.updateMany({
         where: { onChainId: id },
         data: {

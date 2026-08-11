@@ -1,0 +1,9 @@
+{
+  "CommunityNFTRewardPool": "0xae26BA0f1c639beA93e5a4dD9313F5765A29Ee5a",
+  "MFPRewardPool": "0xFb79deC4F0CDe13A667018e567dD636255D61d6d",
+  "replaced": {
+    "community": "0x75DF32Cb543cf7f7B1cC0143C1321E05C29b1166",
+    "mfp": "0x2A60F8AE99C26b5a789688e53228767B6EFFCAEd"
+  },
+  "keeper": "0x2D5bd60Eefb96a8Fc4c67C4321502b3c347e8054"
+}

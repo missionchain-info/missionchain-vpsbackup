@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CONTRACTS } from '@/lib/contracts'
+import { USDT_DECIMALS } from '@missionchain/sdk';
 
 const BSC_TESTNET_HEX = '0x61'
 const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/'
@@ -100,7 +101,7 @@ export default function TestnetPage() {
       const usdt = new Contract(CONTRACTS.usdt, USDT_ABI_FAUCET as any, signer)
 
       // mint(to, amount) — amount with 6 decimals
-      const tx = await usdt.mint(buyerAddress, parseUnits(amount.toString(), 6))
+      const tx = await usdt.mint(buyerAddress, parseUnits(amount.toString(), USDT_DECIMALS))
       setClaimStatus({ type: 'pending', msg: `Tx submitted: ${tx.hash.slice(0, 10)}... waiting confirmation...` })
       const receipt = await tx.wait()
       if (!receipt || receipt.status !== 1) throw new Error('Transaction reverted')

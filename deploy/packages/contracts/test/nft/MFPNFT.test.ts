@@ -35,8 +35,8 @@ describe("MFPNFT", function () {
   let stranger: SignerWithAddress;
 
   const BASE_URI = "https://metadata.missionchain.io/mfp/";
-  const INITIAL_CAP = 25_000n;
-  const EXPANSION_CAP = 25_000n;
+  const INITIAL_CAP = 2_500n;
+  const EXPANSION_CAP = 2_500n;
 
   beforeEach(async () => {
     [admin, minter, user1, user2, stranger] = await ethers.getSigners();
@@ -55,7 +55,7 @@ describe("MFPNFT", function () {
       expect(await mfp.symbol()).to.equal("MFP");
     });
 
-    it("should set maxSupply to INITIAL_CAP (25,000)", async () => {
+    it("should set maxSupply to INITIAL_CAP (2,500)", async () => {
       expect(await mfp.maxSupply()).to.equal(INITIAL_CAP);
     });
 
@@ -80,16 +80,12 @@ describe("MFPNFT", function () {
       ).to.be.revertedWith("MFP: zero admin");
     });
 
-    it("should set INITIAL_CAP constant to 25,000", async () => {
-      expect(await mfp.INITIAL_CAP()).to.equal(25_000n);
+    it("should set INITIAL_CAP constant to 2,500", async () => {
+      expect(await mfp.INITIAL_CAP()).to.equal(2_500n);
     });
 
-    it("should set EXPANSION_CAP constant to 25,000", async () => {
-      expect(await mfp.EXPANSION_CAP()).to.equal(25_000n);
-    });
-
-    it("should set STAKING_MULTIPLIER constant to 100,000 bps (×10)", async () => {
-      expect(await mfp.STAKING_MULTIPLIER()).to.equal(100_000n);
+    it("should set EXPANSION_CAP constant to 2,500", async () => {
+      expect(await mfp.EXPANSION_CAP()).to.equal(2_500n);
     });
 
     it("should not have expansion approved at deploy", async () => {

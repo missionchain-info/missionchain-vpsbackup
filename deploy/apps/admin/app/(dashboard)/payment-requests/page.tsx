@@ -30,6 +30,11 @@ const USDT_ABI = [
 const SEED_BUDGET_V5C = '0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef';
 const SEED_BUDGET_ABI = [
   'function release(uint8 slot, address recipient, uint256 amount) external',
+  // Without these, a permission failure decodes to nothing and ethers reports
+  // "could not coalesce error" — which tells the operator nothing about the fact that
+  // they are simply connected with the wrong wallet.
+  'error AccessControlUnauthorizedAccount(address account, bytes32 neededRole)',
+  'error AccessControlBadConfirmation()',
   'function setFee(uint16 bps, address receiver) external',
   'function feeBps() view returns (uint16)',
   'function feeReceiver() view returns (address)',
@@ -195,9 +200,11 @@ export default function PaymentRequestsPage() {
   useEffect(() => { loadAll(); }, [loadAll]);
 
   const handleSaveConfig = async () => {
+    // `feeBpsInput` is basis points — the input row divides by 100 to show a percentage
+    // and multiplies back on change. Do not convert again here.
     const fee = parseFloat(feeBpsInput);
     if (isNaN(fee) || fee < 0 || fee > 1000) {
-      mcUi.toast({ type: 'error', message: 'Fee must be 0–1000 BPS (0%–10%)' });
+      mcUi.toast({ type: 'error', message: 'Fee must be between 0% and 10%' });
       return;
     }
     // Fall back to current value if user didn't change the receiver field — we
@@ -220,6 +227,19 @@ export default function PaymentRequestsPage() {
         const browser = new BrowserProvider(provider);
         const signer = await browser.getSigner();
         const sb = new Contract(SEED_BUDGET_V5C, SEED_BUDGET_ABI, signer);
+
+        // Ask the chain first. A wallet without the role produces a signature prompt that
+        // can only fail, and the failure comes back as an undecodable custom error.
+        try {
+          await sb.setFee.staticCall(Math.round(fee), finalReceiver);
+        } catch (probe: any) {
+          const me = await signer.getAddress();
+          if (probe?.revert?.name === 'AccessControlUnauthorizedAccount') {
+            throw new Error(`${me.slice(0, 10)}… is not allowed to change the fee — connect the Owner wallet`);
+          }
+          throw new Error(probe?.reason || probe?.shortMessage || 'setFee would revert');
+        }
+
         const tx = await sb.setFee(Math.round(fee), finalReceiver);
         const r = await tx.wait(1);
         if (!r || r.status !== 1) throw new Error('setFee tx reverted');
@@ -232,9 +252,14 @@ export default function PaymentRequestsPage() {
         : 'Payout config saved (DB only — on-chain skipped, no valid receiver)' });
     } catch (err: any) {
       const code = err?.code;
-      const friendly = code === 4001 || code === 'ACTION_REJECTED'
-        ? 'Transaction rejected in wallet'
-        : err?.shortMessage || err?.message || 'Unknown error';
+      let friendly: string;
+      if (code === 4001 || code === 'ACTION_REJECTED') {
+        friendly = 'Transaction rejected in wallet';
+      } else if (err?.revert?.name === 'AccessControlUnauthorizedAccount') {
+        friendly = 'This wallet is not allowed to change the fee — connect the Owner wallet';
+      } else {
+        friendly = err?.reason || err?.shortMessage || err?.message || 'Unknown error';
+      }
       mcUi.toast({ type: 'error', message: 'Save failed: ' + friendly });
     } finally {
       setSavingConfig(false);
@@ -403,7 +428,13 @@ export default function PaymentRequestsPage() {
               <input
                 type="number" min="0" max="10" step="0.1"
                 value={(parseFloat(feeBpsInput || '0') / 100).toFixed(1)}
-                onChange={(e) => setFeeBpsInput(String(Math.round(parseFloat(e.target.value || '0') * 100)))}
+                onChange={(e) => {
+                  // A comma is how a decimal is written on most of the keyboards this
+                  // console is used from, and `parseFloat('5,0')` stops at the comma —
+                  // silently turning five per cent into five.
+                  const pct = parseFloat((e.target.value || '0').replace(',', '.'));
+                  setFeeBpsInput(isNaN(pct) ? '0' : String(Math.round(pct * 100)));
+                }}
                 style={{
                   width: '100%', padding: '8px 10px',
                   background: 'var(--card-2)',

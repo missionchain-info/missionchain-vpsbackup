@@ -7,14 +7,28 @@ import SubNav, { SALES_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { CONTRACTS, ERC20_ABI, PRESALE_ABI } from '@/lib/contracts'
+import { USDT_DECIMALS } from '@missionchain/sdk'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
+/**
+ * The shape `/sales/presale/info` actually returns.
+ *
+ * This declared `raised`, `target` and `pctRaised` — none of which the endpoint has ever
+ * sent. TypeScript could not catch it because every field was optional, so `d.raised` was
+ * simply `undefined` and the SOLD figure fell through to "0" while the chain had recorded
+ * the purchase correctly all along. Optional fields on a response type buy nothing and
+ * hide exactly this.
+ */
 interface PresaleData {
   data?: {
-    raised?: number
-    target?: number
-    pctRaised?: number
+    totalRaisedUsdt?: string
+    totalMicSold?: string
+    remainingMic?: string
+    hardCapUsdt?: number
+    allocationMic?: number
+    pricePerMic?: number
+    purchaseCount?: number
     referralF1?: string
     referralF2?: string
     orders?: Array<{
@@ -63,12 +77,43 @@ const PACKAGES = [
   },
 ]
 
+
+/**
+ * Gas price to sign with.
+ *
+ * Both sale pages used to hardcode 5 gwei. That came from testnet, where the default was
+ * sometimes low enough for MetaMask to flag "Network fee too low" — the comment said as
+ * much, and said the cost was negligible. On mainnet it is not: BSC settles around
+ * 0.05 gwei, so 5 gwei is a hundred times the going rate and turned a $0.05 purchase fee
+ * into roughly $4.50.
+ *
+ * Ask the network instead, add 20% so a rising base fee does not strand the transaction,
+ * and keep a small floor so a momentarily near-zero reading still looks sane to a wallet.
+ */
+async function currentGasPrice(provider: { getFeeData: () => Promise<{ gasPrice: bigint | null }> }): Promise<bigint> {
+  const FLOOR = 100_000_000n // 0.1 gwei
+  try {
+    const { gasPrice } = await provider.getFeeData()
+    if (!gasPrice || gasPrice === 0n) return FLOOR
+    const withHeadroom = (gasPrice * 12n) / 10n
+    return withHeadroom > FLOOR ? withHeadroom : FLOOR
+  } catch {
+    return FLOOR
+  }
+}
+
 export default function PresalePage() {
   const { address } = useAccount()
   const { data, loading, refetch } = useApi<PresaleData>('/sales/presale/info')
   const [customAmount, setCustomAmount] = useState('')
   const d = data?.data || {}
-  const pct = d.pctRaised || 0
+
+  const pricePerMic = Number(d.pricePerMic ?? 0.005)
+  const raisedUsdt = Number(d.totalRaisedUsdt ?? 0)
+  const soldMic = Number(d.totalMicSold ?? 0)
+  const hardCap = Number(d.hardCapUsdt ?? 0)
+  // Progress is derived here rather than expected from the API, which does not send it.
+  const pct = hardCap > 0 ? (raisedUsdt / hardCap) * 100 : 0
   const customMic = customAmount ? Math.floor(Number(customAmount) / 0.005) : 0
 
   // Buy state
@@ -111,8 +156,8 @@ export default function PresalePage() {
         const usdtAddr = CONTRACTS.usdt
         const presaleAddr = CONTRACTS.presale
 
-        const usdtWei = parseUnits(usdtAmount.toString(), 6)
-        const gasPrice = parseUnits('5', 'gwei')
+        const usdtWei = parseUnits(usdtAmount.toString(), USDT_DECIMALS)
+        const gasPrice = await currentGasPrice(signer.provider!)
 
         // Step 1: Check + approve USDT (exact amount)
         setBuyStatus('Checking allowance...')
@@ -127,8 +172,18 @@ export default function PresalePage() {
 
         // Step 2: Call PreSale.buy(usdtAmount, packageIndex)
         setBuyStatus('Confirm purchase\nin wallet!')
+        // Estimate rather than assume: a fixed 1,500,000 limit is what the wallet
+        // shows as the max fee, so an inflated number frightens the buyer even
+        // when the call is cheap.
+        let gasLimit: bigint
+        try {
+          const est = await presale.buy.estimateGas(usdtWei, BigInt(packageIndex))
+          gasLimit = (est * 13n) / 10n
+        } catch {
+          gasLimit = 1_200_000n
+        }
         const buyTx = await presale.buy(usdtWei, BigInt(packageIndex), {
-          gasLimit: 1_500_000n,
+          gasLimit,
           gasPrice,
         })
         setBuyStatus('Waiting for confirmation...')
@@ -140,7 +195,10 @@ export default function PresalePage() {
         setBuyStatus('Recording purchase...')
         try {
           const jwt = typeof window !== 'undefined' ? localStorage.getItem('mc-jwt') : null
-          const micAmount = usdtAmount * 200 // 1 USDT = 200 MIC
+          // Derived from the price the API publishes, not from a constant. 200 is
+          // 1/0.005 — correct only while the price is 0.005, and silently wrong the day
+          // it changes.
+          const micAmount = pricePerMic > 0 ? usdtAmount / pricePerMic : 0
           await fetch(`${API_BASE}/sales/presale/record-onchain`, {
             method: 'POST',
             headers: {
@@ -165,7 +223,7 @@ export default function PresalePage() {
           show: true,
           txHash,
           label,
-          mic: usdtAmount * 200,
+          mic: pricePerMic > 0 ? usdtAmount / pricePerMic : 0,
           usdt: usdtAmount,
           nftBonus,
         })
@@ -225,7 +283,7 @@ export default function PresalePage() {
               </div>
               <div className="pre-stat">
                 <div className="pre-stat-value">
-                  {d.raised ? (d.raised / 0.005).toLocaleString() : '0'}
+                  {soldMic > 0 ? soldMic.toLocaleString('en-US') : '0'}
                 </div>
                 <div className="pre-stat-label">SOLD (MIC)</div>
               </div>

@@ -666,7 +666,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td>Phương Tiện Trao Đổi Toàn Cầu</td><td>Tất cả các giao dịch nội bộ — phí khóa học, thanh toán công việc, mua sắm trên thị trường và phí nền tảng — đều được định giá và thanh toán bằng MIC.</td><td>Mission Learn, Mission Work, Mission Arts, phần thưởng hoạt động Hub, 50% của mỗi lần kích hoạt MICE</td></tr>
         <tr><td>Stake Quản Trị</td><td>MIC được stake cùng với chứng chỉ NFT để xác định trọng số bỏ phiếu và phần chia của pool. Không có stake MIC nghĩa là không có quyền tham gia quản trị.</td><td>Bỏ phiếu DAO, pool MFP-NFT, pool Community NFT, ngưỡng đề xuất</td></tr>
-        <tr><td>Phân Bổ Giao Thức</td><td>MIC được phát hành hàng ngày thông qua Thuật Toán Hindex theo các quy tắc phân bổ được giao thức phê duyệt — dành cho người tham gia mạng, staker, và DAO Treasury.</td><td>60% Thợ đào (MICE), 25% Staking, 10% Kho Bạc DAO, 5% Phân Bổ Community NFT</td></tr>
+        <tr><td>Phân Bổ Giao Thức</td><td>MIC được phát hành hàng ngày thông qua Thuật Toán Hindex theo các quy tắc phân bổ được giao thức phê duyệt — dành cho người tham gia mạng, staker, và DAO Treasury.</td><td>59% Thợ đào (MICE), 25% Staking, 10% Kho Bạc DAO, 5% Phân Bổ Community NFT</td></tr>
       </tbody>
     </table>
   </div>
@@ -683,11 +683,44 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Khuyến Khích &amp; Airdrops</td><td>0.25%</td><td class="mono">17,500,000</td><td>10% sau 6 tháng, sau đó 2.5% hàng tháng</td></tr>
         <tr><td>Niêm Yết DEX / CEX</td><td>1.50%</td><td class="mono">105,000,000</td><td>Giá niêm yết ước tính USD 0.01 · mở khóa cho thanh khoản thị trường</td></tr>
         <tr><td>Nhà Sáng Lập, Vận Hành &amp; Quản Lý</td><td>4.00%</td><td class="mono">280,000,000</td><td>10% sau 24 tháng, sau đó 2.5% hàng tháng</td></tr>
-        <tr><td>Kho Bạc DAO</td><td>1.50%</td><td class="mono">105,000,000</td><td>10% sau 24 tháng, sau đó 2.5% hàng tháng</td></tr>
+        <tr><td>Kho Bạc DAO / Churches (genesis)</td><td>1.50%</td><td class="mono">105,000,000</td><td><strong>Đóng băng</strong> — nằm trong hợp đồng không chuyển được MIC; lịch mở khoá không thể thực thi. Xem mục "Phân Bổ Genesis Bị Đóng Băng"</td></tr>
         <tr><td><strong>Tổng Nguồn Cung</strong></td><td><strong>100%</strong></td><td class="mono"><strong>7,000,000,000</strong></td><td>Giới hạn cứng bất biến — không thể phát hành thêm</td></tr>
       </tbody>
     </table>
   </div>
+  <h3 class="sub-title">Hồ Sơ Đốt Token</h3>
+  <div class="callout gold">
+    <p><strong>Ngày 5/8/2026 — đã đốt vĩnh viễn 31.500.000 MIC.</strong> Nguồn cung phát hành trước giảm từ 1.050.000.000 xuống <strong>1.018.500.000 MIC</strong>. Giới hạn cứng 7.000.000.000 không đổi.</p>
+  </div>
+  <p>Số MIC bị đốt là phần thuộc hạng mục DEX/CEX Listing đã được đưa vào LiquidityPool v5. Hợp đồng đó không có bất kỳ hàm rút nào, và các hàm swap được thiết kế để revert, nên số token này chưa bao giờ có thể bị bán, cho vay hay chuyển đi. Lối ra duy nhất tồn tại là <span class="mono">swapAndBurnMIC</span> — hàm huỷ chính số dư của hợp đồng. Thay vì để 3% nguồn cung phát hành trước nằm trong một hợp đồng đã chết rồi yêu cầu người đọc tin vào lời cam kết khoá, giao thức đã huỷ nó.</p>
+  <p><strong>Việc đốt không thể đảo ngược hay bù lại.</strong> Đường tạo MIC duy nhất còn lại là <span class="mono">mintFromMining</span>, bị chặn bởi một bộ đếm cộng dồn mà thao tác đốt không reset. Không người giữ khoá nào, kể cả đội sáng lập, có thể phát hành lại số token này.</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <tbody>
+        <tr><td>Số lượng đã đốt</td><td class="mono">31,500,000 MIC</td></tr>
+        <tr><td>Nguồn cung phát hành trước sau khi đốt</td><td class="mono">1,018,500,000 MIC</td></tr>
+        <tr><td>Hợp đồng nguồn</td><td class="mono">LiquidityPool v5 — 0x37091454eB49179D3aFF12402980F63cFC3e050a</td></tr>
+        <tr><td>Giao dịch</td><td class="mono">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</td></tr>
+        <tr><td>Block</td><td class="mono">114,156,353 — BNB Smart Chain</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Tự kiểm chứng: <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener">giao dịch đốt</a> ghi nhận việc chuyển 31.500.000 MIC về địa chỉ zero, và <a href="https://bscscan.com/token/0xf27ec0c311728b923b22828002c992c799326182" target="_blank" rel="noopener">trang token MIC</a> hiển thị tổng cung đã giảm.</p>
+  <p><strong>Ảnh hưởng tới hạng mục DEX / CEX Listing ở bảng trên:</strong> trong 105.000.000 MIC được phân bổ, 31.500.000 đã đốt và 73.500.000 còn lại nằm trong Listing Reserve Vault — trong đó 50.000.000 dùng để nạp pool thanh khoản của giao thức, và 23.500.000 giữ lại để mở thị trường bên ngoài.</p>
+
+  <h3 class="sub-title">Phân Bổ Genesis Bị Đóng Băng</h3>
+  <div class="callout gold">
+    <p><strong>105.000.000 MIC được đúc lúc genesis không ai chuyển đi được, kể cả đội sáng lập.</strong> Số token này vẫn nằm trong tổng cung nhưng vĩnh viễn không thể lưu thông. Nó không phải nguồn dự trữ giao thức có thể dùng, và không được trình bày như vậy.</p>
+  </div>
+  <p>Phần phân bổ Kho Bạc DAO và Churches được đúc vào hợp đồng tại <span class="mono">0x1ed5C848D1244a618Bd95Ff92d4f8C2356d3a42F</span>. Hợp đồng đó chỉ khai báo duy nhất một token là USDT. Cả ba hàm ghi của nó đều chuyển USDT; nó không tham chiếu MIC, không có mã nào cấp quyền chi cho ai được, và không phải proxy nâng cấp được. Không tồn tại lời gọi nào chuyển, cấp phát hay đốt được số MIC nằm ở đó.</p>
+  <p>Khác với số dư LiquidityPool v5 ghi ở trên, chỗ này thậm chí không huỷ được. Không có lối ra nào. Lịch mở khoá từng công bố cho phần phân bổ này — cliff 24 tháng, rồi 10% và 2.5% hàng tháng — không thể thực thi, vì không có hàm nào để thực thi nó.</p>
+  <p>Đây là lỗi trong quá trình phát triển, phát hiện tháng 8/2026 khi xây công cụ quản lý kho bạc. Hợp đồng vốn viết cho USDT, sau đó được dùng để giữ thêm MIC, và không ai kiểm tra xem nó có gửi được thứ mình đưa vào hay không. Chúng tôi công bố ở đây thay vì lặng lẽ mang theo, và bất kỳ ai cũng kiểm chứng được từ mã nguồn hợp đồng trên BSCScan.</p>
+
+  <h4 class="mini-title">Chương trình cộng đồng được cấp vốn thế nào</h4>
+  <p>Chương trình Churches &amp; Christian Community vẫn tiếp tục, cấp vốn từ dòng phát hành đang chạy thay vì từ phần genesis bị đóng băng: <strong>10% nhánh khai thác của DAO — tức 1% tổng phát hành hàng ngày — được chuyển sang một vault Churches riêng</strong> ngay khi lượng phát hành mỗi ngày về tới.</p>
+  <p>Tỉ lệ phát hành đã công bố không đổi: 59% thợ đào · 25% staking · 10% DAO · 5% Community NFT · 1% MFP-NFT. Phần Churches là phân bổ <em>bên trong</em> 10% của chính DAO, không phải lát cắt thứ sáu, nên không chương trình nào bị cắt để bù vào.</p>
+  <p>Mỗi khoản cấp phát chuyển MIC và tạo lịch khoá on-chain cho người nhận trong cùng một giao dịch — cliff 24 tháng, 10% tại cliff, rồi 2.5% hàng tháng. Không tồn tại đường mã nào giải ngân mà không kèm lịch khoá. Nguyên tắc thiết kế rút ra sau sự cố này, và nay được kiểm bằng test: <strong>hợp đồng nào giữ được một token thì phải gửi được token đó.</strong></p>
+
   <h3 class="sub-title">7.2 MICE — Giấy Phép Node Thuật Toán Mission</h3>
   <p>MICE không phải là token và không phải là công cụ đầu tư. Đó là chứng chỉ tham gia giao thức có giới hạn thời gian trong khuôn khổ phát thải cố định, có hiệu lực 360 ngày kể từ khi kích hoạt.</p>
   <div class="grid2">
@@ -696,10 +729,10 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <p>Khi bạn kích hoạt chứng chỉ MICE, sự tham gia của bạn được công nhận trong chu kỳ phát thải Hindex. Phân bổ giao thức phụ thuộc vào mô hình tham gia được phê duyệt và điều kiện giao thức hiện hành trong thời gian hoạt động của bạn. Sau 360 ngày, chứng chỉ tự động hết hạn — xem phụ lục kỹ thuật để biết các công thức chuẩn.</p>
       <div class="formula">
   <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-  <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span>
+  <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span>
   <div class="comment" style="margin-top:8px;font-size:0.8rem">
-    Early Staking Boost: Miners 50% → 60% tuyến tính trong 90 ngày đầu, sau đó cố định 60%.<br/>
-    E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)
+    Early Staking Boost: Miners 49% → 59% tuyến tính trong 90 ngày đầu, sau đó cố định 59%.<br/>
+    E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)
   </div>
 </div>
     </div>
@@ -772,7 +805,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Hoạt Động</th><th>Luồng MIC</th><th>Phân Phối Giá Trị</th></tr></thead>
       <tbody>
         <tr><td>Phí Mission Learn</td><td>MIC thu thập → đốt một phần</td><td>60% nhà sáng tạo · 20% mua &amp; đốt · 20% Kho Bạc</td></tr>
-        <tr><td>Mua MICE credential</td><td>50% USDT + 50% MIC → burn + pool</td><td>12.5% Treasure DAO, 40% Liquidity Pool, 5% Reserved Staking</td></tr>
+        <tr><td>Mua MICE credential</td><td>50% USDT + 50% MIC → burn + pool</td><td>12.5% DAO Treasury, 40% Liquidity Pool, 5% Listing Reserve</td></tr>
         <tr><td>Thanh toán công việc Mission Work</td><td>100% MIC thanh toán trên chuỗi</td><td>Phí nền tảng chia giữa Kho Bạc, đốt và phần thưởng Hub; số dư cho nhà sáng tạo</td></tr>
         <tr><td>Cấp phép Mission Arts</td><td>MIC mỗi giấy phép + luồng tiền bản quyền tùy chọn</td><td>80–85% nhà sáng tạo · 10–15% giao thức · 5% đốt</td></tr>
         <tr><td>Phần thưởng tham gia cộng đồng</td><td>MIC từ pool sự kiện</td><td>Phần thưởng nhà sáng tạo + củng cố bánh đà hệ sinh thái</td></tr>
@@ -802,17 +835,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
   <h3 class="sub-title">8.1 Động Cơ Phát Hành Thích Ứng</h3>
   <div class="formula">
-    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span><br/>
-    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ ≈ 22,907,500 MIC/ngày · T<sub>half</sub> = 180 ngày · D(t) = 0.5 + U(t) [0.5, 1.5] · R(t) = clamp(250%/ROI, 0.5, 2.0) · W(t) = min(1.0, t/30) [Hệ số khởi động, 30 ngày đầu]</span>
+    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)</span><br/>
+    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ ≈ 750,000 MIC/ngày · T<sub>half</sub> = 8 năm · D(t) = 0.5 + U(t) [0.5, 1.5] · L(H) = clamp(H/110, 0.02, 2.0) · W(t) = min(1.0, t/30) [Hệ số khởi động, 30 ngày đầu]</span>
   </div>
   <div class="wp-table-wrap" style="margin-top:18px">
     <table class="wp-table">
       <thead><tr><th>Thành Phần</th><th>Giá Trị / Công Thức</th><th>Chức Năng</th></tr></thead>
       <tbody>
-        <tr><td>E<sub>base</sub></td><td>22,907,500 MIC/ngày (tỷ lệ E₀ ban đầu)</td><td>Tỷ lệ phát hành ban đầu phân phối chính xác 5.95B MIC thông qua đào trong toàn bộ lịch trình</td></tr>
+        <tr><td>E<sub>base</sub></td><td>750,000 MIC/ngày (tỷ lệ E₀ ban đầu)</td><td>Tỷ lệ phát hành ban đầu phân phối chính xác 5.95B MIC thông qua đào trong toàn bộ lịch trình</td></tr>
         <tr><td>W(t)</td><td>min(1.0, t/30)</td><td>Hệ số khởi động cho 30 ngày đầu, làm mượt phát hành giai đoạn đầu mà không thay đổi tổng nguồn cung</td></tr>
         <tr><td>D(t)</td><td>0.5 + U(t)</td><td>Hệ số nhu cầu — U(t) = tỷ lệ sử dụng MICE. Phạm vi [0.5, 1.5]</td></tr>
-        <tr><td>R(t)</td><td>clamp(250%/ROI, 0.5, 2.0)</td><td>Bộ điều chỉnh ROI — mục tiêu ROI 250%, giới hạn giữa 0.5 và 2.0</td></tr>
+        <tr><td>L(H)</td><td>clamp(H/110, 0.02, 2.0)</td><td>Bộ điều tiết theo độ phủ thanh khoản — H là số ngày phát hành mà thanh khoản của pool đủ hấp thụ; mục tiêu 110 ngày, đổi tối đa 10% mỗi ngày</td></tr>
       </tbody>
     </table>
   </div>
@@ -900,31 +933,31 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <div class="timeline" style="margin-top:28px">
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <div class="tl-phase">Giai Đoạn I · Q1–Q2 2026</div>
+      <div class="tl-phase">Giai Đoạn I</div>
       <div class="tl-title">Chiến Lược Tổng Thể &amp; Nền Tảng</div>
-      <div class="tl-body"><ul class="dot-list"><li>Hoàn thành tài liệu White Paper &amp; Phụ Lục.</li><li>Triển khai tất cả Smart Contracts V1, Cơ Chế DAO và hoàn thành kiểm toán nội bộ.</li><li>SEED Sale → Presale → Kích Hoạt SWAP (Cuối Q2).</li><li>Ra mắt Demo Mission World.</li></ul></div>
+      <div class="tl-body"><ul class="dot-list"><li>Hoàn thành tài liệu White Paper &amp; Phụ Lục.</li><li>Triển khai tất cả Smart Contracts V1, Cơ Chế DAO và hoàn thành kiểm toán nội bộ.</li><li>SEED Sale → Presale → Kích Hoạt SWAP.</li><li>Ra mắt Demo Mission World.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--blue2)"><div style="width:8px;height:8px;background:var(--blue2);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--blue2)">Giai Đoạn II · Q3–Q4 2026</div>
+      <div class="tl-phase" style="color:var(--blue2)">Giai Đoạn II</div>
       <div class="tl-title">Phân Phối MICE &amp; Khởi Chạy Đào</div>
       <div class="tl-body"><ul class="dot-list"><li>Phân phối MICE bắt đầu trên tất cả các vòng định giá.</li><li>Đào MIC được khởi chạy với động cơ phát hành Hindex đầy đủ hoạt động.</li><li>Mission World chính thức ra mắt như nền tảng đối tác chiến lược.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--gold)"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--gold)">Giai Đoạn III · Q1–Q2 2027</div>
+      <div class="tl-phase" style="color:var(--gold)">Giai Đoạn III</div>
       <div class="tl-title">Niêm Yết DEX &amp; Mở Rộng Hệ Sinh Thái</div>
       <div class="tl-body"><ul class="dot-list"><li>Niêm yết DEX trên các sàn giao dịch lớn.</li><li>Mission Learn, Mission Social và Mission Chain (L2) Testnet được khởi chạy.</li><li>Cơ sở hạ tầng nền kinh tế nhà sáng tạo mở rộng.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--green)"><div style="width:8px;height:8px;background:var(--green);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--green)">Giai Đoạn IV · Q3–Q4 2027</div>
+      <div class="tl-phase" style="color:var(--green)">Giai Đoạn IV</div>
       <div class="tl-title">Niêm Yết CEX &amp; Cầu Nối Đa Chuỗi</div>
       <div class="tl-body"><ul class="dot-list"><li>Niêm yết CEX trên các sàn giao dịch tiền điện tử lớn.</li><li>Thị trường Mission Work ở quy mô lớn.</li><li>Tích hợp Cross-Chain Bridge cho hỗ trợ đa chuỗi.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:#8B6F47"><div style="width:8px;height:8px;background:#8B6F47;border-radius:50%"></div></div>
-<div class="tl-phase" style="color:#8B6F47">Giai đoạn V · Q1 2028+</div>
+<div class="tl-phase" style="color:#8B6F47">Giai Đoạn V</div>
       <div class="tl-title">Mở rộng Hệ sinh thái &amp; Mainnet L2</div>
       <div class="tl-body"><ul class="dot-list"><li>Mở rộng hệ sinh thái toàn diện trên tất cả các sản phẩm Mission.</li><li>Ra mắt Mainnet Mission Chain (L2).</li><li>Các cột mốc chấp nhận toàn cầu và tăng trưởng bền vững.</li></ul></div>
     </div>
@@ -1122,8 +1155,8 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td><strong>Distribution</strong></td><td>Phân phối cộng đồng &amp; giới thiệu cho người tham gia SEED và mạng lưới tăng trưởng</td><td>20% (~$76,250)</td></tr>
         <tr><td><strong>Operational</strong></td><td>Kỹ thuật giao thức cốt lõi, kiểm toán bảo mật, cơ sở hạ tầng, công cụ và lương vận hành nhóm</td><td>20% (~$76,250)</td></tr>
-        <tr><td><strong>Management Bonus</strong></td><td>Thưởng quản lý &amp; lãnh đạo — giải ngân theo biểu quyết Steward Council &ge;75%</td><td>10% (~$38,125)</td></tr>
-        <tr><td><strong>Reserved Expenses (DAO quản trị)</strong></td><td>Dự trữ chiến lược cho kiểm toán tương lai, mở rộng và nhu cầu hệ sinh thái — giải ngân theo biểu quyết Steward Council &ge;75% (Giai đoạn 1) &rarr; DAOGovernor (Giai đoạn &beta;)</td><td>50% (~$190,625)</td></tr>
+        <tr><td><strong>Management Bonus</strong></td><td>Thưởng quản lý &amp; lãnh đạo — giải ngân theo biểu quyết Steward Council 3/5</td><td>10% (~$38,125)</td></tr>
+        <tr><td><strong>Reserved Expenses (DAO quản trị)</strong></td><td>Dự trữ chiến lược cho kiểm toán tương lai, mở rộng và nhu cầu hệ sinh thái — giải ngân theo biểu quyết Steward Council 3/5 (Giai đoạn 1) &rarr; DAOGovernor (Giai đoạn &beta;)</td><td>50% (~$190,625)</td></tr>
         <tr><td><strong>TỔNG CỘNG</strong></td><td><strong>100% doanh thu bán SEED công khai (gộp)</strong></td><td><strong>~USD 381,250</strong></td></tr>
       </tbody>
     </table>
@@ -1225,7 +1258,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <tr><td>Nguồn Tài trợ</td><td>Chỉ thu nhập PRE-SALE — không từ kho bạc, khai thác hoặc bất kỳ pool nào khác</td></tr>
     <tr><td>Đủ điều kiện Đại sứ</td><td>Người giới thiệu phải là vận hành viên MICE hoạt động hoặc người giữ Community NFT trước khi nhận Direct Referral.</td></tr>
     <tr><td>Độ sâu Chương trình</td><td>Tối đa chỉ 2 bước — không có chuỗi sâu hơn được thưởng</td></tr>
-    <tr><td>Tổng Giới hạn Chương trình</td><td>≤ 15% tổng thu nhập PRE-SALE (~$225,000 ở mức huy động $1.5M)</td></tr>
+    <tr><td>Tổng Giới hạn Chương trình</td><td>Đúng 10% thu nhập PRE-SALE (Trực tiếp 7% + Gián tiếp 3%) — cố định on-chain trong RevenueRouter, không điều chỉnh được. ≈ $157,500 ở mức trần cứng $1,575,000</td></tr>
     <tr><td>Chấm dứt Chương trình</td><td>Bị vô hiệu hóa vĩnh viễn khi đóng giai đoạn PRE-SALE — không có ngoại lệ</td></tr>
   </tbody></table></div>
 <h4 class="mini-title">B.4.3 Biện Pháp Bảo Vệ Toàn Vẹn</h4>
@@ -1358,10 +1391,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Mục Tiêu Phân Bổ</th><th>Phần Phát Hành Hàng Ngày E(t)</th></tr></thead>
       <tbody>
-        <tr><td>MICE Participants</td><td class="hl">60%</td></tr>
+        <tr><td>MICE Participants</td><td class="hl">59%</td></tr>
         <tr><td>Staking</td><td class="hl">25%</td></tr>
         <tr><td>Kho Bạc DAO</td><td class="hl">10%</td></tr>
         <tr><td>Phân Bổ NFT Cộng Đồng</td><td class="hl">5%</td></tr>
+        <tr><td>MFP-NFT Reward</td><td class="hl">1%</td></tr>
         <tr><td>Tổng</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
@@ -1370,7 +1404,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">C.6 Công Thức Phân Bổ cho MICE Participants</h3>
   <div class="formula">
     <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-    <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 50%→60% over first 90 days)</span><br/>
+    <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 49%→59% over first 90 days)</span><br/>
     <span class="comment">Tổng protocol allocation giữ nguyên · Allocation trên mỗi credential giảm khi số người tham gia tăng · Không khuếch đại lạm phát</span>
   </div>
   <div class="wp-table-wrap">
@@ -1381,12 +1415,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>N<sub>t</sub></td><td>Tổng số MICE credentials đang active vào ngày t trên toàn bộ participants</td></tr>
         <tr><td>M<sub>i</sub></td><td>Số MICE credentials đang active mà participant i nắm giữ vào ngày t</td></tr>
         <tr><td>R<sub>MICE,i</sub>(t)</td><td>Daily MIC allocation cho participant i tại ngày t</td></tr>
-        <tr><td>MinerPct(t)</td><td>Tỷ lệ phân bổ phát hành hàng ngày cho MICE participants — tăng tuyến tính 50%→60% trong 90 ngày đầu (Early Staking Boost), sau đó cố định ở 60%</td></tr>
+        <tr><td>MinerPct(t)</td><td>Tỷ lệ phân bổ phát hành hàng ngày cho MICE participants — tăng tuyến tính 49%→59% trong 90 ngày đầu (Early Staking Boost), sau đó cố định ở 59%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout">
-    <p><strong>Giải Thích Công Thức:</strong> Daily allocation của mỗi participant tỷ lệ thuận với phần của họ trong tổng số MICE credentials đang active trong ngày đó. Một participant nắm giữ 10 MICE khi có 1,000 MICE đang active sẽ nhận 1% của MICE participant pool 60%. Vì <span class="math">E(t)</span> thay đổi theo ngày dưới Hindex Algorithm, daily allocations không cố định và phản ánh cả phần tương đối của participant lẫn emission rate hiện tại của giao thức. Không có allocation amount nào được bảo đảm.</p>
+    <p><strong>Giải Thích Công Thức:</strong> Daily allocation của mỗi participant tỷ lệ thuận với phần của họ trong tổng số MICE credentials đang active trong ngày đó. Một participant nắm giữ 10 MICE khi có 1,000 MICE đang active sẽ nhận 1% của MICE participant pool 59%. Vì <span class="math">E(t)</span> thay đổi theo ngày dưới Hindex Algorithm, daily allocations không cố định và phản ánh cả phần tương đối của participant lẫn emission rate hiện tại của giao thức. Không có allocation amount nào được bảo đảm.</p>
   </div>
 
   <h3 class="sub-title">C.7 Mission Ambassador Program (Bán MICE)</h3>
@@ -1424,17 +1458,18 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Hạng Mục Phân Bổ</th><th>Phần USDT</th></tr></thead>
       <tbody>
-        <tr><td>Marketing &amp; Bán Hàng</td><td class="hl">35%</td></tr>
+        <tr><td>Giới Thiệu (Trực tiếp 7% + Gián tiếp 3%)</td><td class="hl">10%</td></tr>
+        <tr><td>Marketing &amp; Bán Hàng</td><td class="hl">25%</td></tr>
         <tr><td>Quản Lý &amp; Vận Hành</td><td class="hl">7.5%</td></tr>
         <tr><td>Kho Bạc DAO</td><td class="hl">12.5%</td></tr>
-        <tr><td>Reserved Staking</td><td class="hl">5%</td></tr>
+        <tr><td>Listing Reserve</td><td class="hl">5%</td></tr>
         <tr><td>Nhóm Thanh Khoản + Đệm</td><td class="hl">40%</td></tr>
         <tr><td>Tổng</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout green">
-    <p><strong>Phân Bổ Doanh Thu MICE:</strong> 50% giá MICE được trả bằng MIC (đốt), 50% bằng USDT. Phần USDT tuân theo cùng phân bổ như Pre-Sale: 35% Marketing &amp; Bán Hàng, 7.5% Quản Lý, 57.5% Vốn Ròng.</p>
+    <p><strong>Phân Bổ Doanh Thu MICE:</strong> 50% giá MICE được trả bằng MIC (đốt), 50% bằng USDT. Phần USDT tuân theo cùng phân bổ như Pre-Sale: 10% Giới Thiệu, 25% Marketing &amp; Bán Hàng, 7.5% Quản Lý, 57.5% Vốn Ròng.</p>
   </div>
 
   <h3 class="sub-title">C.9 Rào Cản Bảo Vệ &amp; Tuân Thủ</h3>
@@ -1485,10 +1520,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Nhóm</th><th>% Khai Thác</th><th>Phân Bổ MIC</th><th>Mục Đích</th></tr></thead>
       <tbody>
-        <tr><td><strong>MICE Participants</strong></td><td class="hl">60%</td><td class="mono">3,570,000,000</td><td>MICE participation allocation</td></tr>
+        <tr><td><strong>MICE Participants</strong></td><td class="hl">59%</td><td class="mono">3,510,500,000</td><td>MICE participation allocation</td></tr>
         <tr><td><strong>Staking</strong></td><td class="hl">25%</td><td class="mono">1,487,500,000</td><td>MIC staking allocation (all holders)</td></tr>
         <tr><td><strong>Kho Bạc DAO</strong></td><td class="hl">10%</td><td class="mono">595,000,000</td><td>Phát triển hệ sinh thái, đối tác, dự trữ</td></tr>
         <tr><td><strong>Phân Bổ NFT Cộng Đồng</strong></td><td class="hl">5%</td><td class="mono">297,500,000</td><td>Phần thưởng người nắm giữ Community NFT</td></tr>
+        <tr><td><strong>MFP-NFT Reward</strong></td><td class="hl">1%</td><td class="mono">59,500,000</td><td>Phân bổ cho người giữ MFP-NFT</td></tr>
       </tbody>
     </table>
   </div>
@@ -1497,14 +1533,14 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Động cơ phát hành thích ứng cốt lõi sử dụng bốn yếu tố điều chế độc lập:</p>
 
   <div class="formula-label">TỶ LỆ PHÁT HÀNH TỔNG</div>
-  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × R(t) × W(t)</div>
+  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × L(H) × W(t) × A(N)</div>
 
   <p>Trong đó:</p>
   <ul>
-    <li><strong>E₀ ≈ 22,907,500 MIC/ngày</strong> — Tỷ lệ phát hành ban đầu (tỷ lệ thuận với 85% của 7 tỷ ÷ ~365 ngày năm đầu tiên)</li>
-    <li><strong>λ ≈ 0.00385 ngày⁻¹</strong> — Hằng số phân rã mũ (T_half = 180 ngày ≈ 3 năm đến 99% được phát hành)</li>
+    <li><strong>E₀ ≈ 750,000 MIC/ngày</strong> — Tỷ lệ phát hành ban đầu (tỷ lệ thuận với 85% của 7 tỷ ÷ ~365 ngày năm đầu tiên)</li>
+    <li><strong>λ ≈ 0.000237 ngày⁻¹</strong> — Hằng số phân rã mũ (T_half = 8 năm)</li>
     <li><strong>D(t) = 0.5 + U(t)</strong> — Yếu tố nhu cầu: phạm vi [0.5, 1.5] dựa trên điểm hoạt động hệ sinh thái</li>
-    <li><strong>R(t) = clamp(250% / ROI(t), 0.5, 2.0)</strong> — Điều chỉnh ROI: mối quan hệ nghịch đảo với staking ROI</li>
+    <li><strong>L(H) = clamp(H / 110, 0.02, 2.0)</strong> — Điều chỉnh ROI: mối quan hệ nghịch đảo với staking ROI</li>
     <li><strong>W(t) = min(1.0, t / 30 ngày)</strong> — Yếu tố WarmUp: tăng dần tuyến tính từ 0% đến 100% trong 30 ngày đầu tiên</li>
   </ul>
 
@@ -1523,13 +1559,13 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </ul>
   <p>Khi U(t) = 0 (không hoạt động), D(t) = 0.5 (50% cơ sở). Khi U(t) = 1.0 (hoạt động đỉnh cao), D(t) = 1.5 (150% cơ sở).</p>
 
-  <h4 class="mini-title">Điều Chỉnh ROI R(t)</h4>
-  <p>Giao thức sử dụng yếu tố cân bằng phát thải để duy trì điều kiện phân bổ ổn định. R(t) điều chỉnh phát thải hàng ngày để giảm bớt sự mất cân đối tham gia/phân bổ cực đoan. Công thức được giữ lại ở đây để minh bạch và để tham khảo bởi đơn vị kiểm toán giao thức; nó không phải là dự báo về tương lai và không đại diện cho bất kỳ mục tiêu lợi nhuận đảm bảo nào. Công thức: R(t) = clamp(250% / ROI(t), 0.5, 2.0) giới hạn điều chỉnh giữa 0.5× và 2.0× để ngăn chặn động lực mất kiểm soát. Cơ chế chi tiết, giá trị tham số và ngưỡng tái cân bằng được tài liệu hóa trong Đặc Tả Giao Thức Kỹ Thuật của Mission Chain.
+  <h4 class="mini-title">Điều Chỉnh ROI L(H)</h4>
+  <p>Giao thức sử dụng yếu tố cân bằng phát thải để duy trì điều kiện phân bổ ổn định. L(H) điều chỉnh phát thải hàng ngày để giảm bớt sự mất cân đối tham gia/phân bổ cực đoan. Công thức được giữ lại ở đây để minh bạch và để tham khảo bởi đơn vị kiểm toán giao thức; nó không phải là dự báo về tương lai và không đại diện cho bất kỳ mục tiêu lợi nhuận đảm bảo nào. Công thức: L(H) = clamp(H / 110, 0.02, 2.0) giới hạn điều chỉnh giữa 0.5× và 2.0× để ngăn chặn động lực mất kiểm soát. Cơ chế chi tiết, giá trị tham số và ngưỡng tái cân bằng được tài liệu hóa trong Đặc Tả Giao Thức Kỹ Thuật của Mission Chain.
   <ul>
   </p>
 
   <h4 class="mini-title">Rào Cản Phân Chia Nhóm</h4>
-  <p>Trong khi phân chia cơ sở là MICE Participants 60% / Staking 25% / DAO Treasury 10% / Community NFT Allocation 5%, hệ thống thực thi các dynamic guardrails để ngăn chặn các tình huống cực đoan:</p>
+  <p>Trong khi phân chia cơ sở là MICE Participants 59% / Staking 25% / DAO Treasury 10% / Community NFT Allocation 5%, hệ thống thực thi các dynamic guardrails để ngăn chặn các tình huống cực đoan:</p>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>Nhóm</th><th>% Tối Thiểu</th><th>% Tối Đa</th><th>Kích Hoạt</th></tr></thead>
@@ -1546,13 +1582,13 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Để khuyến khích staking participation trong giai đoạn ra mắt, hệ thống tạm thời phân bổ lại 10% từ MICE participants sang Staking trong 90 ngày đầu tiên:</p>
 
   <div class="formula-label">PHÂN BỔ THỢ ĐÀO TRONG GIAI ĐOẠN TĂNG DẦN</div>
-  <div class="formula">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</div>
+  <div class="formula">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</div>
 
   <p>Điều này có nghĩa là:</p>
   <ul>
     <li><strong>Ngày 1:</strong> MICE Participants 50% / Staking 30% (boost +10%)</li>
     <li><strong>Ngày 45:</strong> MICE Participants 55% / Staking 25% (+5% boost còn lại)</li>
-    <li><strong>Ngày 90+:</strong> MICE Participants 60% / Staking 25% (tỷ lệ vĩnh viễn)</li>
+    <li><strong>Ngày 90+:</strong> MICE Participants 59% / Staking 25% (tỷ lệ vĩnh viễn)</li>
   </ul>
 
   <h3 class="sub-title">D.3 Cơ Chế Giảm Phát</h3>
@@ -1597,9 +1633,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Thời Gian Khóa</th><th>Hệ Số Nhân</th><th>Trọng Số Phân Bổ</th><th>Ghi Chú</th></tr></thead>
       <tbody>
         <tr><td><strong>30 ngày</strong></td><td class="hl">×1.0</td><td>Trọng số cơ bản</td><td>Cơ bản</td></tr>
-        <tr><td><strong>90 ngày</strong></td><td class="hl">×1.25</td><td>+25% so với cơ bản</td><td>Khóa nâng cao</td></tr>
-        <tr><td><strong>180 ngày</strong></td><td class="hl">×1.5</td><td>+50% so với cơ bản</td><td>Khóa mở rộng</td></tr>
-        <tr><td><strong>360 ngày</strong></td><td class="hl">×2.0</td><td>2× trọng số cơ bản</td><td>Khóa cả năm — trọng số phân bổ cao nhất</td></tr>
+        <tr><td><strong>90 ngày</strong></td><td class="hl">×1.6</td><td>+60% so với cơ bản</td><td>Khóa nâng cao</td></tr>
+        <tr><td><strong>180 ngày</strong></td><td class="hl">×2.6</td><td>+160% so với cơ bản</td><td>Khóa mở rộng</td></tr>
+        <tr><td><strong>360 ngày</strong></td><td class="hl">×5.0</td><td>2× trọng số cơ bản</td><td>Khóa cả năm — trọng số phân bổ cao nhất</td></tr>
       </tbody>
     </table>
   </div>
@@ -1607,26 +1643,22 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Tham Gia Bằng MIC Đã Khóa</h4>
   <p>Token MIC đã khóa vesting (từ Seed Round, Pre-Sale, hoặc các phân bổ khác với lịch trình mở khóa theo thời gian) hoàn toàn đủ điều kiện tham gia staking. Staking hoạt động hoàn toàn ở cấp độ MIC mà không có sự tham gia của NFT:</p>
   <ul>
-    <li><strong>Hệ Số Nhân Khóa Thời Gian Đầy Đủ:</strong> MIC đã khóa nhận hệ số nhân khóa thời gian hoàn chỉnh (×2.0 cho khóa 360 ngày) mà không bị giảm</li>
+    <li><strong>Hệ Số Nhân Khóa Thời Gian Đầy Đủ:</strong> MIC đã khóa nhận hệ số nhân khóa thời gian hoàn chỉnh (×5.0 cho khóa 360 ngày) mà không bị giảm</li>
     <li><strong>Unlocked Allocations:</strong> staking allocations kiếm được từ MIC đã khóa được mở khóa ngay lập tức và có thể chuyển tự do, không phải chịu vesting</li>
     <li><strong>Khóa Staking Tối Thiểu:</strong> Thời gian khóa tối thiểu 360 ngày (12 tháng) để tham gia staking</li>
     <li><strong>Không Giới Hạn Staking:</strong> Staking không giới hạn mỗi địa chỉ và không có giới hạn mỗi NFT (NFT chỉ được sử dụng để phân phối phần thưởng USDT, không phải staking)</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>Ví dụ:</strong> Người dùng staking 100,000 MIC trong 360 ngày nhận: 100K × ×2.0 = 200K effective weight. Nếu tổng trọng số staking pool là 100M, người staking này được phân bổ 0.2% của toàn bộ staking emissions trong epoch đó. Phép tính này áp dụng như nhau cho dù MIC đã khóa hay chưa khóa. Quyền sở hữu NFT không ảnh hưởng đến staking allocation.</p>
+    <p><strong>Ví dụ:</strong> Người dùng staking 100,000 MIC trong 360 ngày nhận: 100K × ×5.0 = 500K effective weight. Nếu tổng trọng số staking pool là 100M, người staking này được phân bổ 0.2% của toàn bộ staking emissions trong epoch đó. Phép tính này áp dụng như nhau cho dù MIC đã khóa hay chưa khóa. Quyền sở hữu NFT không ảnh hưởng đến staking allocation.</p>
   </div>
 
-  <h4 class="mini-title">Quỹ Bền Vững Staking</h4>
-  <p>Để duy trì staking allocation pool khác không ngay cả sau khi giai đoạn protocol emission chính giảm dần, MissionChain phân bổ 5% doanh thu USDT từ MICE ($750K từ $15M tổng) cho "Reserved Staking Fund":</p>
+  <h4 class="mini-title">Hỗ Trợ Staking Dài Hạn</h4>
+  <p>Phần thưởng staking được cấp từ 25% lượng phát hành hàng ngày. Vì lượng phát hành suy giảm theo chu kỳ bán rã 8 năm chứ không phải 6 tháng, nguồn này còn đáng kể trong nhiều thập kỷ, và không cần một quỹ dự trữ riêng để duy trì nó.</p>
 
-  <p><strong>Giai Đoạn 1 (Mining Đang Hoạt Động):</strong> Quỹ tự động mua MIC từ DEX theo lịch hàng tuần khi giá giảm dưới MA 30 ngày, tích lũy dự trữ MIC.</p>
+  <p>Nếu DAO xét thấy cần hỗ trợ thêm, DAO có thể phân bổ một phần MIC trong kho bạc của chính mình theo quý, thông qua biểu quyết kho bạc. Đó là một quyết định quản trị tại thời điểm đó, không phải một chương trình tự động thường trực.</p>
 
-  <p><strong>Giai Đoạn 2 (Post-Mining):</strong> Khi giai đoạn protocol emission chính cạn kiệt, MIC tích lũy được sẽ được phân phối dần vào staking allocation pool với tốc độ giảm dần, hỗ trợ non-zero staking allocation trong 5+ năm sau phát thải chính.</p>
-
-  <p><strong>DAO Supplementation:</strong> Mỗi quý, DAO có thể phân bổ 10–20% MIC nắm giữ trong kho bạc để bổ sung thêm cho staking allocation pool, duy trì tính bền vững dài hạn.</p>
-
-  <h3 class="sub-title">D.5 Dự Báo Doanh Thu & Kinh Tế MICE</h3>
+<h3 class="sub-title">D.5 Dự Báo Doanh Thu & Kinh Tế MICE</h3>
 <h4 class="mini-title">Cấu Trúc 5 Vòng MICE</h4>
   <p>Mô hình MICE credential tạo doanh thu thông qua 5 bậc giá tăng dần, với 20,000 credentials mỗi round (tối đa 100,000):</p>
 
@@ -1651,11 +1683,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Hạng Mục</th><th>% Doanh Thu</th><th>Số Tiền (USD)</th><th>Chức Năng</th></tr></thead>
       <tbody>
-        <tr><td><strong>Marketing & Bán Hàng</strong></td><td class="hl">35%</td><td class="mono">$5,250,000</td><td>Giới thiệu 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, Khuyến khích 1.5%</td></tr>
+        <tr><td><strong>Giới Thiệu</strong></td><td class="hl">10%</td><td class="mono">$1,500,000</td><td>Giới thiệu Trực tiếp 7%, Giới thiệu Gián tiếp 3% &mdash; trả ngay theo từng giao dịch; phần chưa dùng chuyển sang Milestones &amp; Incentives</td></tr>
+        <tr><td><strong>Marketing & Bán Hàng</strong></td><td class="hl">25%</td><td class="mono">$3,750,000</td><td>Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td></tr>
         <tr><td><strong>Quản Lý & Vận Hành</strong></td><td class="hl">7.5%</td><td class="mono">$1,125,000</td><td>Founder 1.5%, Architect 1%, CTO 0.5%, Truyền thông xã hội 0.5%, Đào tạo toàn cầu 0.5%, Đội kỹ thuật 1%, Thưởng 2.5%</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="2"><strong>VỐN RÒNG (57.5%)</strong></td><td style="text-align:right"><strong class="td-gold">$8,625,000</strong></td><td></td></tr>
-        <tr><td style="padding-left:40px"><em>Treasure DAO</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>Phát triển thế giới 2.5%, Tiện ích mở rộng ứng dụng 5%, Dự trữ 5%</td></tr>
-        <tr><td style="padding-left:40px"><em>Reserved Staking</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>Tự động mua MIC khi giá giảm, khóa cho staking sau giai đoạn phát thải chính</td></tr>
+        <tr><td style="padding-left:40px"><em>DAO Treasury</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>Phát triển thế giới 2.5%, Tiện ích mở rộng ứng dụng 5%, Dự trữ 5%</td></tr>
+        <tr><td style="padding-left:40px"><em>Listing Reserve</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>Giữ để tạo lập một thị trường bên ngoài khi giao thức niêm yết; do DAO quản trị, khoá thời gian 24 giờ</td></tr>
         <tr><td style="padding-left:40px"><em>Nhóm Thanh Khoản + Đệm</em></td><td class="hl">40%</td><td class="mono">$6,000,000</td><td>Tự động chuyển sang Hợp đồng Thanh khoản</td></tr>
       </tbody>
     </table>
@@ -1712,58 +1745,60 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>Thưởng Quản Lý (Dự Trữ)</strong></td><td class="hl">10%</td><td class="mono">$38,125</td></tr>
         <tr><td style="padding-left:40px">Hội Đồng bỏ phiếu — yêu cầu ngưỡng 75%</td><td></td><td></td></tr>
         <tr><td><strong>Chi Phí Dự Trữ (DAO quản trị)</strong></td><td class="hl">50%</td><td class="mono">$190,625</td></tr>
-        <tr><td style="padding-left:40px">Chi phí do DAO quyết định — Hội Đồng &ge;75% bỏ phiếu (Giai đoạn 1) &rarr; DAOGovernor (Giai đoạn &beta;). Thanh khoản ban đầu được tài trợ từ vòng Pre-Sale &amp; MICE, không phải từ SEED.</td><td></td><td></td></tr>
+        <tr><td style="padding-left:40px">Chi phí do DAO quyết định — Hội Đồng 3/5 bỏ phiếu (Giai đoạn 1) &rarr; DAOGovernor (Giai đoạn &beta;). Thanh khoản ban đầu được tài trợ từ vòng Pre-Sale &amp; MICE, không phải từ SEED.</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
-  <h4 class="mini-title">Ngân Sách Pre-Sale Round (mục tiêu $1.5M)</h4>
+  <h4 class="mini-title">Ngân Sách Pre-Sale Round (kịch bản minh hoạ huy động $1.5M; trần cứng $1,575,000)</h4>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>Hạng Mục</th><th>%</th><th>Số Tiền</th></tr></thead>
       <tbody>
-        <tr><td><strong>Marketing & Bán Hàng</strong></td><td class="hl">35%</td><td class="mono">$525K</td></tr>
-        <tr><td style="padding-left:40px">Giới thiệu 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, Khuyến khích 1.5%</td><td></td><td></td></tr>
+        <tr><td><strong>Giới Thiệu</strong></td><td class="hl">10%</td><td class="mono">$150K</td></tr>
+        <tr><td style="padding-left:40px">Giới thiệu Trực tiếp 7% + Giới thiệu Gián tiếp 3% &mdash; trả ngay theo từng giao dịch; phần chưa dùng chuyển sang Milestones &amp; Incentives</td><td></td><td></td></tr>
+        <tr><td><strong>Marketing & Bán Hàng</strong></td><td class="hl">25%</td><td class="mono">$375K</td></tr>
+        <tr><td style="padding-left:40px">Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td><td></td><td></td></tr>
         <tr><td><strong>Quản Lý & Vận Hành</strong></td><td class="hl">7.5%</td><td class="mono">$112.5K</td></tr>
         <tr><td style="padding-left:40px">Founder 1.5%, Architect 1%, CTO 0.5%, Truyền thông xã hội 0.5%, Đào tạo toàn cầu 0.5%, Đội kỹ thuật 1%, Thưởng 2.5%</td><td></td><td></td></tr>
         <tr><td><strong>Vốn Ròng</strong></td><td class="hl">57.5%</td><td class="mono">$862.5K</td></tr>
-        <tr><td style="padding-left:40px">Treasure DAO 12.5% ($187.5K: Phát triển thế giới 2.5% + Ứng dụng 5% + Dự trữ 5%) + Staking Dự trữ 5% ($75K) + Nhóm Thanh khoản 40% ($600K)</td><td></td><td></td></tr>
+        <tr><td style="padding-left:40px">DAO Treasury 12.5% ($187.5K: Phát triển thế giới 2.5% + Ứng dụng 5% + Dự trữ 5%) + Staking Dự trữ 5% ($75K) + Nhóm Thanh khoản 40% ($600K)</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
   <h4 class="mini-title">Phân Bổ Doanh Thu Giấy Phép MICE ($15M USDT)</h4>
-  <p>Xem Dự Báo Doanh Thu (phần D.5) để biết phân tích chi tiết: Marketing 35%, Quản lý 7.5%, Vốn Ròng 57.5%.</p>
+  <p>Xem Dự Báo Doanh Thu (phần D.5) để biết phân tích chi tiết: Giới Thiệu 10%, Marketing 25%, Quản lý 7.5%, Vốn Ròng 57.5%.</p>
 
   <h3 class="sub-title">D.8 Circuit Breaker & Kiểm Soát Khẩn Cấp</h3>
 <p>Để ngăn chặn các điều kiện thị trường cực đoan và bảo vệ hệ sinh thái, MissionChain triển khai các circuit breaker tự động và được kiểm soát bởi quản trị:</p>
 
   <h4 class="mini-title">Giới Hạn Phát Thải Tích Lũy</h4>
-  <p>Tổng phát thải từ protocol allocation pool không được vượt quá 5,950,000,000 MIC (giới hạn cứng). Khi đạt tới mức này, giai đoạn protocol allocation chính dừng vĩnh viễn và chỉ Reserved Staking cùng DAO Treasury allocations tiếp tục (nếu được bỏ phiếu chấp thuận).</p>
+  <p>Tổng phát thải từ protocol allocation pool không được vượt quá 5,950,000,000 MIC (giới hạn cứng). Khi đạt tới mức này, giai đoạn protocol allocation chính dừng vĩnh viễn và chỉ các phân bổ từ DAO Treasury tiếp tục (nếu được bỏ phiếu chấp thuận).</p>
 
   <h4 class="mini-title">Giới Hạn Phát Thải Hàng Ngày</h4>
-  <p>Không ngày đơn lẻ nào có thể phát thải nhiều hơn 2× E_base(t) đã tính toán. Điều này ngăn chặn đột biến đột ngột từ bất thường D(t) hoặc R(t). Nếu hệ số cầu tạm thời tăng vọt, phần dư được hoãn đến chu kỳ tiếp theo.</p>
+  <p>Không ngày đơn lẻ nào có thể phát thải nhiều hơn 2× E_base(t) đã tính toán. Điều này ngăn chặn đột biến đột ngột từ bất thường D(t) hoặc L(H). Nếu hệ số cầu tạm thời tăng vọt, phần dư được hoãn đến chu kỳ tiếp theo.</p>
 
   <h4 class="mini-title">Giá Sàn</h4>
-  <p>Nếu giá MIC giảm xuống dưới $0.001 trên DEX chính (TWAP 30 ngày), hệ thống tự động:</p>
+  <p>Giao thức áp dụng hai cơ chế hãm phát hành độc lập, cả hai đều được tính on-chain từ giá trung bình theo thời gian của chính pool giao thức. Không cơ chế nào cần người vận hành can thiệp, và không cơ chế nào có thể bật/tắt thủ công.</p>
   <ul>
-    <li>Giảm R(t) xuống tối thiểu 0.5 (cắt phát thải còn một nửa)</li>
-    <li>Kích hoạt mua lại cho Reserved Staking Fund (mua hàng tuần được tăng tốc)</li>
-    <li>DAO có thể bỏ phiếu triển khai MIC nắm giữ trong kho bạc để hỗ trợ thị trường</li>
+    <li><strong>Hệ số hãm xu hướng G:</strong> G = clamp(TWAP<sub>7 ngày</sub> / TWAP<sub>30 ngày</sub>, 0.25, 1.0), nhân vào bộ điều tiết phát hành L(H). Khi trung bình 7 ngày thấp hơn trung bình 30 ngày, lượng phát hành giảm theo tỷ lệ tương ứng. G bị chặn trần ở 1.0 nên chỉ có thể làm chậm phát hành, không bao giờ tăng tốc.</li>
+    <li><strong>Phanh khẩn cấp:</strong> nếu trung bình 7 ngày rơi xuống dưới 50% giá tham chiếu lúc mở pool, L(H) bị giữ ở mức sàn 0.02 cho tới khi trung bình hồi phục. Phanh tự động kích hoạt và tự động nhả.</li>
   </ul>
+  <p>Hai cơ chế hãm này tồn tại vì chỉ số độ phủ thanh khoản H đo năng lực hấp thụ lượng phát hành của pool, chứ không đo sức khoẻ của giá. Hai điều đó phân kỳ: khi giá giảm, mỗi ngày phát hành có giá trị thấp hơn, nên độ phủ lại tăng. Chỉ riêng H sẽ phản ứng ngược chiều, và đó là lý do G cùng phanh khẩn cấp là một phần của giao thức ngay từ ngày đầu chứ không phải bổ sung về sau.</p>
 
   <h4 class="mini-title">Giới Hạn Tốc Độ Hủy Stake</h4>
   <p>Không quá 10% nhóm MIC đã staking có thể được hủy stake trong một ngày. Điều này ngăn chặn rút tiền hoảng loạn và khủng hoảng thanh khoản. Thời gian khóa dài hơn được ưu tiên trong hàng đợi hủy stake.</p>
 
   <h4 class="mini-title">Tạm Dừng Khẩn Cấp (Quản Trị DAO)</h4>
-  <p>Hợp đồng DAOGovernor có thể thực hiện tạm dừng khẩn cấp với yêu cầu đạt đủ số phiếu <strong>Standing Committee (3/5 người ký cốt lõi) + ≥75% trọng số staking MFP bỏ phiếu CÓ, không có độ trễ timelock</strong>. Các kịch bản tạm dừng:</p>
+  <p>Hợp đồng DAOGovernor có thể thực hiện tạm dừng khẩn cấp với yêu cầu đạt đủ số phiếu <strong>Standing Committee 3/5</strong> và không có độ trễ timelock. Các kịch bản tạm dừng:</p>
   <ul>
     <li>Sự cố bảo mật (phát hiện khai thác hợp đồng thông minh)</li>
     <li>Sự kiện thiên nga đen (sụp đổ thị trường lớn, khủng hoảng quy định)</li>
     <li>Bất thường kinh tế (siêu lạm phát, sụp đổ chớp nhoáng)</li>
   </ul>
 
-  <p>Tạm dừng sẽ đóng băng tất cả emission, stake và protocol allocation flows nhưng không khóa hoặc đốt token. Việc khôi phục yêu cầu một governance vote riêng để tiếp tục (lại: 3/5 + 75% MFP, không timelock).</p>
+  <p>Tạm dừng sẽ đóng băng tất cả emission, stake và protocol allocation flows nhưng không khóa hoặc đốt token. Việc khôi phục yêu cầu một biểu quyết quản trị riêng để tiếp tục (cũng 3/5 Hội đồng, không timelock).</p>
 
   <div class="callout warn">
     <p><strong>Cảnh báo:</strong> Tạm dừng khẩn cấp là phương án cuối cùng. Nó yêu cầu phối hợp đa bên rõ ràng và không thể được kích hoạt đơn phương. Khi kích hoạt, cộng đồng phải bỏ phiếu để tiếp tục, đảm bảo tính minh bạch.</p>
@@ -1792,7 +1827,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li><strong>Nguồn cung:</strong> Tối đa 2,500 (giới hạn cứng, mở rộng chỉ bằng bỏ phiếu DAO từ các chủ sở hữu MFP hiện tại)</li>
     <li><strong>Quản trị:</strong> Quyền quản trị và bỏ phiếu DAO đầy đủ khi được stake</li>
     <li><strong>Mục đích:</strong> Phân bổ chiến lược cho người sáng lập, nhà đầu tư cốt lõi và đối tác chính</li>
-    <li><strong>Hệ số nhân:</strong> ×25 (bậc cao nhất)</li>
+    <li><strong>Hệ số nhân:</strong> ×10 (bậc cao nhất)</li>
     <li><strong>Thời hạn:</strong> Quyền sở hữu vĩnh viễn trọn đời</li>
   </ul>
 
@@ -1818,7 +1853,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <ul>
     <li><strong>Tiêu chuẩn Token:</strong> ERC-721 trên BSC</li>
     <li><strong>Nguồn Cung Tối Đa:</strong> Giới hạn cứng 2,500 (mở rộng lên 5,000 chỉ qua bỏ phiếu DAO bởi chủ sở hữu MFP hiện tại)</li>
-    <li><strong>Hệ Số Nhân Staking:</strong> ×25</li>
+    <li><strong>Hệ Số Nhân Staking:</strong> ×10</li>
     <li><strong>Giới Hạn Staking Mỗi NFT:</strong> 500,000 MIC</li>
     <li><strong>Thời Hạn:</strong> Trọn đời (quyền sở hữu vĩnh viễn, không hết hạn)</li>
   </ul>
@@ -1846,9 +1881,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Thời Gian Khóa</th><th>Hệ Số Nhân</th><th>Ghi Chú</th></tr></thead>
       <tbody>
         <tr><td><strong>30 ngày</strong></td><td class="hl">×1.0</td><td>Cơ bản</td></tr>
-        <tr><td><strong>90 ngày</strong></td><td class="hl">×1.25</td><td>Khóa nâng cao</td></tr>
-        <tr><td><strong>180 ngày</strong></td><td class="hl">×1.5</td><td>Khóa mở rộng</td></tr>
-        <tr><td><strong>360 ngày</strong></td><td class="hl">×2.0</td><td>Khóa cả năm — phần thưởng gấp 2× cơ bản</td></tr>
+        <tr><td><strong>90 ngày</strong></td><td class="hl">×1.6</td><td>Khóa nâng cao</td></tr>
+        <tr><td><strong>180 ngày</strong></td><td class="hl">×2.6</td><td>Khóa mở rộng</td></tr>
+        <tr><td><strong>360 ngày</strong></td><td class="hl">×5.0</td><td>Khóa cả năm — phần thưởng gấp 2× cơ bản</td></tr>
       </tbody>
     </table>
   </div>
@@ -1856,7 +1891,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Điều Kiện Staking MIC Đã Khóa</h4>
   <p>Token MIC đã khóa vesting tham gia staking với lợi ích phần thưởng đầy đủ:</p>
   <ul>
-    <li><strong>Hệ Số Nhân Khóa Thời Gian Đầy Đủ:</strong> MIC đã khóa nhận hệ số nhân khóa thời gian hoàn chỉnh (×2.0 cho khóa 360 ngày) không bị phạt</li>
+    <li><strong>Hệ Số Nhân Khóa Thời Gian Đầy Đủ:</strong> MIC đã khóa nhận hệ số nhân khóa thời gian hoàn chỉnh (×5.0 cho khóa 360 ngày) không bị phạt</li>
     <li><strong>Phần Thưởng Đã Mở Khóa:</strong> Tất cả phần thưởng staking được tạo ra từ MIC đã khóa được mở khóa ngay lập tức và có thể chuyển tự do, độc lập với lịch trình vesting của MIC cơ bản</li>
     <li><strong>Khóa Staking Tối Thiểu:</strong> MIC đã stake yêu cầu thời gian khóa tối thiểu 360 ngày (12 tháng)</li>
     <li><strong>Không Giới Hạn Staking:</strong> Staking không giới hạn mỗi địa chỉ hoặc mỗi NFT</li>
@@ -1897,7 +1932,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Pool CỐ ĐỊNH 5.5% chia thành hai sub-pool:</p>
   <ul class="dot-list">
     <li><strong>Community NFT Pool (5%):</strong> Phân phối cho Community NFT phát hành trong tuần hiện tại (Builder ×1, Maker ×2.5, Luminary ×5 — theo tỷ trọng multiplier)</li>
-    <li><strong>MFP-NFT Pool (0.5%):</strong> Phân phối riêng cho MFP-NFT holders (×25 flat share)</li>
+    <li><strong>MFP-NFT Pool (0.5%):</strong> Phân phối riêng cho MFP-NFT holders (×10 flat share)</li>
   </ul>
   <p><strong>A. Milestone NFT Rewards (theo số lượng, cộng thêm vào USDT):</strong></p>
   <div class="wp-table-wrap"><table class="wp-table">
@@ -1914,7 +1949,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Pool CỐ ĐỊNH 8% chia thành hai sub-pool, thưởng lòng trung thành (TẤT CẢ NFT active đều đủ điều kiện bất kể ngày phát hành):</p>
   <ul class="dot-list">
     <li><strong>Community NFT Pool (7.5%):</strong> Phân phối cho TẤT CẢ Community NFT holders active (Builder ×1, Maker ×2.5, Luminary ×5 theo tỷ trọng)</li>
-    <li><strong>MFP-NFT Pool (0.5%):</strong> Phân phối cho MFP-NFT holders (×25 flat)</li>
+    <li><strong>MFP-NFT Pool (0.5%):</strong> Phân phối cho MFP-NFT holders (×10 flat)</li>
   </ul>
   <p>Tính tự động hàng tháng, DAO phê duyệt trước phân phối.</p>
 
@@ -1938,7 +1973,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tr><td><strong>Builder</strong></td><td class="hl">×1.0</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ Đủ điều kiện</td></tr>
       <tr><td><strong>Maker</strong></td><td class="hl">×2.5</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ Đủ điều kiện</td></tr>
       <tr><td><strong>Luminary</strong></td><td class="hl">×5.0</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ Đủ điều kiện</td></tr>
-      <tr><td><strong>MFP-NFT</strong></td><td class="hl">×25</td><td>✓ MFP Pool 0.5%</td><td>✓ MFP Pool 0.5%</td><td>❌ Loại trừ</td></tr>
+      <tr><td><strong>MFP-NFT</strong></td><td class="hl">×10</td><td>✓ MFP Pool 0.5%</td><td>✓ MFP Pool 0.5%</td><td>❌ Loại trừ</td></tr>
     </tbody>
   </table></div>
 
@@ -1972,16 +2007,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">F.1 Kiến Trúc Thanh Khoản</h3>
 <ul>
     <li><strong>Phân bổ niêm yết DEX/CEX:</strong> 1.50% = 105,000,000 MIC khi triển khai</li>
-    <li><strong>Triển khai:</strong> 105M MIC được gửi TRỰC TIẾP đến LiquidityPool.sol khi triển khai — bị khóa, không thể rút</li>
+    <li><strong>Triển khai:</strong> 105M được tách thành 31,5M vào LiquidityPool v5 và 73,5M vào Listing Reserve Vault. Phần 31,5M đã <strong>bị đốt ngày 5/8/2026</strong>; trong phần còn lại, 50M dùng nạp pool thanh khoản của giao thức và 23,5M giữ để mở thị trường bên ngoài.</li>
     <li><strong>Thanh khoản bổ sung:</strong> Được tài trợ từ 40% doanh thu USDT từ MICE + 40% Vốn Ròng PreSale</li>
     <li><strong>Giai đoạn 1:</strong> Chỉ đệm (nhận USDT, giữ MIC bị khóa)</li>
-    <li><strong>Giai đoạn 2:</strong> SWAP + Bộ Ổn Định AI được thêm vào</li>
+    <li><strong>Giai đoạn 2:</strong> Mở SWAP hai chiều; bộ điều tiết theo độ phủ và phanh tự động hoạt động</li>
   </ul>
 
   <h3 class="sub-title">F.2 Hợp Đồng LiquidityPool.sol</h3>
 <h4 class="mini-title">Biến Trạng Thái Cốt Lõi</h4>
   <ul>
-    <li><strong>lockedMIC:</strong> 105,000,000 MIC (được đặt khi triển khai, bất biến)</li>
+    <li><strong>MIC trong pool giao thức:</strong> 50.000.000 MIC nạp lúc mở. Số này chỉ rời pool khi có người mua, và USDT họ trả nằm lại trong pool.</li>
     <li><strong>Mục đích:</strong> Hỗ trợ thanh khoản vĩnh viễn cho cặp giao dịch MIC/USDT</li>
   </ul>
   <h4 class="mini-title">Hàm Giai Đoạn 1</h4>
@@ -1993,7 +2028,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <ul>
     <li><strong>addToSWAP():</strong> Yêu cầu bỏ phiếu cấu trúc DAOGovernor (timelock 7 ngày) để chuyển MIC từ đệm sang cung cấp thanh khoản hoạt động</li>
     <li><strong>withdrawMICForCEX():</strong> Yêu cầu bỏ phiếu cấu trúc DAOGovernor (timelock 7 ngày) cho rút tiền sàn giao dịch tập trung</li>
-    <li><strong>depositMIC():</strong> hàm gửi dự trữ cho cơ chế tự động mua của Reserved Staking Fund</li>
+    <li><strong>depositMIC():</strong> hàm gửi dự trữ, dùng khi MIC được đưa vào các quỹ dự trữ do giao thức nắm giữ</li>
   </ul>
 
   <h3 class="sub-title">F.3 Nguồn Thanh Khoản USDT</h3>
@@ -2010,35 +2045,67 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
 <p>Các quỹ này tích lũy trong Giai đoạn 1 (không có giao dịch hoạt động) và được triển khai vào PancakeSwap V3 trong Giai đoạn 2 để thiết lập thanh khoản sâu cho cặp giao dịch MIC/USDT.</p>
 
-  <h3 class="sub-title">F.4 Quỹ Duy Trì Staking</h3>
-<h4 class="mini-title">Mục Đích & Cơ Chế Quỹ</h4>
+    <h3 class="sub-title">F.4 Quỹ Niêm Yết</h3>
+<h4 class="mini-title">Mục đích</h4>
   <ul>
-    <li><strong>Phân Bổ:</strong> 5% doanh thu USDT từ MICE = $750,000</li>
-    <li><strong>Mục Tiêu:</strong> duy trì staking allocation pool khác không sau khi giai đoạn phát thải chính giảm</li>
-    <li><strong>Cơ Chế:</strong> Tự động mua MIC từ DEX khi giá giảm, khóa trong hợp đồng để phân phối trong tương lai</li>
+    <li><strong>Phân bổ:</strong> 5% doanh thu USDT của MICE = $750.000</li>
+    <li><strong>Mục tiêu:</strong> Tài trợ cho việc mở một thị trường bên ngoài cho MIC</li>
+    <li><strong>Quản trị:</strong> DAO kiểm soát, mọi lệnh rút chịu khoá thời gian 24 giờ</li>
   </ul>
-  <h4 class="mini-title">Chiến Lược Hai Giai Đoạn</h4>
+  <p>Pool thanh khoản của giao thức là vòng kín: USDT đã vào thì không bao giờ ra được. Vì vậy việc ghép cặp trên sàn ngoài cần một nguồn tài trợ riêng, và quỹ này chính là nguồn đó. Nó tích luỹ và được triển khai một lần duy nhất, như một quyết định mở thị trường được DAO phê duyệt.</p>
+
+  <h4 class="mini-title">Quỹ này KHÔNG làm gì</h4>
   <div class="callout gold">
-    <p><strong>Giai Đoạn 1 (Active Mining — Ngày 0–180):</strong> mua MIC từ thị trường hàng tuần bằng USDT dự trữ. Tích lũy MIC trong dự trữ hợp đồng trong giai đoạn protocol emission cao.</p>
+    <p>Quỹ này <strong>không</strong> mua MIC để nâng đỡ giá. Không có ngưỡng giá kích hoạt, không có điều kiện theo đường trung bình, và không có thao tác thị trường tự động nào. Giao thức điều tiết lượng phát hành chứ không điều tiết giá; mở một thị trường khác hẳn với can thiệp vào thị trường đó.</p>
   </div>
-  <div class="callout gold">
-    <p><strong>Giai Đoạn 2 (Mining Cạn Kiệt — Ngày 180+):</strong> Giải ngân từ từ MIC đã tích lũy vào Staking Reward Pool để duy trì nhóm phân bổ khác không và cung cấp phần thưởng bền vững khi phát thải tự nhiên giảm.</p>
-  </div>
-  <h4 class="mini-title">Bổ Sung Từ DAO</h4>
-  <p>Reserved Staking Fund được bổ sung bởi phân bổ hàng quý 10–20% MIC do DAO Treasury nắm giữ, nhằm hỗ trợ khả năng tồn tại dài hạn của hệ sinh thái staking allocation.</p>
+  <p>Phiên bản trước của tài liệu này có mô tả một cơ chế mua MIC mỗi khi giá xuống dưới đường trung bình 30 ngày. Thiết kế đó đã được gỡ bỏ vào tháng 8/2026, trước khi có bất kỳ dòng mã nào thực thi nó.</p>
+
+  <h4 class="mini-title">Hỗ trợ staking dài hạn</h4>
+  <p>Phần thưởng staking được cấp từ 25% lượng phát hành hàng ngày, mà với chu kỳ bán rã 8 năm thì nguồn này còn đáng kể trong nhiều thập kỷ. Nếu DAO xét thấy cần hỗ trợ thêm, DAO có thể phân bổ một phần MIC trong kho bạc của chính mình theo biểu quyết hàng quý.</p>
 
   <h3 class="sub-title">F.5 Chiến Lược Ổn Định Giá</h3>
-<h4 class="mini-title">Cơ Sở Hạ Tầng Oracle</h4>
+<h4 class="mini-title">Pool Thanh Khoản Của Giao Thức</h4>
+  <p>Giao thức vận hành pool thanh khoản MIC/USDT của riêng mình trên chuỗi. Đây là pool tích số không đổi: mỗi giao dịch giữ nguyên tích của hai lượng dự trữ, nên giá do tỉ lệ dự trữ quyết định và dịch chuyển liên tục theo từng lệnh. Không có bất kỳ mức giá nào do quản trị viên đặt trong toàn hệ thống.</p>
+  <p>Pool mở cửa với MIC và không có USDT. Để giá hai chiều xác định được ngay từ khối đầu tiên, pool được khởi tạo với một <strong>dự trữ ảo</strong> cố định — đây là một hằng số kế toán, không phải số dư, và không bên nào rút được. Khi USDT thật tích luỹ, dự trữ ảo được rút dần với tốc độ bằng một nửa dòng tiền thật vào, và về không khi dự trữ thật đạt gấp đôi quy mô ban đầu của nó. Từ thời điểm đó pool được bảo chứng hoàn toàn bằng tài sản thật. Việc rút diễn ra liên tục nên không tạo bước nhảy giá khi hoàn tất.</p>
+  <p><strong>Bất biến về khả năng chi trả:</strong> pool không bao giờ có thể chi ra nhiều USDT hơn số nó thực sự nắm giữ. Điều này được cưỡng chế trong hợp đồng như một điều kiện bắt buộc trên mọi lệnh chuyển ra, độc lập với mức giá mà đường cong định giá đưa ra.</p>
+
+  <h4 class="mini-title">Các Pha Của Pool</h4>
   <ul>
-    <li><strong>Oracle Chính:</strong> PancakeSwap V3 TWAP (Time-Weighted Average Price) với khung thời gian 30 phút</li>
-    <li><strong>Oracle Dự Phòng:</strong> Nguồn cấp giá Chainlink để dự phòng và bảo mật</li>
-    <li><strong>Tần Suất Cập Nhật:</strong> Tính toán on-chain theo thời gian thực cho TWAP; Chainlink cập nhật mỗi 24 giờ</li>
+    <li><strong>Pha 1 — Khởi động:</strong> chỉ cho phép mua. Chiều bán đóng vì pool chưa có USDT để chi trả.</li>
+    <li><strong>Pha 2 — Hai chiều:</strong> mở vào ngày thứ 30. Cho phép bán, tuân theo hạn mức ngày và biểu phí bên dưới.</li>
+    <li><strong>Pha 3 — Niêm yết ngoài:</strong> đạt khi dự trữ thật vượt ngưỡng niêm yết. Pool khi đó vận hành song song với các sàn bên ngoài.</li>
   </ul>
-  <h4 class="mini-title">Bộ Ổn Định AI (Giai Đoạn 2)</h4>
-  <p>Khi được kích hoạt, Bộ Ổn Định AI giám sát giá MIC so với phạm vi mục tiêu và điều chỉnh động việc cung cấp thanh khoản. Nếu giá giảm dưới mức hỗ trợ, hệ thống kích hoạt dòng USDT dự trữ. Nếu giá vượt ngưỡng trên, USDT đệm chưa sử dụng được triển khai để tăng thanh khoản.</p>
+  <p>Việc chuyển pha là hàm không cần quyền, tự kiểm tra điều kiện trên chuỗi. Không có công tắc do người vận hành bấm.</p>
+
+  <h4 class="mini-title">Phí Giao Dịch</h4>
+  <p>Phí được xác định bằng công thức công bố trước và không quản trị viên nào thay đổi được. Phí mua cố định 0,3%. Phí bán thay đổi theo độ phủ thanh khoản:</p>
+  <div class="formula"><span class="math">phí<sub>bán</sub> = clamp(0,3% + 9,7% × (1 − H / 110), 0,3%, 10%)</span></div>
+  <ul>
+    <li>Ở mức phủ đạt hoặc vượt mục tiêu 110 ngày, phí bán là 0,3% — bằng đúng phí mua.</li>
+    <li>Khi độ phủ giảm, phí tăng dần và chạm <strong>trần cứng 10%</strong>, là hằng số cố định trong hợp đồng, không thể nâng bởi quản trị hay bất kỳ ai giữ khoá.</li>
+    <li>Toàn bộ phí ở lại trong pool, làm tăng độ phủ và do đó lại kéo phí xuống. Cơ chế tự điều chỉnh.</li>
+  </ul>
+
+  <h4 class="mini-title">Hạn Mức Theo Ngày</h4>
+  <ul>
+    <li>USDT chi ra giới hạn ở 5% dự trữ thật trong mỗi khung 24 giờ trượt.</li>
+    <li>Một giao dịch đơn lẻ không vượt quá 1% lượng MIC dự trữ.</li>
+    <li>Một địa chỉ không được vừa mua vừa bán trong cùng một khối.</li>
+  </ul>
+  <p>Các hạn mức này là hằng số cố định, công bố trước, và không điều chỉnh được.</p>
+
+  <h4 class="mini-title">Cơ Sở Hạ Tầng Oracle</h4>
+  <ul>
+    <li><strong>Nguồn giá Giai đoạn 1–2:</strong> pool thanh khoản của giao thức tự duy trì bộ tích luỹ giá on-chain và công bố giá bình quân gia quyền theo thời gian của 7 ngày và 30 ngày. Không dùng oracle bên ngoài, và cũng không cần: trong hai giai đoạn này pool là nơi duy nhất MIC được giao dịch.</li>
+    <li><strong>Cửa sổ trong tuần đầu:</strong> cửa sổ tính bình quân là min(7 ngày, tuổi pool), nên giá tham chiếu xác định được ngay từ ngày đầu và dài dần ra khi có thêm lịch sử.</li>
+    <li><strong>Giai đoạn 3 — sau niêm yết:</strong> khi MIC lên sàn ngoài, giao thức bổ sung giá bình quân của sàn đó làm tham chiếu phụ. Nguồn giá bên ngoài chỉ được đưa vào từ thời điểm này.</li>
+  </ul>
+  <h4 class="mini-title">Về "Bộ Ổn Định AI" đã được gỡ bỏ</h4>
+  <p>Một phiên bản trước của tài liệu này có mô tả một "Bộ Ổn Định AI" theo dõi giá MIC so với một phạm vi mục tiêu và giải ngân USDT dự trữ khi giá rơi xuống dưới mức hỗ trợ. Thiết kế đó đã được gỡ bỏ vào tháng 8/2026, trước khi có bất kỳ dòng mã nào thực thi nó. Nó mâu thuẫn với nguyên tắc chi phối của giao thức: giao thức điều tiết lượng phát hành chứ không điều tiết giá, và không tham gia giao dịch trên chính thị trường của mình.</p>
+  <p>Thay thế cho nó là những cơ chế được mô tả ở trên và dưới đây — bộ điều tiết phát hành theo độ phủ thanh khoản, hệ số hãm xu hướng bị chặn trần nên chỉ có thể làm chậm phát hành, và phanh tự động. Tất cả đều tác động lên lượng MIC được tạo ra. Không cơ chế nào mua hay bán MIC.</p>
   <h4 class="mini-title">Circuit Breaker</h4>
   <ul>
-    <li><strong>Ngưỡng Giá Sàn:</strong> $0.001 MIC (mức tối thiểu cứng, được thực thi bởi các ràng buộc thanh khoản)</li>
+    <li><strong>Ngưỡng Giá Sàn:</strong> 50% giá tham chiếu lúc mở pool MIC (mức tối thiểu cứng, được thực thi bởi các ràng buộc thanh khoản)</li>
     <li><strong>Tạm Dừng Khẩn Cấp:</strong> DAOGovernor có thể tạm dừng tất cả hoạt động thanh khoản nếu giá giảm dưới ngưỡng sàn</li>
   </ul>
 
@@ -2052,17 +2119,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
 
   <h3 class="sub-title">G.1 Tổng Quan DAOGovernor</h3>
-<p>DAOGovernor.sol (Hợp Đồng #24) là động cơ quản trị của MissionChain, thay thế hoàn toàn Gnosis Safe. Nó thực thi quản trị on-chain thông qua bỏ phiếu có trọng số của những người nắm giữ MFP-NFT và xác nhận đa chữ ký từ Standing Committee.</p>
+<p>DAOGovernor.sol là động cơ quản trị của MissionChain. Nó hoạt động song song với Admin Multisig được định nghĩa trong Đặc Tả Quản Trị: một EOA của Founder trong Phase 1 Minimal, chuyển sang Gnosis Safe multisig (khuyến nghị 2-of-3) ở Phase 1 Full và Phase 2. Nó thực thi quản trị on-chain thông qua bỏ phiếu có trọng số của những người nắm giữ MFP-NFT và xác nhận đa chữ ký từ Standing Committee.</p>
   <div class="grid3">
     <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">ỦY BAN THƯỜNG TRỰC</div></div>
     <div class="stat-box"><div class="stat-val">3/5</div><div class="stat-lbl">SỐ CHỮ KÝ TỐI THIỂU</div></div>
-    <div class="stat-box"><div class="stat-val">75%</div><div class="stat-lbl">TRỌNG SỐ MFP</div></div>
+    <div class="stat-box"><div class="stat-val">7 ngày</div><div class="stat-lbl">TIMELOCK CẤU TRÚC</div></div>
   </div>
   <h4 class="mini-title">Mô Hình Quản Trị Cốt Lõi</h4>
   <ul>
-    <li><strong>OpenZeppelin Governor:</strong> Mô hình hợp đồng Governor được điều chỉnh cho bỏ phiếu có trọng số MFP-NFT</li>
+    <li><strong>Hợp đồng Hội đồng:</strong> DAOGovernor, hợp đồng hội đồng 5 thành viên. Phiếu đếm theo đầu người — không có bất kỳ hình thức bỏ phiếu theo trọng số token hay trọng số staking nào.</li>
     <li><strong>Standing Committee:</strong> 5 ví đa chữ ký được chỉ định</li>
-    <li><strong>Phê Duyệt Kép:</strong> CẢ Committee (3/5) VÀ ≥75% tổng trọng số MFP-NFT đã stake phải phê duyệt tất cả đề xuất</li>
+    <li><strong>Phê duyệt:</strong> 3 trên 5 thành viên Hội đồng. Người đề xuất tự tính là phiếu đầu tiên, nên chỉ cần thêm hai chữ ký nữa là đủ.</li>
     <li><strong>Tất Cả Thay Đổi Tham Số:</strong> Chỉ thông qua quản trị — không có quyền truy cập admin trực tiếp, không có chủ sở hữu tập trung</li>
     <li><strong>Thực Thi Timelock:</strong> Tất cả đề xuất phải chịu độ trễ có thể cấu hình trước khi thực thi (xem G.4)</li>
   </ul>
@@ -2086,16 +2153,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Standing Committee là cơ quan 5 thành viên gồm các ví được chỉ định chịu tr책nhiệm giám sát hoạt động và quyền chữ ký:</p>
   <ul>
     <li>Cần phê duyệt: <strong>3 trong 5 người ký</strong> (định mức 60%)</li>
-    <li>Cộng <strong>≥75% tổng trọng số MFP-NFT đã stake</strong> bỏ phiếu ủng hộ</li>
+    
     <li>Thành viên được thay thế thông qua bỏ phiếu Structural (timelock 7 ngày)</li>
     <li>Không thành viên nào có thể ghi đè hoặc tạm dừng bỏ phiếu</li>
   </ul>
-  <h4 class="mini-title">Tính Toán Trọng Số Bỏ Phiếu</h4>
-  <p>Sự chấp thuận của mỗi đề xuất phụ thuộc vào:</p>
+  <h4 class="mini-title">Một phiếu duyệt được tính thế nào</h4>
+  <p>Phiếu đếm theo đầu người. Không có bỏ phiếu theo trọng số token hay trọng số staking ở bất kỳ đâu trong hợp đồng:</p>
   <ol>
-    <li><strong>Trọng Số MFP-NFT:</strong> Tỷ lệ phần trăm MIC đã stake bởi những người nắm giữ MFP-NFT hoạt động trong bộ quản trị</li>
-    <li><strong>Xác Nhận Committee:</strong> 3/5 Standing Committee phải ký</li>
-    <li><strong>Ngưỡng:</strong> Đề xuất được thông qua nếu CẢ HAI điều kiện được đáp ứng</li>
+    <li><strong>Một thành viên, một phiếu:</strong> cả năm thành viên Hội đồng có giá trị như nhau</li>
+    <li><strong>Ngưỡng:</strong> 3 trên 5 phiếu duyệt là đề xuất được thông qua. Phiếu của chính người đề xuất tính là phiếu đầu tiên trong ba.</li>
+    <li><strong>Timelock:</strong> hết thời gian chờ theo hạng, bất kỳ ai cũng có thể thực thi on-chain</li>
   </ol>
 
   <h3 class="sub-title">G.3 Yêu Cầu Tham Gia</h3>
@@ -2133,17 +2200,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Quy Trình Timelock</h4>
   <ol>
     <li><strong>Đề Xuất Được Gửi:</strong> Thành viên Council tạo đề xuất (cấp Senator hoặc Council)</li>
-    <li><strong>Thời Gian Bỏ Phiếu:</strong> Cộng đồng bỏ phiếu trong 24-48 giờ</li>
-    <li><strong>Phê Duyệt:</strong> Nếu 75% trọng số MFP-NFT + 3/5 Committee phê duyệt, đề xuất vào hàng đợi timelock</li>
+    <li><strong>Thu Phiếu:</strong> Các thành viên Hội đồng khác duyệt trên chuỗi</li>
+    <li><strong>Phê Duyệt:</strong> Đủ 3 trên 5 phiếu là đề xuất vào hàng đợi timelock</li>
     <li><strong>Khung Trì Hoãn:</strong> Đề xuất bị khóa trong 24h (Tham Số/Ngân Sách) hoặc 7d (Cấu Trúc)</li>
     <li><strong>Thực Thi:</strong> Sau thời gian trì hoãn, bất kỳ ai cũng có thể kích hoạt thực thi on-chain</li>
   </ol>
 
   <h3 class="sub-title">G.5 Quyền Khẩn Cấp</h3>
-<p>Hành động khẩn cấp bỏ qua timelock tiêu chuẩn để giải quyết các mối đe dọa bảo mật quan trọng. Đây là những quyết định hiếm hoi, có rủi ro cao đòi hỏi sự đồng thuận của Standing Committee cộng với sự hỗ trợ áp đảo từ cộng đồng:</p>
+<p>Hành động khẩn cấp bỏ qua timelock tiêu chuẩn để giải quyết các mối đe dọa bảo mật quan trọng. Đây là những quyết định hiếm hoi, có rủi ro cao đòi hỏi sự đồng thuận của Standing Committee:</p>
   <h4 class="mini-title">Quyền Tạm Dừng Khẩn Cấp</h4>
   <ul>
-    <li><strong>Kích Hoạt:</strong> Standing Committee 3/5 CỘNG ≥75% tổng trọng số MFP-NFT đã stake (bỏ phiếu cộng đồng)</li>
+    <li><strong>Kích hoạt:</strong> 3 trên 5 thành viên Standing Committee</li>
     <li><strong>Không có timelock:</strong> Có thể thực thi ngay lập tức sau khi được phê duyệt</li>
     <li><strong>Phạm Vi:</strong> Tạm dừng tất cả hợp đồng thông minh đồng thời</li>
   </ul>
@@ -2167,7 +2234,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Hợp Đồng</th><th>Phân Bổ MIC</th><th>Mục Đích & Trạng Thái Khóa</th></tr></thead>
       <tbody>
         <tr><td><strong>Sale Contracts</strong></td><td class="mono">945,000,000 MIC</td><td>Phân bổ cho Seed, Pre-Sale và những người mua khác — phân phối trực tiếp vào ví người mua khi mua, khóa qua LockManager</td></tr>
-        <tr><td><strong>LiquidityPool</strong></td><td class="mono">105,000,000 MIC</td><td>Cung cấp thanh khoản ban đầu — khóa vĩnh viễn, không thể rút</td></tr>
+        <tr><td><strong>Hạng mục thanh khoản</strong></td><td class="mono">105,000,000 MIC</td><td>31.500.000 đã đốt ngày 5/8/2026; 73.500.000 nằm trong Listing Reserve Vault (DAO quản trị, cooldown rút 7 ngày)</td></tr>
         <tr><td><strong>DAOGovernor (Treasury)</strong></td><td class="mono">0 MIC</td><td>DAO Treasury KHÔNG nắm giữ MIC trực tiếp; protocol allocation phân bổ vào DAO pool</td></tr>
         <tr><td><strong>LockManager</strong></td><td class="mono">0 MIC</td><td>Theo dõi lịch trình vesting on-chain — KHÔNG nắm giữ token MIC</td></tr>
       </tbody>
@@ -2206,12 +2273,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>World Development</strong></td><td class="mono">5% phát thải MIC</td><td>Bỏ phiếu Ngân sách (24h)</td></tr>
         <tr><td><strong>App Add-Ons & Features</strong></td><td class="mono">2.5% phát thải MIC</td><td>Bỏ phiếu Ngân sách (24h)</td></tr>
         <tr><td><strong>Dự Trữ (Chiến Lược)</strong></td><td class="mono">7.5% phát thải MIC</td><td>Bỏ phiếu Structural (7d)</td></tr>
-        <tr><td><strong>Staking Sustainability Fund</strong></td><td class="mono">Hàng quý: 10–20% số nắm giữ DAO</td><td>Bỏ phiếu Ngân sách (24h)</td></tr>
+        <tr><td><strong>Listing Reserve</strong></td><td class="mono">Hàng quý: 10–20% số nắm giữ DAO</td><td>Bỏ phiếu Ngân sách (24h)</td></tr>
       </tbody>
     </table>
   </div>
-  <h4 class="mini-title">Phân Bổ Quỹ Duy Trì Staking Hàng Quý</h4>
-  <p>Để duy trì staking allocation sau khi giai đoạn phát thải chính cạn kiệt, DAO phân bổ 10–20% số MIC tích lũy của mình hàng quý cho Reserved Staking Fund. Quỹ này tự động mua MIC từ DEX và khóa trong hợp đồng để hỗ trợ phân phối sau phát thải.</p>
+  <h4 class="mini-title">Phân Bổ Staking Theo Quý (Tuỳ Nghi)</h4>
+  <p>Nếu DAO xét thấy cần thiết, DAO có thể phân bổ một phần MIC tích luỹ trong kho bạc vào staking allocation pool, thông qua biểu quyết kho bạc. Đây là quyết định tuỳ nghi tại thời điểm đó; không tồn tại chương trình tự động thường trực nào.</p>
   <div class="callout gold">
     <p><strong>Nguyên Tắc Quản Trị DAO:</strong> Tất cả hành động từ kho bạc, bất kể quy mô, đều yêu cầu bỏ phiếu cộng đồng rõ ràng. Không chi tiêu khẩn cấp, không quyền quyết định của người sáng lập. Điều này xây dựng niềm tin lâu dài với các nhà đầu tư và thành viên cộng đồng.</p>
   </div>
@@ -2233,7 +2300,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li><strong>OpenZeppelin Contracts v5.x:</strong> Các triển khai đã được kiểm toán, thử nghiệm thực chiến của các mô hình ERC-20, ERC-1155, AccessControl, Upgradeable Proxy và DAO Governor</li>
     <li><strong>Role-Based Access Control (RBAC):</strong> Tất cả các hoạt động đặc quyền được kiểm soát bởi các vai trò cụ thể, loại bỏ mô hình owner đơn điểm lỗi</li>
     <li><strong>Upgradeable Proxy Pattern:</strong> Các hợp đồng cốt lõi được triển khai qua UUPS (Universal Upgradeable Proxy Standard) để hỗ trợ các bản vá bảo mật mà không cần di chuyển dữ liệu</li>
-    <li><strong>Kiến Trúc Oracle:</strong> PancakeSwap V3 TWAP (Time-Weighted Average Price) làm nguồn chính, Chainlink Aggregator làm dự phòng cho các nguồn cấp giá quan trọng</li>
+    <li><strong>Kiến Trúc Oracle:</strong> giá bình quân gia quyền theo thời gian do chính pool giao thức tính on-chain; tham chiếu từ sàn ngoài chỉ được bổ sung sau khi niêm yết</li>
   </ul>
 
   <div class="callout gold">
@@ -2294,7 +2361,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Tất cả việc cấp/thu hồi vai trò và nâng cấp hợp đồng yêu cầu bỏ phiếu DAOGovernor thành công:</p>
   <ul>
     <li><strong>Standing Committee:</strong> 3/5 người ký nhóm cốt lõi phải phê duyệt hành động khẩn cấp (không có timelock)</li>
-    <li><strong>Định Mức DAO:</strong> ≥75% trọng số MFP-NFT đã stake phải bỏ phiếu phê duyệt (bỏ phiếu 7 ngày, timelock 2 ngày cho đề xuất tiêu chuẩn)</li>
+    <li><strong>Timelock theo hạng:</strong> thay đổi tham số 24 giờ, ngân sách 24 giờ, cấu trúc 7 ngày. Hành động khẩn cấp không có timelock. Thời gian tính từ lúc tạo đề xuất, không phải lúc đủ phiếu.</li>
   </ul>
 
   <div class="callout">
@@ -2310,7 +2377,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td class="hl"><strong>CB-1</strong></td><td><strong>Cumulative Cap</strong></td><td>totalEmitted > 5,950,000,000 MIC</td><td>Dừng tất cả phát thải; chuyển sang chế độ chỉ burn</td></tr>
         <tr><td class="hl"><strong>CB-2</strong></td><td><strong>Daily Cap</strong></td><td>dailyEmission > 2× E_base(t)</td><td>Giới hạn phát thải ở 2× tỷ lệ cơ bản; xếp hàng phần dư cho ngày tiếp theo</td></tr>
-        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>Price Floor</strong></td><td>Giá MIC < $0.001 USD</td><td>Giảm tỷ lệ phát thải, kích hoạt bảo vệ circuit breaker</td></tr>
+        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>Price Floor</strong></td><td>Giá MIC < 50% giá tham chiếu lúc mở pool USD</td><td>Giảm tỷ lệ phát thải, kích hoạt bảo vệ circuit breaker</td></tr>
         <tr><td class="hl"><strong>CB-4</strong></td><td><strong>Unstake Limit</strong></td><td>unstakeRequest > 10% pool/ngày</td><td>Xếp hàng yêu cầu dư cho khung 24 giờ tiếp theo để ngăn cascade</td></tr>
         <tr><td class="hl"><strong>CB-5</strong></td><td><strong>Emergency Pause</strong></td><td>Bỏ phiếu DAOGovernor (Standing Committee 3/5)</td><td>Tạm dừng tất cả hợp đồng (protocol allocation, staking, chuyển) không có timelock</td></tr>
       </tbody>
@@ -2330,42 +2397,32 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <p><strong>Emergency Pause:</strong> Nếu CB-5 được kích hoạt, hệ thống vào chế độ an toàn. Protocol allocation dừng, staking allocation tạm dừng và chuyển khoản bị đóng băng. DAOGovernor có thể bỏ phiếu để tiếp tục hoặc thực hiện bảo trì.</p>
   </div>
 
-  <h3 class="sub-title">H.5 Tích Hợp KYC/AML</h3>
-<p>MissionChain triển khai các kiểm soát Know-Your-Customer (KYC) và Anti-Money-Laundering (AML) toàn diện để tuân thủ các yêu cầu quy định và ngăn chặn hoạt động bất hợp pháp:</p>
+  <h3 class="sub-title">H.5 Xác Minh Danh Tính &amp; Chính Sách Lãnh Thổ</h3>
+<p>Mục này mô tả đúng phần xác minh mà Mission Chain thực sự đang vận hành. Những gì không được liệt kê ở đây thì nền tảng không thực thi.</p>
 
-  <h4 class="mini-title">KYC Ngoại Tuyến</h4>
-  <ul>
-    <li><strong>Nhà Cung Cấp:</strong> Sumsub (dịch vụ xác minh tuân thủ bên thứ ba)</li>
-    <li><strong>Phạm Vi:</strong> Xác minh danh tính, xác thực tài liệu, kiểm tra liveness</li>
-    <li><strong>SLA:</strong> Xác minh hoàn thành trong vòng 48 giờ</li>
+  <p class="appendix-flat-head">Xác minh đang áp dụng</p>
+  <ul class="appendix-flat-list">
+    <li>Phương thức: mã một lần qua email, sau đó mã một lần qua điện thoại (SMS)</li>
+    <li>Các mức: chưa xác minh → đã xác minh email → đã xác minh đầy đủ</li>
+    <li>Lưu trữ: nằm off-chain trong cơ sở dữ liệu của nền tảng. Không thu thập giấy tờ tùy thân, và không ghi trạng thái xác minh lên on-chain</li>
+    <li>Phạm vi áp dụng: sàn P2P yêu cầu <em>đã xác minh đầy đủ</em>. Việc mua SEED, Pre-Sale và MICE mở cho mọi ví và <strong>không</strong> bị chặn bởi xác minh</li>
   </ul>
 
-  <h4 class="mini-title">Đăng Ký KYC On-Chain</h4>
-  <ul>
-    <li><strong>Hợp Đồng:</strong> KYCAllowlist.sol (tương thích ERC-165)</li>
-    <li><strong>Chức Năng:</strong> Duy trì danh sách trắng các địa chỉ ví đã xác minh</li>
-    <li><strong>Cơ Chế Cập Nhật:</strong> OPERATOR_ROLE gọi setKYCStatus(address, bool) để thêm/xóa địa chỉ</li>
+  <p class="appendix-flat-head">Chính sách lãnh thổ — người tham gia tự khai</p>
+  <ul class="appendix-flat-list">
+    <li>Danh sách lãnh thổ hạn chế tại F.3.3 là chính sách tham gia, không phải cơ chế kiểm soát tự động</li>
+    <li>Mission Chain không thu thập dữ liệu lãnh thổ, không sàng lọc cấm vận hay OFAC, và không chặn theo vị trí địa lý. Việc tham gia không bị tự động từ chối dựa trên vị trí</li>
+    <li>Mỗi người tham gia có trách nhiệm đọc các điều khoản này và tự xác nhận việc tham gia là hợp pháp tại nơi mình cư trú, bao gồm cả nghĩa vụ thuế. Tham gia từ một lãnh thổ bị hạn chế là hành vi vi phạm điều khoản của chính người đó</li>
   </ul>
 
-  <h4 class="mini-title">Yêu Cầu KYC Theo Hoạt Động</h4>
-  <ul>
-    <li><strong>Tham Gia SEED Round:</strong> Yêu cầu KYC trước khi mua</li>
-    <li><strong>Tham Gia Pre-Sale:</strong> Yêu cầu KYC trước khi mua</li>
-    <li><strong>Mua Giấy Phép MICE:</strong> Yêu cầu KYC trước khi mint giấy phép</li>
-    <li><strong>Quản Trị DAO:</strong> Xác minh KYC được kiểm tra on-chain trước khi cấp quyền bỏ phiếu</li>
-    <li><strong>Khu Vực Hạn Chế:</strong> Tự động từ chối KYC cho Hoa Kỳ, Iran, Triều Tiên và các vùng lãnh thổ trong danh sách OFAC</li>
-  </ul>
-
-  <h4 class="mini-title">Tuân Thủ Quy Định</h4>
-  <p>Tất cả các thủ tục KYC/AML tuân theo:</p>
-  <ul>
-    <li><strong>FATF Travel Rule:</strong> Quyền sở hữu hưởng lợi và khả năng truy vết giao dịch cho các chuyển khoản lớn</li>
-    <li><strong>Luật AML/CFT Áp Dụng:</strong> Các quy định chống rửa tiền và chống tài trợ khủng bố theo từng khu vực pháp lý</li>
-    <li><strong>Bảo Mật Dữ Liệu:</strong> Dữ liệu nhận dạng cá nhân được mã hóa, lưu trữ an toàn và tuân thủ GDPR/PDPA</li>
+  <p class="appendix-flat-head">Xử lý dữ liệu</p>
+  <ul class="appendix-flat-list">
+    <li>Dữ liệu cá nhân thu thập chỉ gồm địa chỉ email và số điện thoại, dùng cho bảo mật tài khoản và thông báo</li>
+    <li>Dữ liệu on-chain như địa chỉ ví và giao dịch là công khai theo thiết kế và không thể xóa</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>Minh Bạch:</strong> Trạng thái xác minh KYC trên chuỗi và bất biến. Sau khi được xác minh, một địa chỉ ví có thể tham gia tất cả các hoạt động giao thức mà không cần xác minh lại (trừ thay đổi khu vực pháp lý).</p>
+    <p><strong>Chưa triển khai:</strong> xác minh danh tính bằng giấy tờ, sàng lọc cấm vận và thực thi hạn chế lãnh thổ hiện chưa có trên nền tảng. Nếu được triển khai, tài liệu này và điều khoản nền tảng sẽ được cập nhật trước khi có hiệu lực.</p>
   </div>
 
   <h3 class="sub-title">H.6 Ứng Phó Sự Cố</h3>
@@ -2415,7 +2472,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
   <h4 class="mini-title">Dữ Liệu Ngoài Chuỗi</h4>
   <ul>
-    <li><strong>Tài Liệu KYC:</strong> Được mã hóa khi lưu trữ, lưu trong kho lạnh được chứng nhận Sumsub, chỉ đội ngũ tuân thủ mới có quyền truy cập</li>
+    <li><strong>Thông Tin Liên Hệ:</strong> Địa chỉ email và số điện thoại, được mã hóa khi lưu trữ. Không thu thập giấy tờ tùy thân</li>
     <li><strong>Nhật Ký Hội Thoại AI (NIRA):</strong> Dựa trên phiên làm việc, không được lưu trữ vĩnh viễn; xóa sau khi người dùng đăng xuất</li>
     <li><strong>Nhật Ký Backend:</strong> Địa chỉ IP, khóa API và token xác thực được loại trừ khỏi mọi việc lưu giữ dữ liệu</li>
   </ul>
@@ -2490,7 +2547,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Tính Năng</th><th>Mục Đích</th><th>Giai Đoạn</th></tr></thead>
       <tbody>
         <tr><td>Phát Hiện Bất Thường Phát Hành Tự Động</td><td>Đánh dấu hoạt động đào bất thường, cụm Sybil và thao túng ROI</td><td>Giai Đoạn II</td></tr>
-        <tr><td>Phát Hiện Bất Thường KYC</td><td>Hỗ trợ quy trình xem xét Sumsub với chấm điểm rủi ro dựa trên mẫu</td><td>Giai Đoạn II</td></tr>
+        <tr><td>Phát Hiện Bất Thường KYC</td><td>Hỗ trợ quy trình xác minh danh tính trong tương lai với chấm điểm rủi ro dựa trên mẫu</td><td>Giai Đoạn II</td></tr>
         <tr><td>Chấm Điểm Chất Lượng Đề Xuất Quản Trị</td><td>Xếp hạng đề xuất về độ rõ ràng, phạm vi và sự liên kết với nguyên tắc giao thức</td><td>Giai Đoạn III</td></tr>
         <tr><td>Cá Nhân Hóa Mission Learn</td><td>Lộ trình học tập tùy chỉnh về Web3, đức tin và chủ đề sứ mệnh</td><td>Giai Đoạn III</td></tr>
       </tbody>
@@ -2975,24 +3032,24 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
     <div class="wp-table-wrap">
     <table class="wp-table">
-      <thead><tr><th>Giai Đoạn</th><th>Chủ Đề</th><th>Sản Phẩm Bàn Giao</th><th>Thời Gian</th></tr></thead>
+      <thead><tr><th>Giai Đoạn</th><th>Chủ Đề</th><th>Sản Phẩm Bàn Giao</th></tr></thead>
       <tbody>
-        <tr><td><strong>GIAI ĐOẠN 1 — NỀN TẢNG</strong></td><td>Ra Mắt Nền Tảng Cốt Lõi</td><td>Đăng ký cộng đồng với xác thực dựa trên ví. Trung tâm nội dung cơ bản (suy ngẫm, lời chứng). Thử thách đức tin hàng ngày với phần thưởng MIC. Hướng dẫn suy ngẫm hàng ngày SOPHIA. Hỗ trợ 5 ngôn ngữ (EN, ES, VI, KO, PT).</td><td>Q3 2026</td></tr>
-        <tr><td><strong>GIAI ĐOẠN 2 — PHÁT TRIỂN</strong></td><td>Mở Rộng Cộng Đồng</td><td>Cổng quản lý đối tác. Học viện đào tạo với NFT chứng chỉ. Tính năng âm nhạc và thờ phượng SOPHIA. Hệ thống kết nối cố vấn. Nhóm cộng đồng với công cụ quản trị. Chiến dịch thử thách khu vực.</td><td>Q4 2026 – Q1 2027</td></tr>
-        <tr><td><strong>GIAI ĐOẠN 3 — MỞ RỘNG QUY MÔ</strong></td><td>Phạm Vi Toàn Cầu</td><td>Ngôn ngữ Giai đoạn 2 (SW, PCM, TL). Mô-đun tài trợ Truyền Giáo Toàn Cầu. Dịch thuật đa ngôn ngữ thời gian thực qua SOPHIA. Cổng white-label cho Strategic Partners. Trải nghiệm gốc di động (PWA + app store).</td><td>Q2 – Q4 2027</td></tr>
-        <tr><td><strong>GIAI ĐOẠN 4 — TRƯỞNG THÀNH</strong></td><td>Sự Phối Hợp Hệ Sinh Thái</td><td>Kiểm duyệt nội dung được quản trị đầy đủ bởi DAO. Hệ thống thành tích đa nền tảng. Phân tích nâng cao và bảng điều khiển tác động cho đối tác. Chiến lược nội dung tự động SOPHIA. Tích hợp danh tính phi tập trung (DID).</td><td>2028+</td></tr>
+        <tr><td><strong>GIAI ĐOẠN 1 — NỀN TẢNG</strong></td><td>Ra Mắt Nền Tảng Cốt Lõi</td><td>Đăng ký cộng đồng với xác thực dựa trên ví. Trung tâm nội dung cơ bản (suy ngẫm, lời chứng). Thử thách đức tin hàng ngày với phần thưởng MIC. Hướng dẫn suy ngẫm hàng ngày SOPHIA. Hỗ trợ 5 ngôn ngữ (EN, ES, VI, KO, PT).</td></tr>
+        <tr><td><strong>GIAI ĐOẠN 2 — PHÁT TRIỂN</strong></td><td>Mở Rộng Cộng Đồng</td><td>Cổng quản lý đối tác. Học viện đào tạo với NFT chứng chỉ. Tính năng âm nhạc và thờ phượng SOPHIA. Hệ thống kết nối cố vấn. Nhóm cộng đồng với công cụ quản trị. Chiến dịch thử thách khu vực.</td></tr>
+        <tr><td><strong>GIAI ĐOẠN 3 — MỞ RỘNG QUY MÔ</strong></td><td>Phạm Vi Toàn Cầu</td><td>Ngôn ngữ Giai đoạn 2 (SW, PCM, TL). Mô-đun tài trợ Truyền Giáo Toàn Cầu. Dịch thuật đa ngôn ngữ thời gian thực qua SOPHIA. Cổng white-label cho Strategic Partners. Trải nghiệm gốc di động (PWA + app store).</td></tr>
+        <tr><td><strong>GIAI ĐOẠN 4 — TRƯỞNG THÀNH</strong></td><td>Sự Phối Hợp Hệ Sinh Thái</td><td>Kiểm duyệt nội dung được quản trị đầy đủ bởi DAO. Hệ thống thành tích đa nền tảng. Phân tích nâng cao và bảng điều khiển tác động cho đối tác. Chiến lược nội dung tự động SOPHIA. Tích hợp danh tính phi tập trung (DID).</td></tr>
       </tbody>
     </table>
   </div><h4 class="mini-title">Các Cột Mốc Chính</h4>
     <div class="wp-table-wrap">
       <table class="wp-table">
-        <thead><tr><th>CỘT MỐC</th><th>MỤC TIÊU</th><th>CHỈ SỐ THÀNH CÔNG</th></tr></thead>
+        <thead><tr><th>CỘT MỐC</th><th>CHỈ SỐ THÀNH CÔNG</th></tr></thead>
         <tbody>
-          <tr><td><strong>Platform Beta</strong></td><td class="mono">Q3 2026</td><td>1.000 người dùng hoạt động, 10 nhà thờ đối tác</td></tr>
-          <tr><td><strong>Ra Mắt Công Khai</strong></td><td class="mono">Q4 2026</td><td>10.000 người dùng hoạt động, 50 đối tác, 5 ngôn ngữ hoạt động</td></tr>
-          <tr><td><strong>Ngưỡng Phát Triển</strong></td><td class="mono">Q2 2027</td><td>50.000 người dùng hoạt động, 200 đối tác, Học viện đào tạo hoạt động</td></tr>
-          <tr><td><strong>Quy Mô Toàn Cầu</strong></td><td class="mono">Q4 2027</td><td>200.000 người dùng hoạt động, 8 ngôn ngữ, Truyền Giáo Toàn Cầu hoạt động</td></tr>
-          <tr><td><strong>Trưởng Thành</strong></td><td class="mono">2028</td><td>500.000+ người dùng hoạt động, quản trị DAO đầy đủ, tích hợp DID</td></tr>
+          <tr><td><strong>Platform Beta</strong></td><td>1.000 người dùng hoạt động, 10 nhà thờ đối tác</td></tr>
+          <tr><td><strong>Ra Mắt Công Khai</strong></td><td>10.000 người dùng hoạt động, 50 đối tác, 5 ngôn ngữ hoạt động</td></tr>
+          <tr><td><strong>Ngưỡng Phát Triển</strong></td><td>50.000 người dùng hoạt động, 200 đối tác, Học viện đào tạo hoạt động</td></tr>
+          <tr><td><strong>Quy Mô Toàn Cầu</strong></td><td>200.000 người dùng hoạt động, 8 ngôn ngữ, Truyền Giáo Toàn Cầu hoạt động</td></tr>
+          <tr><td><strong>Trưởng Thành</strong></td><td>500.000+ người dùng hoạt động, quản trị DAO đầy đủ, tích hợp DID</td></tr>
         </tbody>
       </table>
     </div>

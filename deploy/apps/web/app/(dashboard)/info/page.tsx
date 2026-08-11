@@ -39,7 +39,7 @@ const CONTRACTS = [
   { name: 'Community NFT', addr: '0x2828C97397be51FCCa5D8D99a0c5126F11A15149', desc: 'ERC-1155 Builder/Maker/Luminary tiers' },
   { name: 'SEED Sale (V7)', addr: '0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905', desc: 'SEED Round purchase, 221.1M MIC, active 2026-06-23 (V6 paused)' },
   { name: 'SeedBudget V5c', addr: '0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef', desc: 'Centralized SEED revenue vault (4 slots: Distribution 20% / Operational 20% / Management Bonus 10% / Reserved 50%), active 2026-06-23' },
-  { name: 'StewardCouncil', addr: '0x87723621D50fcc6f6db25d73031E44Bee4081B19', desc: 'Phase 1 governance ≥75% threshold' },
+  { name: 'StewardCouncil', addr: '0x87723621D50fcc6f6db25d73031E44Bee4081B19', desc: 'Phase 1 governance — Steward Council, one vote per member' },
   { name: 'DAOGovernor', addr: '0xDCD65DC97b0A147BeCf542E22a5C218C006231cC', desc: 'Phase 2 DAO (dormant until phase transition)' },
   { name: 'TreasuryManager', addr: '0x1ed5C848D1244a618Bd95Ff92d4f8C2356d3a42F', desc: 'Treasury hold + distribute (105M MIC)' },
   { name: 'FoundersVault', addr: '0x142167334Ad8da6790353dC54c42651F9F416b67', desc: '280M MIC + 1,250 MFP cap allocation' },
@@ -48,7 +48,7 @@ const CONTRACTS = [
   { name: 'AirdropDistributor', addr: '0x9Bdd75b6aDf5BA674F74C49601AF7D82d3672EF9', desc: '17.5M MIC airdrop pool' },
   { name: 'P2P Escrow MFP', addr: '0xcff25169c783B84eFBa746eF4A51271764f24b8B', desc: 'MFP-NFT secondary market (1.5% platform fee, 5% royalty)' },
   { name: 'OperationalSalaryPool V3', addr: '0xB2f318b07B7501f6A03b53066610032418F66b85', desc: 'Steward Council salary claims (V3 active 2026-06-23)' },
-  { name: 'ManagementBonusPool V3', addr: '0x2bfA50146C01d6c4BFA4A2550385988C2619f033', desc: 'DAO-approved bonus payments ≥75% vote (V3 active 2026-06-23)' },
+  { name: 'ManagementBonusPool V3', addr: '0x2bfA50146C01d6c4BFA4A2550385988C2619f033', desc: 'DAO-approved bonus payments — 3 of 5 Council votes (V3 active 2026-06-23)' },
   { name: 'ReservedExpensesPool V3', addr: '0xe04519547F051AE4388FcdE571EA2301dD9e3495', desc: 'Reserved expenses with voting + Phase B (V3 active 2026-06-23)' },
 ]
 

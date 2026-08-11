@@ -1,4 +1,141 @@
 import { FastifyPluginAsync } from 'fastify'
+import { getActiveAddresses, USDT_DECIMALS } from '@missionchain/sdk'
+
+/**
+ * Reading a purchase back off the chain.
+ *
+ * Both `record-onchain` endpoints used to accept a txHash, confirm only that the receipt
+ * had `status === 1`, take `tx.from` as the buyer, and then believe whatever amounts and
+ * package index the caller posted alongside it. Nothing checked that the transaction had
+ * touched the sale contract at all. Any cheap self-transfer produced a hash that would be
+ * accepted, and the caller chose what it was worth — for SEED that also minted MFP-NFT
+ * rows. `Purchase` feeds Group Volume, which feeds rank, which pays out in real USDT, so
+ * the forgery reached money rather than stopping at cosmetics.
+ *
+ * The endpoints now derive every field from the sale contract's own event, found in the
+ * receipt logs and required to have been emitted BY the sale address. Client-supplied
+ * amounts are ignored entirely. If the event is not there, the request is refused.
+ */
+
+const ZERO = '0x0000000000000000000000000000000000000000'
+
+/** `PreSale.PreSalePurchase(address indexed buyer, uint256 usdtAmount, uint256 micAmount, uint256 packageIndex)` */
+const PRESALE_PURCHASE_ABI = [
+  'event PreSalePurchase(address indexed buyer, uint256 usdtAmount, uint256 micAmount, uint256 packageIndex)',
+]
+/** `SeedSaleV9.SeedPurchase(address indexed buyer, uint256 indexed packageIndex, uint256 priceUsdt, uint256 micAmount, uint256 nftCount)` */
+const SEED_PURCHASE_ABI = [
+  'event SeedPurchase(address indexed buyer, uint256 indexed packageIndex, uint256 priceUsdt, uint256 micAmount, uint256 nftCount)',
+]
+
+type VerifiedPurchase = {
+  buyer: string
+  packageIndex: number
+  usdtAmount: number
+  micAmount: number
+  nftCount: number
+  blockNumber: number
+}
+
+type VerifyFailure = { status: number; error: string; message: string }
+
+/**
+ * Confirm a transaction really bought from `saleAddress`, and return what the contract
+ * said it was — not what the caller claims.
+ */
+async function verifyPurchaseTx(
+  txHash: string,
+  saleAddress: string,
+  eventAbi: string[],
+  eventName: 'PreSalePurchase' | 'SeedPurchase',
+  rpcUrls: string[],
+): Promise<{ ok: true; data: VerifiedPurchase } | { ok: false; fail: VerifyFailure }> {
+  const { ethers } = await import('ethers')
+
+  if (!saleAddress || saleAddress === ZERO) {
+    return { ok: false, fail: { status: 503, error: 'SALE_NOT_DEPLOYED', message: 'Sale contract address is not configured' } }
+  }
+
+  // A null result means "this node cannot see it" as often as it means "no such tx", so
+  // keep asking until one endpoint answers. A node that answered cleanly with null has
+  // told us something; a node that threw has not. Only if NONE answered is this a chain
+  // problem — otherwise the honest reply is that the transaction does not exist.
+  let receipt: Awaited<ReturnType<typeof provider.getTransactionReceipt>> | null = null
+  let provider!: InstanceType<typeof ethers.JsonRpcProvider>
+  let anyAnswered = false
+  let lastErr: unknown = null
+  for (const url of rpcUrls) {
+    try {
+      provider = new ethers.JsonRpcProvider(url)
+      receipt = await provider.getTransactionReceipt(txHash)
+      anyAnswered = true
+      if (receipt) break
+    } catch (e) { lastErr = e }
+  }
+  if (!receipt) {
+    if (!anyAnswered && lastErr) throw lastErr   // no endpoint reachable → CHAIN_ERROR
+    return { ok: false, fail: { status: 404, error: 'TX_NOT_FOUND', message: 'Transaction not found on-chain' } }
+  }
+  if (receipt.status !== 1) {
+    return { ok: false, fail: { status: 400, error: 'TX_FAILED', message: 'Transaction reverted on-chain' } }
+  }
+
+  const iface = new ethers.Interface(eventAbi)
+  const topic = iface.getEvent(eventName)!.topicHash
+  const sale = saleAddress.toLowerCase()
+
+  // The log must come from the sale contract itself. Matching on topic alone would let
+  // anyone emit a look-alike event from a contract they deployed.
+  for (const log of receipt.logs) {
+    if (log.address.toLowerCase() !== sale) continue
+    if (log.topics[0] !== topic) continue
+
+    const parsed = iface.parseLog({ topics: [...log.topics], data: log.data })
+    if (!parsed) continue
+    const a = parsed.args
+
+    const usdtRaw: bigint = (a.usdtAmount ?? a.priceUsdt) as bigint
+    return {
+      ok: true,
+      data: {
+        buyer: (a.buyer as string).toLowerCase(),
+        packageIndex: Number(a.packageIndex),
+        usdtAmount: Number(ethers.formatUnits(usdtRaw, USDT_DECIMALS)),
+        micAmount: Number(ethers.formatUnits(a.micAmount as bigint, 18)),
+        nftCount: a.nftCount != null ? Number(a.nftCount) : 0,
+        blockNumber: receipt.blockNumber,
+      },
+    }
+  }
+
+  return {
+    ok: false,
+    fail: {
+      status: 400,
+      error: 'NOT_A_PURCHASE',
+      message: 'This transaction did not buy from the sale contract',
+    },
+  }
+}
+
+/**
+ * Endpoints to try, in order, when reading a purchase receipt back.
+ *
+ * This needs a receipt for a transaction that may be hours or days old, and the endpoints
+ * disagree about whether that counts as an archive request. Both publicnode hosts answer
+ * "Archive requests require a personal token", and the Alchemy key hit its monthly
+ * capacity on 2026-08-09 — either one alone turns a genuine purchase into a 502. The
+ * Binance dataseed hosts serve old receipts without a key, so they are the reliable tail
+ * of the list rather than a last resort nobody reaches.
+ */
+const RPC_CANDIDATES = (): string[] => [
+  process.env.INDEXER_RPC_URL,
+  process.env.BSC_RPC_URL,
+  'https://bsc-dataseed.binance.org/',
+  'https://bsc-dataseed1.defibit.io/',
+  'https://bsc-dataseed1.ninicoin.io/',
+].filter((u): u is string => Boolean(u))
+
 
 // ─── Hardcoded Tokenomics Data ────────────────────────────────────────────
 
@@ -760,9 +897,7 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
     if (!body.txHash || body.txHash.length < 10) {
       return reply.status(400).send({ error: 'BAD_REQUEST', message: 'txHash is required' })
     }
-    if (body.packageIndex == null || body.packageIndex < 0 || body.packageIndex > 3) {
-      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'packageIndex must be 0-3' })
-    }
+    // packageIndex is read from the SeedPurchase event, not from the caller.
 
     // Idempotent — same txHash already recorded?
     const existing = await app.prisma.purchase.findFirst({ where: { txHash: body.txHash } })
@@ -776,33 +911,34 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
       })
     }
 
-    // Verify tx on-chain + extract buyer wallet from tx.from
-    let buyerWallet: string
-    let blockNumber: number | null = body.blockNumber ?? null
+    // Read the purchase off the chain. Nothing the caller posted about amounts, package
+    // or NFT count is used — only what SeedSaleV9 itself emitted.
+    const addresses = getActiveAddresses()
+    let verified
     try {
-      const { ethers } = await import('ethers')
-      const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/')
-      const tx = await provider.getTransaction(body.txHash)
-      if (!tx) {
-        return reply.status(404).send({ error: 'TX_NOT_FOUND', message: 'Transaction not found on-chain' })
+      const res = await verifyPurchaseTx(
+        body.txHash,
+        (addresses as any).SeedSaleV9 as string,
+        SEED_PURCHASE_ABI,
+        'SeedPurchase',
+        RPC_CANDIDATES(),
+      )
+      if (!res.ok) {
+        return reply.status(res.fail.status).send({ error: res.fail.error, message: res.fail.message })
       }
-      const receipt = await provider.getTransactionReceipt(body.txHash)
-      if (!receipt || receipt.status !== 1) {
-        return reply.status(400).send({ error: 'TX_FAILED', message: 'Transaction reverted on-chain' })
-      }
-      buyerWallet = tx.from.toLowerCase()
-      blockNumber = receipt.blockNumber
+      verified = res.data
     } catch (e: any) {
       app.log.warn({ err: e?.message, txHash: body.txHash }, 'seed/record-onchain on-chain verify failed')
       return reply.status(502).send({ error: 'CHAIN_ERROR', message: 'Failed to verify transaction on-chain' })
     }
 
-    // Match package to get canonical data
-    const matchedPkg = SEED_PACKAGES[body.packageIndex] || null
-    const packageName = matchedPkg?.name || body.packageName || `Package ${body.packageIndex}`
-    const mfpCount = matchedPkg?.mfp || body.mfpCount || 0
-    const micAmount = matchedPkg?.mic || body.micAmount || 0
-    const usdtAmount = matchedPkg?.price || body.usdtAmount || 0
+    const buyerWallet = verified.buyer
+    const blockNumber: number | null = verified.blockNumber
+    const matchedPkg = SEED_PACKAGES[verified.packageIndex] || null
+    const packageName = matchedPkg?.name || `Package ${verified.packageIndex}`
+    const mfpCount = verified.nftCount
+    const micAmount = verified.micAmount
+    const usdtAmount = verified.usdtAmount
 
     // Wrap in transaction for atomicity
     const result = await app.prisma.$transaction(async (tx) => {
@@ -974,12 +1110,8 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
     if (!body.txHash || body.txHash.length < 10) {
       return reply.status(400).send({ error: 'BAD_REQUEST', message: 'txHash required' })
     }
-    if (body.usdtAmount == null || body.usdtAmount <= 0) {
-      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'usdtAmount must be > 0' })
-    }
-    if (body.packageIndex == null || body.packageIndex < 0 || body.packageIndex > 3) {
-      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'packageIndex must be 0-3' })
-    }
+    // No validation of amounts or package here on purpose: those fields are no longer
+    // read. The txHash is the whole input — everything else comes from the contract event.
 
     // Idempotent — same txHash already recorded?
     const existing = await app.prisma.purchase.findFirst({ where: { txHash: body.txHash } })
@@ -989,28 +1121,30 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
       })
     }
 
-    // Verify tx on-chain + extract buyer wallet from tx.from
-    let buyerWallet: string
+    // Read the purchase off the chain. The amounts and package index the caller posted
+    // are ignored — only what PreSale itself emitted is recorded.
+    const addresses = getActiveAddresses()
+    let verified
     try {
-      const { ethers } = await import('ethers')
-      const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/')
-      const tx = await provider.getTransaction(body.txHash)
-      if (!tx) {
-        return reply.status(404).send({ error: 'TX_NOT_FOUND', message: 'Transaction not found on-chain' })
+      const res = await verifyPurchaseTx(
+        body.txHash,
+        addresses.PreSale as string,
+        PRESALE_PURCHASE_ABI,
+        'PreSalePurchase',
+        RPC_CANDIDATES(),
+      )
+      if (!res.ok) {
+        return reply.status(res.fail.status).send({ error: res.fail.error, message: res.fail.message })
       }
-      const receipt = await provider.getTransactionReceipt(body.txHash)
-      if (!receipt || receipt.status !== 1) {
-        return reply.status(400).send({ error: 'TX_FAILED', message: 'Transaction reverted on-chain' })
-      }
-      buyerWallet = tx.from.toLowerCase()
+      verified = res.data
     } catch (e: any) {
       app.log.warn({ err: e?.message, txHash: body.txHash }, 'record-onchain on-chain verify failed')
       return reply.status(502).send({ error: 'CHAIN_ERROR', message: 'Failed to verify transaction on-chain' })
     }
 
-    // Map package index to canonical name + NFT bonus tier
-    const matchedPkg = PRESALE_PACKAGES[body.packageIndex] || null
-    const packageName = matchedPkg?.name || (body.packageIndex === 0 ? 'Minimum' : `Package ${body.packageIndex}`)
+    const buyerWallet = verified.buyer
+    const matchedPkg = PRESALE_PACKAGES[verified.packageIndex] || null
+    const packageName = matchedPkg?.name || (verified.packageIndex === 0 ? 'Minimum' : `Package ${verified.packageIndex}`)
     const nftBonusType = matchedPkg?.nftBonus || null
 
     // Lookup buyer record (may not exist yet if wallet never registered)
@@ -1037,11 +1171,11 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
         wallet: buyerWallet,
         type: 'PRESALE',
         packageName,
-        usdtAmount: body.usdtAmount,
-        micAmount: body.micAmount,
+        usdtAmount: verified.usdtAmount,
+        micAmount: verified.micAmount,
         status: 'CONFIRMED',
         txHash: body.txHash,
-        blockNumber: body.blockNumber || null,
+        blockNumber: verified.blockNumber,
         referrerWallet,
         nftBonusType,
       },
@@ -1057,8 +1191,8 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
       data: {
         purchaseId: purchase.id,
         packageName,
-        usdtAmount: body.usdtAmount,
-        micAmount: body.micAmount,
+        usdtAmount: verified.usdtAmount,
+        micAmount: verified.micAmount,
         nftBonusType,
         txHash: body.txHash,
         status: 'CONFIRMED',

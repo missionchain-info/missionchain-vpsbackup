@@ -55,9 +55,11 @@ const NAV_ITEMS: NavGroup[] = [
         ],
       },
       { href: '/revenue-funds', icon: '💰', label: 'Revenue & Funds' },
+      { href: '/treasury', icon: '🏛️', label: 'Treasury Vaults', ownerOnly: true },
       { href: '/mining', icon: '⛏️', label: 'Mining & Staking' },
       { href: '/p2p', icon: '🔀', label: 'P2P Exchange', shortLabel: 'P2P' },
       { href: '/swap', icon: '🔄', label: 'SWAP' },
+      { href: '/nft-rewards', icon: '🎖️', label: 'NFT Rewards' },
     ],
   },
   {

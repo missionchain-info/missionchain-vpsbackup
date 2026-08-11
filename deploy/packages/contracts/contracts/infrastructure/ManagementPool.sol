@@ -62,6 +62,7 @@ contract ManagementPool is AccessControl, ReentrancyGuard {
     uint256 public totalReceived;
 
     // ─── Events ───
+    event TokenRescued(address indexed token, address indexed to, uint256 amount);
     event USDTReceived(uint256 amount);
     event Claimed(uint256 indexed roleIndex, address indexed roleHolder, uint256 amount);
     event BonusDistributed(address indexed recipient, uint256 amount);
@@ -175,5 +176,21 @@ contract ManagementPool is AccessControl, ReentrancyGuard {
     function getRoleBps(uint256 roleIndex) external view returns (uint256) {
         require(roleIndex < ROLE_COUNT, "ManagementPool: invalid role");
         return _roleBps[roleIndex];
+    }
+
+    /// @notice Recover ERC-20 tokens sent here by mistake.
+    /// @dev A contract that can hold a token must be able to send it. `TreasuryManager`
+    ///      v1 could not, and 105,000,000 MIC is stranded there permanently as a result.
+    ///      These contracts are not upgradeable, so this cannot be added later.
+    ///      USDT is excluded: role holders' claims are denominated in it, and no admin path
+    ///      may reach money that is owed to someone.
+    function rescueToken(address token, address to, uint256 amount)
+        external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant
+    {
+        require(to != address(0), "MAN: zero recipient");
+        require(amount > 0,       "MAN: zero amount");
+        require(token != address(usdt), "MAN: usdt has its own path");
+        IERC20(token).safeTransfer(to, amount);
+        emit TokenRescued(token, to, amount);
     }
 }

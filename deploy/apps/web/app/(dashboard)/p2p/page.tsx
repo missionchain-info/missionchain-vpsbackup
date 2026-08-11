@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import SubNav, { EXPLORE_TABS } from '@/components/layout/SubNav'
 import { BrowserProvider, Contract, parseUnits } from 'ethers'
-import { getActiveAddresses, getActiveChain } from '@missionchain/sdk'
+import { getActiveAddresses, getActiveChain, USDT_DECIMALS } from '@missionchain/sdk'
 import { api } from '@/lib/api'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
@@ -501,7 +501,7 @@ export default function P2pPage() {
               }
 
               setToast('Sign createOrder tx...')
-              const priceWei = parseUnits(order.price.toString(), 6)
+              const priceWei = parseUnits(order.price.toString(), USDT_DECIMALS)
               const expirySec = BigInt(order.expiryDays * 86400)
               const tokenId = BigInt(order.tokenId || '0')
               const tx = await p2p.createOrder(tokenId, priceWei, expirySec)
@@ -706,7 +706,7 @@ function OrderCard({ order, tradeAction, isNFT, assetConfig, setToast, loadOrder
                     }
                   }
 
-                  const priceWei = parseUnits(order.price.toString(), 6)
+                  const priceWei = parseUnits(order.price.toString(), USDT_DECIMALS)
                   setToast('Sign USDT approval...')
                   const approveTx = await usdt.approve(P2P_ESCROW_MFP, priceWei)
                   await approveTx.wait()
@@ -1358,7 +1358,7 @@ function OrderPreviewModal({ order, myAddrLower, platformFee, onClose, setToast,
         }
       }
 
-      const priceWei = parseUnits(order.priceUsdt.toString(), 6)
+      const priceWei = parseUnits(order.priceUsdt.toString(), USDT_DECIMALS)
       setToast('Sign USDT approval...')
       const approveTx = await usdt.approve(P2P_ESCROW_MFP, priceWei)
       await approveTx.wait()

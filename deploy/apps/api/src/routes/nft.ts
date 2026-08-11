@@ -78,20 +78,66 @@ const COMMUNITY_TIERS = [
 
 export const nftRoutes: FastifyPluginAsync = async (app) => {
   // ─── GET /nft/overview — NFT dashboard summary ────────────────
+  /**
+   * Cached for a minute. The MFP supply is read from chain — correct, but it is one
+   * round trip on every page load for a number that changes when someone mints.
+   */
+  let overviewCache: { at: number; body: any } | null = null
+  const OVERVIEW_TTL_MS = 60_000
+
   app.get('/overview', async () => {
-    const [totalMfp, builder, maker, luminary] = await Promise.all([
+    if (overviewCache && Date.now() - overviewCache.at < OVERVIEW_TTL_MS) return overviewCache.body
+
+    const [dbMfp, builder, maker, luminary] = await Promise.all([
       app.prisma.nFTItem.count({ where: { contractType: 'MFP', active: true } }),
       app.prisma.nFTItem.count({ where: { contractType: 'COMMUNITY', tier: 'Builder', active: true } }),
       app.prisma.nFTItem.count({ where: { contractType: 'COMMUNITY', tier: 'Maker', active: true } }),
       app.prisma.nFTItem.count({ where: { contractType: 'COMMUNITY', tier: 'Luminary', active: true } }),
     ])
 
-    return {
+    /**
+     * How many MFP passes exist, asked of the contract that mints them.
+     *
+     * This counted rows in `NFTItem` instead, which is an indexer's copy — and the copy
+     * had drifted: 23 minted on chain, 3 recorded here. The published figure was a
+     * seventh of the truth, on the page people open to see how many exist.
+     *
+     * The chain is the authority for a supply number. The table stays as the fallback
+     * for when the RPC cannot be reached, and it is labelled as such in the response so
+     * a stale figure is never mistaken for a fresh one.
+     */
+    let totalMfp = dbMfp
+    let mfpSource: 'chain' | 'index' = 'index'
+    try {
+      const { ethers } = await import('ethers')
+      const { getActiveAddresses, getActiveChain } = await import('@missionchain/sdk')
+      const A = getActiveAddresses() as Record<string, string>
+      const ZERO = '0x0000000000000000000000000000000000000000'
+      if (A.MFPNFT && A.MFPNFT !== ZERO) {
+        const p = new ethers.JsonRpcProvider(
+          process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || getActiveChain().rpcUrls[0],
+        )
+        const c = new ethers.Contract(
+          A.MFPNFT, ['function totalSupply() view returns (uint256)'], p,
+        )
+        totalMfp = Number(await c.totalSupply())
+        mfpSource = 'chain'
+      }
+    } catch {
+      // Leave the indexed count in place rather than reporting zero.
+    }
+
+    const body = {
       totalMfp,
+      mfpSource,
+      indexedMfp: dbMfp,
       maxMfp: MFP_MAX_SUPPLY,
       communityNfts: { builder, maker, luminary },
       userNfts: [],
     }
+
+    overviewCache = { at: Date.now(), body }
+    return body
   })
 
   // ─── GET /nft/holdings — User NFT holdings (auth) ─────────────
@@ -141,6 +187,8 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
             expiresAt: n.expiresAt?.toISOString() ?? null,
             active: n.active && !isExpired,
             isExpired,
+            // The holdings table links each NFT to its mint tx on BSCScan.
+            mintTxHash: n.mintTxHash,
             rewardPoolWeight: COMMUNITY_TIERS.find((t) => t.tier === n.tier)?.multiplier ?? 1,
             primaryBenefit: COMMUNITY_TIERS.find((t) => t.tier === n.tier)?.primaryBenefit ?? 'Reward-pool participation',
           }
@@ -576,4 +624,143 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
     ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 50)
     return activity
   })
+
+  // ─── GET /nft/rewards/:wallet — everything a holder can claim ────────────
+  //
+  // Four programmes pay Community and MFP holders, in two different currencies, from
+  // four different contracts. A holder should not have to know that: this returns one
+  // list of what they are owed and where to claim it.
+  //
+  //   Weekly  — USDT, Community 5% + MFP 0.5%, only NFTs minted inside that week
+  //   Monthly — USDT, Community 7.5% + MFP 0.5%, every NFT still valid at the cut-off
+  //   Mining  — MIC, Community 5% + MFP 1% of daily emission, accrues by the second
+  //   Lucky Draw — USDT, drawn weekly among that week's active Community NFTs
+  //
+  // Everything is read from chain. `claimable` on the USDT pools is what the operator has
+  // credited for closed periods; the mining figure accrues continuously, so it is a live
+  // number rather than a stored one.
+  app.get<{ Params: { wallet: string } }>('/rewards/:wallet', async (req, reply) => {
+    const wallet = req.params.wallet
+    if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+      return reply.status(400).send({ error: 'BAD_WALLET', message: 'Not a wallet address' })
+    }
+
+    const { ethers } = await import('ethers')
+    const { getActiveAddresses } = await import('@missionchain/sdk')
+    const A = getActiveAddresses() as Record<string, string>
+    const ZERO = '0x0000000000000000000000000000000000000000'
+
+    const rpc = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
+    const p = new ethers.JsonRpcProvider(rpc)
+
+    const live = (a?: string) => !!a && a !== ZERO
+
+    const usdtPoolAbi = [
+      'function claimable(address) view returns (uint256)',
+      'function communityBalance() view returns (uint256)',
+      'function mfpBalance() view returns (uint256)',
+      'function poolName() view returns (string)',
+    ]
+    const micPoolAbi = [
+      'function claimable(address) view returns (uint256)',
+      'function weightOf(address) view returns (uint256)',
+      'function totalWeight() view returns (uint256)',
+      'function rewardPerDay() view returns (uint256)',
+    ]
+    const drawAbi = ['function claimable(address) view returns (uint256)']
+
+    const fmt = (v: bigint) => ethers.formatUnits(v, 18)
+
+    async function readUsdtPool(address?: string) {
+      if (!live(address)) return null
+      try {
+        const c = new ethers.Contract(address!, usdtPoolAbi, p)
+        const [mine, community, mfp, name] = await Promise.all([
+          c.claimable(wallet), c.communityBalance(), c.mfpBalance(), c.poolName(),
+        ])
+        return {
+          address,
+          name,
+          // What the pool is holding for the period in progress — not yet anyone's.
+          poolCommunity: fmt(community),
+          poolMfp: fmt(mfp),
+          // What has been credited to this wallet for periods already closed.
+          claimable: fmt(mine),
+          currency: 'USDT',
+        }
+      } catch (e: any) {
+        app.log.warn({ err: e?.message, address }, 'nft rewards: usdt pool read failed')
+        return null
+      }
+    }
+
+    async function readMicPool(address?: string) {
+      if (!live(address)) return null
+      try {
+        const c = new ethers.Contract(address!, micPoolAbi, p)
+        const [mine, weight, total, perDay] = await Promise.all([
+          c.claimable(wallet), c.weightOf(wallet), c.totalWeight(), c.rewardPerDay(),
+        ])
+        const w = weight as bigint
+        const t = total as bigint
+        return {
+          address,
+          claimable: fmt(mine),
+          myWeight: w.toString(),
+          totalWeight: t.toString(),
+          // What this wallet earns per day at the current rate and the current field of
+          // holders. It moves as NFTs are minted and as they expire.
+          myRewardPerDay: t > 0n ? fmt(((perDay as bigint) * w) / t) : '0',
+          currency: 'MIC',
+        }
+      } catch (e: any) {
+        app.log.warn({ err: e?.message, address }, 'nft rewards: mic pool read failed')
+        return null
+      }
+    }
+
+    const [weekly, monthly, mining, mfpMining] = await Promise.all([
+      readUsdtPool(A.NFTRewardPoolWeekly),
+      readUsdtPool(A.NFTRewardPoolMonthly),
+      readMicPool(A.CommunityNFTRewardPool),
+      readMicPool(A.MFPRewardPool),
+    ])
+
+    let luckyDraw: { address: string; claimable: string; currency: string } | null = null
+    if (live(A.LuckyDraw)) {
+      try {
+        const c = new ethers.Contract(A.LuckyDraw, drawAbi, p)
+        luckyDraw = {
+          address: A.LuckyDraw,
+          claimable: fmt(await c.claimable(wallet)),
+          currency: 'USDT',
+        }
+      } catch { /* the draw contract predates this getter on some deploys */ }
+    }
+
+    const totalUsdt =
+      Number(weekly?.claimable ?? 0) +
+      Number(monthly?.claimable ?? 0) +
+      Number(luckyDraw?.claimable ?? 0)
+    const totalMic = Number(mining?.claimable ?? 0) + Number(mfpMining?.claimable ?? 0)
+
+    return {
+      data: {
+        wallet,
+        weekly,
+        monthly,
+        mining,
+        mfpMining,
+        luckyDraw,
+        totals: { usdt: totalUsdt.toFixed(6), mic: totalMic.toFixed(6) },
+        // Stated so the UI never has to guess why a figure is zero.
+        note:
+          totalUsdt === 0 && totalMic === 0
+            ? 'Nothing is claimable yet. Weekly and monthly rewards become claimable once the period closes and the pool is credited; mining rewards accrue every second you hold an active NFT.'
+            : null,
+      },
+    }
+  })
+
 }
+

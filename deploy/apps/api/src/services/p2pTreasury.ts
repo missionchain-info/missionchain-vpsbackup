@@ -6,7 +6,7 @@
  * log provider forced to publicnode since data-seed RPC doesn't support eth_getLogs).
  */
 import { Contract, JsonRpcProvider, formatUnits } from 'ethers'
-import { getActiveAddresses, isMainnet } from '@missionchain/sdk'
+import { getActiveAddresses, isMainnet, USDT_DECIMALS } from '@missionchain/sdk'
 
 export const P2P_EVENT_ABI = [
   'function VERSION() view returns (string)',
@@ -115,7 +115,7 @@ function parseOrder(o: any): P2POrderOnChain | null {
     id:         Number(o[0]),
     seller:     (o[1] as string).toLowerCase(),
     tokenId:    o[2] as bigint,
-    priceUsdt:  Number(formatUnits(o[3] as bigint, 6)),
+    priceUsdt:  Number(formatUnits(o[3] as bigint, USDT_DECIMALS)),
     createdAt:  Number(o[4]),
     expiresAt:  Number(o[5]),
     status:     STATUS[Number(o[6])] ?? 'PENDING',

@@ -6,7 +6,7 @@ import { useAccount, useBalance } from 'wagmi'
 import { BrowserProvider, Contract, formatUnits, formatEther } from 'ethers'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { CONTRACTS, ERC20_ABI, MIC_ABI, LOCK_MANAGER_ABI, MFPNFT_ABI, COMMUNITY_NFT_ABI } from '@/lib/contracts'
-import { getActiveChain } from '@missionchain/sdk'
+import { getActiveChain, USDT_DECIMALS } from '@missionchain/sdk'
 
 const ACTIVE_CHAIN = getActiveChain()
 
@@ -123,9 +123,16 @@ export default function DashboardPage() {
           usdt.balanceOf(address) as Promise<bigint>,
           lockMgr.lockedOf(address).catch(() => 0n) as Promise<bigint>,
           mfpNft.balanceOf(address).catch(() => 0n) as Promise<bigint>,
-          communityNft.balanceOf(address, 1).catch(() => 0n) as Promise<bigint>,  // Builder = tier 1
-          communityNft.balanceOf(address, 2).catch(() => 0n) as Promise<bigint>,  // Maker = tier 2
-          communityNft.balanceOf(address, 3).catch(() => 0n) as Promise<bigint>,  // Luminary = tier 3
+          // `balanceOf(address, tier)` is the ERC-1155 signature, and CommunityNFTv2 is
+          // ERC-721 — so these three calls could only ever fail. The `.catch` hid that,
+          // but the page still waited for three round trips to return an error before it
+          // could render, on every load.
+          //
+          // `activeCountOf` is what v2 exposes, and it counts only unexpired tokens —
+          // which is the number that belongs on a dashboard anyway.
+          communityNft.activeCountOf(address, 1).catch(() => 0n) as Promise<bigint>,
+          communityNft.activeCountOf(address, 2).catch(() => 0n) as Promise<bigint>,
+          communityNft.activeCountOf(address, 3).catch(() => 0n) as Promise<bigint>,
         ])
 
         const micTotal = Number(formatUnits(micBalance, 18))
@@ -138,7 +145,7 @@ export default function DashboardPage() {
           micAvailable: available.toString(),
           micVesting: locked.toString(),
           micStaked: '0', // TODO: read from MICStaking contract when deployed
-          usdtBalance: formatUnits(usdtBalance, 6),
+          usdtBalance: formatUnits(usdtBalance, USDT_DECIMALS),
           bnbBalance: bnbBal.toFixed(4),
           mfpNfts: Number(mfpCount),
           builders: Number(builderCount),

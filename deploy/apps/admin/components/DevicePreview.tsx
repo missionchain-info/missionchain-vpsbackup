@@ -66,11 +66,13 @@ export default function DevicePreview() {
         role="toolbar"
         aria-label="Display mode"
         style={{
-          position: 'fixed', top: 8, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 2147483000, display: 'flex', alignItems: 'center', gap: 2,
-          padding: 4, borderRadius: 999,
-          background: 'rgba(18,18,28,.92)', border: '1px solid rgba(255,255,255,.12)',
-          backdropFilter: 'blur(8px)', boxShadow: '0 6px 24px rgba(0,0,0,.35)',
+          position: 'fixed', top: 6, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 2147483000, display: 'flex', alignItems: 'center', gap: 1,
+          padding: 2, borderRadius: 999,
+          // Lighter than before: less opaque, thinner hairline, softer shadow, so the
+          // bar reads as a subtle overlay rather than a heavy black pill.
+          background: 'rgba(18,18,28,.72)', border: '1px solid rgba(255,255,255,.08)',
+          backdropFilter: 'blur(10px)', boxShadow: '0 2px 10px rgba(0,0,0,.22)',
           fontFamily: 'system-ui, sans-serif',
         }}
       >
@@ -84,21 +86,24 @@ export default function DevicePreview() {
               aria-pressed={on}
               title={m.label}
               style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 999, cursor: 'pointer',
-                fontSize: 12.5, fontWeight: 600, lineHeight: 1,
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '3px 9px', borderRadius: 999, cursor: 'pointer',
+                // Smaller and lighter: 10.5px at weight 500, with a touch of tracking so
+                // the thinner text still reads cleanly.
+                fontSize: 10.5, fontWeight: 500, lineHeight: 1, letterSpacing: '.01em',
                 border: 'none',
-                background: on ? 'rgba(255,255,255,.16)' : 'transparent',
-                color: on ? '#fff' : 'rgba(255,255,255,.6)',
+                background: on ? 'rgba(255,255,255,.13)' : 'transparent',
+                color: on ? 'rgba(255,255,255,.94)' : 'rgba(255,255,255,.5)',
+                transition: 'background .15s ease, color .15s ease',
               }}
             >
-              <span style={{ fontSize: 14 }}>{m.icon}</span>
+              <span style={{ fontSize: 11, opacity: on ? 1 : 0.75 }}>{m.icon}</span>
               <span>{m.label}</span>
             </button>
           )
         })}
         {mode !== 'laptop' && (
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,.45)', padding: '0 8px 0 4px' }}>
+          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,.38)', padding: '0 7px 0 3px' }}>
             {active.w}px
           </span>
         )}

@@ -47,10 +47,11 @@ export default function MiningStakingPage() {
           <div className="g2" style={{ marginBottom: 16 }}>
             <div className="card" style={{ padding: 20 }}>
               <div className="card-title">Emission Split</div>
-              <div className="info-row"><span className="info-key">Miners (MICE)</span><span className="info-val">60%</span></div>
+              <div className="info-row"><span className="info-key">Miners (MICE)</span><span className="info-val">59%</span></div>
               <div className="info-row"><span className="info-key">Staking</span><span className="info-val">25%</span></div>
               <div className="info-row"><span className="info-key">DAO Treasury</span><span className="info-val">10%</span></div>
               <div className="info-row"><span className="info-key">Community NFT Reward</span><span className="info-val">5%</span></div>
+              <div className="info-row"><span className="info-key">MFP-NFT Reward</span><span className="info-val">1%</span></div>
             </div>
             <div className="card" style={{ padding: 20 }}>
               <div className="card-title">Circuit Breakers</div>

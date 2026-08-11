@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify'
 import { formatUnits } from 'ethers'
+import { MIC_DISPLAY_PRICE_USD } from '@missionchain/sdk'
 
 // ─── Helper: load SystemConfig values (Admin-configurable) ──────────────
 async function getConfig(prisma: any, key: string, fallback: string): Promise<string> {
@@ -17,7 +18,25 @@ const DEPLOYER_WALLET = '0xD32e666381b56f979D60C57831838f05F33AD6c2'
 
 export const dashboardRoutes: FastifyPluginAsync = async (app) => {
   // ─── GET /dashboard/overview — Global stats (PUBLIC — no auth) ──
+  /**
+   * Platform-wide figures, cached for a minute.
+   *
+   * This makes fourteen on-chain reads, and one throttled RPC response stalls the whole
+   * `Promise.all` — measured at 90 to 115 seconds against a 120-second gateway timeout,
+   * which is why the dashboard sat on a spinner and every tile read "-".
+   *
+   * Nothing here is per-user or fast-moving: total supply, vault balances, emission
+   * totals. A minute of staleness is invisible, and it turns a burst of fourteen calls
+   * per visitor into fourteen per minute for everyone.
+   */
+  let overviewCache: { at: number; body: unknown } | null = null
+  const OVERVIEW_TTL_MS = 60_000
+
   app.get('/overview', async (req, reply) => {
+    if (overviewCache && Date.now() - overviewCache.at < OVERVIEW_TTL_MS) {
+      return overviewCache.body
+    }
+
     const bc = app.blockchain
 
     // ── On-chain reads (parallel) ────────────────────────────────────
@@ -123,7 +142,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       getConfigNum(app.prisma, 'mining_pool', 5_950_000_000),
       getConfigNum(app.prisma, 'mfp_total', 2_500),
       getConfigNum(app.prisma, 'mice_max_supply', 100_000),
-      getConfig(app.prisma, 'mic_price', '0.0025'),
+      getConfig(app.prisma, 'mic_price', String(MIC_DISPLAY_PRICE_USD)),
       getConfigNum(app.prisma, 'emission_miners_pct', 60),
       getConfigNum(app.prisma, 'emission_staking_pct', 25),
       getConfigNum(app.prisma, 'emission_dao_pct', 10),
@@ -199,13 +218,29 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
     // Circulating = Pre-Issued + Emitted - Locked - Staked (simplified)
     const circulatingSupply = PRE_ISSUED + totalEmitted - totalLockedNum - totalStaked
 
-    // Burned MIC (from MICE purchases)
-    // For now read from DB; in future can read on-chain burn address balance
-    const burnedFromMice = await app.prisma.purchase.aggregate({
-      where: { type: 'MICE' },
-      _sum: { micAmount: true },
-    })
-    const totalBurned = Number(burnedFromMice._sum.micAmount ?? 0)
+    // ── Burned MIC — derived on-chain, not from the DB ────────────────
+    // Every MIC that ever existed was either pre-issued at deploy (a fixed
+    // 1,050,000,000 cap) or minted by EmissionController (totalMiningMinted).
+    // Anything missing from totalSupply was burned, wherever the burn happened:
+    //
+    //   burned = PRE_ISSUED_CAP + totalMiningMinted − totalSupply
+    //
+    // This is self-maintaining — the 31,500,000 MIC destroyed from
+    // LiquidityPoolV5 on 2026-08-05 (tx 0xb2f0d013…4924b) and every future MICE
+    // burn both land here with no code change. The old DB sum only ever counted
+    // MICE purchases and missed the LP5 burn entirely.
+    //
+    // PRE_ISSUED is admin-configurable, so the cap is pinned as a constant: it is
+    // an immutable property of the token, not a display setting.
+    const PRE_ISSUED_CAP = 1_050_000_000
+    const miningMinted = await bc.micToken
+      .totalMiningMinted()
+      .then((v: bigint) => parseFloat(formatUnits(v, 18)))
+      .catch(() => totalEmitted)
+    const totalBurned = Math.max(0, PRE_ISSUED_CAP + miningMinted - totalSupplyOnChain)
+
+    // Burned MIC never circulates again, so it comes off the pre-issued base.
+    const circulatingSupplyNet = circulatingSupply - totalBurned
 
     return {
       data: {
@@ -218,7 +253,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
         micPrice,
 
         // ★ ON-CHAIN computed values
-        circulatingSupply: Math.max(0, Math.round(circulatingSupply)).toString(),
+        circulatingSupply: Math.max(0, Math.round(circulatingSupplyNet)).toString(),
         totalEmitted: Math.round(totalEmitted).toString(),
         totalStaked: totalStaked.toFixed(0),
         totalBurned: totalBurned.toFixed(0),
@@ -487,7 +522,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
     const makers = activeCommunity.filter(n => n.tier === 'Maker').length
     const luminaries = activeCommunity.filter(n => n.tier === 'Luminary').length
 
-    return {
+    const body = {
       data: {
         // ★ ON-CHAIN values (from LockManager + MICToken.balanceOf)
         micTotal: tokenBalance.balance,          // What MetaMask shows
@@ -510,5 +545,8 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
         },
       },
     }
+
+    overviewCache = { at: Date.now(), body }
+    return body
   })
 }

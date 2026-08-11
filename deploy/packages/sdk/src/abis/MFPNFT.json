@@ -10,11 +10,6 @@
         "internalType": "address",
         "name": "admin",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "royaltyReceiver_",
-        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -39,70 +34,6 @@
       }
     ],
     "name": "AccessControlUnauthorizedAccount",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "numerator",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "denominator",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC2981InvalidDefaultRoyalty",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      }
-    ],
-    "name": "ERC2981InvalidDefaultRoyaltyReceiver",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "numerator",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "denominator",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC2981InvalidTokenRoyalty",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      }
-    ],
-    "name": "ERC2981InvalidTokenRoyaltyReceiver",
     "type": "error"
   },
   {
@@ -286,12 +217,6 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "BaseURIFrozen",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": false,
@@ -328,23 +253,17 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "startId",
         "type": "uint256"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "grantedBy",
-        "type": "address"
-      },
-      {
         "indexed": false,
-        "internalType": "uint8",
-        "name": "source",
-        "type": "uint8"
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "MFPGranted",
+    "name": "MFPBatchMinted",
     "type": "event"
   },
   {
@@ -361,46 +280,9 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "imageId",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "verseId",
-        "type": "uint8"
       }
     ],
     "name": "MFPMinted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "revokedBy",
-        "type": "address"
-      }
-    ],
-    "name": "MFPRevoked",
     "type": "event"
   },
   {
@@ -484,19 +366,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "newReceiver",
-        "type": "address"
-      }
-    ],
-    "name": "RoyaltyReceiverUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -557,90 +426,12 @@
   },
   {
     "inputs": [],
-    "name": "PAIR_POOL_SIZE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "ROYALTY_BPS",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "",
-        "type": "uint96"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SEED_CAP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SEED_GRANTER_ROLE",
+    "name": "MINTER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "STAKING_MULTIPLIER",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "TOTAL_IMAGES",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "TOTAL_VERSES",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -675,24 +466,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "autoGrantFromSeed",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "owner",
         "type": "address"
       }
@@ -710,19 +483,6 @@
   },
   {
     "inputs": [],
-    "name": "baseURIFrozen",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "expansionApproved",
     "outputs": [
       {
@@ -732,13 +492,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "freezeBaseURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -777,24 +530,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "grantMintAllowance",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -898,13 +633,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "quantity",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
       }
     ],
     "name": "mint",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -912,38 +653,18 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "to",
         "type": "address"
-      }
-    ],
-    "name": "mintAllowance",
-    "outputs": [
+      },
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "amount",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "mintedCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "mintBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -954,6 +675,19 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextTokenId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -973,92 +707,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "pairOf",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "imageId",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "verseId",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "pairUsed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "pairs",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "imageId",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "verseId",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "remainingAllowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1098,24 +746,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "revokeMintAllowance",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -1129,48 +759,6 @@
     "name": "revokeRole",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "salePrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "royaltyInfo",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "royaltyReceiver",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1225,19 +813,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "seedGranted",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -1264,19 +839,6 @@
       }
     ],
     "name": "setBaseURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newReceiver",
-        "type": "address"
-      }
-    ],
-    "name": "setRoyaltyReceiver",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1370,19 +932,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalGranted",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

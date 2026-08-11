@@ -28,7 +28,7 @@ export interface StakingPosition {
   effectiveWeight: bigint
 }
 
-export type NFTTier = 'MFP' | 'Platinum' | 'Gold' | 'Silver' | 'None'
+export type NFTTier = 'MFP' | 'Luminary' | 'Maker' | 'Builder' | 'None'
 export type LockPeriod = 30 | 90 | 180 | 360
 
 export interface VestingSchedule {
@@ -55,17 +55,21 @@ export interface EmissionData {
   poolRemaining: bigint
   daysSinceLaunch: number
   demandFactor: number
-  roiRegulator: number
+  /** Coverage regulator L(H). Replaced the ROI regulator on 2026-08-05. */
+  coverageFactor: number
+  /** Liquidity coverage H, in days. Target 110. */
+  coverageDays: number
+  /** Trend damper G — capped at 1.0, so it can only slow issuance. */
+  trendFactor: number
+  /** Adoption factor A(N) = min(1, sqrt(N / 10,000)). */
+  adoptionFactor: number
+  /** True while the 50%-of-P0 brake holds L(H) at its floor. */
+  brakeEngaged: boolean
 }
 
-// NFT Tier multipliers
-export const NFT_MULTIPLIERS: Record<NFTTier, number> = {
-  MFP: 10,
-  Platinum: 5,
-  Gold: 2.5,
-  Silver: 1,
-  None: 0.5,
-}
+// NFT tier multipliers were removed here in 2026-08. Nothing applies an NFT
+// multiplier on-chain: MICStaking weights by time-lock alone. Reward-pool weighting
+// is off-chain policy and lives with the reward engine, not in shared types.
 
 // Lock period multipliers
 export const LOCK_MULTIPLIERS: Record<LockPeriod, number> = {

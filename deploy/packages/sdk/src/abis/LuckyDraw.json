@@ -38,7 +38,22 @@
   },
   {
     "inputs": [],
+    "name": "CommitmentMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CommitmentOpen",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCommitment",
     "type": "error"
   },
   {
@@ -63,6 +78,16 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "RevealWindowClosed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RevealWindowOpen",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -72,6 +97,38 @@
     ],
     "name": "SafeERC20FailedOperation",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "commitment",
+        "type": "bytes32"
+      }
+    ],
+    "name": "DrawCommitmentCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "commitment",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "revealDeadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "DrawCommitted",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -121,6 +178,25 @@
       }
     ],
     "name": "PrizeAwarded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "winner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PrizeClaimed",
     "type": "event"
   },
   {
@@ -219,6 +295,19 @@
   },
   {
     "inputs": [],
+    "name": "CREDITOR_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -258,12 +347,84 @@
   },
   {
     "inputs": [],
+    "name": "REVEAL_WINDOW",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "WEEKLY_CAP",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cancelExpiredCommit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "claimable",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "commitmentHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "commitDraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "commitment",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -280,6 +441,30 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "participants",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "seed",
+        "type": "uint256"
+      }
+    ],
+    "name": "drawCommitment",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -385,6 +570,19 @@
     "name": "renounceRole",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "revealDeadline",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

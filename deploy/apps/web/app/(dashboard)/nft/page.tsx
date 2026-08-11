@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAccount, useReadContract } from 'wagmi'
 import SubNav, { EARN_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
+import { api } from '@/lib/api'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import MfpMintCard from '@/components/MfpMintCard'
 import { CONTRACTS, MFPNFT_ABI, COMMUNITY_NFT_ABI } from '@/lib/contracts'
@@ -24,15 +25,72 @@ interface MyNft {
   txid?: string
 }
 
-interface NftData {
-  totalNfts?: number
-  mfpCount?: number
-  communityCount?: number
-  builderCount?: number
-  makerCount?: number
-  luminaryCount?: number
-  myNfts?: MyNft[]
+/**
+ * GET /nft/overview — global, project-wide counts. It has never returned
+ * builderCount / makerCount / luminaryCount / myNfts; those reads silently produced
+ * `undefined`. Per-wallet data comes from /nft/holdings below.
+ */
+interface NftOverview {
+  totalMfp: number
+  maxMfp: number
+  communityNfts: {
+    builder: number
+    maker: number
+    luminary: number
+  }
+  userNfts: unknown[]
 }
+
+/**
+ * A Community NFT the Owner awarded outside the automatic KPI programmes.
+ *
+ * These are the only Community NFTs a member mints by hand. Referral milestones and
+ * Community Growth Award rank bonuses are minted automatically the moment the condition
+ * is met, and never appear here.
+ */
+interface CommunityGrant {
+  id: string
+  tier: number
+  tierName: string
+  quantity: number
+  note: string
+  status: 'PENDING' | 'MINTED'
+  txHash: string | null
+  grantedAt: string
+  mintedAt: string | null
+}
+
+interface CommunityGrantsRes {
+  data?: {
+    grants: CommunityGrant[]
+    canMint: boolean
+    mintDisabledReason: string | null
+  }
+}
+
+/** One Community NFT as returned by GET /nft/holdings (auth, per wallet). */
+interface HoldingCommunityItem {
+  tokenId: string
+  tier: string | null
+  mintedAt: string
+  expiresAt: string | null
+  active: boolean
+  isExpired: boolean
+  rewardPoolWeight: number
+  primaryBenefit: string
+  mintTxHash?: string
+}
+
+interface NftHoldings {
+  data: {
+    wallet: string
+    mfp: { count: number; items: Array<{ tokenId: string; mintedAt: string; active: boolean }> }
+    community: HoldingCommunityItem[]
+    totalCount: number
+  }
+}
+
+const DAY_MS = 86_400_000
 
 type NftCategory = 'Builder' | 'Maker' | 'Luminary'
 type NftTab = 'mfp' | 'community'
@@ -50,12 +108,126 @@ function shortenTx(tx: string) {
   return tx.slice(0, 8) + '...' + tx.slice(-6)
 }
 
+const fmtUsd = (v?: string) =>
+  v === undefined ? '-' : Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+const fmtMic = (v?: string) =>
+  v === undefined ? '-' : Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 })
+
+/**
+ * One button for every pool, because every pool claims the same way: `claim()` with no
+ * arguments, from the holder's own wallet. Disabled when there is nothing there, so a
+ * holder never pays gas to be told they are owed zero.
+ */
+function ClaimButton({ label, amount, address, busy, onClaim }: {
+  label: string
+  amount?: string
+  address?: string
+  busy: string
+  onClaim: (address: string, label: string) => void
+}) {
+  const value = Number(amount ?? 0)
+  const isBusy = busy === address
+  return (
+    <button
+      className="nft-claim-btn"
+      disabled={!address || value <= 0 || isBusy}
+      onClick={() => address && onClaim(address, label)}
+      style={{
+        marginTop: 10, width: '100%', padding: '8px 12px', borderRadius: 8,
+        border: 'none', cursor: value > 0 ? 'pointer' : 'not-allowed',
+        fontSize: '0.72rem', fontWeight: 700,
+        background: value > 0 ? 'var(--gold, #F0B54A)' : 'rgba(255,255,255,.07)',
+        color: value > 0 ? '#141018' : 'var(--gray2, #8b8b9a)',
+      }}
+    >
+      {isBusy ? 'Claiming…' : value > 0 ? label : 'Nothing to claim'}
+    </button>
+  )
+}
+
 export default function NftPage() {
   const { address } = useAccount()
   const [tab, setTab] = useState<NftTab>('mfp')
-  const { data, loading } = useApi<NftData>('/nft/overview')
+  // Project-wide totals; kept for the initial load gate. Per-wallet numbers come from /nft/holdings.
+  const { loading } = useApi<NftOverview>('/nft/overview')
+  // Per-wallet holdings need a JWT, so only ask once a wallet is connected.
+  const { data: holdingsRes } = useApi<NftHoldings>('/nft/holdings', { enabled: !!address })
   const [popupCategory, setPopupCategory] = useState<NftCategory | null>(null)
   const [poolStats, setPoolStats] = useState<any>(null)
+  const [rewards, setRewards] = useState<any>(null)
+  const [claiming, setClaiming] = useState<string>('')
+  const [claimMsg, setClaimMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  // ── Owner-granted Community NFTs awaiting the recipient's own mint (Path 2) ──
+  const {
+    data: grantsRes,
+    refetch: refetchGrants,
+  } = useApi<CommunityGrantsRes>('/nft/community-grants', { enabled: !!address })
+  const myGrants = grantsRes?.data?.grants ?? []
+  const pendingGrants = myGrants.filter((g) => g.status === 'PENDING')
+  const canMintGrant = grantsRes?.data?.canMint ?? false
+  const mintDisabledReason = grantsRes?.data?.mintDisabledReason ?? null
+  const [mintingId, setMintingId] = useState<string | null>(null)
+
+  /**
+   * The recipient holds no MINTER_ROLE, so this cannot mint from the browser. The API
+   * verifies the grant is theirs and unspent, then the platform's keeper wallet mints to
+   * their address — so no gas is charged to the member.
+   */
+  const mintGrant = async (g: CommunityGrant) => {
+    setMintingId(g.id)
+    setClaimMsg(null)
+    try {
+      const res = await api<{ data?: { txHash?: string; quantity?: number } }>(
+        `/nft/community-grants/${g.id}/mint`,
+        // An empty body with a JSON content-type is rejected by Fastify
+        // (FST_ERR_CTP_EMPTY_JSON_BODY), and api() always sets that header.
+        { method: 'POST', body: {} },
+      )
+      setClaimMsg({
+        ok: true,
+        text: `${res?.data?.quantity ?? g.quantity}× ${g.tierName} minted to your wallet. `
+            + 'Your validity period starts now.',
+      })
+      refetchGrants()
+    } catch (err) {
+      setClaimMsg({
+        ok: false,
+        text: err instanceof Error ? err.message : 'Mint failed — your award is unchanged.',
+      })
+    }
+    setMintingId(null)
+  }
+
+  // Every pool exposes the same no-argument `claim()`, and all of them are pull-based:
+  // the reward is already credited on chain, this only moves it to the wallet.
+  const claimFrom = async (poolAddress: string, label: string) => {
+    setClaiming(poolAddress)
+    setClaimMsg(null)
+    try {
+      const eth = (window as any).ethereum
+      if (!eth) throw new Error('No wallet found')
+      const chainId = await eth.request({ method: 'eth_chainId' })
+      if (chainId !== '0x38') throw new Error('Switch to BSC Mainnet')
+
+      const { BrowserProvider, Contract } = await import('ethers')
+      const signer = await new BrowserProvider(eth).getSigner()
+      const c = new Contract(poolAddress, ['function claim()'], signer)
+      const tx = await c.claim()
+      await tx.wait()
+
+      setClaimMsg({ ok: true, text: `${label} sent to your wallet — ${tx.hash.slice(0, 12)}…` })
+      const base = process.env.NEXT_PUBLIC_API_URL || 'https://api.missionchain.io'
+      if (address) {
+        const r = await fetch(`${base}/nft/rewards/${address}`)
+        if (r.ok) setRewards((await r.json()).data)
+      }
+    } catch (e: any) {
+      setClaimMsg({ ok: false, text: e?.shortMessage || e?.message || 'Claim failed' })
+    }
+    setClaiming('')
+  }
 
   // ── On-chain reads for MFP-NFT ─────────────────────────────────
   const { data: mfpUserBalance } = useReadContract({
@@ -95,15 +267,44 @@ export default function NftPage() {
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL || ''
     fetch(`${base}/nft/pool/stats`).then(r => r.ok ? r.json() : null).then(d => { if (d) setPoolStats(d) }).catch(() => {})
+    if (address) {
+      fetch(`${base}/nft/rewards/${address}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then(d => { if (d?.data) setRewards(d.data) })
+        .catch(() => {})
+    }
   }, [])
 
   if (loading) return <LoadingSpinner />
-  const d = data || {}
-  const myNfts = d.myNfts || []
-  // Prefer on-chain when available (DB indexer can lag); fall back to API counts.
-  const builderCount = Math.max(d.builderCount || 0, chainCommunity?.builder || 0)
-  const makerCount = Math.max(d.makerCount || 0, chainCommunity?.maker || 0)
-  const luminaryCount = Math.max(d.luminaryCount || 0, chainCommunity?.luminary || 0)
+
+  // This block is "My Community NFTs", so every count here must be per-wallet.
+  // /nft/overview only carries project-wide totals — it is deliberately not used for it.
+  const held = holdingsRes?.data.community ?? []
+  const now = Date.now()
+  const myNfts: MyNft[] = held.map((n) => {
+    const minted = Date.parse(n.mintedAt)
+    const expires = n.expiresAt ? Date.parse(n.expiresAt) : null
+    return {
+      id: n.tokenId,
+      type: 'COMMUNITY',
+      tier: n.tier ?? undefined,
+      multiplier: `×${n.rewardPoolWeight}`,
+      serial: n.tokenId,
+      mintedAt: n.mintedAt,
+      daysElapsed: Number.isNaN(minted) ? undefined : Math.floor((now - minted) / DAY_MS),
+      daysRemaining: expires === null || Number.isNaN(expires)
+        ? undefined
+        : Math.max(0, Math.ceil((expires - now) / DAY_MS)),
+      status: n.isExpired ? 'Expired' : 'Active',
+      txid: n.mintTxHash,
+    }
+  })
+
+  const heldByTier = (tier: string) => held.filter((n) => n.tier === tier && !n.isExpired).length
+  // Prefer on-chain when available (the DB indexer can lag); fall back to per-wallet holdings.
+  const builderCount = Math.max(heldByTier('Builder'), chainCommunity?.builder ?? 0)
+  const makerCount = Math.max(heldByTier('Maker'), chainCommunity?.maker ?? 0)
+  const luminaryCount = Math.max(heldByTier('Luminary'), chainCommunity?.luminary ?? 0)
   const communityCount = builderCount + makerCount + luminaryCount
 
   return (
@@ -151,11 +352,18 @@ export default function NftPage() {
                 <div className="nft-pool-mini-icon">{'\u{23F0}'}</div>
                 <div className="nft-pool-mini-body">
                   <div className="nft-pool-mini-name">Weekly Reward Pool</div>
-                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue</div>
+                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue · no holding restriction</div>
                   <div className="nft-pool-mini-stats">
-                    <div><span>This week:</span> <strong>$-</strong></div>
-                    <div><span>My share:</span> <strong className="net-stat-gold">$-</strong></div>
+                    <div><span>This week:</span> <strong>${rewards?.weekly ? fmtUsd(rewards.weekly.poolMfp) : '-'}</strong></div>
+                    <div><span>Claimable:</span> <strong className="net-stat-gold">${rewards?.weekly ? fmtUsd(rewards.weekly.claimable) : '-'}</strong></div>
                   </div>
+                  <ClaimButton
+                    label="Claim weekly"
+                    amount={rewards?.weekly?.claimable}
+                    address={rewards?.weekly?.address}
+                    busy={claiming}
+                    onClaim={claimFrom}
+                  />
                 </div>
               </div>
               {/* Monthly 0.5% */}
@@ -163,11 +371,18 @@ export default function NftPage() {
                 <div className="nft-pool-mini-icon">{'\u{1F4C5}'}</div>
                 <div className="nft-pool-mini-body">
                   <div className="nft-pool-mini-name">Monthly Reward Pool</div>
-                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue</div>
+                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue · no holding restriction</div>
                   <div className="nft-pool-mini-stats">
-                    <div><span>This month:</span> <strong>$-</strong></div>
-                    <div><span>My share:</span> <strong className="net-stat-gold">$-</strong></div>
+                    <div><span>This month:</span> <strong>${rewards?.monthly ? fmtUsd(rewards.monthly.poolMfp) : '-'}</strong></div>
+                    <div><span>Claimable:</span> <strong className="net-stat-gold">${rewards?.monthly ? fmtUsd(rewards.monthly.claimable) : '-'}</strong></div>
                   </div>
+                  <ClaimButton
+                    label="Claim monthly"
+                    amount={rewards?.monthly?.claimable}
+                    address={rewards?.monthly?.address}
+                    busy={claiming}
+                    onClaim={claimFrom}
+                  />
                 </div>
               </div>
             </div>
@@ -175,7 +390,7 @@ export default function NftPage() {
             <div className="nft-pool-detail-rows">
               <div className="nft-pool-detail-row">
                 <span className="nft-pool-detail-label">Multiplier</span>
-                <span className="nft-pool-detail-value">MFP-NFT × 25 (highest weight in protocol)</span>
+                <span className="nft-pool-detail-value">Highest share of the MFP reward pool</span>
               </div>
               <div className="nft-pool-detail-row">
                 <span className="nft-pool-detail-label">Eligibility</span>
@@ -261,6 +476,95 @@ export default function NftPage() {
             </div>
           </div>
 
+          {/*
+            Only rendered when something is actually awarded. An empty "you have no awards"
+            panel on every member's page would imply this is a programme they can qualify
+            for, when in fact it is the Owner's discretion alone.
+          */}
+          {pendingGrants.length > 0 && (
+            <div className="nft-section-card" style={{ marginBottom: 14 }}>
+              <div className="nft-section-header">
+                <span className="nft-section-title">Awarded to You — Ready to Mint</span>
+              </div>
+              <div className="nft-pool-note">
+                Granted by Mission Chain outside the automatic reward programmes. Mint it to your
+                wallet to activate it — the validity period starts at the moment you mint, not now.
+                No gas is charged to you.
+              </div>
+
+              {!canMintGrant && mintDisabledReason && (
+                <div style={{
+                  margin: '10px 0 0', padding: '10px 13px', borderRadius: 9, fontSize: '0.68rem',
+                  lineHeight: 1.6, color: '#D4C098',
+                  background: 'rgba(212,160,23,.08)', border: '1px solid rgba(212,160,23,.25)',
+                }}>
+                  {mintDisabledReason} Your award is safely recorded and stays available — you will
+                  be able to mint it as soon as this is switched on.
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gap: 10, marginTop: 12 }}>
+                {pendingGrants.map((g) => (
+                  <div key={g.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+                    padding: '12px 14px', borderRadius: 10,
+                    background: 'rgba(40,26,58,0.50)', border: '1px solid rgba(212,160,23,0.18)',
+                  }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5D56E' }}>
+                        {g.quantity}× {g.tierName}
+                      </div>
+                      {g.note && (
+                        <div style={{ fontSize: '0.65rem', color: '#D4C098', marginTop: 3 }}>{g.note}</div>
+                      )}
+                      <div style={{ fontSize: '0.6rem', color: '#B8A894', marginTop: 3 }}>
+                        Awarded {new Date(g.grantedAt).toISOString().slice(0, 10)}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => mintGrant(g)}
+                      disabled={!canMintGrant || mintingId === g.id}
+                      title={!canMintGrant && mintDisabledReason ? mintDisabledReason : undefined}
+                      style={{
+                        padding: '9px 18px', borderRadius: 8, fontSize: '0.7rem', fontWeight: 700,
+                        border: '1px solid rgba(212,160,23,0.45)',
+                        background: canMintGrant ? '#F5D56E' : 'rgba(212,160,23,0.12)',
+                        color: canMintGrant ? '#281A3A' : '#B8A894',
+                        cursor: canMintGrant && mintingId !== g.id ? 'pointer' : 'not-allowed',
+                        opacity: canMintGrant ? 1 : 0.55,
+                      }}
+                    >
+                      {mintingId === g.id ? 'Minting…' : canMintGrant ? 'Mint to my wallet' : 'Mint unavailable'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* A claim that succeeds silently reads as a claim that failed. */}
+          {claimMsg && (
+            <div
+              style={{
+                margin: '0 0 14px', padding: '11px 15px', borderRadius: 10, fontSize: '0.7rem',
+                lineHeight: 1.6,
+                color: claimMsg.ok ? '#66BB6A' : '#EF5350',
+                background: claimMsg.ok ? 'rgba(76,175,80,.12)' : 'rgba(244,67,54,.12)',
+                border: `1px solid ${claimMsg.ok ? 'rgba(76,175,80,.3)' : 'rgba(244,67,54,.3)'}`,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}
+            >
+              <span style={{ flex: 1 }}>{claimMsg.text}</span>
+              <button
+                onClick={() => setClaimMsg(null)}
+                style={{ background: 'none', border: 'none', color: 'var(--gray2)', cursor: 'pointer', fontSize: '1rem' }}
+                aria-label="Dismiss"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* Community NFT Reward Pool 5% Daily Emission */}
           <div className="nft-section-card">
             <div className="nft-section-header">
@@ -286,9 +590,16 @@ export default function NftPage() {
                   <div className="nft-pool-mini-name">My Pending</div>
                   <div className="nft-pool-mini-pct">Daily MIC accrued (claimable)</div>
                   <div className="nft-pool-mini-stats">
-                    <div><span>Pending:</span> <strong className="net-stat-gold">- MIC</strong></div>
-                    <div><span>Burned:</span> <strong>{poolStats?.burnedTotal || '-'}</strong></div>
+                    <div><span>Pending:</span> <strong className="net-stat-gold">{rewards?.mining ? fmtMic(rewards.mining.claimable) : '-'} MIC</strong></div>
+                    <div><span>Per day:</span> <strong>{rewards?.mining ? fmtMic(rewards.mining.myRewardPerDay) : '-'} MIC</strong></div>
                   </div>
+                  <ClaimButton
+                    label="Claim MIC"
+                    amount={rewards?.mining?.claimable}
+                    address={rewards?.mining?.address}
+                    busy={claiming}
+                    onClaim={claimFrom}
+                  />
                 </div>
               </div>
             </div>
@@ -306,22 +617,36 @@ export default function NftPage() {
                 <div className="nft-pool-mini-icon">{'\u{23F0}'}</div>
                 <div className="nft-pool-mini-body">
                   <div className="nft-pool-mini-name">Weekly Reward Pool</div>
-                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue</div>
+                  <div className="nft-pool-mini-pct">5% of Pre-Sale + MICE revenue · only NFTs minted this week</div>
                   <div className="nft-pool-mini-stats">
-                    <div><span>This week:</span> <strong>$-</strong></div>
-                    <div><span>My share:</span> <strong className="net-stat-gold">$-</strong></div>
+                    <div><span>This week:</span> <strong>${rewards?.weekly ? fmtUsd(rewards.weekly.poolCommunity) : '-'}</strong></div>
+                    <div><span>Claimable:</span> <strong className="net-stat-gold">${rewards?.weekly ? fmtUsd(rewards.weekly.claimable) : '-'}</strong></div>
                   </div>
+                  <ClaimButton
+                    label="Claim weekly"
+                    amount={rewards?.weekly?.claimable}
+                    address={rewards?.weekly?.address}
+                    busy={claiming}
+                    onClaim={claimFrom}
+                  />
                 </div>
               </div>
               <div className="nft-pool-mini">
                 <div className="nft-pool-mini-icon">{'\u{1F4C5}'}</div>
                 <div className="nft-pool-mini-body">
                   <div className="nft-pool-mini-name">Monthly Reward Pool</div>
-                  <div className="nft-pool-mini-pct">0.5% of Pre-Sale + MICE revenue</div>
+                  <div className="nft-pool-mini-pct">7.5% of Pre-Sale + MICE revenue · every NFT valid at 24:00 UTC on the last day</div>
                   <div className="nft-pool-mini-stats">
-                    <div><span>This month:</span> <strong>$-</strong></div>
-                    <div><span>My share:</span> <strong className="net-stat-gold">$-</strong></div>
+                    <div><span>This month:</span> <strong>${rewards?.monthly ? fmtUsd(rewards.monthly.poolCommunity) : '-'}</strong></div>
+                    <div><span>Claimable:</span> <strong className="net-stat-gold">${rewards?.monthly ? fmtUsd(rewards.monthly.claimable) : '-'}</strong></div>
                   </div>
+                  <ClaimButton
+                    label="Claim monthly"
+                    amount={rewards?.monthly?.claimable}
+                    address={rewards?.monthly?.address}
+                    busy={claiming}
+                    onClaim={claimFrom}
+                  />
                 </div>
               </div>
             </div>

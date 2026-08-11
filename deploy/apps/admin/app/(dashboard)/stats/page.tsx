@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { fetchStatsOverview, fetchDistributorStats, fetchDashboardOverview } from '@/lib/api';
+import { MIC_DISPLAY_PRICE_USD, MIC_DISPLAY_PRICE_SOURCE } from '@missionchain/sdk';
 
 const SZ = '0.62rem';
 
@@ -74,8 +75,8 @@ export default function StatsPage() {
   const hardCap = Number(oc.totalSupply || 7_000_000_000);
 
   // MIC price: before SWAP → use current sale round price
-  const micPrice = 0.0025; // SEED price while SWAP not live
-  const priceSource = 'SEED Round';
+  const micPrice = MIC_DISPLAY_PRICE_USD;
+  const priceSource = MIC_DISPLAY_PRICE_SOURCE;
 
   // Sales
   const seed = s.seed || {};
@@ -222,7 +223,7 @@ export default function StatsPage() {
             <SaleRow label="BUYERS" value={fmt(presale.buyers || 0)} />
             <SaleRow label="MIC SOLD" value={`${fmt(presale.micSold || 0)} / ${fmt(presale.allocation || 315000000)}`} />
             <SaleRow label="VOLUME ($)" value={fmtUsd(presale.usdtRaised || 0)} highlight="gold" />
-            <SaleRow label="MKT COST" value={fmtUsd(presale.mktCost || 0)} sub="35% Marketing" />
+            <SaleRow label="MKT COST" value={fmtUsd(presale.mktCost || 0)} sub="35% (Ref 10% + Mktg 25%)" />
             <SaleRow label="FUND RAISED" value={fmtUsd(presale.fundRaised || 0)} highlight="g" sub="57.5% Net Capital" last />
           </div>
         </div>
@@ -255,7 +256,7 @@ export default function StatsPage() {
               <SaleRow label="MICE SOLD" value={fmt(miceSold)} />
               <SaleRow label="MIC BURNED" value={fmt(mice.micBurned || 0)} highlight="c" sub="50% of payment" />
               <SaleRow label="VOLUME ($)" value={fmtUsd(mice.usdtRaised || 0)} highlight="gold" sub="USDT portion (50%)" />
-              <SaleRow label="MKT COST" value={fmtUsd(mice.mktCost || 0)} sub="35% Marketing" />
+              <SaleRow label="MKT COST" value={fmtUsd(mice.mktCost || 0)} sub="35% (Ref 10% + Mktg 25%)" />
               <SaleRow label="FUND RAISED" value={fmtUsd(mice.fundRaised || 0)} highlight="g" sub="57.5% Net Capital" last />
             </div>
 
@@ -343,8 +344,9 @@ export default function StatsPage() {
           <div className="card-title">Fund Allocation (PreSale + MICE)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <AllocBar label="Liquidity Pool & Buffer" pct={40} value={fmtUsd(rev.liquidityPool || 0)} color="var(--gold)" />
-            <AllocBar label="Marketing & Sales" pct={35} value={fmtUsd(rev.marketing || 0)} color="var(--purple)" />
+            <AllocBar label="Marketing & Sales" pct={25} value={fmtUsd(rev.marketing || 0)} color="var(--purple)" />
             <AllocBar label="DAO Treasury" pct={12.5} value={fmtUsd(rev.daoTreasury || 0)} color="var(--crimson)" />
+            <AllocBar label="Referral (F1 7% + F2 3%)" pct={10} value={fmtUsd(rev.referral || 0)} color="var(--cyan)" />
             <AllocBar label="Management" pct={7.5} value={fmtUsd(rev.management || 0)} color="var(--copper)" />
             <AllocBar label="Reserved Staking" pct={5} value={fmtUsd(rev.reservedStaking || 0)} color="var(--purple2)" />
           </div>

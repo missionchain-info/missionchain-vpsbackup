@@ -1,20 +1,58 @@
 'use client'
 
+import { useAccount } from 'wagmi'
 import SubNav, { EARN_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
-interface StakingData {
-  poolTotal?: string
-  myStaked?: string
-  currentApy?: string
-  estMonthly?: string
-  positions?: Array<{
-    amount: string
-    lockPeriod: string
-    rewards: string
-    unlock: string
-  }>
+/**
+ * Global staking stats — GET /staking/info.
+ * The page used to read these off /staking/tiers, which only ever returned the static
+ * rule book (model / lockPeriods / stakingRules / daoRequirement). Every number on the
+ * hero was therefore `undefined` and rendered as "--".
+ */
+interface StakingInfo {
+  data: {
+    totalStaked: string
+    totalWeightedStaked: string
+    activePositions: number
+    stakingEmissionPct: number
+    estimatedAPY: string
+  }
+}
+
+/** One row of GET /staking/positions (auth) — mirrors the StakingPosition table. */
+interface StakingPositionRow {
+  stakeId: number
+  amount: string
+  weightedAmount: string
+  tier: string
+  lockPeriod: string
+  stakeTime: string
+  unlockTime: string
+  active: boolean
+}
+
+interface StakingPositions {
+  data: StakingPositionRow[]
+  pagination: { page: number; limit: number; total: number }
+}
+
+const num = (v: string | number | undefined | null) => {
+  const n = Number(v ?? NaN)
+  return Number.isFinite(n) ? n : null
+}
+
+/** "Days360" → "360 Days"; anything unexpected is shown as-is. */
+function formatLockPeriod(raw: string): string {
+  const m = /^Days(\d+)$/.exec(raw)
+  return m ? `${m[1]} Days` : raw
+}
+
+function formatDate(iso: string): string {
+  const t = Date.parse(iso)
+  if (Number.isNaN(t)) return '-'
+  return new Date(t).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 const timeLocks = [
@@ -25,8 +63,26 @@ const timeLocks = [
 ]
 
 export default function StakingPage() {
-  const { data, loading } = useApi<StakingData>('/staking/tiers')
-  const d = data || {}
+  const { address } = useAccount()
+  const { data: infoRes, loading: loadingInfo } = useApi<StakingInfo>('/staking/info')
+  // Per-wallet positions need a JWT, so only ask once a wallet is connected.
+  const { data: posRes, loading: loadingPositions } = useApi<StakingPositions>('/staking/positions', { enabled: !!address })
+
+  const loading = loadingInfo || (!!address && loadingPositions)
+
+  const info = infoRes?.data
+  const positions = (posRes?.data || []).filter((p) => p.active)
+
+  const poolTotal = num(info?.totalStaked)
+  const myStaked = address ? positions.reduce((sum, p) => sum + (num(p.amount) ?? 0), 0) : null
+  // With nothing staked network-wide the APY is undefined, not zero — don't print "0%".
+  const currentApy = poolTotal && poolTotal > 0 ? num(info?.estimatedAPY) : null
+  const estMonthly = currentApy !== null && myStaked !== null && myStaked > 0
+    ? (myStaked * currentApy) / 100 / 12
+    : null
+
+  const fmt = (v: number | null, digits = 0) =>
+    v === null ? '--' : v.toLocaleString('en-US', { maximumFractionDigits: digits })
 
   return (
     <>
@@ -51,12 +107,12 @@ export default function StakingPage() {
             <div className="stk-hero-stats">
               <div className="stk-hero-stat">
                 <div className="stk-hero-stat-label">Pool Total</div>
-                <div className="stk-hero-stat-value">{d.poolTotal || '--'}</div>
+                <div className="stk-hero-stat-value">{fmt(poolTotal)}</div>
                 <div className="stk-hero-stat-unit">MIC</div>
               </div>
               <div className="stk-hero-stat stk-hero-stat-highlight">
                 <div className="stk-hero-stat-label">My Staked</div>
-                <div className="stk-hero-stat-value gold">{d.myStaked || '--'}</div>
+                <div className="stk-hero-stat-value gold">{fmt(myStaked)}</div>
                 <div className="stk-hero-stat-unit">MIC</div>
               </div>
             </div>
@@ -65,11 +121,11 @@ export default function StakingPage() {
               <div className="stk-hero-apy">
                 <span className="stk-apy-dot" />
                 <span className="stk-apy-label">Current APY</span>
-                <span className="stk-apy-value">{d.currentApy || '--'}%</span>
+                <span className="stk-apy-value">{currentApy === null ? '--' : `${fmt(currentApy, 2)}%`}</span>
               </div>
               <div className="stk-hero-est">
                 <span className="stk-est-label">Est. Monthly</span>
-                <span className="stk-est-value">{d.estMonthly || '--'} MIC</span>
+                <span className="stk-est-value">{fmt(estMonthly)} MIC</span>
               </div>
             </div>
           </div>
@@ -139,7 +195,7 @@ export default function StakingPage() {
             <span className="stk-section-title">Your Active Positions</span>
           </div>
 
-          {(d.positions || []).length === 0 ? (
+          {positions.length === 0 ? (
             <div className="stk-empty">
               <div className="stk-empty-icon">{'\uD83D\uDD12'}</div>
               <div className="stk-empty-text">No active positions</div>
@@ -160,12 +216,13 @@ export default function StakingPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {d.positions!.map((p, i) => (
-                        <tr key={i}>
-                          <td className="stk-td-amount">{p.amount}</td>
-                          <td>{p.lockPeriod}</td>
-                          <td className="stk-td-rewards">{p.rewards}</td>
-                          <td>{p.unlock}</td>
+                      {positions.map((p) => (
+                        <tr key={p.stakeId}>
+                          <td className="stk-td-amount">{fmt(num(p.amount))}</td>
+                          <td>{formatLockPeriod(p.lockPeriod)}</td>
+                          {/* Pending reward lives on-chain (NFTStaking.pendingReward); the API does not expose it yet. */}
+                          <td className="stk-td-rewards">-</td>
+                          <td>{formatDate(p.unlockTime)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -175,23 +232,23 @@ export default function StakingPage() {
 
               {/* Mobile cards */}
               <div className="stk-cards-mobile">
-                {d.positions!.map((p, i) => (
-                  <div className="stk-position-card" key={i}>
+                {positions.map((p) => (
+                  <div className="stk-position-card" key={p.stakeId}>
                     <div className="stk-pc-top">
-                      <span className="stk-pc-amount">{p.amount} MIC</span>
+                      <span className="stk-pc-amount">{fmt(num(p.amount))} MIC</span>
                     </div>
                     <div className="stk-pc-grid">
                       <div className="stk-pc-field">
                         <span className="stk-pc-flabel">Lock Period</span>
-                        <span className="stk-pc-fvalue">{p.lockPeriod}</span>
+                        <span className="stk-pc-fvalue">{formatLockPeriod(p.lockPeriod)}</span>
                       </div>
                       <div className="stk-pc-field">
                         <span className="stk-pc-flabel">Rewards</span>
-                        <span className="stk-pc-fvalue gold">{p.rewards}</span>
+                        <span className="stk-pc-fvalue gold">-</span>
                       </div>
                       <div className="stk-pc-field stk-pc-field-full">
                         <span className="stk-pc-flabel">Unlock Date</span>
-                        <span className="stk-pc-fvalue">{p.unlock}</span>
+                        <span className="stk-pc-fvalue">{formatDate(p.unlockTime)}</span>
                       </div>
                     </div>
                   </div>

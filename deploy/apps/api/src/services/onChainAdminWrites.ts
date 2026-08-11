@@ -28,7 +28,12 @@ const OPERATIONAL_POOL_ABI = [
 ] as const
 
 function getRpcUrl(): string {
-  return process.env.BSC_RPC_URL || BSC_MAINNET_RPC
+  // BSC_RPC_URL points at publicnode, which answers eth_getTransactionReceipt with
+  // "Archive requests require a personal token". That breaks confirmation, not sending:
+  // on 2026-08-09 a council removeMember went through on-chain and the receipt lookup
+  // then failed, so the API reported a failure, skipped the database write, and left the
+  // row on a member the contract had already dropped. Prefer the archive-capable key.
+  return process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || BSC_MAINNET_RPC
 }
 
 function getSigner(): Wallet {
@@ -58,11 +63,30 @@ async function sendAndWait(
   txPromise: Promise<{ hash: string; wait: (n?: number) => Promise<{ status: number | null; blockNumber: number; hash: string } | null> }>,
 ): Promise<TxResult> {
   const tx = await txPromise
-  const receipt = await tx.wait(1)
-  if (!receipt || receipt.status !== 1) {
-    throw new Error(`Tx ${tx.hash} reverted on-chain`)
+
+  // Once the transaction is broadcast the write has happened; only the confirmation is
+  // still in doubt. Treating a failed receipt lookup as a failed write is what made a
+  // completed removeMember look like an error and left the database out of step with the
+  // contract. Carry the hash so the caller can say what was actually sent.
+  try {
+    const receipt = await tx.wait(1)
+    if (!receipt) throw new Error('no receipt')
+    if (receipt.status !== 1) {
+      const err: any = new Error(`Tx ${tx.hash} reverted on-chain`)
+      err.txHash = tx.hash
+      err.reverted = true
+      throw err
+    }
+    return { txHash: receipt.hash, blockNumber: Number(receipt.blockNumber) }
+  } catch (e: any) {
+    if (e?.reverted) throw e
+    const err: any = new Error(
+      `Tx ${tx.hash} was broadcast but its receipt could not be read: ${e?.shortMessage || e?.message}`,
+    )
+    err.txHash = tx.hash
+    err.unconfirmed = true
+    throw err
   }
-  return { txHash: receipt.hash, blockNumber: Number(receipt.blockNumber) }
 }
 
 // ─── StewardCouncil ────────────────────────────────────────────────────
@@ -109,7 +133,7 @@ export async function submitEnrollOperational(args: {
   weeklyMaxoutUsdt: number
 }): Promise<TxResult> {
   const c = operationalPoolContract()
-  // weeklyMaxoutUsdt API value is plain USDT (e.g. 5000), contract expects 1e6 base units (USDT 6 decimals)
+  // weeklyMaxoutUsdt API value is plain USDT (e.g. 5000), contract expects 1e6 base units (USDT, 18 decimals (BSC-USD))
   const maxoutBaseUnits = BigInt(args.weeklyMaxoutUsdt) * 10n ** 6n
   return sendAndWait(c.enrollMember(args.wallet, args.sharePctBps, maxoutBaseUnits))
 }

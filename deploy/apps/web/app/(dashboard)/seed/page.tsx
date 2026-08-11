@@ -4,12 +4,15 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useAccount } from 'wagmi'
 import { useSearchParams } from 'next/navigation'
-import { BrowserProvider, Contract, parseUnits } from 'ethers'
+import { BrowserProvider, Contract, JsonRpcProvider, parseUnits } from 'ethers'
 import RoundGuard from '@/components/ui/RoundGuard'
 import SubNav, { SALES_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { CONTRACTS, ERC20_ABI, SEED_ABI } from '@/lib/contracts'
+import { CONTRACTS, ERC20_ABI, SEED_ABI, isDeployed } from '@/lib/contracts'
+import { getActiveChain, USDT_DECIMALS } from '@missionchain/sdk'
+
+const ACTIVE_CHAIN = getActiveChain()
 
 /* ── Types ── */
 interface SeedInfo {
@@ -207,6 +210,31 @@ function PromoCountdown({ endDate }: { endDate: string }) {
   )
 }
 
+
+/**
+ * Gas price to sign with.
+ *
+ * Both sale pages used to hardcode 5 gwei. That came from testnet, where the default was
+ * sometimes low enough for MetaMask to flag "Network fee too low" — the comment said as
+ * much, and said the cost was negligible. On mainnet it is not: BSC settles around
+ * 0.05 gwei, so 5 gwei is a hundred times the going rate and turned a $0.05 purchase fee
+ * into roughly $4.50.
+ *
+ * Ask the network instead, add 20% so a rising base fee does not strand the transaction,
+ * and keep a small floor so a momentarily near-zero reading still looks sane to a wallet.
+ */
+async function currentGasPrice(provider: { getFeeData: () => Promise<{ gasPrice: bigint | null }> }): Promise<bigint> {
+  const FLOOR = 100_000_000n // 0.1 gwei
+  try {
+    const { gasPrice } = await provider.getFeeData()
+    if (!gasPrice || gasPrice === 0n) return FLOOR
+    const withHeadroom = (gasPrice * 12n) / 10n
+    return withHeadroom > FLOOR ? withHeadroom : FLOOR
+  } catch {
+    return FLOOR
+  }
+}
+
 /* ── Page ── */
 export default function SeedPage() {
   const { address } = useAccount()
@@ -215,6 +243,89 @@ export default function SeedPage() {
   const { data: seedData, loading: seedLoading, refetch: refetchSeed } = useApi<SeedInfo>('/sales/seed/info')
   const { data: roundsData } = useApi<RoundConfigRes>('/rounds/config')
   const { data: purchaseData, refetch: refetchPurchases } = useApi<PurchaseRes>('/sales/purchases', { enabled: !!address })
+
+  // Whether the sale contract will actually accept a purchase right now.
+  // Read straight from chain, not from the API: the round can be halted on-chain at any
+  // moment (SeedSaleV7 was, on 2026-08-08) and the DB knows nothing about it. Without
+  // this the page looked completely normal and the buyer only found out after paying gas
+  // to approve USDT. `null` = still loading, so nothing is blocked on a slow RPC.
+  const [saleActive, setSaleActive] = useState<boolean | null>(null)
+
+  // Whether THIS wallet is cleared for the round. SEED sells MIC at $0.0025 against the
+  // Pre-Sale's $0.005, so the round is restricted to approved wallets — otherwise nobody
+  // would buy the Pre-Sale at all. `null` = unknown (no wallet, still loading, or an older
+  // contract without the getter); only an explicit `false` blocks the buttons.
+  const [walletCleared, setWalletCleared] = useState<boolean | null>(null)
+  const [gateEnforced, setGateEnforced] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    if (!isDeployed(CONTRACTS.seed)) { setSaleActive(false); return }
+    ;(async () => {
+      try {
+        const seed = new Contract(CONTRACTS.seed, SEED_ABI, new JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0]))
+        const on = (await seed.active()) as boolean
+        if (!cancelled) setSaleActive(on)
+
+        // Older SeedSale versions have neither getter — treat a failure as "unknown"
+        // rather than as "allowed", but never as a hard block.
+        try {
+          const required = (await seed.whitelistRequired()) as boolean
+          if (!cancelled) setGateEnforced(required)
+          if (!required) { if (!cancelled) setWalletCleared(true); return }
+        } catch { if (!cancelled) setGateEnforced(null) }
+
+        if (!address) { if (!cancelled) setWalletCleared(null); return }
+        try {
+          const ok = (await seed.canBuy(address)) as boolean
+          if (!cancelled) setWalletCleared(ok)
+        } catch {
+          try {
+            const listed = (await seed.whitelisted(address)) as boolean
+            if (!cancelled) setWalletCleared(listed)
+          } catch { if (!cancelled) setWalletCleared(null) }
+        }
+      } catch {
+        if (!cancelled) { setSaleActive(null); setWalletCleared(null) }
+      }
+    })()
+    return () => { cancelled = true }
+  }, [address])
+
+  /** Only an explicit `false` dims the round — never a slow RPC or a missing wallet. */
+  const blockedByGate = walletCleared === false
+
+  // What the wallet can actually pay with. A cleared wallet that has no USDT — or no BNB
+  // for gas — used to look ready to buy and only failed after the user signed, which
+  // costs them a transaction to learn something we could have told them up front.
+  const [funds, setFunds] = useState<{ usdt: number; bnb: number } | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    if (!address || !isDeployed(CONTRACTS.seed)) { setFunds(null); return }
+    ;(async () => {
+      try {
+        const prov = new JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0])
+        const usdtC = new Contract(CONTRACTS.usdt, ERC20_ABI, prov)
+        const [u, b] = await Promise.all([
+          usdtC.balanceOf(address) as Promise<bigint>,
+          prov.getBalance(address),
+        ])
+        if (!cancelled) setFunds({
+          usdt: Number(u) / 10 ** USDT_DECIMALS,
+          bnb: Number(b) / 1e18,
+        })
+      } catch { if (!cancelled) setFunds(null) }
+    })()
+    return () => { cancelled = true }
+  }, [address])
+
+  /** Gas headroom for approve + buyPackage on BSC, with room to spare. */
+  const MIN_BNB = 0.002
+  const cheapestPackage = Math.min(...PACKAGES.map(p => p.price))
+  const shortOfUsdt = funds !== null && funds.usdt < cheapestPackage
+  const shortOfBnb = funds !== null && funds.bnb < MIN_BNB
+  const canAfford = (price: number) => funds === null || funds.usdt >= price
 
   // Buy state
   const [buyingIndex, setBuyingIndex] = useState<number | null>(null)
@@ -372,12 +483,17 @@ export default function SeedPage() {
       const msg = err instanceof Error ? err.message : String(err)
       if (msg.includes('user rejected') || msg.includes('ACTION_REJECTED')) {
         setBuyError('Transaction cancelled by user')
-      } else if (msg.includes('Not whitelisted')) {
-        setBuyError('Your wallet is not whitelisted for SEED Round')
-      } else if (msg.includes('Sale not active')) {
-        setBuyError('SEED sale is not active yet')
+      } else if (/not whitelisted/i.test(msg)) {
+        setBuyError('This wallet has not been approved for the SEED round. Nothing was charged.')
+      } else if (/sale not active/i.test(msg)) {
+        // The contract reverts with "Seed: sale not active" — lowercase. The old check
+        // looked for 'Sale not active' and so never matched, leaving buyers with a raw
+        // revert string. Both matches are case-insensitive now.
+        setBuyError('The SEED round is closed right now. Nothing was charged.')
       } else if (msg.includes('insufficient') || msg.includes('exceeds balance')) {
-        setBuyError('Insufficient USDT balance')
+        setBuyError('Not enough USDT in this wallet to cover the package. Nothing was charged.')
+      } else if (/insufficient funds for (intrinsic transaction cost|gas)/i.test(msg)) {
+        setBuyError('Not enough BNB to pay gas. Top up a little BNB and try again — nothing was charged.')
       } else if (msg.includes('could not decode')) {
         setBuyError('Wrong network — please switch to BSC Mainnet (Chain ID 56)')
       } else {
@@ -393,23 +509,21 @@ export default function SeedPage() {
   const executeBuy = useCallback(async (signer: Awaited<ReturnType<BrowserProvider['getSigner']>>, packageIndex: number, priceUsdt: number) => {
     const usdtContract = new Contract(CONTRACTS.usdt, ERC20_ABI, signer)
     const seedAddr = CONTRACTS.seed
-    const usdtAmount = parseUnits(priceUsdt.toString(), 6)
+    if (!isDeployed(seedAddr)) throw new Error('The SEED round is not available right now.')
+    const usdtAmount = parseUnits(priceUsdt.toString(), USDT_DECIMALS)
     const signerAddr = await signer.getAddress()
 
     // Check USDT balance first
     setBuyStatus('Checking balance...')
     const balance = await usdtContract.balanceOf(signerAddr) as bigint
     if (balance < usdtAmount) {
-      throw new Error(`Insufficient USDT balance. Need ${fmtUsdFull(priceUsdt)}, have ${fmtUsdFull(Number(balance) / 1e6)}`)
+      throw new Error(`Insufficient USDT balance. Need ${fmtUsdFull(priceUsdt)}, have ${fmtUsdFull(Number(balance) / 10 ** USDT_DECIMALS)}`)
     }
 
     // Check & approve allowance (EXACT amount — no MetaMask "Unlimited" alert)
     setBuyStatus('Checking allowance...')
     const allowance = await usdtContract.allowance(signerAddr, seedAddr) as bigint
-    // Explicit gas price — BSC testnet default is sometimes <1 gwei which
-    // MetaMask flags as "Network fee too low" → red Review alert.
-    // 5 gwei is well above floor and still negligible cost on testnet.
-    const gasPrice = parseUnits('5', 'gwei')
+    const gasPrice = await currentGasPrice(signer.provider!)
     if (allowance < usdtAmount) {
       setBuyStatus('Approving USDT,\nconfirm in wallet!')
       // Approve exact package amount only. User-friendly + least-privilege security.
@@ -425,10 +539,17 @@ export default function SeedPage() {
     setBuyStatus('Buying package,\nconfirm in wallet!')
     const seedContract = new Contract(seedAddr, SEED_ABI, signer)
     // Gas scales with NFT count: ~120K per NFT + 800K base overhead
-    const nftCounts = [1, 3, 8, 20]
-    const estimatedGas = 800_000 + nftCounts[packageIndex] * 35_000
-    const gasWithBuffer = Math.min(Math.ceil(estimatedGas * 1.3), 15_000_000) // cap under 16M RPC limit
-    const buyTx = await seedContract.buyPackage(BigInt(packageIndex), { gasLimit: gasWithBuffer, gasPrice })
+    // Estimate against the real contract instead of guessing. A fixed 1.3x pad on a
+    // made-up number is what a wallet shows the buyer as "max fee", so it should be
+    // close to what the call actually costs.
+    let gasLimit: bigint
+    try {
+      const est = await seedContract.buyPackage.estimateGas(BigInt(packageIndex))
+      gasLimit = (est * 13n) / 10n
+    } catch {
+      gasLimit = 1_200_000n // estimation failed — fall back to a workable ceiling
+    }
+    const buyTx = await seedContract.buyPackage(BigInt(packageIndex), { gasLimit, gasPrice })
     setBuyStatus('Confirming transaction...')
     const receipt = await buyTx.wait()
 
@@ -484,7 +605,10 @@ export default function SeedPage() {
 
   // Key stats — SOLD / CAP / Participants
   const totalMicSold = Number(d.totalMicSold || 0)
-  const allocationMic = d.allocationMic || 227_500_000
+  // 152,500,000 is the public SEED allocation. The old fallback of 227,500,000 added
+  // the 75M strategic-partner grant, which is not for sale — so a failed read showed a
+  // third more supply than exists. `??` because a real 0 must survive.
+  const allocationMic = d.allocationMic ?? 152_500_000
   const participants = d.participants || 0
   const pctSold = allocationMic > 0 ? Math.min((totalMicSold / allocationMic) * 100, 100) : 0
 
@@ -602,6 +726,52 @@ export default function SeedPage() {
           </div>
         </div>
 
+        {saleActive !== false && blockedByGate && (
+          <div style={{
+            background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.30)',
+            borderRadius: 12, padding: '16px 20px', marginBottom: 16,
+          }}>
+            <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--gold)' }}>
+              Reserved for strategic partners and investors
+            </div>
+            <div style={{ fontSize: '0.82rem', lineHeight: 1.7, opacity: 0.9 }}>
+              The SEED round is not open to the public. Access is granted per wallet, so
+              there is no code to enter — once your wallet has been approved, connect it
+              here and the packages below unlock on their own.
+              {!address && ' Connect your wallet to check whether it has been approved.'}
+              <br /><br />
+              Looking to take part? Reach out to the Mission Chain team. In the meantime the
+              <strong> Pre-Sale</strong> is open to everyone.
+            </div>
+          </div>
+        )}
+
+        {!isDeployed(CONTRACTS.seed) && (
+          <div style={{
+            background: 'rgba(240,181,74,0.10)', border: '1px solid rgba(240,181,74,0.35)',
+            borderRadius: 12, padding: '14px 18px', marginBottom: 16,
+          }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>The SEED round is not available</div>
+            <div style={{ fontSize: '0.82rem', lineHeight: 1.6, opacity: 0.85 }}>
+              No SEED contract is currently published, so no purchase can be made. Nothing
+              here will charge your wallet. The <strong>Pre-Sale</strong> is open in the meantime.
+            </div>
+          </div>
+        )}
+
+        {isDeployed(CONTRACTS.seed) && saleActive === false && (
+          <div style={{
+            background: 'rgba(240,181,74,0.10)', border: '1px solid rgba(240,181,74,0.35)',
+            borderRadius: 12, padding: '14px 18px', marginBottom: 16,
+          }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>The SEED round is closed right now</div>
+            <div style={{ fontSize: '0.82rem', lineHeight: 1.6, opacity: 0.85 }}>
+              Buying is disabled on-chain, so no purchase can go through. Your wallet will
+              not be charged and no approval is needed. We will announce here when it reopens.
+            </div>
+          </div>
+        )}
+
         {/* ── Promotion Block ── */}
         <div className="seed-promo-card" style={{
           opacity: promo?.active ? 1 : 0.4,
@@ -661,7 +831,38 @@ export default function SeedPage() {
           )}
         </div>
 
-        <div className="seed-packages">
+        {saleActive !== false && !blockedByGate && funds !== null && (shortOfUsdt || shortOfBnb) && (
+          <div style={{
+            background: 'rgba(240,181,74,0.10)', border: '1px solid rgba(240,181,74,0.35)',
+            borderRadius: 12, padding: '14px 18px', marginBottom: 16,
+          }}>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>
+              Your wallet is approved, but it cannot cover a purchase yet
+            </div>
+            <div style={{ fontSize: '0.82rem', lineHeight: 1.7, opacity: 0.9 }}>
+              {shortOfUsdt && (
+                <>You hold <strong>{fmtUsdFull(funds.usdt)}</strong> USDT. The smallest
+                package is <strong>{fmtUsdFull(cheapestPackage)}</strong>, so you need{' '}
+                <strong>{fmtUsdFull(cheapestPackage - funds.usdt)}</strong> more.<br /></>
+              )}
+              {shortOfBnb && (
+                <>You hold <strong>{funds.bnb.toFixed(4)}</strong> BNB. Approving and buying
+                costs gas — top up to at least <strong>{MIN_BNB}</strong> BNB.<br /></>
+              )}
+              Nothing has been charged. Add funds to this wallet and the packages will unlock.
+            </div>
+          </div>
+        )}
+
+        {/* Dimmed rather than hidden: an approved partner should still be able to see
+            what the round offers before their wallet is connected. */}
+        <div
+          className="seed-packages"
+          aria-disabled={blockedByGate || saleActive === false}
+          style={blockedByGate || saleActive === false
+            ? { opacity: 0.38, pointerEvents: 'none', filter: 'grayscale(0.6)' }
+            : undefined}
+        >
           {PACKAGES.map((pkg) => {
             const apiPkg = packages.find(p => p.name === pkg.label)
             const baseMic = apiPkg?.mic || pkg.mic
@@ -692,7 +893,7 @@ export default function SeedPage() {
                 </div>
                 <button
                   className={`seed-pkg-btn ${pkg.tier >= 3 ? 'seed-pkg-btn-gold' : ''} ${buyingIndex === pkg.tier - 1 ? 'seed-pkg-btn-active' : ''}`}
-                  disabled={buyingIndex !== null}
+                  disabled={buyingIndex !== null || saleActive === false || blockedByGate || !canAfford(apiPkg?.price || pkg.price) || shortOfBnb}
                   onClick={() => handleBuy(pkg.tier - 1, apiPkg?.price || pkg.price)}
                 >
                   {buyingIndex === pkg.tier - 1

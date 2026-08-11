@@ -1,52 +1,83 @@
-// Mission Chain Smart Contract Addresses & ABIs — BSC Mainnet (Phase 0 Genesis)
-// Phase 0 Genesis deployed 2026-05-06 (16 contracts). Phase 1 expansion + Phase 2/3 = zero address until deployed.
-// Source: SDK @missionchain/sdk addresses.bsc namespace
+// Mission Chain contract addresses for the DApp.
+//
+// Every value is derived from `@missionchain/sdk` — this file keeps NO addresses of its
+// own. It used to hold a hand-maintained copy, which is how `seed` sat on SeedSaleV7
+// after V7 was halted: two lists, one of them silently stale. There is now one list, and
+// updating the SDK after a deploy updates the app with it.
+
+import { USDT_DECIMALS, getActiveAddresses } from '@missionchain/sdk'
+
+const A = getActiveAddresses()
+
+const ZERO = '0x0000000000000000000000000000000000000000'
+
+/** wagmi/viem want the 0x-prefixed template type; the SDK stores plain strings. */
+type Hex = `0x${string}`
+const hex = (a: string) => a as Hex
+
+/** Prefer the newer contract, fall back to the one it replaces while it is still zero. */
+const pick = (...candidates: string[]) => hex(candidates.find(a => a && a !== ZERO) ?? ZERO)
 
 export const CONTRACTS = {
   // Tokens & Vesting
-  usdt: '0x55d398326f99059fF775485246999027B3197955' as const,
-  mic: '0xf27ec0c311728b923b22828002c992c799326182' as const,
-  micToken: '0xf27ec0c311728b923b22828002c992c799326182' as const, // alias for Header.tsx
-  lockManager: '0x6bE58BCe62f526E7751e121CDBa1eb22873471A0' as const,
-  vesting: '0x6bE58BCe62f526E7751e121CDBa1eb22873471A0' as const, // @deprecated alias → lockManager
-  referral: '0x0000000000000000000000000000000000000000' as const,
+  usdt: hex(A.USDT),
+  mic: hex(A.MICToken),
+  micToken: hex(A.MICToken),            // alias used by Header.tsx
+  lockManager: hex(A.LockManager),
+  vesting: hex(A.LockManager),          // @deprecated alias → lockManager
+  referral: hex(A.ReferralRegistry),
 
-  // NFTs
-  mfpNft: '0xAE6F32A6fdf80F5e54ba85441386dBA6a381f565' as const,    // SEED_CAP=1250, ROYALTY 5%, STAKING_MULTIPLIER ×25
-  communityNft: '0x2828C97397be51FCCa5D8D99a0c5126F11A15149' as const,
+  // NFTs — CommunityNFTv2 (ERC-721) supersedes the ERC-1155 original
+  mfpNft: hex(A.MFPNFT),
+  communityNft: pick(A.CommunityNFTv2, A.CommunityNFT),
 
-  // Sales (SEED + 75M Old Investors holding, PreSale, MICE 100% USDT flow)
-  seed: '0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905' as const, // V7 (2026-06-23) — replaces V6 0x7ce5AcDC5DACf59aaB130C963ac461f902A5e5A0
-  presale: '0x0000000000000000000000000000000000000000' as const,
-  airdrop: '0x9Bdd75b6aDf5BA674F74C49601AF7D82d3672EF9' as const,
-  mice: '0x0000000000000000000000000000000000000000' as const,       // 100% USDT, 50% → LP burn
+  // Sales — SeedSaleV9 only. Deliberately NO fallback to V8 or V7: V7 was halted for
+  // 6-decimal pricing, V8 shipped without a whitelist and would sell MIC at half the
+  // Pre-Sale price to anyone. A fallback chain would quietly point the DApp at whichever
+  // of them still had an address, which is exactly how `seed` sat on the halted V7.
+  seed: hex(A.SeedSaleV9),
+  presale: hex(A.PreSale),
+  airdrop: hex(A.AirdropDistributor),
+  mice: hex(A.MICELicense),
 
   // Mining & Staking
-  mining: '0x0000000000000000000000000000000000000000' as const,     // reservedForPriorEpochs fix
-  staking: '0x0000000000000000000000000000000000000000' as const,    // MIC time-lock staking (NFTStaking contract, tier deprecated)
-  emission: '0x0000000000000000000000000000000000000000' as const,
+  mining: hex(A.MiningPool),
+  staking: hex(A.NFTStaking),
+  emission: hex(A.EmissionController),
 
   // Revenue routing
-  revenueRouter: '0x0000000000000000000000000000000000000000' as const,
-  seedBudget: '0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef' as const, // V5c (2026-06-23) — replaces V5b 0xf7a839A271d8F5A7b19a42eCD7f7E604A3dcEC1a
-  operationalSalaryPool: '0xB2f318b07B7501f6A03b53066610032418F66b85' as const, // V3 (2026-06-23) — replaces V2 0xf3fDaD73CCf9Ccf1D42fc4d772efad9BB7E17576
-  managementBonusPool: '0x2bfA50146C01d6c4BFA4A2550385988C2619f033' as const, // V3 (2026-06-23) — replaces V2 0x71E3D41F2d5464576fA7aCfd42bcEAA2c1E0578B
-  reservedExpensesPool: '0xe04519547F051AE4388FcdE571EA2301dD9e3495' as const, // V3 (2026-06-23) — replaces V2 0xC92963834a5F992b6599aD19eF18061594C23154
-  rewardDistributor: '0x0000000000000000000000000000000000000000' as const,
+  revenueRouter: hex(A.RevenueRouter),
+  seedBudget: hex(A.SeedBudgetV5c),
+  operationalSalaryPool: hex(A.OperationalSalaryPoolV3),
+  managementBonusPool: hex(A.ManagementBonusPoolV3),
+  reservedExpensesPool: hex(A.ReservedExpensesPoolV3),
+  rewardDistributor: pick(A.RewardDistributorV2, A.RewardDistributor),
 
   // Reward sub-pools
-  claimRewards: '0x0000000000000000000000000000000000000000' as const,    // BPS 4167/2083/3750
-  periodicRewards: '0x0000000000000000000000000000000000000000' as const,
-  luckyDraw: '0x0000000000000000000000000000000000000000' as const,
-  incentivePool: '0x0000000000000000000000000000000000000000' as const,
+  claimRewards: pick(A.ClaimRewardsV2, A.ClaimRewards),
+  weeklyRewardPool: hex(A.NFTRewardPoolWeekly),
+  monthlyRewardPool: hex(A.NFTRewardPoolMonthly),
+  listingReserve: hex(A.ListingReserve),
+  periodicRewards: hex(A.PeriodicRewards),
+  luckyDraw: hex(A.LuckyDraw),
+  incentivePool: hex(A.IncentivePool),
 
   // Infrastructure
-  daoGovernor: '0xDCD65DC97b0A147BeCf542E22a5C218C006231cC' as const,
-  managementPool: '0x0000000000000000000000000000000000000000' as const,
-  treasuryManager: '0x1ed5C848D1244a618Bd95Ff92d4f8C2356d3a42F' as const,
-  liquidityPool: '0x37091454eB49179D3aFF12402980F63cFC3e050a' as const,    // + USDT→MIC swap+burn for MICE
-  foundersVault: '0x142167334Ad8da6790353dC54c42651F9F416b67' as const,    // NEW Apr 28: 280M MIC + 1,250 MFP cap
+  daoGovernor: hex(A.DAOGovernor),
+  managementPool: hex(A.ManagementPool),
+  treasuryManager: hex(A.TreasuryManager),
+  liquidityPool: pick(A.LiquidityPool, A.LiquidityPoolV5),
+  // The SWAP pool deployed 2026-08-10. Kept separate from `liquidityPool`, which still
+  // names the older contract other pages read — conflating them would point the swap UI
+  // at a pool that has no swap.
+  liquidityPoolV6: hex(A.LiquidityPoolV6),
+  foundersVault: hex(A.FoundersVault),
+  p2pEscrowMFP: hex(A.P2PEscrowMFP),
 } as const
+
+/** True once a contract has a real address — use this to gate UI, not a hardcoded flag. */
+export const isDeployed = (addr: string) => Boolean(addr) && addr !== ZERO
+
 // --- ABIs (minimal, only what the frontend needs) ---
 
 export const ERC20_ABI = [
@@ -77,6 +108,10 @@ export const SEED_ABI = [
   { type: 'function', name: 'totalAllocated', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { type: 'function', name: 'contributions', inputs: [{ name: '', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { type: 'function', name: 'whitelisted', inputs: [{ name: '', type: 'address' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  // SeedSaleV9 — one call that answers exactly what buyPackage will do, so the page never
+  // has to reassemble the rule itself and drift from the contract.
+  { type: 'function', name: 'canBuy', inputs: [{ name: 'user', type: 'address' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'whitelistRequired', inputs: [], outputs: [{ type: 'bool' }], stateMutability: 'view' },
   { type: 'function', name: 'setActive', inputs: [{ name: '_active', type: 'bool' }], outputs: [], stateMutability: 'nonpayable' },
   { type: 'function', name: 'addToWhitelist', inputs: [{ name: 'users', type: 'address[]' }], outputs: [], stateMutability: 'nonpayable' },
   { type: 'function', name: 'HARD_CAP', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
@@ -143,10 +178,16 @@ export const MIC_LOCK_ABI = [
 export const VESTING_ABI = LOCK_MANAGER_ABI
 
 export const MICE_ABI = [
-  { type: 'function', name: 'currentPrice', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // MICELicense exposes getCurrentPrice() and buyLicense(quantity[, referrer]).
+  // The old entries here said currentPrice() and buy() — names the contract never had, so
+  // every call would have reverted the moment MICE was switched on.
+  { type: 'function', name: 'getCurrentPrice', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // MIC the buyer must hold and burn for a purchase, priced at min(spot, TWAP7d).
+  { type: 'function', name: 'quoteMicRequired', inputs: [{ name: 'quantity', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'buyLicense', inputs: [{ name: 'quantity', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'getCurrentRound', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { type: 'function', name: 'activeLicenses', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { type: 'function', name: 'totalMinted', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'purchase', inputs: [], outputs: [], stateMutability: 'nonpayable' },
   { type: 'function', name: 'activeCountOf', inputs: [{ name: 'user', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { type: 'function', name: 'getUserLicenses', inputs: [{ name: 'user', type: 'address' }], outputs: [{ type: 'uint256[]' }], stateMutability: 'view' },
   {
@@ -168,11 +209,19 @@ export const EMISSION_ABI = [
   { type: 'function', name: 'lastDistribution', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const
 
+/**
+ * MiningPool. Rewards accrue per licence, by the second, from the moment of activation —
+ * there are no epochs to claim against and no window to catch. `claim` takes the caller's
+ * licence ids; `claimAccrued` takes what was banked when a licence expired or was sold.
+ */
 export const MINING_ABI = [
-  { type: 'function', name: 'currentEpoch', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'pendingReward', inputs: [{ name: 'epoch', type: 'uint256' }, { name: 'miner', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'claimReward', inputs: [{ name: 'epoch', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
-  { type: 'function', name: 'getScore', inputs: [{ name: 'epoch', type: 'uint256' }, { name: 'miner', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'pendingOf', inputs: [{ name: 'licenceId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'claimableOf', inputs: [{ name: 'account', type: 'address' }, { name: 'licenceIds', type: 'uint256[]' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'accrued', inputs: [{ name: '', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'claim', inputs: [{ name: 'licenceIds', type: 'uint256[]' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'claimAccrued', inputs: [], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'totalActive', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'isActive', inputs: [{ name: '', type: 'uint256' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
 ] as const
 
 export const STAKING_ABI = [
@@ -269,7 +318,8 @@ export function fmtMIC(value: bigint): string {
 }
 
 export function fmtUSDT(value: bigint): string {
-  const n = Number(value) / 1e6
+  // BSC-USD is 18 decimals, not 6 — dividing by 1e6 overstated every dollar figure by 10^12.
+  const n = Number(value) / 10 ** USDT_DECIMALS
   return n.toLocaleString(undefined, { maximumFractionDigits: 2 })
 }
 

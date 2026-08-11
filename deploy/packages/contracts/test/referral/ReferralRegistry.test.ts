@@ -13,19 +13,20 @@ describe("ReferralRegistry", function () {
   let bob: SignerWithAddress;      // F1 referrer for alice
   let carol: SignerWithAddress;    // F2 referrer (bob's referrer)
   let dave: SignerWithAddress;     // another buyer
+  let mockMI: any;                 // Milestones & Incentives pool (overflow sink)
 
   const CALLER_ROLE = ethers.keccak256(ethers.toUtf8Bytes("CALLER_ROLE"));
   const DEFAULT_ADMIN_ROLE = ethers.ZeroHash;
 
   // USDT amounts (6 decimals)
-  const USDT_100   = 100n   * 10n ** 6n;
-  const USDT_1000  = 1_000n * 10n ** 6n;
-  const USDT_5000  = 5_000n * 10n ** 6n;
-  const USDT_10000 = 10_000n * 10n ** 6n;
-  const USDT_20000 = 20_000n * 10n ** 6n;
-  const USDT_50000 = 50_000n * 10n ** 6n;
-  const USDT_150000 = 150_000n * 10n ** 6n;
-  const USDT_500000 = 500_000n * 10n ** 6n;
+  const USDT_100   = 100n   * 10n ** 18n;
+  const USDT_1000  = 1_000n * 10n ** 18n;
+  const USDT_5000  = 5_000n * 10n ** 18n;
+  const USDT_10000 = 10_000n * 10n ** 18n;
+  const USDT_20000 = 20_000n * 10n ** 18n;
+  const USDT_50000 = 50_000n * 10n ** 18n;
+  const USDT_150000 = 150_000n * 10n ** 18n;
+  const USDT_500000 = 500_000n * 10n ** 18n;
 
   // GV tier thresholds in USDT (6-decimal format from CLAUDE.md)
   // Tier 0 (Believer):       $0 – $4,999       → 0 BPS
@@ -52,11 +53,13 @@ describe("ReferralRegistry", function () {
     // Grant CALLER_ROLE to authorized sale contract
     await registry.connect(admin).grantRole(CALLER_ROLE, caller.address);
 
-    // Mint USDT to caller (simulates PreSale/MICELicense holding USDT to distribute)
-    await usdt.mint(caller.address, 10_000_000n * 10n ** 6n); // 10M USDT
-
-    // Approve registry to pull from caller
-    await usdt.connect(caller).approve(await registry.getAddress(), ethers.MaxUint256);
+    // NEW model: RevenueRouter deposits the 10% referral slice into the registry, which pays
+    // F1/F2 from its OWN balance and routes unspent to the Milestones & Incentives pool.
+    // Pre-fund the registry (simulates the router deposit) and wire an M&I overflow sink.
+    const MockMI = await ethers.getContractFactory("MockRewardReceiver");
+    mockMI = await MockMI.deploy(await usdt.getAddress());
+    await registry.connect(admin).setIncentivePool(await mockMI.getAddress());
+    await usdt.mint(await registry.getAddress(), 10_000_000n * 10n ** 18n); // 10M USDT float
   });
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -166,31 +169,25 @@ describe("ReferralRegistry", function () {
         .withArgs(alice.address, bob.address, expectedF1, carol.address, expectedF2);
     });
 
-    it("when no F1: 7% stays in contract (for admin recovery)", async () => {
-      // alice has no referrer
-      const contractBefore = await usdt.balanceOf(await registry.getAddress());
+    it("when no F1: the full 10% overflows to Milestones & Incentives", async () => {
+      // alice has no referrer → nothing paid, 10% (F1 7% + F2 3%) → M&I pool
       await registry.connect(caller).distributeReferral(alice.address, USDT_1000);
-      const contractAfter = await usdt.balanceOf(await registry.getAddress());
-
-      // 7% of 1000 USDT stays in contract (no F1, no F2)
-      const expectedStayed = (USDT_1000 * 700n) / 10000n;
-      expect(contractAfter - contractBefore).to.equal(expectedStayed);
+      const expectedOverflow = (USDT_1000 * 1000n) / 10000n; // 10% = 100 USDT
+      expect(await mockMI.received()).to.equal(expectedOverflow);
     });
 
-    it("when F1 exists but no F2: F1 gets 7%, F2 3% stays in contract", async () => {
+    it("when F1 exists but no F2: F1 gets 7%, the 3% F2 share overflows to M&I", async () => {
       await registry.connect(caller).setReferrer(alice.address, bob.address);
       // bob has no referrer
-
-      const bobBefore      = await usdt.balanceOf(bob.address);
-      const contractBefore = await usdt.balanceOf(await registry.getAddress());
+      const bobBefore = await usdt.balanceOf(bob.address);
 
       await registry.connect(caller).distributeReferral(alice.address, USDT_1000);
 
-      const expectedF1      = (USDT_1000 * 700n) / 10000n; // 70 USDT to bob
-      const expectedStayed  = (USDT_1000 * 300n) / 10000n; // 30 USDT stays in contract
+      const expectedF1       = (USDT_1000 * 700n) / 10000n; // 70 USDT to bob
+      const expectedOverflow = (USDT_1000 * 300n) / 10000n; // 30 USDT → M&I
 
       expect(await usdt.balanceOf(bob.address)).to.equal(bobBefore + expectedF1);
-      expect(await usdt.balanceOf(await registry.getAddress())).to.equal(contractBefore + expectedStayed);
+      expect(await mockMI.received()).to.equal(expectedOverflow);
     });
 
     it("only CALLER_ROLE can call distributeReferral", async () => {

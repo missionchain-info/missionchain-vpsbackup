@@ -399,11 +399,14 @@ export default function RegisterPage() {
             reporting. Mission Chain does not provide legal, tax, or financial advice.
           </p>
 
-          <h4>5. KYC / AML</h4>
+          <h4>5. Account Verification</h4>
           <p>
-            Certain features may require Know Your Customer (KYC) verification processed by
-            third-party provider Sumsub. By participating, you consent to identity verification
-            procedures as required by applicable anti-money laundering regulations.
+            Certain features — currently the P2P marketplace — require you to verify an email
+            address and a phone number using one-time codes. No identity documents are collected
+            and no third-party identity provider is used. Token sale participation is not gated
+            by verification. Mission Chain does not verify your jurisdiction; the restrictions
+            described in our documentation are self-certified, and you are responsible for
+            confirming that your participation is lawful where you reside.
           </p>
 
           <h4>6. Smart Contract Risk</h4>
@@ -454,12 +457,12 @@ export default function RegisterPage() {
             with third parties without your explicit consent, except as required by law.
           </p>
 
-          <h4>4. KYC Data</h4>
+          <h4>4. Verification Data</h4>
           <p>
-            Identity verification is handled exclusively by Sumsub, a certified third-party
-            KYC provider. Your identity documents and verification data are processed and
-            stored according to Sumsub&apos;s privacy policy. Mission Chain does not store
-            copies of your identity documents.
+            If you choose to verify your account, we store the email address and phone number
+            you provide, together with their verification status. One-time codes are delivered
+            through our messaging providers. We do not collect, process, or store identity
+            documents, and we do not use a third-party identity verification provider.
           </p>
 
           <h4>5. Cookies & Analytics</h4>

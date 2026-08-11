@@ -14,7 +14,6 @@ import authPlugin from './plugins/auth'
 import { authRoutes } from './routes/auth'
 import { userRoutes } from './routes/user'
 import { dashboardRoutes } from './routes/dashboard'
-import { feedsRoutes } from './routes/feeds'
 import { salesRoutes } from './routes/sales'
 import { stakingRoutes } from './routes/staking'
 import { miningRoutes } from './routes/mining'
@@ -27,6 +26,8 @@ import { adminRoutes } from './routes/admin'
 import { distributorRoutes } from './routes/distributor'
 import { oldInvestorsRoutes } from './routes/old-investors'
 import { foundersRoutes } from './routes/founders'
+import { nftRewardsRoutes } from './routes/nft-rewards.js'
+import { communityGrantsAdminRoutes, communityGrantsUserRoutes } from './routes/community-grants.js'
 import { stewardCouncilRoutes } from './routes/steward-council'
 import { operationalPoolRoutes } from './routes/operational-pool'
 import { governanceRoutes } from './routes/governance'
@@ -108,12 +109,12 @@ async function start() {
   await app.register(authRoutes, { prefix: '/auth' })
   await app.register(userRoutes, { prefix: '/user' })
   await app.register(dashboardRoutes, { prefix: '/dashboard' })
-  await app.register(feedsRoutes, { prefix: '/feeds' })
   await app.register(salesRoutes, { prefix: '/sales' })
   await app.register(stakingRoutes, { prefix: '/staking' })
   await app.register(miningRoutes, { prefix: '/mining' })
   await app.register(miningNetworkRoutes, { prefix: '/mining' })
   await app.register(nftRoutes, { prefix: '/nft' })
+  await app.register(communityGrantsUserRoutes, { prefix: '/nft' })
   await app.register(referralRoutes, { prefix: '/referral' })
   await app.register(vestingRoutes, { prefix: '/vesting' })
   await app.register(daoRoutes, { prefix: '/dao' })
@@ -121,6 +122,8 @@ async function start() {
   await app.register(distributorRoutes, { prefix: '/admin/distributors' })
   await app.register(oldInvestorsRoutes, { prefix: '/admin/seed/old-investors' })
   await app.register(foundersRoutes, { prefix: '/admin/founders' })
+  await app.register(nftRewardsRoutes, { prefix: '/admin/nft-rewards' })
+  await app.register(communityGrantsAdminRoutes, { prefix: '/admin/community-grants' })
   await app.register(stewardCouncilRoutes, { prefix: '/admin/steward-council' })
   await app.register(operationalPoolRoutes, { prefix: '/admin/seed-budget/operational' })
   await app.register(governanceRoutes, { prefix: '/governance' })
@@ -175,6 +178,23 @@ async function start() {
     startFounderCron(app, 60_000)
   } else {
     app.log.warn('OldInvestor + Founder cron NOT started (DEPLOYER_PK not configured)')
+  }
+
+  // ── Mining keeper ────────────────────────────────────────────────
+  // Nothing in the mining layer runs on its own: a day's emission that nobody asks for
+  // is not deferred, it is destroyed. Uses KEEPER_PK, deliberately not DEPLOYER_PK —
+  // a wallet that signs every ten minutes must not also hold admin authority.
+  if (process.env.KEEPER_PK) {
+    const { startMiningKeeper } = await import('./services/miningKeeper.js')
+    startMiningKeeper(app, Number(process.env.MINING_KEEPER_MS) || 600_000)
+
+    // Turns pool balances into individual entitlements: notifies the two MIC pools after
+    // each daily emission, and credits the weekly and monthly USDT pools when a period
+    // closes. Without it the USDT accumulates while every holder's claimable stays zero.
+    const { startRewardKeeper } = await import('./services/rewardKeeper.js')
+    startRewardKeeper(app, Number(process.env.REWARD_KEEPER_MS) || 3_600_000)
+  } else {
+    app.log.warn('miningKeeper NOT started (KEEPER_PK not configured) — no daily emission will be minted')
   }
 
   // ── Start Event Indexer (background) ─────────────────────────────

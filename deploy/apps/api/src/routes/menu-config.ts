@@ -25,7 +25,6 @@ const DEFAULT_MENU_ITEMS = [
   { id: 'swap', icon: '🔄', label: 'Swap', href: '/swap', group: 'Explore', status: 'disabled', mandatory: false, order: 12 },
   { id: 'info', icon: 'ℹ️', label: 'Infos', href: '/info', group: 'Explore', status: 'disabled', mandatory: false, order: 13 },
   { id: 'nira', icon: '🤖', label: 'NIRA AI', href: '/nira', group: 'Explore', status: 'disabled', mandatory: false, order: 14, badge: 'AI' },
-  { id: 'feeds', icon: '📰', label: 'Feeds', href: '/feeds', group: 'Explore', status: 'enabled', mandatory: false, order: 15, badge: 'NEW' },
 ]
 
 const CONFIG_KEY = 'frontend-menu-config'

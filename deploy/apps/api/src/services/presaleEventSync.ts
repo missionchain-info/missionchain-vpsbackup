@@ -15,6 +15,7 @@
  */
 import { Contract, JsonRpcProvider, formatUnits, type EventLog, type Log } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
+import { USDT_DECIMALS } from '@missionchain/sdk';
 
 const POLL_INTERVAL_MS = 300_000     // 5 minutes (rate-limit safe on BSC testnet)
 const BATCH_BLOCKS     = 100         // small batch — public RPCs throttle aggressively
@@ -120,7 +121,7 @@ export class PreSaleEventSync {
         const log = ev as EventLog
         if (!log.args) continue
         const buyer = (log.args.buyer as string).toLowerCase()
-        const usdtAmount = Number(formatUnits(log.args.usdtAmount as bigint, 6))
+        const usdtAmount = Number(formatUnits(log.args.usdtAmount as bigint, USDT_DECIMALS))
         const micAmount = Number(formatUnits(log.args.micAmount as bigint, 18))
         const pkgIndex = Number(log.args.packageIndex as bigint)
         const packageName = PACKAGE_NAMES[pkgIndex] ?? 'Minimum'

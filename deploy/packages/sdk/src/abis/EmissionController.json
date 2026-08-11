@@ -33,6 +33,11 @@
       },
       {
         "internalType": "address",
+        "name": "_mfpRewardPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "admin",
         "type": "address"
       }
@@ -104,6 +109,12 @@
         "internalType": "uint256",
         "name": "toCommunityNFT",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toMFPReward",
+        "type": "uint256"
       }
     ],
     "name": "DailyDistributed",
@@ -114,12 +125,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "breached",
-        "type": "bool"
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "openingPrice",
+        "type": "uint256"
       }
     ],
-    "name": "PriceFloorToggled",
+    "name": "LiquidityPoolSet",
     "type": "event"
   },
   {
@@ -128,17 +145,23 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "oldROI",
+        "name": "currentL",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "newROI",
+        "name": "targetL",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "coverageDays",
         "type": "uint256"
       }
     ],
-    "name": "ROIUpdated",
+    "name": "RegulatorUpdated",
     "type": "event"
   },
   {
@@ -242,10 +265,42 @@
         "internalType": "uint256",
         "name": "communityNFT",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "mfpReward",
+        "type": "uint256"
       }
     ],
     "name": "SplitRatiosUpdated",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ADOPTION_REF",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BRAKE_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -276,6 +331,58 @@
   {
     "inputs": [],
     "name": "HALF_LIFE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "H_TARGET_DAYS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "L_MAX",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "L_MIN",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "L_STEP_BPS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -353,6 +460,19 @@
   },
   {
     "inputs": [],
+    "name": "ORIG_MFP_REWARD",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "ORIG_MINERS",
     "outputs": [
       {
@@ -372,6 +492,45 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "adoptionFactor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "avgDailyEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "brakeEngaged",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -405,7 +564,20 @@
   },
   {
     "inputs": [],
-    "name": "currentROI",
+    "name": "coverageH",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "currentL",
     "outputs": [
       {
         "internalType": "uint256",
@@ -502,6 +674,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "emissionIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emissionSamples",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -577,6 +775,58 @@
   },
   {
     "inputs": [],
+    "name": "lastLUpdate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "liquidityPool",
+    "outputs": [
+      {
+        "internalType": "contract ILiquidityPoolV6Reader",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mfpRewardBps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mfpRewardPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "micToken",
     "outputs": [
       {
@@ -629,12 +879,38 @@
   },
   {
     "inputs": [],
-    "name": "priceFloorBreached",
+    "name": "openingPrice",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "uint256",
         "name": "",
-        "type": "bool"
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pokeRegulator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "recentEmissions",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -677,19 +953,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "roiFactor",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -721,35 +984,40 @@
         "internalType": "address",
         "name": "_pool",
         "type": "address"
-      }
-    ],
-    "name": "setMiningPool",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "breached",
-        "type": "bool"
-      }
-    ],
-    "name": "setPriceFloorBreached",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
         "internalType": "uint256",
-        "name": "roiBps",
+        "name": "_openingPrice",
         "type": "uint256"
       }
     ],
-    "name": "setROI",
+    "name": "setLiquidityPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_pool",
+        "type": "address"
+      }
+    ],
+    "name": "setMfpRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_pool",
+        "type": "address"
+      }
+    ],
+    "name": "setMiningPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -774,6 +1042,11 @@
       {
         "internalType": "uint256",
         "name": "_communityNFT",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_mfpReward",
         "type": "uint256"
       }
     ],
@@ -842,7 +1115,33 @@
   },
   {
     "inputs": [],
+    "name": "targetL",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "totalEmitted",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "trendFactor",
     "outputs": [
       {
         "internalType": "uint256",

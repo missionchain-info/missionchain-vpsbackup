@@ -182,21 +182,26 @@ interface NetworkData {
     gv?: string
     total?: string
   }
-  // Team Bonus rate (admin-configurable, defaults to 9% if API not yet exposing it)
+  // This wallet's own rate, and the ceiling of the programme. 9% is the top rank's rate,
+  // not everyone's — showing it to a Believer earning 0% read as a promise.
+  // what actually renders. Left as-is on purpose: the header may mean the programme's top
+  // rate rather than this wallet's rate, and guessing would put a wrong number on screen.
   teamBonusRate?: number
-  // My Earnings — all reward streams unified into Total / Claimed / Unclaimed
+  teamBonusMaxRate?: number
+  // My Earnings — from the RewardClaim ledger (USDT). Optional only because `data` is null
+  // while loading or after an error; once the response arrives every field is present.
   earnings?: {
-    total?: string | number
-    claimed?: string | number
-    unclaimed?: string | number
-    referralClaimed?: string | number
-    referralUnclaimed?: string | number
-    teamBonusClaimed?: string | number
-    teamBonusUnclaimed?: string | number
-    monthlyClaimed?: string | number
-    monthlyUnclaimed?: string | number
-    luckyClaimed?: string | number
-    luckyUnclaimed?: string | number
+    total: string
+    claimed: string
+    unclaimed: string
+    referralClaimed: string
+    referralUnclaimed: string
+    teamBonusClaimed: string
+    teamBonusUnclaimed: string
+    monthlyClaimed: string
+    monthlyUnclaimed: string
+    luckyClaimed: string
+    luckyUnclaimed: string
   }
 }
 
@@ -429,7 +434,12 @@ export default function NetworkPage() {
       <div className="net-section-card">
         <div className="net-section-header">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <span className="net-section-title">Team Bonus — {d.teamBonusRate || 9}%</span>
+          <span className="net-section-title">
+            Team Bonus — {(d.teamBonusRate ?? 0)}%{' '}
+            <span style={{ opacity: 0.6, fontWeight: 400 }}>
+              (your rate · up to {d.teamBonusMaxRate ?? 9}%)
+            </span>
+          </span>
         </div>
         <div className="net-info-note">{d.teamBonusRate || 9}% of revenue. Calculated on entire team volume (all generations). Override: earn only the difference between your rate and each direct downline&apos;s rate.</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>

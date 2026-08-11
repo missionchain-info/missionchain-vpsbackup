@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import { MIC_DISPLAY_PRICE_USD } from '@missionchain/sdk'
 
 /**
  * PUBLIC round config endpoints — no auth required.
@@ -96,7 +97,7 @@ export const roundsRoutes: FastifyPluginAsync = async (app) => {
 
     return {
       data: {
-        price: adminPrice?.value ?? '0.0085',
+        price: adminPrice?.value ?? String(MIC_DISPLAY_PRICE_USD),
         source: 'admin',
         swapEnabled: isSwapEnabled,
       },
@@ -128,7 +129,7 @@ export const roundsRoutes: FastifyPluginAsync = async (app) => {
     return {
       data: {
         swapEnabled: configMap['swap_enabled'] === 'true',
-        micPrice: configMap['mic_price'] ?? '0.0085',
+        micPrice: configMap['mic_price'] ?? String(MIC_DISPLAY_PRICE_USD),
         micPriceMode: configMap['mic_price_mode'] ?? 'admin',
         p2pEnabled: configMap['p2p_enabled'] === 'true',
         p2pFee,

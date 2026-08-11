@@ -8,7 +8,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "declaration": true
+    "declaration": true,
+    // The SDK's abis/index.ts imports its ABI JSON directly. Without this, a local
+    // `tsc --noEmit` drowns in 24 TS2732s from one file and stops being a usable check —
+    // which is how a stale Prisma client sat unnoticed behind them.
+    "resolveJsonModule": true
   },
   "include": ["src"],
   "exclude": ["dist", "node_modules"]

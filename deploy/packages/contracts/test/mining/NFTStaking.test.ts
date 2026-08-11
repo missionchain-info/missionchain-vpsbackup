@@ -188,16 +188,16 @@ describe("NFTStaking", function () {
       expect(await nftStaking.LOCK_30D()).to.equal(10000n);
     });
 
-    it("LOCK_90D = 12500 (×1.25)", async () => {
-      expect(await nftStaking.LOCK_90D()).to.equal(12500n);
+    it("LOCK_90D = 16000 (×1.6)", async () => {
+      expect(await nftStaking.LOCK_90D()).to.equal(16000n);
     });
 
-    it("LOCK_180D = 15000 (×1.5)", async () => {
-      expect(await nftStaking.LOCK_180D()).to.equal(15000n);
+    it("LOCK_180D = 26000 (×2.6)", async () => {
+      expect(await nftStaking.LOCK_180D()).to.equal(26000n);
     });
 
-    it("LOCK_360D = 20000 (×2)", async () => {
-      expect(await nftStaking.LOCK_360D()).to.equal(20000n);
+    it("LOCK_360D = 50000 (×5)", async () => {
+      expect(await nftStaking.LOCK_360D()).to.equal(50000n);
     });
 
     it("MAX_DAILY_UNSTAKE_BPS = 1000 (10%)", async () => {
@@ -254,49 +254,50 @@ describe("NFTStaking", function () {
   // ─────────────────────────────────────────────────────────────────────────
   // Weighted amount calculation
   // ─────────────────────────────────────────────────────────────────────────
-  describe("Weighted amount calculation", () => {
-    it("NoNFT × 30d: 1000 MIC → weighted = 1000 × 0.5 × 1 = 500", async () => {
-      // user1 defaults to TIER_NO_NFT
-      const amount = ethers.parseEther("1000");
-      await nftStaking.connect(user1).stake(amount, LP_30D, false);
-      const s = await nftStaking.stakes(0);
-      // weighted = 1000e18 * 5000 * 10000 / 1e8 = 500e18
-      expect(s.weightedAmount).to.equal(ethers.parseEther("500"));
-    });
-
-    it("Builder × 30d: 1000 MIC → weighted = 1000 × 1 × 1 = 1000", async () => {
-      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_BUILDER);
+  // ARCHITECTURE CHANGE (April 2026): staking is PURE MIC — the NFT tier no longer affects
+  // the stake weight at all. weighted = amount × time-lock multiplier ONLY.
+  // NFT multipliers moved to USDT reward-pool distribution (Weekly/Monthly/Lucky Draw).
+  describe("Weighted amount calculation (time-lock multiplier only)", () => {
+    it("30d: 1000 MIC → weighted = 1000 × 1.0 = 1000", async () => {
       const amount = ethers.parseEther("1000");
       await nftStaking.connect(user1).stake(amount, LP_30D, false);
       const s = await nftStaking.stakes(0);
       expect(s.weightedAmount).to.equal(ethers.parseEther("1000"));
     });
 
-    it("Maker × 90d: 1000 MIC → weighted = 1000 × 2.5 × 1.25 = 3125", async () => {
-      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_MAKER);
+    it("90d: 1000 MIC → weighted = 1000 × 1.6 = 1600", async () => {
       const amount = ethers.parseEther("1000");
       await nftStaking.connect(user1).stake(amount, LP_90D, false);
       const s = await nftStaking.stakes(0);
-      // weighted = 1000e18 * 25000 * 12500 / 1e8 = 3125e18
-      expect(s.weightedAmount).to.equal(ethers.parseEther("3125"));
+      expect(s.weightedAmount).to.equal(ethers.parseEther("1600"));
     });
 
-    it("Luminary × 180d: 1000 MIC → weighted = 1000 × 5 × 1.5 = 7500", async () => {
-      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_LUMINARY);
+    it("180d: 1000 MIC → weighted = 1000 × 2.6 = 2600", async () => {
       const amount = ethers.parseEther("1000");
       await nftStaking.connect(user1).stake(amount, LP_180D, false);
       const s = await nftStaking.stakes(0);
-      // weighted = 1000e18 * 50000 * 15000 / 1e8 = 7500e18
-      expect(s.weightedAmount).to.equal(ethers.parseEther("7500"));
+      expect(s.weightedAmount).to.equal(ethers.parseEther("2600"));
     });
 
-    it("MFP × 360d: 1000 MIC → weighted = 1000 × 10 × 2 = 20000", async () => {
-      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_MFP);
+    it("360d: 1000 MIC → weighted = 1000 × 5.0 = 5000", async () => {
       const amount = ethers.parseEther("1000");
       await nftStaking.connect(user1).stake(amount, LP_360D, false);
       const s = await nftStaking.stakes(0);
-      // weighted = 1000e18 * 100000 * 20000 / 1e8 = 20000e18
-      expect(s.weightedAmount).to.equal(ethers.parseEther("20000"));
+      expect(s.weightedAmount).to.equal(ethers.parseEther("5000"));
+    });
+
+    it("the NFT tier does NOT change the weight — MFP weighs the same as NoNFT", async () => {
+      const amount = ethers.parseEther("1000");
+      await nftStaking.connect(user1).stake(amount, LP_30D, false);          // NoNFT
+      await nftStaking.connect(oracle).setUserTier(user2.address, TIER_MFP);
+      await micToken.transfer(user2.address, amount);
+      await micToken.connect(user2).approve(await nftStaking.getAddress(), ethers.MaxUint256);
+      await nftStaking.connect(user2).stake(amount, LP_30D, false);          // MFP
+
+      const noNft = await nftStaking.stakes(0);
+      const mfp   = await nftStaking.stakes(1);
+      expect(mfp.weightedAmount).to.equal(noNft.weightedAmount);
+      expect(mfp.weightedAmount).to.equal(ethers.parseEther("1000"));
     });
   });
 
@@ -335,9 +336,9 @@ describe("NFTStaking", function () {
     it("should update totalWeightedStaked", async () => {
       const amount = ethers.parseEther("1000");
       await nftStaking.connect(user1).stake(amount, LP_30D, false);
-      // NoNFT × 30d: weighted = 500e18
+      // 30d lock multiplier ×1.0 → weighted = 1000e18
       expect(await nftStaking.totalWeightedStaked()).to.equal(
-        ethers.parseEther("500")
+        ethers.parseEther("1000")
       );
     });
 
@@ -415,54 +416,40 @@ describe("NFTStaking", function () {
   // ─────────────────────────────────────────────────────────────────────────
   // Staking caps per tier
   // ─────────────────────────────────────────────────────────────────────────
-  describe("Staking caps", () => {
-    it("Builder: should revert if exceeds 10,000 MIC cap", async () => {
-      await nftStaking
-        .connect(oracle)
-        .setUserTier(user1.address, TIER_BUILDER);
-      const overCap = ethers.parseEther("10001");
+  // ARCHITECTURE CHANGE (April 2026): per-tier staking caps are NO LONGER ENFORCED.
+  // Pure MIC staking — anyone stakes any amount. The CAP_* constants survive on the
+  // contract only as deprecated references; these tests pin that they are inert.
+  describe("Staking caps are NOT enforced (deprecated)", () => {
+    it("Builder: can stake past the old 10,000 MIC cap", async () => {
+      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_BUILDER);
+      await micToken.transfer(user1.address, ethers.parseEther("10001"));
       await expect(
-        nftStaking.connect(user1).stake(overCap, LP_30D, false)
-      ).to.be.revertedWith("Staking: exceeds tier cap");
-    });
-
-    it("Builder: should allow exactly 10,000 MIC", async () => {
-      await nftStaking
-        .connect(oracle)
-        .setUserTier(user1.address, TIER_BUILDER);
-      await expect(
-        nftStaking
-          .connect(user1)
-          .stake(ethers.parseEther("10000"), LP_30D, false)
+        nftStaking.connect(user1).stake(ethers.parseEther("10001"), LP_30D, false)
       ).to.not.be.reverted;
     });
 
-    it("Maker: should revert if exceeds 25,000 MIC cap", async () => {
+    it("Maker: can stake past the old 25,000 MIC cap", async () => {
       await nftStaking.connect(oracle).setUserTier(user1.address, TIER_MAKER);
-      const overCap = ethers.parseEther("25001");
+      await micToken.transfer(user1.address, ethers.parseEther("25001"));
       await expect(
-        nftStaking.connect(user1).stake(overCap, LP_30D, false)
-      ).to.be.revertedWith("Staking: exceeds tier cap");
+        nftStaking.connect(user1).stake(ethers.parseEther("25001"), LP_30D, false)
+      ).to.not.be.reverted;
     });
 
-    it("Luminary: should revert if exceeds 50,000 MIC cap", async () => {
-      await nftStaking
-        .connect(oracle)
-        .setUserTier(user1.address, TIER_LUMINARY);
-      const overCap = ethers.parseEther("50001");
+    it("Luminary: can stake past the old 50,000 MIC cap", async () => {
+      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_LUMINARY);
+      await micToken.transfer(user1.address, ethers.parseEther("50001"));
       await expect(
-        nftStaking.connect(user1).stake(overCap, LP_30D, false)
-      ).to.be.revertedWith("Staking: exceeds tier cap");
+        nftStaking.connect(user1).stake(ethers.parseEther("50001"), LP_30D, false)
+      ).to.not.be.reverted;
     });
 
-    it("MFP: should revert if exceeds 100,000 MIC cap", async () => {
+    it("MFP: can stake past the old 100,000 MIC cap", async () => {
       await nftStaking.connect(oracle).setUserTier(user1.address, TIER_MFP);
-      // Give user1 enough MIC first
       await micToken.transfer(user1.address, ethers.parseEther("100001"));
-      const overCap = ethers.parseEther("100001");
       await expect(
-        nftStaking.connect(user1).stake(overCap, LP_30D, false)
-      ).to.be.revertedWith("Staking: exceeds tier cap");
+        nftStaking.connect(user1).stake(ethers.parseEther("100001"), LP_30D, false)
+      ).to.not.be.reverted;
     });
 
     it("NoNFT: cap is Unlimited — can stake any large amount", async () => {
@@ -475,22 +462,15 @@ describe("NFTStaking", function () {
       ).to.not.be.reverted;
     });
 
-    it("Builder: cumulative stakes across multiple positions should respect cap", async () => {
-      await nftStaking
-        .connect(oracle)
-        .setUserTier(user1.address, TIER_BUILDER);
-      await nftStaking
-        .connect(user1)
-        .stake(ethers.parseEther("6000"), LP_30D, false);
-      await nftStaking
-        .connect(user1)
-        .stake(ethers.parseEther("4000"), LP_90D, false);
-      // Now at cap: 10,000 total
+    it("Builder: cumulative stakes are not capped either", async () => {
+      await nftStaking.connect(oracle).setUserTier(user1.address, TIER_BUILDER);
+      await micToken.transfer(user1.address, ethers.parseEther("10001"));
+      await nftStaking.connect(user1).stake(ethers.parseEther("6000"), LP_30D, false);
+      await nftStaking.connect(user1).stake(ethers.parseEther("4000"), LP_90D, false);
+      // Past the old 10,000 cumulative cap — still allowed.
       await expect(
-        nftStaking
-          .connect(user1)
-          .stake(ethers.parseEther("1"), LP_30D, false)
-      ).to.be.revertedWith("Staking: exceeds tier cap");
+        nftStaking.connect(user1).stake(ethers.parseEther("1"), LP_30D, false)
+      ).to.not.be.reverted;
     });
   });
 
@@ -519,9 +499,19 @@ describe("NFTStaking", function () {
   describe("useLockedMic flag", () => {
     it("should store useLockedMic=true in StakeInfo", async () => {
       const amount = ethers.parseEther("1000");
-      await nftStaking.connect(user1).stake(amount, LP_30D, true);
+      // Locked (vesting) MIC must be staked for the full 360-day period.
+      await nftStaking.connect(user1).stake(amount, LP_360D, true);
       const s = await nftStaking.stakes(0);
       expect(s.useLockedMic).to.be.true;
+    });
+
+    it("rejects locked MIC on any lock period shorter than 360 days", async () => {
+      const amount = ethers.parseEther("1000");
+      for (const lp of [LP_30D, LP_90D, LP_180D]) {
+        await expect(
+          nftStaking.connect(user1).stake(amount, lp, true)
+        ).to.be.revertedWith("Staking: locked MIC requires 360d lock");
+      }
     });
 
     it("should store useLockedMic=false in StakeInfo", async () => {
@@ -533,9 +523,9 @@ describe("NFTStaking", function () {
 
     it("should emit Staked event with useLockedMic=true", async () => {
       const amount = ethers.parseEther("1000");
-      await expect(nftStaking.connect(user1).stake(amount, LP_30D, true))
+      await expect(nftStaking.connect(user1).stake(amount, LP_360D, true))
         .to.emit(nftStaking, "Staked")
-        .withArgs(user1.address, 0, amount, TIER_NO_NFT, LP_30D, true);
+        .withArgs(user1.address, 0, amount, TIER_NO_NFT, LP_360D, true);
     });
 
     it("should emit Staked event with useLockedMic=false", async () => {
@@ -570,10 +560,10 @@ describe("NFTStaking", function () {
       // Verify user1's tokens are locked
       expect(await lockManager.lockedOf(user1.address)).to.equal(AMOUNT);
 
-      // Now stake with useLockedMic=true — should succeed because
-      // NFTStaking is an approvedStakingContract
+      // Now stake with useLockedMic=true (360d lock is mandatory for locked MIC) —
+      // should succeed because NFTStaking is an approvedStakingContract
       await expect(
-        nftStaking.connect(user1).stake(AMOUNT, LP_30D, true)
+        nftStaking.connect(user1).stake(AMOUNT, LP_360D, true)
       ).to.not.be.reverted;
 
       const s = await nftStaking.stakes(0);
@@ -613,9 +603,11 @@ describe("NFTStaking", function () {
         .connect(user2)
         .approve(await unapprovedStaking.getAddress(), ethers.MaxUint256);
 
-      // Should revert: locked tokens cannot go to unapproved contract
+      // Should revert: locked tokens cannot go to unapproved contract.
+      // Use LP_360D so we get past the locked-MIC lock-period guard and actually
+      // reach the MICToken transfer check we're asserting on.
       await expect(
-        unapprovedStaking.connect(user2).stake(AMOUNT, LP_30D, true)
+        unapprovedStaking.connect(user2).stake(AMOUNT, LP_360D, true)
       ).to.be.revertedWith("MIC: transfer exceeds unlocked balance");
     });
   });
@@ -671,8 +663,8 @@ describe("NFTStaking", function () {
       const weightedBefore = await nftStaking.totalWeightedStaked();
       await time.increase(THIRTY_DAYS);
       await nftStaking.connect(user1).unstake(1);
-      // user1 had weighted = 1000 * 5000 * 10000 / 1e8 = 500 MIC
-      const expectedWeightedUser1 = ethers.parseEther("500");
+      // user1 staked 1000 MIC at 30d (×1.0) → weighted = 1000 MIC
+      const expectedWeightedUser1 = ethers.parseEther("1000");
       expect(await nftStaking.totalWeightedStaked()).to.equal(
         weightedBefore - expectedWeightedUser1
       );

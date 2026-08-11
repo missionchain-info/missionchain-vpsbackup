@@ -313,13 +313,13 @@ footer .disclaimer{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,6
 <div class="section-num">Section 7</div>
 <h2 class="section-title">Formula Variables</h2>
 <p>Mission Chain 문서의 모든 수식, 변수명, 함수 표기, 수치 상수는 영어 원문 그대로 유지해야 합니다. 기호, 구분자, 표기법을 현지화하면 안 됩니다.</p>
-<p>Mission Chain은 모든 수식에서 국제 표준인 점 (.) 을 소수점 구분자로 사용합니다. 예: 0.60, 0.95, 22,907,500. 수식 안에서는 쉼표나 현지 숫자 표기를 사용하지 마십시오.</p>
+<p>Mission Chain은 모든 수식에서 국제 표준인 점 (.) 을 소수점 구분자로 사용합니다. 예: 0.59, 0.95, 22,907,500. 수식 안에서는 쉼표나 현지 숫자 표기를 사용하지 마십시오.</p>
 <div class="wp-table-wrap"><table class="wp-table formula-table"><thead><tr><th>Formula / Variable</th><th>Definition / Meaning of each variable</th></tr></thead><tbody>
 <tr><td><span class="formula-math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span></td><td>Adaptive Emission Engine의 일일 MIC 배출 공식입니다. t = 생태계 제네시스 이후 경과한 일수. 네 구성 요소를 모두 곱해 E(t)를 만들며, 이는 t일에 네트워크에 배출되는 총 MIC를 의미합니다.</td></tr>
 <tr><td><span class="formula-math">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup></span></td><td>지수 감쇠형 기본 배출입니다. E₀ ≈ 22,907,500 MIC/일 (초기 속도). T_half = 180일. 감쇠와 결합되어 약 3년에 걸쳐 mining pool에 정확히 5,950,000,000 MIC (총 공급의 85%)를 배분하여 99% 배출에 도달합니다.</td></tr>
 <tr><td><span class="formula-math">D(t) = 0.5 + U(t)</span></td><td>수요 계수입니다. U(t) = MICE 사용률. 범위: [0.5, 1.5]. MICE 라이선스의 실시간 수요에 따라 배출량을 조정하며, 사용률이 높을 때는 배출을 늘리고 낮을 때는 줄입니다.</td></tr>
 <tr><td><span class="formula-math">R(t) = clamp(250%/ROI, 0.5, 2.0)</span></td><td>ROI 조절기입니다. 목표 ROI = 250%. ROI가 목표를 초과하면 R(t)는 배출량을 낮추고, 목표보다 낮으면 배출량을 높입니다. 극단적인 변동을 막기 위해 0.5와 2.0 사이로 제한됩니다.</td></tr>
-<tr><td><span class="formula-math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.60 × E(t)</span></td><td>day t 에서 MICE operator i 의 일일 MIC reward 입니다. M<sub>i</sub> 는 operator i 가 보유한 active MICE license 수이고, N<sub>t</sub> 는 network 전체 active MICE license 총량입니다. 0.60은 일일 emission 중 60%가 Miners pool에 배정됨을 뜻합니다.</td></tr>
+<tr><td><span class="formula-math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × 0.59 × E(t)</span></td><td>day t 에서 MICE operator i 의 일일 MIC reward 입니다. M<sub>i</sub> 는 operator i 가 보유한 active MICE license 수이고, N<sub>t</sub> 는 network 전체 active MICE license 총량입니다. 0.59은 일일 emission 중 59%가 Miners pool에 배정됨을 뜻합니다.</td></tr>
 <tr><td><span class="formula-math">VotingWeight<sub>MFP,i</sub> = S<sub>i</sub> / Σ S<sub>MFP,eligible</sub></span></td><td>헌법적 거버넌스 집합 내에서 거버넌스 자격을 갖춘 MFP holder i의 voting weight입니다. S<sub>i</sub>는 holder i에게 인정되는 적격 MIC stake이고, Σ S<sub>MFP,eligible</sub>는 거버넌스 자격을 갖춘 모든 MFP holder의 적격 MIC stake 합계입니다. MFP를 보유하는 것만으로는 voting weight가 활성화되지 않으며, 승인된 staking 및 남은 lock 규칙도 충족되어야 합니다.</td></tr>
 <tr><td><span class="formula-math">PoolShare<sub>i</sub>(t) = (S<sub>i</sub> × TL<sub>mult</sub> / Σ weighted_stakes) × 0.25 × E(t)</span></td><td>holder i 의 일일 Staking Pool allocation 입니다. 0.25 는 daily emission 중 25%가 Staking pool 에 배정됨을 뜻합니다. TL_mult는 time-lock 배수 (30d=1×, 90d=1.25×, 180d=1.5×, 360d=2×). NFT 배수 미적용, 순수 MIC 기반.</td></tr>
 <tr><td><span class="formula-math">W(t) = min(1.0, t/30)</span></td><td>생태계 출시 후 첫 30일 동안 적용되는 warm-up factor 입니다. 초기 단계를 부드럽게 만들기 위해 유효 emission 을 점진적으로 증가시킵니다.</td></tr>

@@ -366,7 +366,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <span class="g-full">MISSION CHAIN</span><br/>
         <span style="font-weight:300;font-size:.65em;color:var(--gray)" data-t="hero-sub">네트워크</span>
       </h1>
-      <div class="hero-tagline anim a2" data-t="hero-tagline">믿음에서 영감을 받다. 사람을 위해 만들어지다.</div>
+      <div class="hero-tagline anim a2" data-t="hero-tagline">믿음에서 태어나다. 사람을 위해 만들어지다.</div>
       <div class="hero-quote anim a3">
         <span data-t="hero-quote">"너희는 세상의 빛이라 산 위에 있는 동네가 숨겨지지 못할 것이요"</span>
         <cite>— 마태복음 5:14</cite>
@@ -683,7 +683,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td>보편적 교환 매개체</td><td>모든 내부 거래 — 강좌 수수료, 작업 대금, 마켓플레이스 구매, 플랫폼 수수료 — 는 MIC로 표시되고 정산됩니다.</td><td>Mission Learn, Mission Work, Mission Arts, Hub 활동 보상, 각 MICE 활성화의 50%</td></tr>
         <tr><td>거버넌스 스테이크</td><td>MIC는 거버넌스 자격과 투표 가중치를 결정하기 위해 승인된 MFP 규칙과 함께 스테이킹됩니다. 자격을 갖춘 MIC 스테이크가 없으면 거버넌스 참여도 없습니다.</td><td>DAO 투표, MFP 거버넌스, 제안 임계값</td></tr>
-        <tr><td>프로토콜 할당</td><td>MIC는 프로토콜이 관리하는 할당 규칙에 따라 Hindex 알고리즘을 통해 네트워크 참여자, 스테이커, DAO 트레저리에게 매일 발행됩니다.</td><td>MICE 참여자 60%, 스테이킹 25%, DAO 트레저리 10%, Community NFT 할당 5%</td></tr>
+        <tr><td>프로토콜 할당</td><td>MIC는 프로토콜이 관리하는 할당 규칙에 따라 Hindex 알고리즘을 통해 네트워크 참여자, 스테이커, DAO 트레저리에게 매일 발행됩니다.</td><td>MICE 참여자 59%, 스테이킹 25%, DAO 트레저리 10%, Community NFT 할당 5%</td></tr>
       </tbody>
     </table>
   </div>
@@ -700,11 +700,44 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>인센티브 &amp; 에어드랍</td><td>0.25%</td><td class="mono">17,500,000</td><td>6개월 후 10%, 이후 매월 2.5%</td></tr>
         <tr><td>DEX / CEX 상장</td><td>1.50%</td><td class="mono">105,000,000</td><td>예상 상장가 USD 0.01 · 시장 유동성용으로 잠금 해제</td></tr>
         <tr><td>Founders, Operating &amp; Management</td><td>4.00%</td><td class="mono">280,000,000</td><td>24개월 후 10%, 이후 매월 2.5%</td></tr>
-        <tr><td>DAO 트레저리</td><td>1.50%</td><td class="mono">105,000,000</td><td>24개월 후 10%, 이후 매월 2.5%</td></tr>
+        <tr><td>DAO 트레저리 / Churches (제네시스)</td><td>1.50%</td><td class="mono">105,000,000</td><td><strong>동결</strong> — MIC를 전송할 수 없는 컨트랙트에 보관됨. 해당 일정은 실행 불가. "동결된 제네시스 배분" 참조</td></tr>
         <tr><td><strong>총 공급량</strong></td><td><strong>100%</strong></td><td class="mono"><strong>7,000,000,000</strong></td><td>불변 하드캡 — 추가 발행 불가</td></tr>
       </tbody>
     </table>
   </div>
+  <h3 class="sub-title">토큰 소각 기록</h3>
+  <div class="callout gold">
+    <p><strong>2026년 8월 5일 — 31,500,000 MIC 영구 소각.</strong> 사전 발행 물량이 1,050,000,000에서 <strong>1,018,500,000 MIC</strong>로 감소했습니다. 7,000,000,000 하드 캡은 변경되지 않습니다.</p>
+  </div>
+  <p>소각된 MIC는 DEX/CEX Listing 배분 중 LiquidityPool v5에 예치되어 있던 부분입니다. 해당 컨트랙트에는 어떤 형태의 인출 함수도 없으며 스왑 진입점은 설계상 revert하므로, 이 토큰은 매도·대여·이전이 애초에 불가능했습니다. 존재하는 유일한 출구는 컨트랙트 자신의 잔액을 파기하는 <span class="mono">swapAndBurnMIC</span>뿐이었습니다. 사전 발행 물량의 3%를 죽은 컨트랙트에 남겨두고 독자에게 락업을 믿어달라고 요구하는 대신, 프로토콜은 이를 파기했습니다.</p>
+  <p><strong>이 소각은 되돌리거나 상쇄할 수 없습니다.</strong> MIC를 생성할 수 있는 유일한 경로는 <span class="mono">mintFromMining</span>이며, 소각으로 초기화되지 않는 누적 카운터로 제한됩니다. 창립 팀을 포함한 어떤 키 보유자도 이 토큰을 재발행할 수 없습니다.</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <tbody>
+        <tr><td>소각 수량</td><td class="mono">31,500,000 MIC</td></tr>
+        <tr><td>소각 후 사전 발행 물량</td><td class="mono">1,018,500,000 MIC</td></tr>
+        <tr><td>출처 컨트랙트</td><td class="mono">LiquidityPool v5 — 0x37091454eB49179D3aFF12402980F63cFC3e050a</td></tr>
+        <tr><td>트랜잭션</td><td class="mono">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</td></tr>
+        <tr><td>블록</td><td class="mono">114,156,353 — BNB Smart Chain</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>직접 검증: <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener">소각 트랜잭션</a>에 31,500,000 MIC가 제로 주소로 전송된 기록이 있으며, <a href="https://bscscan.com/token/0xf27ec0c311728b923b22828002c992c799326182" target="_blank" rel="noopener">MIC 토큰 페이지</a>에서 감소한 총 공급량을 확인할 수 있습니다.</p>
+  <p><strong>위 표의 DEX / CEX Listing 배분에 미치는 영향:</strong> 배분된 105,000,000 MIC 중 31,500,000은 소각되었고 73,500,000은 Listing Reserve Vault에 남아 있습니다. 그 중 50,000,000은 프로토콜 유동성 풀에 투입되고, 23,500,000은 외부 시장 개설을 위해 보유합니다.</p>
+
+  <h3 class="sub-title">동결된 제네시스 배분</h3>
+  <div class="callout gold">
+    <p><strong>제네시스에서 발행된 105,000,000 MIC는 창립 팀을 포함해 누구도 옮길 수 없습니다.</strong> 이 토큰은 총 공급량에는 남아 있으나 결코 유통될 수 없습니다. 프로토콜이 사용할 수 있는 준비금이 아니며, 그렇게 제시하지도 않습니다.</p>
+  </div>
+  <p>DAO 트레저리 및 Churches 배분은 <span class="mono">0x1ed5C848D1244a618Bd95Ff92d4f8C2356d3a42F</span> 주소의 컨트랙트로 발행되었습니다. 해당 컨트랙트는 오직 USDT 하나만 선언합니다. 세 개의 쓰기 함수 모두 USDT를 옮기며, MIC에 대한 참조도, 지출자를 승인할 수 있는 코드도 없고, 업그레이드 가능한 프록시도 아닙니다. 그곳에 있는 MIC를 전송·지급·소각할 수 있는 호출은 존재하지 않습니다.</p>
+  <p>위에 기록된 LiquidityPool v5 잔액과 달리, 이쪽은 소각조차 불가능합니다. 어떤 형태의 출구도 없습니다. 이 배분에 대해 이전에 공표한 베스팅 일정 — 24개월 클리프, 이후 10%와 매월 2.5% — 은 실행할 함수가 존재하지 않으므로 실행될 수 없습니다.</p>
+  <p>이는 개발 과정의 오류이며, 2026년 8월 트레저리 도구를 만들던 중 발견했습니다. 이 컨트랙트는 USDT용으로 작성되었다가 이후 MIC까지 보관하는 데 쓰였고, 받은 것을 보낼 수 있는지 아무도 확인하지 않았습니다. 조용히 안고 가는 대신 여기에 공개하며, 누구든 BSCScan의 컨트랙트 소스에서 직접 확인할 수 있습니다.</p>
+
+  <h4 class="mini-title">커뮤니티 프로그램의 새로운 재원</h4>
+  <p>Churches &amp; Christian Community 프로그램은 동결된 제네시스 배분이 아니라 진행 중인 발행에서 재원을 받아 계속됩니다. <strong>DAO 채굴 배분의 10%, 즉 일일 발행량의 1%가 매일 발행분이 도착할 때마다 전용 Churches 볼트로 전달됩니다.</strong></p>
+  <p>공표된 발행 배분은 그대로입니다. 채굴자 59% · 스테이킹 25% · DAO 10% · Community NFT 5% · MFP-NFT 1%. Churches 몫은 DAO 자체 10% <em>안에서</em> 이루어지는 배분이며 여섯 번째 조각이 아니므로, 이를 위해 축소되는 프로그램은 없습니다.</p>
+  <p>각 지원금은 MIC 전송과 수령인의 온체인 베스팅 일정 생성을 같은 트랜잭션에서 수행합니다 — 24개월 클리프, 클리프 시점 10%, 이후 매월 2.5%. 일정 없이 지원금을 내보내는 코드 경로는 존재하지 않습니다. 이번 사건 이후 채택하고 이제 테스트로 검증하는 설계 원칙은 이것입니다. <strong>토큰을 보관할 수 있는 컨트랙트는 그 토큰을 보낼 수 있어야 한다.</strong></p>
+
   <h3 class="sub-title">7.2 MICE — 기간 한정 네트워크 참여 크레덴셜</h3>
   <p>MICE는 토큰이 아니며 투자 상품도 아닙니다. 고정된 프로토콜 할당 프레임워크 내의 기간 한정 네트워크 참여 크레덴셜로, 활성화로부터 360일간 유효합니다.</p>
   <div class="grid2">
@@ -713,10 +746,10 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <p>MICE 크레덴셜을 활성화하면 귀하의 참여가 Hindex 할당 주기 내에서 인정됩니다. 프로토콜 할당은 활성 기간 동안의 승인된 참여 모델과 당시의 프로토콜 조건에 따라 달라집니다. 360일 후 크레덴셜은 자동으로 만료됩니다 — 표준 공식은 기술 부록을 참조하십시오.</p>
       <div class="formula">
   <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-  <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span>
+  <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span>
   <div class="comment" style="margin-top:8px;font-size:0.8rem">
-    초기 스테이킹 부스트: MICE 참여자는 첫 90일간 50% → 60%로 선형 증가하고, 이후 60%로 고정됩니다.<br/>
-    E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)
+    초기 스테이킹 부스트: MICE 참여자는 첫 90일간 49% → 59%로 선형 증가하고, 이후 59%로 고정됩니다.<br/>
+    E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)
   </div>
 </div>
     </div>
@@ -789,7 +822,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>활동</th><th>MIC 흐름</th><th>가치 분배</th></tr></thead>
       <tbody>
         <tr><td>Mission Learn 수수료</td><td>MIC 수집 → 부분 소각</td><td>크리에이터 60% · 매입 &amp; 소각 20% · 트레저리 20%</td></tr>
-        <tr><td>MICE 크레덴셜 활성화</td><td>50% USDT + 50% MIC → 소각 + 승인된 할당 프로그램</td><td>Treasure DAO 12.5%, Liquidity Pool 40%, Reserved Staking 5%</td></tr>
+        <tr><td>MICE 크레덴셜 활성화</td><td>50% USDT + 50% MIC → 소각 + 승인된 할당 프로그램</td><td>DAO Treasury 12.5%, Liquidity Pool 40%, Listing Reserve 5%</td></tr>
         <tr><td>Mission Work 작업 대금</td><td>100% MIC 온체인 정산</td><td>플랫폼 수수료는 트레저리, 소각, Hub 보상으로 분배; 잔액은 크리에이터에게</td></tr>
         <tr><td>Mission Arts 라이선싱</td><td>라이선스당 MIC + 선택적 로열티 스트림</td><td>크리에이터 80–85% · 프로토콜 10–15% · 소각 5%</td></tr>
         <tr><td>커뮤니티 참여 인센티브</td><td>이벤트 할당 프로그램에서 나오는 MIC</td><td>크리에이터 인센티브 + 생태계 플라이휠 강화</td></tr>
@@ -819,17 +852,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
   <h3 class="sub-title">8.1 적응형 발행 엔진</h3>
   <div class="formula">
-    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span><br/>
-    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ ≈ 22,907,500 MIC/일 · T<sub>half</sub> = 180일 · D(t) = 0.5 + U(t) [0.5, 1.5] · R(t) = clamp(250%/ROI, 0.5, 2.0) · W(t) = min(1.0, t/30) [워밍업 계수, 첫 30일]</span>
+    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)</span><br/>
+    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ ≈ 750,000 MIC/일 · T<sub>half</sub> = 8년 · D(t) = 0.5 + U(t) [0.5, 1.5] · L(H) = clamp(H/110, 0.02, 2.0) · W(t) = min(1.0, t/30) [워밍업 계수, 첫 30일]</span>
   </div>
   <div class="wp-table-wrap" style="margin-top:18px">
     <table class="wp-table">
       <thead><tr><th>구성 요소</th><th>값 / 공식</th><th>기능</th></tr></thead>
       <tbody>
-        <tr><td>E<sub>base</sub></td><td>22,907,500 MIC/일 (E₀ 초기 발행률)</td><td>프로토콜 스케줄을 통해 정확히 5.95B MIC를 분배하는 초기 할당률</td></tr>
+        <tr><td>E<sub>base</sub></td><td>750,000 MIC/일 (E₀ 초기 발행률)</td><td>프로토콜 스케줄을 통해 정확히 5.95B MIC를 분배하는 초기 할당률</td></tr>
         <tr><td>W(t)</td><td>min(1.0, t/30)</td><td>총 공급량을 바꾸지 않으면서 초기 단계 발행을 완만하게 하는 첫 30일 워밍업 계수</td></tr>
         <tr><td>D(t)</td><td>0.5 + U(t)</td><td>수요 계수 — U(t) = MICE 활용률. 범위 [0.5, 1.5]</td></tr>
-        <tr><td>R(t)</td><td>clamp(250%/ROI, 0.5, 2.0)</td><td>내부 할당 압력 지수에 기반한 발행 균형 계수 (기술적 사항, 전체 명세는 부록 D 참조 — 프로토콜 안정성 유지를 위해 클램프 처리)</td></tr>
+        <tr><td>L(H)</td><td>clamp(H/110, 0.02, 2.0)</td><td>내부 할당 압력 지수에 기반한 발행 균형 계수 (기술적 사항, 전체 명세는 부록 D 참조 — 프로토콜 안정성 유지를 위해 클램프 처리)</td></tr>
       </tbody>
     </table>
   </div>
@@ -917,31 +950,31 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <div class="timeline" style="margin-top:28px">
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <div class="tl-phase">Phase I · Q1–Q2 2026</div>
+      <div class="tl-phase">Phase I</div>
       <div class="tl-title">전체 전략 &amp; 기반</div>
       <div class="tl-body"><ul class="dot-list"><li>White Paper &amp; 부록 문서 완성.</li><li>핵심 Smart Contracts V1 범위, DAO 프레임워크 마일스톤, 초기 내부 감사 라운드 완료.</li><li>SEED Sale → Presale → SWAP 활성화 (Q2 말).</li><li>Mission World 데모 출시.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--blue2)"><div style="width:8px;height:8px;background:var(--blue2);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--blue2)">Phase II · Q3–Q4 2026</div>
+      <div class="tl-phase" style="color:var(--blue2)">Phase II</div>
       <div class="tl-title">MICE 분배 &amp; 채굴 출시</div>
       <div class="tl-body"><ul class="dot-list"><li>모든 가격 라운드에 걸쳐 MICE 분배 시작.</li><li>완전한 Hindex 발행 엔진이 활성화된 MIC 채굴 출시.</li><li>Mission World가 세 기둥 아키텍처 위에 구축된 최초의 커뮤니티 플랫폼으로 공식 출시.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--gold)"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--gold)">Phase III · Q1–Q2 2027</div>
+      <div class="tl-phase" style="color:var(--gold)">Phase III</div>
       <div class="tl-title">DEX 상장 &amp; 생태계 확장</div>
       <div class="tl-body"><ul class="dot-list"><li>주요 거래소 DEX 상장.</li><li>Mission Learn, Mission Social, Mission Chain (L2) 테스트넷 출시.</li><li>확장된 크리에이터 이코노미 인프라.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--green)"><div style="width:8px;height:8px;background:var(--green);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--green)">Phase IV · Q3–Q4 2027</div>
+      <div class="tl-phase" style="color:var(--green)">Phase IV</div>
       <div class="tl-title">CEX 상장 &amp; 크로스체인 브리지</div>
       <div class="tl-body"><ul class="dot-list"><li>주요 암호화폐 거래소 CEX 상장.</li><li>대규모 Mission Work 마켓플레이스.</li><li>멀티체인 지원을 위한 크로스체인 브리지 통합.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:#8B6F47"><div style="width:8px;height:8px;background:#8B6F47;border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:#8B6F47">Phase V · Q1 2028+</div>
+      <div class="tl-phase" style="color:#8B6F47">Phase V</div>
       <div class="tl-title">생태계 확장 &amp; L2 메인넷</div>
       <div class="tl-body"><ul class="dot-list"><li>모든 Mission 제품에 걸친 완전한 생태계 확장.</li><li>Mission Chain (L2) 메인넷 출시.</li><li>글로벌 채택 마일스톤과 지속적 성장.</li></ul></div>
     </div>
@@ -1139,8 +1172,8 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td><strong>Distribution</strong></td><td>SEED 참여자 및 성장 네트워크를 위한 커뮤니티 및 추천 분배</td><td>20% (~$76,250)</td></tr>
         <tr><td><strong>Operational</strong></td><td>핵심 프로토콜 엔지니어링, 보안 감사, 인프라, 도구 및 팀 운영 급여</td><td>20% (~$76,250)</td></tr>
-        <tr><td><strong>Management Bonus</strong></td><td>관리 및 리더십 인센티브 — 스튜어드 평의회 &ge;75% 투표로 지급</td><td>10% (~$38,125)</td></tr>
-        <tr><td><strong>Reserved Expenses (DAO 거버넌스)</strong></td><td>향후 감사, 확장 및 생태계 필요를 위한 전략적 예비금 — 스튜어드 평의회 &ge;75% 투표로 지급 (1단계) &rarr; DAOGovernor (&beta;단계)</td><td>50% (~$190,625)</td></tr>
+        <tr><td><strong>Management Bonus</strong></td><td>관리 및 리더십 인센티브 — 스튜어드 평의회 5명 중 3명 투표로 지급</td><td>10% (~$38,125)</td></tr>
+        <tr><td><strong>Reserved Expenses (DAO 거버넌스)</strong></td><td>향후 감사, 확장 및 생태계 필요를 위한 전략적 예비금 — 스튜어드 평의회 5명 중 3명 투표로 지급 (1단계) &rarr; DAOGovernor (&beta;단계)</td><td>50% (~$190,625)</td></tr>
         <tr><td><strong>합계</strong></td><td><strong>SEED 공개 판매 총수익의 100%</strong></td><td><strong>~USD 381,250</strong></td></tr>
       </tbody>
     </table>
@@ -1242,7 +1275,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <tr><td>자금 출처</td><td>PRE-SALE 수익금만 — Treasury, 채굴 또는 기타 풀이 아님</td></tr>
     <tr><td>Ambassador 자격</td><td>추천인은 Direct Referral을 받기 전에 활성 MICE 운영자 또는 Community NFT 보유자여야 함.</td></tr>
     <tr><td>프로그램 깊이</td><td>최대 2단계만 — 더 깊은 체인은 보상 없음</td></tr>
-    <tr><td>총 프로그램 한도</td><td>총 PRE-SALE 수익금의 ≤ 15% ($1.5M 조달 시 약 $225,000)</td></tr>
+    <tr><td>총 프로그램 한도</td><td>PRE-SALE 수익금의 정확히 10% (직접 7% + 간접 3%) — RevenueRouter에 온체인으로 고정되어 조정 불가. $1,575,000 하드캡 기준 약 $157,500</td></tr>
     <tr><td>프로그램 종료</td><td>PRE-SALE 단계 종료 시 영구적으로 비활성화 — 예외 없음</td></tr>
   </tbody></table></div>
 <h4 class="mini-title">B.4.3 무결성 보호 장치</h4>
@@ -1375,10 +1408,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>할당 대상</th><th>일일 배출량 E(t)의 비중</th></tr></thead>
       <tbody>
-        <tr><td>채굴자 (MICE)</td><td class="hl">60%</td></tr>
+        <tr><td>채굴자 (MICE)</td><td class="hl">59%</td></tr>
         <tr><td>스테이킹</td><td class="hl">25%</td></tr>
         <tr><td>DAO 재무부</td><td class="hl">10%</td></tr>
         <tr><td>커뮤니티 NFT 보상</td><td class="hl">5%</td></tr>
+        <tr><td>MFP-NFT Reward</td><td class="hl">1%</td></tr>
         <tr><td>합계</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
@@ -1387,7 +1421,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">C.6 채굴자 보상 공식</h3>
   <div class="formula">
     <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-    <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 50%→60% over first 90 days)</span><br/>
+    <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 49%→59% over first 90 days)</span><br/>
     <span class="comment">총 채굴 보상은 고정 유지 · 라이선스당 수익률은 참여 증가에 따라 감소 · 인플레이션 증폭 없음</span>
   </div>
   <div class="wp-table-wrap">
@@ -1398,12 +1432,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>N<sub>t</sub></td><td>t일의 모든 참여자에 걸친 총 활성 MICE 라이선스</td></tr>
         <tr><td>M<sub>i</sub></td><td>t일에 참여자 i가 보유한 활성 MICE 라이선스</td></tr>
         <tr><td>R<sub>MICE,i</sub>(t)</td><td>t일에 참여자 i에 대한 일일 MIC 보상</td></tr>
-        <tr><td>0.60</td><td>일일 배출량 중 MICE 채굴자의 비중 — 60%로 고정</td></tr>
+        <tr><td>0.59</td><td>일일 배출량 중 MICE 채굴자의 비중 — 59%로 고정</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout">
-    <p><strong>공식 해석:</strong> 각 참여자의 일일 보상은 해당 날짜의 총 활성 MICE 라이선스 중 자신의 비중에 비례합니다. 1,000개가 활성일 때 10개의 MICE를 보유한 참여자는 60% 채굴자 풀의 1%를 받습니다. <span class="math">E(t)</span>가 Hindex Algorithm에 따라 날마다 변하기 때문에, 일일 보상은 고정되지 않으며 참여자의 상대적 비중과 프로토콜의 현재 배출 비율을 모두 반영합니다.</p>
+    <p><strong>공식 해석:</strong> 각 참여자의 일일 보상은 해당 날짜의 총 활성 MICE 라이선스 중 자신의 비중에 비례합니다. 1,000개가 활성일 때 10개의 MICE를 보유한 참여자는 59% 채굴자 풀의 1%를 받습니다. <span class="math">E(t)</span>가 Hindex Algorithm에 따라 날마다 변하기 때문에, 일일 보상은 고정되지 않으며 참여자의 상대적 비중과 프로토콜의 현재 배출 비율을 모두 반영합니다.</p>
   </div>
 
   <h3 class="sub-title">C.7 Mission Ambassador Program (MICE 판매)</h3>
@@ -1441,17 +1475,18 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>배분 카테고리</th><th>USDT 비중</th></tr></thead>
       <tbody>
-        <tr><td>마케팅 및 판매</td><td class="hl">35%</td></tr>
+        <tr><td>추천 (직접 7% + 간접 3%)</td><td class="hl">10%</td></tr>
+        <tr><td>마케팅 및 판매</td><td class="hl">25%</td></tr>
         <tr><td>관리 및 운영</td><td class="hl">7.5%</td></tr>
-        <tr><td>Treasure DAO</td><td class="hl">12.5%</td></tr>
-        <tr><td>예비 스테이킹</td><td class="hl">5%</td></tr>
+        <tr><td>DAO Treasury</td><td class="hl">12.5%</td></tr>
+        <tr><td>상장 준비금</td><td class="hl">5%</td></tr>
         <tr><td>유동성 풀 + 버퍼</td><td class="hl">40%</td></tr>
         <tr><td>합계</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout green">
-    <p><strong>MICE 수익 배분:</strong> MICE 가격의 50%는 MIC로 지급(소각), 50%는 USDT로 지급됩니다. USDT 부분은 Pre-Sale과 동일한 배분을 따릅니다: 35% 마케팅 및 판매, 7.5% 관리, 57.5% 순자본.</p>
+    <p><strong>MICE 수익 배분:</strong> MICE 가격의 50%는 MIC로 지급(소각), 50%는 USDT로 지급됩니다. USDT 부분은 Pre-Sale과 동일한 배분을 따릅니다: 10% 추천, 25% 마케팅 및 판매, 7.5% 관리, 57.5% 순자본.</p>
   </div>
 
   <h3 class="sub-title">C.9 가드레일 및 규정 준수</h3>
@@ -1502,10 +1537,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>풀</th><th>채굴 비중</th><th>MIC 할당량</th><th>목적</th></tr></thead>
       <tbody>
-        <tr><td><strong>채굴자 (MICE)</strong></td><td class="hl">60%</td><td class="mono">3,570,000,000</td><td>MICE 라이선스 배출</td></tr>
+        <tr><td><strong>채굴자 (MICE)</strong></td><td class="hl">59%</td><td class="mono">3,510,500,000</td><td>MICE 라이선스 배출</td></tr>
         <tr><td><strong>스테이킹</strong></td><td class="hl">25%</td><td class="mono">1,487,500,000</td><td>MIC 스테이킹 보상 (모든 보유자)</td></tr>
         <tr><td><strong>DAO 재무부</strong></td><td class="hl">10%</td><td class="mono">595,000,000</td><td>생태계 개발, 파트너십, 준비금</td></tr>
         <tr><td><strong>커뮤니티 NFT 보상</strong></td><td class="hl">5%</td><td class="mono">297,500,000</td><td>커뮤니티 NFT 보유자 보상</td></tr>
+        <tr><td><strong>MFP-NFT Reward</strong></td><td class="hl">1%</td><td class="mono">59,500,000</td><td>MFP-NFT 보유자 배분</td></tr>
       </tbody>
     </table>
   </div>
@@ -1514,14 +1550,14 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>핵심 적응형 배출 엔진은 네 가지 독립적인 조정 요소를 사용합니다:</p>
 
   <div class="formula-label">총 배출 비율</div>
-  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × R(t) × W(t)</div>
+  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × L(H) × W(t) × A(N)</div>
 
   <p>여기서:</p>
   <ul>
-    <li><strong>E₀ ≈ 22,907,500 MIC/일</strong> — 초기 배출 비율 (7B의 85% ÷ 1년차 ~365일에 비례)</li>
-    <li><strong>λ ≈ 0.00385 일⁻¹</strong> — 지수 감쇠 상수 (T_half = 180일 ≈ 3년 후 99% 배출)</li>
+    <li><strong>E₀ ≈ 750,000 MIC/일</strong> — 초기 배출 비율 (7B의 85% ÷ 1년차 ~365일에 비례)</li>
+    <li><strong>λ ≈ 0.000237 일⁻¹</strong> — 지수 감쇠 상수 (T_half = 8년)</li>
     <li><strong>D(t) = 0.5 + U(t)</strong> — 수요 요인: 생태계 활동 점수 기반 범위 [0.5, 1.5]</li>
-    <li><strong>R(t) = clamp(250% / ROI(t), 0.5, 2.0)</strong> — ROI 조절기: 스테이킹 ROI와 역관계</li>
+    <li><strong>L(H) = clamp(H / 110, 0.02, 2.0)</strong> — ROI 조절기: 스테이킹 ROI와 역관계</li>
     <li><strong>W(t) = min(1.0, t / 30일)</strong> — 준비 요인: 첫 30일 동안 0%에서 100%로 선형 증가</li>
   </ul>
 
@@ -1540,17 +1576,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </ul>
   <p>U(t) = 0 (활동 없음)일 때, D(t) = 0.5 (기본의 50%). U(t) = 1.0 (최대 활동)일 때, D(t) = 1.5 (기본의 150%).</p>
 
-  <h4 class="mini-title">ROI 조절기 R(t)</h4>
-  <p>시스템은 스테이커를 위한 지속 가능한 15-25% APY를 목표로 합니다. 실제 스테이킹 ROI가 목표 이상으로 상승하면 R(t)는 보상을 냉각시키기 위해 배출을 감소시킵니다. ROI가 목표 이하로 떨어지면 R(t)는 증가시킵니다. 공식: R(t) = clamp(250% / ROI(t), 0.5, 2.0)은 다음을 보장합니다:
+  <h4 class="mini-title">ROI 조절기 L(H)</h4>
+  <p>시스템은 스테이커를 위한 지속 가능한 15-25% APY를 목표로 합니다. 실제 스테이킹 ROI가 목표 이상으로 상승하면 L(H)는 보상을 냉각시키기 위해 배출을 감소시킵니다. ROI가 목표 이하로 떨어지면 L(H)는 증가시킵니다. 공식: L(H) = clamp(H / 110, 0.02, 2.0)은 다음을 보장합니다:
   <ul>
-    <li>ROI = 25%일 때, R(t) = 1.0 (목표 범위)</li>
-    <li>ROI = 50% (과열)일 때, R(t) = 0.5 (배출 50% 감소)</li>
-    <li>ROI = 10% (고갈)일 때, R(t) = 2.0 (배출 2배)</li>
+    <li>ROI = 25%일 때, L(H) = 1.0 (목표 범위)</li>
+    <li>ROI = 50% (과열)일 때, L(H) = 0.5 (배출 50% 감소)</li>
+    <li>ROI = 10% (고갈)일 때, L(H) = 2.0 (배출 2배)</li>
   </ul>
   </p>
 
   <h4 class="mini-title">풀 분할 가드레일</h4>
-  <p>기본 분할은 채굴자 60% / 스테이킹 25% / DAO 재무부 10% / 커뮤니티 NFT 보상 5%이지만, 시스템은 극단적인 시나리오를 방지하기 위해 동적 가드레일을 시행합니다:</p>
+  <p>기본 분할은 채굴자 59% / 스테이킹 25% / DAO 재무부 10% / 커뮤니티 NFT 보상 5%이지만, 시스템은 극단적인 시나리오를 방지하기 위해 동적 가드레일을 시행합니다:</p>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>풀</th><th>최소 %</th><th>최대 %</th><th>트리거</th></tr></thead>
@@ -1567,13 +1603,13 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>출시 기간 동안 스테이킹 참여를 장려하기 위해, 시스템은 처음 90일 동안 채굴자로부터 스테이킹으로 일시적으로 10%를 재배분합니다:</p>
 
   <div class="formula-label">램프 기간 동안 채굴자 배분</div>
-  <div class="formula">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</div>
+  <div class="formula">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</div>
 
   <p>이것은 다음을 의미합니다:</p>
   <ul>
     <li><strong>1일째:</strong> 채굴자 50% / 스테이킹 30% (+10% 부스트)</li>
     <li><strong>45일째:</strong> 채굴자 55% / 스테이킹 25% (+5% 부스트 남음)</li>
-    <li><strong>90일째 이후:</strong> 채굴자 60% / 스테이킹 25% (영구 비율)</li>
+    <li><strong>90일째 이후:</strong> 채굴자 59% / 스테이킹 25% (영구 비율)</li>
   </ul>
 
   <h3 class="sub-title">D.3 디플레이션 메커니즘</h3>
@@ -1589,7 +1625,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>DAO 거버넌스를 통해 통과된 MFP-NFT 투표는 스팸을 방지하기 위해 투표당 500 MIC 소각을 요구합니다. 5-10년의 거버넌스 수명 동안 이는 수백만 MIC의 소각된 투표 수수료로 누적됩니다.</p>
 
   <h4 class="mini-title">비활동 회수</h4>
-  <p>180일 이상 상호작용하지 않는 계정(스테이킹 없음, MICE 소유 없음, 거래 없음)에 보유된 토큰은 DAO에 의한 부분 회수 대상이 됩니다. 이 메커니즘은 <em>기본적으로 꺼져</em> 있으며 75% MFP 투표와 30일 타임록으로 DAO 거버넌스 활성화가 필요합니다.</p>
+  <p>180일 이상 상호작용하지 않는 계정(스테이킹 없음, MICE 소유 없음, 거래 없음)에 보유된 토큰은 DAO에 의한 부분 회수 대상이 됩니다. 이 메커니즘은 <em>기본적으로 꺼져</em> 있으며 활성화하려면 평의회 5명 중 3명의 승인과 30일 타임락이 필요합니다.</p>
 
   <h4 class="mini-title">총 디플레이션 영향</h4>
   <p>모든 메커니즘을 결합하면:</p>
@@ -1619,9 +1655,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>락 기간</th><th>승수</th><th>연간 APY 범위</th><th>비고</th></tr></thead>
       <tbody>
         <tr><td><strong>30일</strong></td><td class="hl">×1.0</td><td>10–15%</td><td>기준선</td></tr>
-        <tr><td><strong>90일</strong></td><td class="hl">×1.25</td><td>12–18%</td><td>향상된 락</td></tr>
-        <tr><td><strong>180일</strong></td><td class="hl">×1.5</td><td>15–22%</td><td>연장된 락</td></tr>
-        <tr><td><strong>360일</strong></td><td class="hl">×2.0</td><td>20–30%</td><td>1년 락 — 기준 보상의 2배</td></tr>
+        <tr><td><strong>90일</strong></td><td class="hl">×1.6</td><td>12–18%</td><td>향상된 락</td></tr>
+        <tr><td><strong>180일</strong></td><td class="hl">×2.6</td><td>15–22%</td><td>연장된 락</td></tr>
+        <tr><td><strong>360일</strong></td><td class="hl">×5.0</td><td>20–30%</td><td>1년 락 — 기준 보상의 2배</td></tr>
       </tbody>
     </table>
   </div>
@@ -1629,26 +1665,22 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">락된 MIC 참여</h4>
   <p>베스팅 락된 MIC 토큰(SEED Round, Pre-Sale 또는 시간 기반 잠금 해제 일정이 있는 기타 할당)은 스테이킹에 완전히 참여할 수 있습니다. 스테이킹은 NFT 개입 없이 순수하게 MIC 수준에서 작동합니다:</p>
   <ul>
-    <li><strong>전체 시간락 승수:</strong> 락된 MIC는 감소 없이 완전한 시간락 승수를 받습니다 (360일 락의 경우 ×2.0)</li>
+    <li><strong>전체 시간락 승수:</strong> 락된 MIC는 감소 없이 완전한 시간락 승수를 받습니다 (360일 락의 경우 ×5.0)</li>
     <li><strong>잠금 해제된 보상:</strong> 락된 MIC에서 획득한 스테이킹 보상은 즉시 잠금 해제되어 자유롭게 양도 가능하며, 베스팅 대상이 아닙니다</li>
     <li><strong>최소 스테이킹 락:</strong> 스테이킹 참여를 위한 최소 360일 (12개월) 락 기간</li>
     <li><strong>스테이킹 상한 없음:</strong> 스테이킹은 주소당 무제한이며 NFT당 상한이 없습니다 (NFT는 USDT 보상 배분에만 사용되며 스테이킹에는 사용되지 않습니다)</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>예시:</strong> 100,000 MIC를 360일 동안 스테이킹하는 사용자는 다음을 받습니다: 100K × ×2.0 = 200K 유효 가중치. 총 스테이킹 풀 가중치가 100M이면, 이 스테이커는 해당 에포크의 모든 스테이킹 발행량 중 0.2%를 획득합니다. 이 계산은 MIC가 락되어 있든 잠금 해제되어 있든 동일하게 적용됩니다. NFT 소유권은 스테이킹 보상에 영향을 미치지 않습니다.</p>
+    <p><strong>예시:</strong> 100,000 MIC를 360일 동안 스테이킹하는 사용자는 다음을 받습니다: 100K × ×5.0 = 500K 유효 가중치. 총 스테이킹 풀 가중치가 100M이면, 이 스테이커는 해당 에포크의 모든 스테이킹 발행량 중 0.2%를 획득합니다. 이 계산은 MIC가 락되어 있든 잠금 해제되어 있든 동일하게 적용됩니다. NFT 소유권은 스테이킹 보상에 영향을 미치지 않습니다.</p>
   </div>
 
-  <h4 class="mini-title">스테이킹 지속 가능성 펀드</h4>
-  <p>채굴 단계가 종료된 후에도 APY를 0% 이상으로 유지하기 위해, MissionChain은 MICE USDT 수익의 5%($15M 총액 중 $750K)를 "예비 스테이킹 펀드"에 할당합니다:</p>
+  <h4 class="mini-title">장기 스테이킹 지원</h4>
+  <p>스테이킹 배분은 일일 발행량의 25%로 충당됩니다. 발행량이 6개월이 아닌 8년 반감기로 감소하므로 이 재원은 수십 년간 유의미하게 유지되며, 이를 유지하기 위한 별도의 준비금은 필요하지 않습니다.</p>
 
-  <p><strong>1단계 (활성 채굴):</strong> 펀드는 가격이 30일 이동평균 아래로 하락할 때 주간 일정으로 DEX에서 MIC를 자동 매수하여 MIC 준비금을 축적합니다.</p>
+  <p>DAO가 추가 지원이 필요하다고 판단하는 경우, 트레저리 투표를 거쳐 자체 트레저리 MIC의 일부를 분기별로 배분할 수 있습니다. 이는 그때그때 내리는 거버넌스 결정이며, 상시 자동 프로그램이 아닙니다.</p>
 
-  <p><strong>2단계 (채굴 후):</strong> 채굴이 고갈되면, 축적된 MIC는 감소율로 스테이킹 보상 풀에 투입되어 채굴 후 5년 이상 0이 아닌 보상을 보장합니다.</p>
-
-  <p><strong>DAO 보충:</strong> 분기마다 DAO는 재무부 MIC 보유량의 10~20%를 스테이킹 보상 풀에 추가로 보충할 수 있으며, 장기 지속 가능성을 유지합니다.</p>
-
-  <h3 class="sub-title">D.5 수익 예측 및 MICE 경제학</h3>
+<h3 class="sub-title">D.5 수익 예측 및 MICE 경제학</h3>
 <h4 class="mini-title">MICE 5라운드 구조</h4>
   <p>MICE 라이선스 모델은 5개의 상승 가격 단계를 통해 수익을 창출하며, 라운드당 20,000개의 라이선스(최대 100,000개)를 제공합니다:</p>
 
@@ -1673,11 +1705,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>카테고리</th><th>수익 비율</th><th>금액 (USD)</th><th>기능</th></tr></thead>
       <tbody>
-        <tr><td><strong>마케팅 및 판매</strong></td><td class="hl">35%</td><td class="mono">$5,250,000</td><td>추천 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, 인센티브 1.5%</td></tr>
+        <tr><td><strong>추천</strong></td><td class="hl">10%</td><td class="mono">$1,500,000</td><td>직접 추천 7%, 간접 추천 3% &mdash; 구매 시 즉시 지급; 미사용분은 Milestones &amp; Incentives로 이전</td></tr>
+        <tr><td><strong>마케팅 및 판매</strong></td><td class="hl">25%</td><td class="mono">$3,750,000</td><td>Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td></tr>
         <tr><td><strong>관리 및 운영</strong></td><td class="hl">7.5%</td><td class="mono">$1,125,000</td><td>창립자 1.5%, 설계자 1%, CTO 0.5%, 소셜 미디어 0.5%, 글로벌 교육 0.5%, 기술 팀 1%, 보너스 2.5%</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="2"><strong>순 자본 (57.5%)</strong></td><td style="text-align:right"><strong class="td-gold">$8,625,000</strong></td><td></td></tr>
-        <tr><td style="padding-left:40px"><em>Treasure DAO</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>World Dev 2.5%, 앱 애드온 5%, 예비 5%</td></tr>
-        <tr><td style="padding-left:40px"><em>예비 스테이킹</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>가격 하락 시 MIC 자동 매수, 채굴 후 스테이킹용 락</td></tr>
+        <tr><td style="padding-left:40px"><em>DAO Treasury</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>World Dev 2.5%, 앱 애드온 5%, 예비 5%</td></tr>
+        <tr><td style="padding-left:40px"><em>상장 준비금</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>프로토콜 상장 시 외부 시장을 조성하기 위해 보유; DAO 거버넌스, 24시간 타임락</td></tr>
         <tr><td style="padding-left:40px"><em>유동성 풀 + 버퍼</em></td><td class="hl">40%</td><td class="mono">$6,000,000</td><td>유동성 계약으로 자동 이체</td></tr>
       </tbody>
     </table>
@@ -1734,51 +1767,53 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>관리 보너스 (예비)</strong></td><td class="hl">10%</td><td class="mono">$38,125</td></tr>
         <tr><td style="padding-left:40px">평의회 투표 — 75% 임계값 필요</td><td></td><td></td></tr>
         <tr><td><strong>예비 비용 (DAO 거버넌스)</strong></td><td class="hl">50%</td><td class="mono">$190,625</td></tr>
-        <tr><td style="padding-left:40px">DAO가 결정하는 지출 — 스튜어드 평의회 &ge;75% 투표 (1단계) &rarr; DAOGovernor (&beta;단계). 초기 유동성은 SEED가 아닌 Pre-Sale 및 MICE 라운드에서 조달됩니다.</td><td></td><td></td></tr>
+        <tr><td style="padding-left:40px">DAO가 결정하는 지출 — 스튜어드 평의회 5명 중 3명 투표 (1단계) &rarr; DAOGovernor (&beta;단계). 초기 유동성은 SEED가 아닌 Pre-Sale 및 MICE 라운드에서 조달됩니다.</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
-  <h4 class="mini-title">Pre-Sale 라운드 예산 (목표 $1.5M)</h4>
+  <h4 class="mini-title">Pre-Sale 라운드 예산 (예시 조달 $1.5M; 하드캡 $1,575,000)</h4>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>카테고리</th><th>%</th><th>금액</th></tr></thead>
       <tbody>
-        <tr><td><strong>마케팅 및 판매</strong></td><td class="hl">35%</td><td class="mono">$525K</td></tr>
-        <tr><td style="padding-left:40px">추천 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, 인센티브 1.5%</td><td></td><td></td></tr>
+        <tr><td><strong>추천</strong></td><td class="hl">10%</td><td class="mono">$150K</td></tr>
+        <tr><td style="padding-left:40px">직접 추천 7% + 간접 추천 3% &mdash; 구매 시 즉시 지급; 미사용분은 Milestones &amp; Incentives로 이전</td><td></td><td></td></tr>
+        <tr><td><strong>마케팅 및 판매</strong></td><td class="hl">25%</td><td class="mono">$375K</td></tr>
+        <tr><td style="padding-left:40px">Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td><td></td><td></td></tr>
         <tr><td><strong>관리 및 운영</strong></td><td class="hl">7.5%</td><td class="mono">$112.5K</td></tr>
         <tr><td style="padding-left:40px">창립자 1.5%, 설계자 1%, CTO 0.5%, 소셜 미디어 0.5%, 글로벌 교육 0.5%, 기술 팀 1%, 보너스 2.5%</td><td></td><td></td></tr>
         <tr><td><strong>순 자본</strong></td><td class="hl">57.5%</td><td class="mono">$862.5K</td></tr>
-        <tr><td style="padding-left:40px">Treasure DAO 12.5% ($187.5K: World Dev 2.5% + 앱 5% + 예비 5%) + 예비 스테이킹 5% ($75K) + 유동성 풀 40% ($600K)</td><td></td><td></td></tr>
+        <tr><td style="padding-left:40px">DAO Treasury 12.5% ($187.5K: World Dev 2.5% + 앱 5% + 예비 5%) + 상장 준비금 5% ($75K) + 유동성 풀 40% ($600K)</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
   <h4 class="mini-title">MICE 라이선스 수익 할당 ($15M USDT)</h4>
-  <p>자세한 분석은 수익 예측(섹션 D.5)을 참조하십시오: 마케팅 35%, 관리 7.5%, 순 자본 57.5%.</p>
+  <p>자세한 분석은 수익 예측(섹션 D.5)을 참조하십시오: 추천 10%, 마케팅 25%, 관리 7.5%, 순 자본 57.5%.</p>
 
   <h3 class="sub-title">D.8 회로 차단기 및 비상 제어</h3>
 <p>극단적인 시장 상황을 방지하고 생태계를 보호하기 위해, MissionChain은 자동화된 거버넌스 제어 회로 차단기를 구현합니다:</p>
 
   <h4 class="mini-title">누적 발행 상한</h4>
-  <p>채굴 풀에서 발행된 총량은 5,950,000,000 MIC(하드 캡)을 초과할 수 없습니다. 도달하면 모든 채굴이 영구적으로 중지되며 예비 스테이킹 및 DAO 재무부 할당만 계속됩니다(투표 승인 시).</p>
+  <p>채굴 풀에서 발행된 총량은 5,950,000,000 MIC(하드 캡)을 초과할 수 없습니다. 도달하면 모든 채굴이 영구적으로 중지되며 DAO 재무부 할당만 계속됩니다(투표 승인 시).</p>
 
   <h4 class="mini-title">일일 발행 상한</h4>
-  <p>하루에 계산된 E_base(t)의 2배 이상을 발행할 수 없습니다. 이는 D(t) 또는 R(t) 이상으로 인한 급격한 급증을 방지합니다. 수요 요인이 일시적으로 급증하면 초과분은 다음 주기로 연기됩니다.</p>
+  <p>하루에 계산된 E_base(t)의 2배 이상을 발행할 수 없습니다. 이는 D(t) 또는 L(H) 이상으로 인한 급격한 급증을 방지합니다. 수요 요인이 일시적으로 급증하면 초과분은 다음 주기로 연기됩니다.</p>
 
   <h4 class="mini-title">가격 하한</h4>
-  <p>주요 DEX에서 MIC 가격이 $0.001 아래로 떨어지면(30일 TWAP), 시스템은 자동으로:</p>
+  <p>프로토콜은 발행량에 두 가지 독립적인 브레이크를 적용하며, 둘 다 프로토콜 풀 자체의 시간가중 평균가격으로부터 온체인에서 계산됩니다. 어느 쪽도 운영자의 개입을 필요로 하지 않으며, 수동으로 켜거나 끌 수 없습니다.</p>
   <ul>
-    <li>R(t)를 최소 0.5로 줄임 (발행량을 절반으로 줄임)</li>
-    <li>예비 스테이킹 펀드 환매 트리거 (가속화된 주간 매수)</li>
-    <li>DAO는 시장 지원으로 재무부 MIC를 배치하기 위해 투표할 수 있습니다</li>
+    <li><strong>추세 감쇠 계수 G:</strong> G = clamp(TWAP<sub>7일</sub> / TWAP<sub>30일</sub>, 0.25, 1.0)로, 발행 조절기 L(H)에 곱해집니다. 7일 평균이 30일 평균보다 낮으면 그 비율만큼 발행량이 줄어듭니다. G는 1.0으로 상한이 걸려 있어 발행을 늦출 수만 있고 결코 가속할 수 없습니다.</li>
+    <li><strong>비상 브레이크:</strong> 7일 평균이 풀 개시 기준가의 50% 아래로 내려가면, 평균이 회복될 때까지 L(H)가 하한값 0.02에 고정됩니다. 브레이크는 자동으로 걸리고 자동으로 풀립니다.</li>
   </ul>
+  <p>이 브레이크들이 존재하는 이유는 유동성 커버리지 지수 H가 가격의 건전성이 아니라 풀이 발행량을 흡수할 수 있는 능력을 측정하기 때문입니다. 둘은 서로 어긋납니다. 가격이 내리면 하루치 발행의 가치가 줄어들어 커버리지는 오히려 올라갑니다. H만으로는 반대 방향으로 반응하게 되며, 그래서 G와 비상 브레이크는 나중에 덧붙인 것이 아니라 출시 시점부터 프로토콜의 일부입니다.</p>
 
   <h4 class="mini-title">언스테이크 비율 제한</h4>
   <p>하루에 스테이킹된 MIC 풀의 10% 이상을 언스테이크할 수 없습니다. 이는 공황 인출 및 유동성 위기를 방지합니다. 더 긴 락업 기간은 언스테이크 대기열에서 우선순위가 부여됩니다.</p>
 
   <h4 class="mini-title">비상 일시 중지 (DAO 거버넌스)</h4>
-  <p>DAOGovernor 계약은 <strong>Standing Committee (핵심 서명자 5명 중 3명) + MFP 스테이킹 가중치의 ≥75%가 찬성 투표하고 타임락 지연 없이</strong> 정족수로 비상 일시 중지를 실행할 수 있습니다. 일시 중지 시나리오:</p>
+  <p>DAOGovernor 계약은 <strong>Standing Committee 5명 중 3명</strong>의 승인으로, 타임락 지연 없이 정족수로 비상 일시 중지를 실행할 수 있습니다. 일시 중지 시나리오:</p>
   <ul>
     <li>보안 사고 (스마트 계약 악용 감지)</li>
     <li>블랙 스완 이벤트 (주요 시장 붕괴, 규제 위기)</li>
@@ -1814,7 +1849,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li><strong>공급:</strong> 최대 2,500개 (하드 캡, 기존 MFP 보유자의 DAO 투표로만 확장)</li>
     <li><strong>거버넌스:</strong> 스테이킹 시 전체 DAO 거버넌스 및 투표권</li>
     <li><strong>목적:</strong> 창립자, 핵심 투자자 및 주요 파트너에 대한 전략적 할당</li>
-    <li><strong>승수:</strong> ×25 (최고 계층)</li>
+    <li><strong>승수:</strong> ×10 (최고 계층)</li>
     <li><strong>기간:</strong> 평생 영구 소유권</li>
   </ul>
 
@@ -1840,7 +1875,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <ul>
     <li><strong>토큰 표준:</strong> BSC의 ERC-721</li>
     <li><strong>최대 공급:</strong> 2,500개 하드 캡 (기존 MFP 보유자의 DAO 투표로만 5,000개로 확장)</li>
-    <li><strong>스테이킹 승수:</strong> ×25</li>
+    <li><strong>스테이킹 승수:</strong> ×10</li>
     <li><strong>NFT당 스테이킹 상한:</strong> 500,000 MIC</li>
     <li><strong>기간:</strong> 평생 (영구 소유권, 만료 없음)</li>
   </ul>
@@ -1868,9 +1903,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>락 기간</th><th>승수</th><th>비고</th></tr></thead>
       <tbody>
         <tr><td><strong>30일</strong></td><td class="hl">×1.0</td><td>기준선</td></tr>
-        <tr><td><strong>90일</strong></td><td class="hl">×1.25</td><td>향상된 락</td></tr>
-        <tr><td><strong>180일</strong></td><td class="hl">×1.5</td><td>연장된 락</td></tr>
-        <tr><td><strong>360일</strong></td><td class="hl">×2.0</td><td>1년 락 — 기준 보상의 2배</td></tr>
+        <tr><td><strong>90일</strong></td><td class="hl">×1.6</td><td>향상된 락</td></tr>
+        <tr><td><strong>180일</strong></td><td class="hl">×2.6</td><td>연장된 락</td></tr>
+        <tr><td><strong>360일</strong></td><td class="hl">×5.0</td><td>1년 락 — 기준 보상의 2배</td></tr>
       </tbody>
     </table>
   </div>
@@ -1878,7 +1913,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">락된 MIC 스테이킹 자격</h4>
   <p>베스팅 락된 MIC 토큰은 전체 보상 혜택으로 스테이킹에 참여합니다:</p>
   <ul>
-    <li><strong>전체 시간락 승수:</strong> 락된 MIC는 패널티 없이 완전한 시간락 승수를 받습니다 (360일 락의 경우 ×2.0)</li>
+    <li><strong>전체 시간락 승수:</strong> 락된 MIC는 패널티 없이 완전한 시간락 승수를 받습니다 (360일 락의 경우 ×5.0)</li>
     <li><strong>잠금 해제된 보상:</strong> 락된 MIC에서 생성된 모든 스테이킹 보상은 즉시 잠금 해제되어 자유롭게 양도 가능하며, 기본 MIC의 베스팅 일정과 무관합니다</li>
     <li><strong>최소 스테이킹 락:</strong> 스테이킹된 MIC는 최소 360일(12개월)의 락 기간이 필요합니다</li>
     <li><strong>스테이킹 상한 없음:</strong> 스테이킹은 주소당 또는 NFT당 상한 없이 무제한입니다</li>
@@ -1919,7 +1954,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>고정된 5.5% 풀은 두 개의 서브풀로 나뉩니다:</p>
   <ul class="dot-list">
     <li><strong>Community NFT Pool (5%):</strong> 현재 주에 발행된 Community NFT에 분배 (Builder ×1, Maker ×2.5, Luminary ×5 — 승수 가중)</li>
-    <li><strong>MFP-NFT Pool (0.5%):</strong> MFP-NFT 보유자에게 별도 분배 (×25 평탄 공유)</li>
+    <li><strong>MFP-NFT Pool (0.5%):</strong> MFP-NFT 보유자에게 별도 분배 (×10 평탄 공유)</li>
   </ul>
   <p><strong>A. Milestone NFT Rewards (수량 기반, USDT에 추가):</strong></p>
   <div class="wp-table-wrap"><table class="wp-table">
@@ -1936,7 +1971,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>고정된 8% 풀은 두 개의 서브풀로 나뉘며 충성도를 보상합니다 (발행일에 관계없이 모든 활성 NFT가 자격):</p>
   <ul class="dot-list">
     <li><strong>Community NFT Pool (7.5%):</strong> 모든 활성 Community NFT 보유자에게 분배 (Builder ×1, Maker ×2.5, Luminary ×5 가중)</li>
-    <li><strong>MFP-NFT Pool (0.5%):</strong> MFP-NFT 보유자에게 분배 (×25 평탄)</li>
+    <li><strong>MFP-NFT Pool (0.5%):</strong> MFP-NFT 보유자에게 분배 (×10 평탄)</li>
   </ul>
   <p>월간 자동 계산, 분배 전 DAO 승인.</p>
 
@@ -1960,7 +1995,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tr><td><strong>Builder</strong></td><td class="hl">×1.0</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ 자격</td></tr>
       <tr><td><strong>Maker</strong></td><td class="hl">×2.5</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ 자격</td></tr>
       <tr><td><strong>Luminary</strong></td><td class="hl">×5.0</td><td>✓ Community 5%</td><td>✓ Community 7.5%</td><td>✓ 자격</td></tr>
-      <tr><td><strong>MFP-NFT</strong></td><td class="hl">×25</td><td>✓ MFP Pool 0.5%</td><td>✓ MFP Pool 0.5%</td><td>❌ 제외</td></tr>
+      <tr><td><strong>MFP-NFT</strong></td><td class="hl">×10</td><td>✓ MFP Pool 0.5%</td><td>✓ MFP Pool 0.5%</td><td>❌ 제외</td></tr>
     </tbody>
   </table></div>
 
@@ -1994,16 +2029,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">F.1 유동성 아키텍처</h3>
 <ul>
     <li><strong>DEX/CEX 상장 할당:</strong> 1.50% = 배포 시 105,000,000 MIC</li>
-    <li><strong>배포:</strong> 105M MIC가 배포 시 LiquidityPool.sol로 직접 전송됨 — 락됨, 인출 불가</li>
+    <li><strong>배포:</strong> 105M은 LiquidityPool v5에 31.5M, Listing Reserve Vault에 73.5M으로 나뉘었습니다. 이 중 31.5M은 <strong>2026년 8월 5일 소각</strong>되었고, 나머지 중 50M은 프로토콜 유동성 풀에 투입되며 23.5M은 외부 시장 개설을 위해 보유합니다.</li>
     <li><strong>추가 유동성:</strong> MICE USDT 수익의 40% + PreSale 순 자본의 40%에서 자금 지원</li>
     <li><strong>1단계:</strong> 버퍼만 (USDT 수신, 락된 MIC 보유)</li>
-    <li><strong>2단계:</strong> SWAP + AI 안정화 장치 추가</li>
+    <li><strong>2단계:</strong> SWAP 양방향 거래 개시, 커버리지 조절기와 자동 브레이크 가동</li>
   </ul>
 
   <h3 class="sub-title">F.2 LiquidityPool.sol 계약</h3>
 <h4 class="mini-title">핵심 상태 변수</h4>
   <ul>
-    <li><strong>lockedMIC:</strong> 105,000,000 MIC (배포 시 설정, 불변)</li>
+    <li><strong>프로토콜 풀 보유 MIC:</strong> 개시 시 50,000,000 MIC 투입. 누군가 매수할 때만 풀을 떠나며, 지불된 USDT는 풀에 남습니다.</li>
     <li><strong>목적:</strong> MIC/USDT 거래 쌍을 위한 영구 유동성 지원</li>
   </ul>
   <h4 class="mini-title">1단계 함수</h4>
@@ -2015,7 +2050,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <ul>
     <li><strong>addToSWAP():</strong> 버퍼에서 활성 유동성 제공으로 MIC를 이동하기 위해 DAOGovernor 구조적 투표(7일 타임락) 필요</li>
     <li><strong>withdrawMICForCEX():</strong> 중앙 집중식 거래소 인출을 위해 DAOGovernor 구조적 투표(7일 타임락) 필요</li>
-    <li><strong>depositMIC():</strong> 예비 스테이킹 펀드 자동 매수 메커니즘을 위한 예비 입금 함수</li>
+    <li><strong>depositMIC():</strong> MIC를 프로토콜 보유 준비금에 넣을 때 사용하는 준비금 입금 함수</li>
   </ul>
 
   <h3 class="sub-title">F.3 USDT 유동성 소스</h3>
@@ -2034,35 +2069,67 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 ```html
 <p>이 자금들은 Phase 1(활성 거래 없음) 동안 축적되며, Phase 2에서 PancakeSwap V3에 배포되어 MIC/USDT 거래 쌍에 대한 깊은 유동성을 확립합니다.</p>
 
-  <h3 class="sub-title">F.4 스테이킹 지속가능성 펀드</h3>
-<h4 class="mini-title">펀드 목적 및 메커니즘</h4>
+    <h3 class="sub-title">F.4 상장 준비금</h3>
+<h4 class="mini-title">목적</h4>
   <ul>
     <li><strong>배분:</strong> MICE USDT 수익의 5% = $750,000</li>
-    <li><strong>목표:</strong> 채굴 배출량 감소 후 긍정적 스테이킹 보상 유지 (APY > 0%)</li>
-    <li><strong>메커니즘:</strong> 가격 하락 시 DEX에서 MIC 자동 구매, 향후 분배를 위해 컨트랙트에 잠금</li>
+    <li><strong>목표:</strong> MIC의 외부 시장 개설 자금 조달</li>
+    <li><strong>거버넌스:</strong> DAO가 통제하며, 모든 인출에 24시간 타임락 적용</li>
   </ul>
-  <h4 class="mini-title">2단계 전략</h4>
+  <p>프로토콜 유동성 풀은 폐쇄형입니다. 들어온 USDT는 결코 나갈 수 없습니다. 따라서 외부 거래소에 페어를 조성하려면 별도의 자금원이 필요하며, 이 준비금이 바로 그 자금원입니다. 준비금은 축적되었다가, DAO가 승인한 시장 개설 행위로서 단 한 번 집행됩니다.</p>
+
+  <h4 class="mini-title">이 준비금이 하지 않는 일</h4>
   <div class="callout gold">
-    <p><strong>Phase 1 (채굴 활성 — 0~180일):</strong> 예비 USDT를 사용한 주간 MIC 시장 매수. 배출량이 높은 최대 채굴 기간 동안 컨트랙트 준비금에 MIC 축적.</p>
+    <p>이 자금은 가격을 떠받치기 위해 MIC를 매수하지 <strong>않습니다</strong>. 가격 트리거도, 이동평균 조건도, 어떤 형태의 자동 시장 운영도 없습니다. 프로토콜은 발행량을 통제할 뿐 가격을 통제하지 않습니다. 시장을 여는 것과 시장에 개입하는 것은 다릅니다.</p>
   </div>
-  <div class="callout gold">
-    <p><strong>Phase 2 (채굴 고갈 — 180일 이후):</strong> 자연 배출량이 감소할 때 APY > 0%를 유지하고 지속 가능한 보상을 제공하기 위해 축적된 MIC를 스테이킹 보상 풀에 주입.</p>
-  </div>
-  <h4 class="mini-title">DAO 보충</h4>
-  <p>스테이킹 지속가능성 펀드는 DAO 보유 MIC의 10-20%를 분기별 DAO Treasury 배분으로 보충하여 스테이킹 보상 생태계의 장기 생존 가능성을 보장합니다.</p>
+  <p>이 문서의 이전 판에는 가격이 30일 평균 아래로 내려가면 MIC를 매수하는 메커니즘이 기술되어 있었습니다. 해당 설계는 이를 구현한 코드가 존재하기 전인 2026년 8월에 제거되었습니다.</p>
+
+  <h4 class="mini-title">장기 스테이킹 지원</h4>
+  <p>스테이킹 배분은 일일 발행량의 25%로 충당되며, 8년 반감기 하에서는 수십 년간 유의미하게 유지됩니다. DAO가 추가 지원이 필요하다고 판단하면 분기별 투표로 자체 트레저리 MIC의 일부를 배분할 수 있습니다.</p>
 
   <h3 class="sub-title">F.5 가격 안정화 전략</h3>
-<h4 class="mini-title">오라클 인프라</h4>
+<h4 class="mini-title">프로토콜 유동성 풀</h4>
+  <p>프로토콜은 자체 MIC/USDT 유동성 풀을 온체인으로 운영합니다. 상수곱 방식의 풀로, 모든 거래가 두 준비금의 곱을 보존하므로 가격은 준비금 비율로 결정되며 거래마다 연속적으로 움직입니다. 시스템 어디에도 관리자가 지정하는 가격은 존재하지 않습니다.</p>
+  <p>풀은 MIC만 보유한 채 USDT 없이 시작합니다. 첫 블록부터 양방향 가격을 정의할 수 있도록, 풀은 고정된 <strong>가상 준비금</strong>으로 초기화됩니다. 이는 잔액이 아니라 회계상의 상수이며 어떤 주체도 인출할 수 없습니다. 실제 USDT가 쌓이면 가상 준비금은 실제 유입의 절반 속도로 소각되며, 실제 준비금이 초기 규모의 두 배에 도달하면 0이 됩니다. 그 시점부터 풀은 전적으로 실물 자산으로 뒷받침됩니다. 소각은 연속적으로 이루어지므로 완료 시 가격 단절이 발생하지 않습니다.</p>
+  <p><strong>지급능력 불변식:</strong> 풀은 실제 보유량보다 많은 USDT를 지급할 수 없습니다. 이는 가격 곡선이 제시하는 값과 무관하게, 모든 외부 이체에 대한 엄격한 조건으로 컨트랙트에 강제됩니다.</p>
+
+  <h4 class="mini-title">풀 단계</h4>
   <ul>
-    <li><strong>주요 오라클:</strong> PancakeSwap V3 TWAP (시간 가중 평균 가격), 30분 윈도우</li>
-    <li><strong>대체 오라클:</strong> 중복성 및 보안을 위한 Chainlink 가격 피드</li>
-    <li><strong>업데이트 빈도:</strong> TWAP를 위한 실시간 온체인 계산; Chainlink는 24시간마다 업데이트</li>
+    <li><strong>1단계 — 부트스트랩:</strong> 매수만 가능합니다. 지급할 USDT가 없으므로 매도 방향은 닫혀 있습니다.</li>
+    <li><strong>2단계 — 양방향:</strong> 30일째에 열립니다. 아래의 일일 한도와 수수료 체계에 따라 매도가 허용됩니다.</li>
+    <li><strong>3단계 — 외부 상장:</strong> 실제 준비금이 상장 기준을 넘으면 도달합니다. 이후 풀은 외부 거래소와 병행하여 운영됩니다.</li>
   </ul>
-  <h4 class="mini-title">AI 안정화 장치 (Phase 2)</h4>
-  <p>활성화되면 AI 안정화 장치가 MIC 가격을 목표 범위와 비교하여 모니터링하고 유동성 제공을 동적으로 조정합니다. 가격이 지지선 아래로 떨어지면 시스템이 예비 USDT 유입을 트리거합니다. 가격이 상한선을 초과하면 미사용 버퍼 USDT가 배포되어 유동성을 심화시킵니다.</p>
+  <p>단계 전환은 온체인 조건을 스스로 검증하는 무허가 함수입니다. 운영자 스위치는 없습니다.</p>
+
+  <h4 class="mini-title">거래 수수료</h4>
+  <p>수수료는 사전 공표된 공식으로 정해지며 어떤 관리자도 변경할 수 없습니다. 매수 수수료는 0.3%로 고정입니다. 매도 수수료는 유동성 커버리지에 따라 변동합니다:</p>
+  <div class="formula"><span class="math">매도수수료 = clamp(0.3% + 9.7% × (1 − H / 110), 0.3%, 10%)</span></div>
+  <ul>
+    <li>커버리지가 110일 목표 이상이면 매도 수수료는 매수와 동일한 0.3%입니다.</li>
+    <li>커버리지가 낮아지면 수수료가 상승하여 <strong>절대 상한 10%</strong>에 도달합니다. 이 상한은 컨트랙트의 상수로 고정되어 있으며 거버넌스나 키 보유자가 올릴 수 없습니다.</li>
+    <li>모든 수수료는 풀에 남아 커버리지를 높이고, 그 결과 수수료가 다시 낮아집니다. 자기교정 메커니즘입니다.</li>
+  </ul>
+
+  <h4 class="mini-title">일일 한도</h4>
+  <ul>
+    <li>USDT 유출은 24시간 이동 구간마다 실제 준비금의 5%로 제한됩니다.</li>
+    <li>단일 거래는 MIC 준비금의 1%를 초과할 수 없습니다.</li>
+    <li>동일 주소는 같은 블록 내에서 매수와 매도를 함께 할 수 없습니다.</li>
+  </ul>
+  <p>이 한도들은 사전 공표된 고정 상수이며 조정할 수 없습니다.</p>
+
+  <h4 class="mini-title">오라클 인프라</h4>
+  <ul>
+    <li><strong>1–2단계 가격 출처:</strong> 프로토콜 유동성 풀이 자체 온체인 누적 가격을 유지하며 7일 및 30일 시간 가중 평균 가격을 공표합니다. 외부 오라클은 사용하지 않으며 필요하지도 않습니다. 이 단계에서는 풀이 MIC가 거래되는 유일한 장소이기 때문입니다.</li>
+    <li><strong>첫 주 동안의 윈도우:</strong> 평균 산출 윈도우는 min(7일, 풀 가동 기간)이므로 첫날부터 기준가가 명확히 정의되며 이력이 쌓이면서 점차 길어집니다.</li>
+    <li><strong>3단계 — 상장 이후:</strong> MIC가 외부 거래소에 상장되면 프로토콜은 해당 거래소의 시간 가중 평균 가격을 보조 기준으로 추가합니다. 외부 가격 출처는 이 시점에만 도입됩니다.</li>
+  </ul>
+  <h4 class="mini-title">삭제된 "AI 안정화 장치"에 대하여</h4>
+  <p>이 문서의 이전 판에는 MIC 가격을 목표 범위와 대조해 감시하고 가격이 지지선 아래로 내려가면 예비 USDT를 투입하는 "AI 안정화 장치"가 기술되어 있었습니다. 해당 설계는 이를 구현한 코드가 존재하기 전인 2026년 8월에 삭제되었습니다. 프로토콜은 발행량을 통제할 뿐 가격을 통제하지 않으며 자체 시장에서 거래하지 않는다는 지배 원칙과 양립할 수 없기 때문입니다.</p>
+  <p>이를 대체한 것은 위아래에 설명된 장치들입니다. 유동성 커버리지에 따른 발행 조절기, 발행을 늦추는 방향으로만 작동하도록 상한이 걸린 추세 감쇠 계수, 그리고 자동 브레이크입니다. 모두 MIC가 얼마나 생성되는지에만 작용합니다. 어느 것도 MIC를 매수하거나 매도하지 않습니다.</p>
   <h4 class="mini-title">Circuit Breaker</h4>
   <ul>
-    <li><strong>가격 하한선:</strong> $0.001 MIC (하드 최소값, 유동성 제약에 의해 강제됨)</li>
+    <li><strong>가격 하한선:</strong> 풀 개시 기준가의 50% MIC (하드 최소값, 유동성 제약에 의해 강제됨)</li>
     <li><strong>긴급 일시 중지:</strong> 가격이 하한선 아래로 떨어지면 DAOGovernor가 모든 유동성 작업을 일시 중지할 수 있음</li>
   </ul>
 
@@ -2076,17 +2143,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
 
   <h3 class="sub-title">G.1 DAOGovernor 개요</h3>
-<p>DAOGovernor.sol (컨트랙트 #24)은 MissionChain의 거버넌스 엔진으로, Gnosis Safe를 완전히 대체합니다. MFP-NFT 보유자의 가중 투표와 Standing Committee의 다중 서명 확인을 통해 온체인 거버넌스를 시행합니다.</p>
+<p>DAOGovernor.sol은 MissionChain의 거버넌스 엔진입니다. 거버넌스 사양에 정의된 Admin Multisig와 함께 작동하며, Phase 1 Minimal에서는 Founder EOA가, Phase 1 Full 및 Phase 2에서는 Gnosis Safe 멀티시그(2-of-3 권장)가 해당 역할을 맡습니다. MFP-NFT 보유자의 가중 투표와 Standing Committee의 다중 서명 확인을 통해 온체인 거버넌스를 시행합니다.</p>
   <div class="grid3">
     <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">상임위원회</div></div>
     <div class="stat-box"><div class="stat-val">3/5</div><div class="stat-lbl">최소 서명자</div></div>
-    <div class="stat-box"><div class="stat-val">75%</div><div class="stat-lbl">MFP 가중치</div></div>
+    <div class="stat-box"><div class="stat-val">7일</div><div class="stat-lbl">구조적 타임락</div></div>
   </div>
   <h4 class="mini-title">핵심 거버넌스 패턴</h4>
   <ul>
-    <li><strong>OpenZeppelin Governor:</strong> MFP-NFT 가중 투표를 위해 조정된 Governor 컨트랙트 패턴</li>
+    <li><strong>평의회 컨트랙트:</strong> DAOGovernor, 5인 평의회 컨트랙트입니다. 표는 인원수로 계산하며, 토큰 가중이나 스테이킹 가중 투표는 어디에도 없습니다.</li>
     <li><strong>Standing Committee:</strong> 5개의 지정된 다중 서명 지갑</li>
-    <li><strong>이중 승인:</strong> 위원회 (3/5)와 ≥75%의 전체 MFP-NFT 스테이킹 가중치가 모든 제안을 승인해야 함</li>
+    <li><strong>승인:</strong> 평의회 5명 중 3명. 제안자 본인의 승인이 첫 표로 계산되므로 추가 서명 2개면 통과합니다.</li>
     <li><strong>모든 매개변수 변경:</strong> 거버넌스만 — 직접 관리자 액세스 없음, 중앙화된 소유자 없음</li>
     <li><strong>Timelock 강제:</strong> 모든 제안은 실행 전 구성 가능한 지연에 따름 (G.4 참조)</li>
   </ul>
@@ -2110,16 +2177,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>Standing Committee는 운영 감독 및 서명 권한을 담당하는 지정된 지갑 5명으로 구성된 기구입니다:</p>
   <ul>
     <li>승인 필요: <strong>5명 중 3명의 서명자</strong> (60% 정족수)</li>
-    <li>더하기 <strong>전체 MFP-NFT 스테이킹 가중치의 ≥75%</strong>가 찬성 투표</li>
+    
     <li>구성원은 구조적 투표를 통해 교체됨 (7일 타임락)</li>
     <li>개별 구성원은 투표를 재정의하거나 일시 중지할 수 없음</li>
   </ul>
-  <h4 class="mini-title">투표 가중치 계산</h4>
-  <p>각 제안의 승인은 다음에 따라 달라집니다:</p>
+  <h4 class="mini-title">승인은 어떻게 집계되는가</h4>
+  <p>승인은 인원수로 집계합니다. 컨트랙트 어디에도 토큰 가중이나 스테이킹 가중 투표는 없습니다:</p>
   <ol>
-    <li><strong>MFP-NFT 가중치:</strong> 거버넌스 세트 내 활성 MFP-NFT 보유자가 스테이킹한 MIC의 비례 지분</li>
-    <li><strong>위원회 확인:</strong> Standing Committee의 3/5가 서명해야 함</li>
-    <li><strong>임계값:</strong> 두 조건이 모두 충족되면 제안 통과</li>
+    <li><strong>1인 1표:</strong> 다섯 명의 평의회 구성원은 모두 동등합니다</li>
+    <li><strong>임계값:</strong> 5명 중 3명이 승인하면 제안이 승인됩니다. 제안자 본인의 승인이 그 셋 중 첫 표입니다.</li>
+    <li><strong>타임락:</strong> 해당 범주의 지연이 지나면 누구나 온체인에서 실행할 수 있습니다</li>
   </ol>
 
   <h3 class="sub-title">G.3 참여 요구사항</h3>
@@ -2157,17 +2224,17 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Timelock 워크플로우</h4>
   <ol>
     <li><strong>제안 제출:</strong> Council 구성원이 제안 생성 (Senator 또는 Council 단계)</li>
-    <li><strong>투표 기간:</strong> 커뮤니티가 24-48시간 동안 투표</li>
-    <li><strong>승인:</strong> 75% MFP-NFT 가중치 + 3/5 위원회가 승인하면 제안이 타임락 대기열에 진입</li>
+    <li><strong>서명 수집:</strong> 나머지 평의회 구성원이 온체인에서 승인</li>
+    <li><strong>승인:</strong> 5명 중 3명에 도달하면 제안이 타임락 대기열에 진입</li>
     <li><strong>지연 윈도우:</strong> 제안이 24시간 (매개변수/예산) 또는 7일 (구조적)동안 잠김</li>
     <li><strong>실행:</strong> 지연 후 누구나 온체인에서 실행을 트리거할 수 있음</li>
   </ol>
 
   <h3 class="sub-title">G.5 긴급 권한</h3>
-<p>긴급 조치는 중요한 보안 위협을 해결하기 위해 표준 타임락을 우회합니다. 이는 Standing Committee 합의와 압도적인 커뮤니티 지원이 필요한 드물고 중대한 결정입니다:</p>
+<p>긴급 조치는 중요한 보안 위협을 해결하기 위해 표준 타임락을 우회합니다. 이는 Standing Committee 합의가 필요한 드물고 중대한 결정입니다:</p>
   <h4 class="mini-title">긴급 일시 중지 권한</h4>
   <ul>
-    <li><strong>활성화:</strong> Standing Committee 3/5 더하기 전체 MFP-NFT 스테이킹 가중치의 ≥75% (커뮤니티 투표)</li>
+    <li><strong>활성화:</strong> Standing Committee 5명 중 3명</li>
     <li><strong>타임락 없음:</strong> 승인 즉시 실행 가능</li>
     <li><strong>범위:</strong> 모든 스마트 컨트랙트를 동시에 일시 중지</li>
   </ul>
@@ -2191,7 +2258,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>컨트랙트</th><th>MIC 할당</th><th>목적 및 잠금 상태</th></tr></thead>
       <tbody>
         <tr><td><strong>Sale 컨트랙트</strong></td><td class="mono">945,000,000 MIC</td><td>Seed, Pre-Sale 및 기타 구매자 할당 — 구매 시 구매자 지갑에 직접 분배, LockManager를 통해 잠금</td></tr>
-        <tr><td><strong>LiquidityPool</strong></td><td class="mono">105,000,000 MIC</td><td>초기 유동성 제공 — 영구 잠금, 인출 불가</td></tr>
+        <tr><td><strong>유동성 배분</strong></td><td class="mono">105,000,000 MIC</td><td>2026년 8월 5일 31,500,000 소각; 73,500,000은 Listing Reserve Vault 보유 (DAO 거버넌스, 인출 7일 대기)</td></tr>
         <tr><td><strong>DAOGovernor (Treasury)</strong></td><td class="mono">0 MIC</td><td>DAO Treasury는 MIC를 직접 보유하지 않음; 채굴 배출이 DAO 풀에 할당</td></tr>
         <tr><td><strong>LockManager</strong></td><td class="mono">0 MIC</td><td>베스팅 일정을 온체인에서 추적 — MIC 토큰을 보유하지 않음</td></tr>
       </tbody>
@@ -2230,12 +2297,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>World 개발</strong></td><td class="mono">MIC 배출의 5%</td><td>예산 투표 (24h)</td></tr>
         <tr><td><strong>앱 추가 기능 및 특징</strong></td><td class="mono">MIC 배출의 2.5%</td><td>예산 투표 (24h)</td></tr>
         <tr><td><strong>예비 (전략적)</strong></td><td class="mono">MIC 배출의 7.5%</td><td>구조적 투표 (7d)</td></tr>
-        <tr><td><strong>스테이킹 지속가능성 펀드</strong></td><td class="mono">분기별: DAO 보유량의 10–20%</td><td>예산 투표 (24h)</td></tr>
+        <tr><td><strong>스테이킹 지원 (재량)</strong></td><td class="mono">분기별: DAO 보유량의 10–20%</td><td>예산 투표 (24h)</td></tr>
       </tbody>
     </table>
   </div>
   <h4 class="mini-title">분기별 스테이킹 지속가능성 할당</h4>
-  <p>채굴 배출 고갈 이후 스테이킹 보상을 유지하기 위해 DAO는 축적된 MIC 보유량의 10–20%를 분기별로 스테이킹 지속가능성 펀드에 할당합니다. 이 펀드는 DEX에서 MIC를 자동 구매하고 배출 후 보상 분배를 위해 컨트랙트에 잠급니다.</p>
+  <p>DAO가 필요하다고 판단하는 경우, 트레저리 투표를 거쳐 축적된 MIC 보유량의 일부를 스테이킹 배분 풀에 할당할 수 있습니다. 이는 재량 사항이며 그때그때 결정됩니다. 상시 자동 프로그램은 존재하지 않습니다.</p>
   <div class="callout gold">
     <p><strong>DAO 거버넌스 원칙:</strong> 규모에 관계없이 모든 treasury 조치는 명시적인 커뮤니티 투표가 필요합니다. 긴급 지출 없음, 창립자 재량 없음. 이는 투자자 및 커뮤니티 구성원과의 장기적 신뢰를 구축합니다.</p>
   </div>
@@ -2257,7 +2324,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li><strong>OpenZeppelin Contracts v5.x:</strong> ERC-20, ERC-1155, AccessControl, Upgradeable Proxy 및 DAO Governor 패턴의 감사되고 실전 검증된 구현</li>
     <li><strong>역할 기반 액세스 제어 (RBAC):</strong> 모든 특권 작업은 특정 역할에 의해 게이트되어 단일 장애 지점 소유자 패턴 제거</li>
     <li><strong>업그레이드 가능한 프록시 패턴:</strong> 핵심 컨트랙트는 데이터 마이그레이션 없이 보안 패치를 지원하기 위해 UUPS (Universal Upgradeable Proxy Standard)를 통해 배포</li>
-    <li><strong>오라클 아키텍처:</strong> 주요 소스로 PancakeSwap V3 TWAP (시간 가중 평균 가격), 중요한 가격 피드를 위한 대체로 Chainlink Aggregator</li>
+    <li><strong>가격 기준:</strong> 프로토콜 유동성 풀이 7일 및 30일 시간 가중 평균 가격을 온체인으로 산출합니다. 1–2단계에서는 외부 오라클을 사용하지 않으며, 외부 거래소 기준은 상장 이후에만 추가됩니다</li>
   </ul>
 
   <div class="callout gold">
@@ -2318,7 +2385,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>모든 역할 부여/취소 및 컨트랙트 업그레이드는 성공적인 DAOGovernor 투표가 필요합니다:</p>
   <ul>
     <li><strong>Standing Committee:</strong> 3/5 핵심 팀 서명자가 긴급 조치를 승인해야 함 (타임락 없음)</li>
-    <li><strong>DAO 정족수:</strong> MFP-NFT 스테이킹 가중치의 ≥75%가 승인 투표를 해야 함 (7일 투표, 표준 제안의 경우 2일 타임락)</li>
+    <li><strong>범주별 타임락:</strong> 매개변수 변경 24시간, 예산 24시간, 구조적 사안 7일. 긴급 조치에는 타임락이 없습니다. 정족수 도달 시점이 아니라 제안 생성 시점부터 계산됩니다.</li>
   </ul>
 
   <div class="callout">
@@ -2334,7 +2401,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td class="hl"><strong>CB-1</strong></td><td><strong>누적 상한</strong></td><td>totalEmitted > 5,950,000,000 MIC</td><td>모든 배출 중단; 소각 전용 모드로 전환</td></tr>
         <tr><td class="hl"><strong>CB-2</strong></td><td><strong>일일 상한</strong></td><td>dailyEmission > 2× E_base(t)</td><td>배출량을 2× 기본 비율로 제한; 초과분은 다음 날로 대기열</td></tr>
-        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>가격 하한선</strong></td><td>MIC 가격 < $0.001 USD</td><td>배출률 감소, 회로 차단기 보호 활성화</td></tr>
+        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>가격 하한선</strong></td><td>MIC 가격 < 풀 개시 기준가의 50% USD</td><td>배출률 감소, 회로 차단기 보호 활성화</td></tr>
         <tr><td class="hl"><strong>CB-4</strong></td><td><strong>언스테이킹 제한</strong></td><td>unstakeRequest > 풀의 10%/일</td><td>연쇄를 방지하기 위해 초과 요청을 다음 24시간 윈도우로 대기열</td></tr>
         <tr><td class="hl"><strong>CB-5</strong></td><td><strong>긴급 일시 중지</strong></td><td>DAOGovernor 투표 (Standing Committee 3/5)</td><td>타임락 없이 모든 컨트랙트 (채굴, 스테이킹, 전송) 일시 중지</td></tr>
       </tbody>
@@ -2354,42 +2421,32 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <p><strong>긴급 일시 중지:</strong> CB-5가 트리거되면 시스템은 안전 모드로 진입합니다. 채굴 중지, 스테이킹 보상 중단 및 전송 동결. DAOGovernor는 재개 또는 유지 보수 수행에 투표할 수 있습니다.</p>
   </div>
 
-  <h3 class="sub-title">H.5 KYC/AML 통합</h3>
-<p>MissionChain은 규제 요구 사항을 준수하고 불법 활동을 방지하기 위해 포괄적인 고객 확인 (KYC) 및 자금세탁 방지 (AML) 통제를 구현합니다:</p>
+  <h3 class="sub-title">H.5 신원 확인 &amp; 관할권 정책</h3>
+<p>이 섹션은 Mission Chain이 현재 실제로 운영하는 확인 절차를 설명합니다. 여기에 명시되지 않은 항목은 플랫폼이 시행하지 않습니다.</p>
 
-  <h4 class="mini-title">오프체인 KYC</h4>
-  <ul>
-    <li><strong>제공자:</strong> Sumsub (제3자 규정 준수 검증 서비스)</li>
-    <li><strong>범위:</strong> 신원 확인, 문서 인증, 생체 확인</li>
-    <li><strong>SLA:</strong> 48시간 내 확인 완료</li>
+  <p class="appendix-flat-head">현재 시행 중인 확인 절차</p>
+  <ul class="appendix-flat-list">
+    <li>방식: 이메일 일회용 코드, 이후 휴대폰(SMS) 일회용 코드</li>
+    <li>단계: 미확인 → 이메일 확인 → 전체 확인 완료</li>
+    <li>저장: 플랫폼 데이터베이스에 오프체인으로 보관됩니다. 신분증 서류는 수집하지 않으며, 확인 상태를 온체인에 기록하지 않습니다</li>
+    <li>적용 범위: P2P 마켓플레이스는 <em>전체 확인 완료</em>를 요구합니다. SEED, Pre-Sale 및 MICE 크리덴셜 구매는 모든 지갑에 열려 있으며 확인 절차로 <strong>제한되지 않습니다</strong></li>
   </ul>
 
-  <h4 class="mini-title">온체인 KYC 레지스트리</h4>
-  <ul>
-    <li><strong>컨트랙트:</strong> KYCAllowlist.sol (ERC-165 호환)</li>
-    <li><strong>기능:</strong> 확인된 지갑 주소의 화이트리스트 유지</li>
-    <li><strong>업데이트 메커니즘:</strong> OPERATOR_ROLE이 setKYCStatus(address, bool)를 호출하여 주소 추가/제거</li>
+  <p class="appendix-flat-head">관할권 정책 — 참여자 자기신고</p>
+  <ul class="appendix-flat-list">
+    <li>F.3.3에 나열된 제한 관할권은 참여 정책이며, 자동화된 통제 장치가 아닙니다</li>
+    <li>Mission Chain은 관할권 데이터를 수집하지 않고, 제재 또는 OFAC 심사를 수행하지 않으며, 지역 차단을 적용하지 않습니다. 위치를 근거로 참여가 자동 거부되지 않습니다</li>
+    <li>각 참여자는 본 약관을 읽고 거주 지역에서 참여가 합법인지, 세금 의무를 포함하여 스스로 확인할 책임이 있습니다. 제한 관할권에서 참여하는 것은 해당 참여자의 약관 위반입니다</li>
   </ul>
 
-  <h4 class="mini-title">활동별 KYC 요구 사항</h4>
-  <ul>
-    <li><strong>SEED 라운드 참여:</strong> 구매 전 KYC 필요</li>
-    <li><strong>Pre-Sale 참여:</strong> 구매 전 KYC 필요</li>
-    <li><strong>MICE 라이선스 구매:</strong> 라이선스 발행 전 KYC 필요</li>
-    <li><strong>DAO 거버넌스:</strong> 투표권 부여 전 온체인에서 KYC 확인 확인</li>
-    <li><strong>제한된 관할 구역:</strong> 미국, 이란, 북한 및 OFAC 목록 지역에 대한 자동 KYC 거부</li>
-  </ul>
-
-  <h4 class="mini-title">규제 준수</h4>
-  <p>모든 KYC/AML 절차는 다음을 준수합니다:</p>
-  <ul>
-    <li><strong>FATF Travel Rule:</strong> 대규모 이체에 대한 실소유자 및 거래 추적성</li>
-    <li><strong>적용 가능한 AML/CFT 법률:</strong> 관할권별 자금세탁 방지 및 테러 자금 조달 방지 규정</li>
-    <li><strong>데이터 프라이버시:</strong> 개인 식별 데이터 암호화, 안전하게 저장, GDPR/PDPA 준수</li>
+  <p class="appendix-flat-head">데이터 처리</p>
+  <ul class="appendix-flat-list">
+    <li>수집되는 개인정보는 이메일 주소와 전화번호로 한정되며, 계정 보안 및 알림에 사용됩니다</li>
+    <li>지갑 주소와 거래 등 온체인 데이터는 설계상 공개되며 삭제할 수 없습니다</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>투명성:</strong> KYC 확인 상태는 온체인이며 불변입니다. 확인되면 지갑 주소는 반복적인 확인 없이 모든 프로토콜 활동에 참여할 수 있습니다 (관할 구역 변경 제외).</p>
+    <p><strong>아직 미구현:</strong> 서류 기반 신원 확인, 제재 심사, 관할권 제한 시행은 현재 플랫폼에 포함되어 있지 않습니다. 도입될 경우 시행 전에 본 문서와 플랫폼 약관이 업데이트됩니다.</p>
   </div>
 
   <h3 class="sub-title">H.6 사고 대응</h3>
@@ -2440,7 +2497,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
   <h4 class="mini-title">오프체인 데이터</h4>
   <ul>
-    <li><strong>KYC 문서:</strong> 보관 시 암호화되며, Sumsub 인증 콜드 스토리지에 저장되고 컴플라이언스 팀만 접근 가능</li>
+    <li><strong>연락처 정보:</strong> 이메일 주소와 전화번호이며 보관 시 암호화됩니다. 신분증 서류는 수집하지 않습니다</li>
     <li><strong>AI 대화 로그 (NIRA):</strong> 세션 기반이며 영구적으로 보관되지 않음; 사용자 로그아웃 후 삭제됨</li>
     <li><strong>백엔드 로그:</strong> IP 주소, API 키 및 인증 토큰은 모든 데이터 보존에서 제외됩니다</li>
   </ul>
@@ -2515,7 +2572,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>기능</th><th>목적</th><th>단계</th></tr></thead>
       <tbody>
         <tr><td>자동화된 배출 이상 감지</td><td>비정상적인 채굴 활동, Sybil 클러스터 및 ROI 조작 플래그</td><td>2단계</td></tr>
-        <tr><td>KYC 이상 감지</td><td>패턴 기반 위험 점수로 Sumsub 검토 흐름 지원</td><td>2단계</td></tr>
+        <tr><td>KYC 이상 감지</td><td>향후 도입될 신원 확인 검토를 패턴 기반 위험 점수로 지원</td><td>2단계</td></tr>
         <tr><td>거버넌스 제안 품질 점수</td><td>명확성, 범위 및 프로토콜 원칙과의 일치도를 기준으로 제안 순위 매김</td><td>3단계</td></tr>
         <tr><td>Mission Learn 개인화</td><td>Web3, 신앙 및 미션 주제 전반에 걸친 맞춤형 학습 경로</td><td>3단계</td></tr>
       </tbody>
@@ -3000,24 +3057,24 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
     <div class="wp-table-wrap">
     <table class="wp-table">
-      <thead><tr><th>단계</th><th>테마</th><th>산출물</th><th>타임라인</th></tr></thead>
+      <thead><tr><th>단계</th><th>테마</th><th>산출물</th></tr></thead>
       <tbody>
-        <tr><td><strong>1단계 — 기초</strong></td><td>핵심 플랫폼 출시</td><td>지갑 기반 인증으로 커뮤니티 등록. 기본 콘텐츠 허브(묵상, 간증). MIC 보상이 있는 일일 신앙 챌린지. SOPHIA 일일 묵상 가이드. 5개 언어 지원(EN, ES, VI, KO, PT).</td><td>2026년 3분기</td></tr>
-        <tr><td><strong>2단계 — 성장</strong></td><td>커뮤니티 확장</td><td>파트너십 관리 포털. 인증서 NFT가 있는 학습 아카데미. SOPHIA 음악 및 예배 기능. 멘토십 매칭 시스템. 거버넌스 도구가 있는 커뮤니티 그룹. 지역 챌린지 캠페인.</td><td>2026년 4분기 – 2027년 1분기</td></tr>
-        <tr><td><strong>3단계 — 규모</strong></td><td>글로벌 도달</td><td>2단계 언어(SW, PCM, TL). 글로벌 미션 자금 지원 모듈. SOPHIA를 통한 실시간 다국어 번역. Strategic Partner를 위한 화이트 라벨 포털. 모바일 네이티브 경험(PWA + 앱 스토어).</td><td>2027년 2~4분기</td></tr>
-        <tr><td><strong>4단계 — 성숙</strong></td><td>생태계 시너지</td><td>완전한 DAO 거버넌스 콘텐츠 중재. 크로스 플랫폼 성과 시스템. 파트너를 위한 고급 분석 및 영향 대시보드. SOPHIA 자율 콘텐츠 전략. 탈중앙화 신원(DID) 통합.</td><td>2028년+</td></tr>
+        <tr><td><strong>1단계 — 기초</strong></td><td>핵심 플랫폼 출시</td><td>지갑 기반 인증으로 커뮤니티 등록. 기본 콘텐츠 허브(묵상, 간증). MIC 보상이 있는 일일 신앙 챌린지. SOPHIA 일일 묵상 가이드. 5개 언어 지원(EN, ES, VI, KO, PT).</td></tr>
+        <tr><td><strong>2단계 — 성장</strong></td><td>커뮤니티 확장</td><td>파트너십 관리 포털. 인증서 NFT가 있는 학습 아카데미. SOPHIA 음악 및 예배 기능. 멘토십 매칭 시스템. 거버넌스 도구가 있는 커뮤니티 그룹. 지역 챌린지 캠페인.</td></tr>
+        <tr><td><strong>3단계 — 규모</strong></td><td>글로벌 도달</td><td>2단계 언어(SW, PCM, TL). 글로벌 미션 자금 지원 모듈. SOPHIA를 통한 실시간 다국어 번역. Strategic Partner를 위한 화이트 라벨 포털. 모바일 네이티브 경험(PWA + 앱 스토어).</td></tr>
+        <tr><td><strong>4단계 — 성숙</strong></td><td>생태계 시너지</td><td>완전한 DAO 거버넌스 콘텐츠 중재. 크로스 플랫폼 성과 시스템. 파트너를 위한 고급 분석 및 영향 대시보드. SOPHIA 자율 콘텐츠 전략. 탈중앙화 신원(DID) 통합.</td></tr>
       </tbody>
     </table>
   </div><h4 class="mini-title">주요 마일스톤</h4>
     <div class="wp-table-wrap">
       <table class="wp-table">
-        <thead><tr><th>마일스톤</th><th>목표</th><th>성공 지표</th></tr></thead>
+        <thead><tr><th>마일스톤</th><th>성공 지표</th></tr></thead>
         <tbody>
-          <tr><td><strong>플랫폼 베타</strong></td><td class="mono">2026년 3분기</td><td>1,000명 활성 사용자, 10개 파트너 교회</td></tr>
-          <tr><td><strong>공개 출시</strong></td><td class="mono">2026년 4분기</td><td>10,000명 활성 사용자, 50개 파트너, 5개 언어 라이브</td></tr>
-          <tr><td><strong>성장 임계값</strong></td><td class="mono">2027년 2분기</td><td>50,000명 활성 사용자, 200개 파트너, 학습 아카데미 라이브</td></tr>
-          <tr><td><strong>글로벌 규모</strong></td><td class="mono">2027년 4분기</td><td>200,000명 활성 사용자, 8개 언어, 글로벌 미션 라이브</td></tr>
-          <tr><td><strong>성숙</strong></td><td class="mono">2028년</td><td>500,000명 이상 활성 사용자, 완전한 DAO 거버넌스, DID 통합</td></tr>
+          <tr><td><strong>플랫폼 베타</strong></td><td>1,000명 활성 사용자, 10개 파트너 교회</td></tr>
+          <tr><td><strong>공개 출시</strong></td><td>10,000명 활성 사용자, 50개 파트너, 5개 언어 라이브</td></tr>
+          <tr><td><strong>성장 임계값</strong></td><td>50,000명 활성 사용자, 200개 파트너, 학습 아카데미 라이브</td></tr>
+          <tr><td><strong>글로벌 규모</strong></td><td>200,000명 활성 사용자, 8개 언어, 글로벌 미션 라이브</td></tr>
+          <tr><td><strong>성숙</strong></td><td>500,000명 이상 활성 사용자, 완전한 DAO 거버넌스, DID 통합</td></tr>
         </tbody>
       </table>
     </div>
@@ -3068,7 +3125,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <div class="foot-logo">
       <img src="../mission-chain-logo-clear.png" alt="Mission Chain" style="height:60px;width:60px;border-radius:14px;object-fit:contain;background:transparent"/>
       <div class="foot-logo-name">Mission Chain Network</div>
-      <div class="foot-tagline" data-t="foot-tagline">신앙에서 영감을 받고, 사람을 위해 구축되었습니다.</div>
+      <div class="foot-tagline" data-t="foot-tagline">신앙에서 태어나, 사람을 위해 구축되었습니다.</div>
     </div>
     <div>
       <p data-t="foot-p">© 2026 Mission Chain Network. 모든 권리 보유. · 토큰: MIC · 네트워크: BSC (BEP-20) · 최대 공급량: 7,000,000,000</p>

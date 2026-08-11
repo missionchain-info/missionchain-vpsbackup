@@ -205,7 +205,10 @@ export const daoRoutes: FastifyPluginAsync = async (app) => {
         totalVotes,
         uniqueVoters,
         participationRate,
-        governanceModel: 'DAOGovernor: Ban Thuong Truc 3/5 + >= 75% MFP staked weight',
+        // What DAOGovernor actually enforces: BTC_QUORUM = 3, one vote per Council member.
+        // The old string here promised ">= 75% MFP staked weight", which the contract has
+        // never had and which the Owner ruled out on 2026-08-07 — governance is by head.
+        governanceModel: 'DAOGovernor: Steward Council, 3 of 5 votes, one vote per member',
         timelocks: {
           parameter: '24h',
           budget: '24h',

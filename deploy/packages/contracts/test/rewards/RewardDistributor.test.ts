@@ -184,66 +184,73 @@ describe("RewardDistributor", function () {
   // BPS Adjustment (DAO)
   // ─────────────────────────────────────────────────────────
   describe("adjustBPS", () => {
-    it("DAO can adjust BPS within +-200 per pool", async () => {
-      // Increase bpsClaim by 200, decrease bpsIncentive by 200
-      // 6143 + 200 = 6343; 714 - 200 = 514; 6343 + 2857 + 286 + 514 = 10000
-      await distributor.connect(admin).adjustBPS(6343, 2857, 286, 514);
+    // Derived from the deployed defaults so these cases can't drift from the contract again.
+    const MAX_CHANGE = 200n;
+    // Shift the max allowed step from Claim → Incentive (total stays 10000).
+    const UP_CLAIM   = BPS_CLAIM + MAX_CHANGE;      // 7057
+    const DOWN_INC   = BPS_INCENTIVE - MAX_CHANGE;  //  514
+    // ...and the mirror image.
+    const DOWN_CLAIM = BPS_CLAIM - MAX_CHANGE;      // 6657
+    const UP_INC     = BPS_INCENTIVE + MAX_CHANGE;  //  914
 
-      expect(await distributor.bpsClaim()).to.equal(6343n);
-      expect(await distributor.bpsIncentive()).to.equal(514n);
+    it("DAO can adjust BPS within +-200 per pool", async () => {
+      await distributor.connect(admin).adjustBPS(UP_CLAIM, BPS_PERIODIC, BPS_LUCKY, DOWN_INC);
+
+      expect(await distributor.bpsClaim()).to.equal(UP_CLAIM);
+      expect(await distributor.bpsIncentive()).to.equal(DOWN_INC);
     });
 
     it("allows exact +-200 BPS boundary", async () => {
-      // Decrease bpsClaim by 200: 6143 - 200 = 5943; add to incentive: 714 + 200 = 914
-      await distributor.connect(admin).adjustBPS(5943, 2857, 286, 914);
-      expect(await distributor.bpsClaim()).to.equal(5943n);
-      expect(await distributor.bpsIncentive()).to.equal(914n);
+      await distributor.connect(admin).adjustBPS(DOWN_CLAIM, BPS_PERIODIC, BPS_LUCKY, UP_INC);
+      expect(await distributor.bpsClaim()).to.equal(DOWN_CLAIM);
+      expect(await distributor.bpsIncentive()).to.equal(UP_INC);
     });
 
     it("reverts if any pool changes by more than 200 BPS", async () => {
-      // bpsClaim change: 6143 -> 6344 = +201, exceeds +-200
+      // Claim moves +201 — one step past the cap. Total still 10000 so the size check is what trips.
       await expect(
-        distributor.connect(admin).adjustBPS(6344, 2857, 286, 513)
+        distributor.connect(admin).adjustBPS(
+          BPS_CLAIM + MAX_CHANGE + 1n, BPS_PERIODIC, BPS_LUCKY, BPS_INCENTIVE - MAX_CHANGE - 1n)
       ).to.be.revertedWith("RewardDistributor: BPS change too large");
     });
 
     it("reverts if new total != 10000", async () => {
-      // sum = 6143 + 2857 + 286 + 713 = 9999
+      // sum = 9999
       await expect(
-        distributor.connect(admin).adjustBPS(6143, 2857, 286, 713)
+        distributor.connect(admin).adjustBPS(BPS_CLAIM, BPS_PERIODIC, BPS_LUCKY, BPS_INCENTIVE - 1n)
       ).to.be.revertedWith("RewardDistributor: total BPS must be 10000");
     });
 
     it("enforces 14-day cooldown between adjustments", async () => {
       // First adjustment (valid)
-      await distributor.connect(admin).adjustBPS(6343, 2857, 286, 514);
+      await distributor.connect(admin).adjustBPS(UP_CLAIM, BPS_PERIODIC, BPS_LUCKY, DOWN_INC);
 
       // Immediate second adjustment should fail
       await expect(
-        distributor.connect(admin).adjustBPS(6143, 2857, 286, 714)
+        distributor.connect(admin).adjustBPS(BPS_CLAIM, BPS_PERIODIC, BPS_LUCKY, BPS_INCENTIVE)
       ).to.be.revertedWith("RewardDistributor: cooldown active");
     });
 
     it("allows second adjustment after 14-day cooldown passes", async () => {
-      await distributor.connect(admin).adjustBPS(6343, 2857, 286, 514);
+      await distributor.connect(admin).adjustBPS(UP_CLAIM, BPS_PERIODIC, BPS_LUCKY, DOWN_INC);
 
       await increaseTime(FOURTEEN_DAYS + 1);
 
-      await distributor.connect(admin).adjustBPS(6143, 2857, 286, 714);
-      expect(await distributor.bpsClaim()).to.equal(6143n);
-      expect(await distributor.bpsIncentive()).to.equal(714n);
+      await distributor.connect(admin).adjustBPS(BPS_CLAIM, BPS_PERIODIC, BPS_LUCKY, BPS_INCENTIVE);
+      expect(await distributor.bpsClaim()).to.equal(BPS_CLAIM);
+      expect(await distributor.bpsIncentive()).to.equal(BPS_INCENTIVE);
     });
 
     it("reverts if caller is not admin", async () => {
       await expect(
-        distributor.connect(stranger).adjustBPS(6143, 2857, 286, 714)
+        distributor.connect(stranger).adjustBPS(BPS_CLAIM, BPS_PERIODIC, BPS_LUCKY, BPS_INCENTIVE)
       ).to.be.revertedWithCustomError(distributor, "AccessControlUnauthorizedAccount");
     });
 
     it("emits BPSAdjusted event", async () => {
-      await expect(distributor.connect(admin).adjustBPS(6343, 2857, 286, 514))
+      await expect(distributor.connect(admin).adjustBPS(UP_CLAIM, BPS_PERIODIC, BPS_LUCKY, DOWN_INC))
         .to.emit(distributor, "BPSAdjusted")
-        .withArgs(6343, 2857, 286, 514);
+        .withArgs(UP_CLAIM, BPS_PERIODIC, BPS_LUCKY, DOWN_INC);
     });
   });
 

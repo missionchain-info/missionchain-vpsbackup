@@ -8,11 +8,6 @@
       },
       {
         "internalType": "address",
-        "name": "_lockManager",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "admin",
         "type": "address"
       }
@@ -623,19 +618,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lockManager",
-    "outputs": [
-      {
-        "internalType": "contract ILockManager",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from '@/lib/wagmi'
 import { useEffect, useState } from 'react'
 import { initTheme } from '@/lib/theme'
+import ChainGuard from '@/components/wallet/ChainGuard'
 import '@/styles/globals.css'
 
 const queryClient = new QueryClient()
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
+            <ChainGuard />
             {mounted ? children : null}
           </QueryClientProvider>
         </WagmiProvider>
