@@ -179,7 +179,7 @@ export const vestingRoutes: FastifyPluginAsync = async (app) => {
     // 2. DB empty → fallback to on-chain LockManager.getSchedules()
     const lockManagerAddress = process.env.LOCK_MANAGER_ADDRESS
     const micTokenAddress = process.env.MIC_TOKEN_ADDRESS
-    const rpcUrl = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
+    const rpcUrl = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
 
     if (!lockManagerAddress || !micTokenAddress) {
       return { data: [], source: 'db', message: 'No schedules found' }
@@ -287,7 +287,7 @@ export const vestingRoutes: FastifyPluginAsync = async (app) => {
       // Fallback: on-chain LockManager
       const lockManagerAddress = process.env.LOCK_MANAGER_ADDRESS
       const micTokenAddress = process.env.MIC_TOKEN_ADDRESS
-      const rpcUrl = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
+      const rpcUrl = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
 
       if (lockManagerAddress && micTokenAddress) {
         const onChain = await fetchOnChainVesting(targetWallet, lockManagerAddress, micTokenAddress, rpcUrl)

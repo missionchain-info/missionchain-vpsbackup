@@ -93,7 +93,11 @@ async function getProvider(): Promise<JsonRpcProvider> {
     }
   }
   const fallback = getRpcFallback()
-  const primary = process.env.BSC_RPC_URL || fallback[0]
+  // Alchemy first. The public endpoints answer eth_blockNumber in under a second and
+  // then 504 after 90s on a real eth_call, so the health check below cannot tell them
+  // apart -- the only defence is not to reach for them first. (Aug 11: this stalled
+  // /revenue-funds until the browser gave up with an unexplained "Failed to fetch".)
+  const primary = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || fallback[0]
   const endpoints = [primary, ...fallback.filter((u) => u !== primary)]
   for (const url of endpoints) {
     try {

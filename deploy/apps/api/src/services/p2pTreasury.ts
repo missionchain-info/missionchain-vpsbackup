@@ -60,7 +60,7 @@ async function getStateProvider(): Promise<JsonRpcProvider> {
     try { await stateProvider.getBlockNumber(); return stateProvider } catch { stateProvider = null }
   }
   const fallback = stateRpcFallback()
-  const primary = process.env.BSC_RPC_URL || fallback[0]
+  const primary = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || fallback[0]
   const endpoints = [primary, ...fallback.filter((u) => u !== primary)]
   for (const url of endpoints) {
     try {

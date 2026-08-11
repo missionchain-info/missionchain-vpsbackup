@@ -23,7 +23,7 @@ const SEED_SALE_ABI = [
 ] as const
 
 function getRpcUrl(): string {
-  return process.env.BSC_RPC_URL || BSC_MAINNET_RPC
+  return process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || BSC_MAINNET_RPC
 }
 
 /**

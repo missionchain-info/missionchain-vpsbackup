@@ -115,7 +115,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       const ZERO = '0x0000000000000000000000000000000000000000'
       if (A.MFPNFT && A.MFPNFT !== ZERO) {
         const p = new ethers.JsonRpcProvider(
-          process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || getActiveChain().rpcUrls[0],
+          process.env.INDEXER_RPC_URL || process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || getActiveChain().rpcUrls[0],
         )
         const c = new ethers.Contract(
           A.MFPNFT, ['function totalSupply() view returns (uint256)'], p,
@@ -457,7 +457,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       // Fallback: read pair directly on-chain (indexer may not have caught up yet)
       try {
         const { JsonRpcProvider, Contract } = await import('ethers')
-        const rpcUrl = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
+        const rpcUrl = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
         const mfpAddr = process.env.MFPNFT_ADDRESS || '0xC53DfA185D29A10124a57c27eA4131c504B8097F'
         const provider = new JsonRpcProvider(rpcUrl)
         const ABI = [
@@ -650,7 +650,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
     const A = getActiveAddresses() as Record<string, string>
     const ZERO = '0x0000000000000000000000000000000000000000'
 
-    const rpc = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
+    const rpc = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
     const p = new ethers.JsonRpcProvider(rpc)
 
     const live = (a?: string) => !!a && a !== ZERO

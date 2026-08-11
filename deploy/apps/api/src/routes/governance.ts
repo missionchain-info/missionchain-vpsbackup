@@ -197,7 +197,7 @@ export const governanceRoutes: FastifyPluginAsync = async (app) => {
     let amount = body.amountUsdt ?? 0
     try {
       const { ethers } = await import('ethers')
-      const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/')
+      const provider = new ethers.JsonRpcProvider(process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/')
       const tx = await provider.getTransaction(body.txHash)
       const receipt = await provider.getTransactionReceipt(body.txHash)
       if (!tx || !receipt || receipt.status !== 1) {
