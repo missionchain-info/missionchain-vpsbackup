@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import SubNav, { EXPLORE_TABS } from '@/components/layout/SubNav'
+import MicP2PPanel from '@/components/MicP2PPanel'
 import { BrowserProvider, Contract, parseUnits } from 'ethers'
 import { getActiveAddresses, getActiveChain, USDT_DECIMALS } from '@missionchain/sdk'
 import { api } from '@/lib/api'
@@ -243,6 +244,11 @@ export default function P2pPage() {
     return (
       <>
         <SubNav items={EXPLORE_TABS} />
+
+      {/* MIC/USDT — live. The MFP marketplace below it is on a contract whose
+          price ceiling is $0.000001, so it cannot accept a real listing until it
+          is redeployed. */}
+      <MicP2PPanel address={connectedAddr} />
         <P2pComingSoon platformFee={platformFee} />
       </>
     )

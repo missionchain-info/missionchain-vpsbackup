@@ -72,11 +72,43 @@ describe('P2PEscrowMIC', () => {
       ).to.be.revertedWith('P2P: price out of range')
     })
 
-    it('rejects a listing below $1 — the old contract allowed a millionth of a cent', async () => {
+    it('accepts $0.005 and rejects $0.004 — the floor the Owner set', async () => {
       const { p2p, seller } = await fixture()
       await expect(
-        p2p.connect(seller).createOrder(E18(1000), ethers.parseUnits('0.99', 18), DAY),
+        p2p.connect(seller).createOrder(E18(1000), ethers.parseUnits('0.005', 18), DAY),
+      ).to.not.be.reverted
+      await expect(
+        p2p.connect(seller).createOrder(E18(1000), ethers.parseUnits('0.004', 18), DAY),
       ).to.be.revertedWith('P2P: price out of range')
+    })
+
+    it('lets the admin move the floor without a redeploy — what MFP could not do', async () => {
+      const { p2p, admin, seller } = await fixture()
+      await expect(
+        p2p.connect(seller).createOrder(E18(1000), ethers.parseUnits('0.002', 18), DAY),
+      ).to.be.revertedWith('P2P: price out of range')
+
+      await p2p.connect(admin).setPriceBounds(ethers.parseUnits('0.001', 18), E18(1_000_000))
+      await expect(
+        p2p.connect(seller).createOrder(E18(1000), ethers.parseUnits('0.002', 18), DAY),
+      ).to.not.be.reverted
+    })
+
+    it('will not let the floor go below $0.001 or the ceiling above $100M', async () => {
+      const { p2p, admin } = await fixture()
+      await expect(
+        p2p.connect(admin).setPriceBounds(ethers.parseUnits('0.0009', 18), E18(1_000_000)),
+      ).to.be.revertedWith('P2P: min below floor')
+      await expect(
+        p2p.connect(admin).setPriceBounds(E18(1), E18(100_000_001)),
+      ).to.be.revertedWith('P2P: max above ceiling')
+    })
+
+    it('lets nobody but the admin move the bounds', async () => {
+      const { p2p, stranger } = await fixture()
+      await expect(
+        p2p.connect(stranger).setPriceBounds(E18(1), E18(100)),
+      ).to.be.reverted
     })
   })
 

@@ -34,7 +34,7 @@ const FALLBACK_ITEMS: MenuItem[] = [
   { id: 'network', icon: '🌐', label: 'Building', href: '/network', group: 'Earn', status: 'enabled', mandatory: false, order: 8 },
   { id: 'nft', icon: '🎨', label: 'NFT', href: '/nft', group: 'Earn', status: 'disabled', mandatory: false, order: 9 },
   { id: 'vesting', icon: '🔒', label: 'Vesting', href: '/vesting', group: 'Earn', status: 'disabled', mandatory: false, order: 10 },
-  { id: 'p2p', icon: '🔀', label: 'P2P Exchange', href: '/p2p', group: 'Explore', status: 'disabled', mandatory: false, order: 11 },
+  { id: 'p2p', icon: '🔀', label: 'P2P Exchange', href: '/p2p', group: 'Explore', status: 'enabled', mandatory: false, order: 11 },
   { id: 'swap', icon: '🔄', label: 'Swap', href: '/swap', group: 'Explore', status: 'disabled', mandatory: false, order: 12 },
   { id: 'info', icon: 'ℹ️', label: 'Infos', href: '/info', group: 'Explore', status: 'disabled', mandatory: false, order: 13 },
   { id: 'nira', icon: '🤖', label: 'NIRA AI', href: '/nira', group: 'Explore', status: 'disabled', mandatory: false, order: 14, badge: 'AI' },

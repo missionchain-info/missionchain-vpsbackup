@@ -47,11 +47,22 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
     uint16 public constant MAX_FEE_BPS = 1000;     // 10%
     uint16 public feeBps = 150;                    // 1.5%
 
-    uint256 public constant MIN_PRICE_USDT = 1e18;          // $1
-    uint256 public constant MAX_PRICE_USDT = 1_000_000e18;  // $1,000,000
+    // Adjustable, on purpose. P2PEscrowMFP wrote its bounds as `constant` and shipped a
+    // $0.000001 ceiling that no setter could reach, so a redeploy is the only cure -- and
+    // the first draft of THIS contract repeated the same shape before the floor needed to
+    // move from $1 to $0.10. A bound the Owner may reasonably want to tune is a parameter,
+    // not a constant. The hard ceilings below still fence a fat-fingered call.
+    uint256 public minPriceUsdt = 0.005e18;        // $0.005 -- the price of one MIC, so a
+                                                   // single-coin lot is listable
+    uint256 public maxPriceUsdt = 1_000_000e18;    // $1,000,000
 
-    uint256 public constant MIN_AMOUNT_MIC = 1e18;             // 1 MIC
-    uint256 public constant MAX_AMOUNT_MIC = 100_000_000e18;   // 100,000,000 MIC
+    uint256 public minAmountMic = 1e18;            // 1 MIC
+    uint256 public maxAmountMic = 100_000_000e18;  // 100,000,000 MIC
+
+    /// Outer fences. These are genuinely fixed: nothing legitimate lives outside them, and
+    /// they stop a mistyped setter from reopening the hole this contract exists to avoid.
+    uint256 public constant FLOOR_PRICE_USDT = 0.001e18;        // $0.001 -- never lower
+    uint256 public constant CEILING_PRICE_USDT = 100_000_000e18; // $100,000,000 -- never higher
 
     uint256 public constant MIN_EXPIRY_SECONDS = 1 hours;
     uint256 public constant MAX_EXPIRY_SECONDS = 30 days;
@@ -105,6 +116,8 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
     event FeeUpdated(uint16 oldBps, uint16 newBps);
     event FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient);
     event PausedSet(bool paused);
+    event PriceBoundsUpdated(uint256 oldMin, uint256 oldMax, uint256 newMin, uint256 newMax);
+    event AmountBoundsUpdated(uint256 oldMin, uint256 oldMax, uint256 newMin, uint256 newMax);
     event StraySwept(address indexed token, address indexed to, uint256 amount);
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -159,8 +172,8 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
         notPaused
         returns (uint256 id)
     {
-        require(amountMic >= MIN_AMOUNT_MIC && amountMic <= MAX_AMOUNT_MIC, "P2P: amount out of range");
-        require(priceUsdt >= MIN_PRICE_USDT && priceUsdt <= MAX_PRICE_USDT, "P2P: price out of range");
+        require(amountMic >= minAmountMic && amountMic <= maxAmountMic, "P2P: amount out of range");
+        require(priceUsdt >= minPriceUsdt && priceUsdt <= maxPriceUsdt, "P2P: price out of range");
         require(
             expirySeconds >= MIN_EXPIRY_SECONDS && expirySeconds <= MAX_EXPIRY_SECONDS,
             "P2P: expiry out of range"
@@ -267,6 +280,25 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
         require(newBps >= MIN_FEE_BPS && newBps <= MAX_FEE_BPS, "P2P: fee out of range");
         emit FeeUpdated(feeBps, newBps);
         feeBps = newBps;
+    }
+
+    /// @notice Move the accepted price range. Stated in 18-decimal USDT: $0.10 is `0.1e18`.
+    function setPriceBounds(uint256 newMin, uint256 newMax) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newMin >= FLOOR_PRICE_USDT, "P2P: min below floor");
+        require(newMax <= CEILING_PRICE_USDT, "P2P: max above ceiling");
+        require(newMin < newMax, "P2P: min must be below max");
+        emit PriceBoundsUpdated(minPriceUsdt, maxPriceUsdt, newMin, newMax);
+        minPriceUsdt = newMin;
+        maxPriceUsdt = newMax;
+    }
+
+    /// @notice Move the accepted lot size. Stated in 18-decimal MIC.
+    function setAmountBounds(uint256 newMin, uint256 newMax) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newMin > 0, "P2P: zero min amount");
+        require(newMin < newMax, "P2P: min must be below max");
+        emit AmountBoundsUpdated(minAmountMic, maxAmountMic, newMin, newMax);
+        minAmountMic = newMin;
+        maxAmountMic = newMax;
     }
 
     function setFeeRecipient(address newRecipient) external onlyRole(DEFAULT_ADMIN_ROLE) {

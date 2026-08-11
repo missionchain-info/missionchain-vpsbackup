@@ -13240,3 +13240,79 @@ body.light {
 @media (max-width: 560px) {
   .nft-ledger-cells { grid-template-columns: 1fr 1fr; }
 }
+
+
+/* ── MIC/USDT peer-to-peer ────────────────────────────────────────────── */
+.p2p-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin: 14px 0 10px;
+}
+.p2p-form label { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.p2p-form label span {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gray2, #8b8b9a);
+}
+.p2p-form input,
+.p2p-form select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .04);
+  color: inherit;
+  font-size: .85rem;
+}
+.p2p-form .nft-claim-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--gold, #F0B54A);
+  color: #141018;
+}
+.p2p-form .nft-claim-btn:disabled {
+  background: rgba(255, 255, 255, .07);
+  color: var(--gray2, #8b8b9a);
+  cursor: not-allowed;
+}
+
+.p2p-table { margin-top: 10px; overflow-x: auto; }
+.p2p-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  font-size: .82rem;
+  min-width: 560px;
+}
+.p2p-row:last-child { border-bottom: none; }
+.p2p-head {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gray2, #8b8b9a);
+}
+.p2p-row .nft-claim-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 7px;
+  font-size: .68rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--gold, #F0B54A);
+  color: #141018;
+}
+.p2p-row .nft-claim-btn:disabled {
+  background: rgba(255, 255, 255, .07);
+  color: var(--gray2, #8b8b9a);
+  cursor: not-allowed;
+}

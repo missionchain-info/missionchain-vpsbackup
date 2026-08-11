@@ -32,6 +32,7 @@ import { stewardCouncilRoutes } from './routes/steward-council'
 import { operationalPoolRoutes } from './routes/operational-pool'
 import { governanceRoutes } from './routes/governance'
 import { p2pRoutes } from './routes/p2p'
+import p2pMicRoutes from './routes/p2p-mic'
 import { roundsRoutes } from './routes/rounds'
 import { menuConfigRoutes } from './routes/menu-config'
 import { niraAvatarRoutes } from './routes/nira-avatar'
@@ -128,6 +129,7 @@ async function start() {
   await app.register(operationalPoolRoutes, { prefix: '/admin/seed-budget/operational' })
   await app.register(governanceRoutes, { prefix: '/governance' })
   await app.register(p2pRoutes, { prefix: '/p2p' })
+  await app.register(p2pMicRoutes, { prefix: '/p2p-mic' })
   await app.register(roundsRoutes, { prefix: '/rounds' })
   await app.register(menuConfigRoutes, { prefix: '/menu-config' })
   await app.register(niraAvatarRoutes, { prefix: '/nira-avatar' })
