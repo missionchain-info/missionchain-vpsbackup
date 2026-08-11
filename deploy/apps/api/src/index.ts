@@ -102,7 +102,7 @@ async function start() {
   const blockchain = new BlockchainService()
   app.decorate('blockchain', blockchain)
   app.log.info('BlockchainService initialized (RPC: %s)',
-    process.env.BSC_RPC_URL || 'testnet default')
+    process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'testnet default')
 
   // ── Routes ───────────────────────────────────────────────────────
 
@@ -233,7 +233,8 @@ async function start() {
     const presaleSync = new PreSaleEventSync(
       app.prisma,
       presaleAddr,
-      process.env.BSC_RPC_URL || defaultRpc,
+      // getLogs is the first thing the public endpoints fail at.
+      process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || defaultRpc,
     )
     presaleSync.start()
   } else {
