@@ -21,6 +21,16 @@ const STEWARD_COUNCIL_ABI = [
   'function removeMember(address wallet) external',
 ] as const
 
+const STEWARD_COUNCIL_READ_ABI = [
+  'function getActiveMembers() view returns (address[])',
+] as const
+
+const DAO_GOVERNOR_ABI = [
+  'function setTemporaryMembers(address[5] members) external',
+  'function daoActive() view returns (bool)',
+  'function btcMembers(uint256) view returns (address)',
+] as const
+
 const OPERATIONAL_POOL_ABI = [
   'function enrollMember(address wallet, uint16 sharePctBps, uint128 weeklyMaxoutUsdt) external',
   'function updateMember(address wallet, uint16 newSharePctBps, uint128 newWeeklyMaxoutUsdt) external',
@@ -123,6 +133,84 @@ export async function submitSetCouncilActive(args: {
 export async function submitRemoveCouncilMember(wallet: string): Promise<TxResult> {
   const c = councilContract()
   return sendAndWait(c.removeMember(wallet))
+}
+
+// ─── DAOGovernor seat sync ────────────────────────────────────────────
+//
+// StewardCouncil and DAOGovernor keep SEPARATE member lists. The admin console only ever
+// wrote to StewardCouncil, so on 2026-08-11 the council held 5 members while DAOGovernor
+// had never granted BTC_MEMBER_ROLE to anyone -- 0 of 5. Meanwhile the API told the
+// frontend that governance was "3 of 5 votes, one vote per member". Any proposal raised
+// then could never have reached quorum, because nobody was eligible to vote.
+//
+// This makes StewardCouncil the single list the Owner maintains, and mirrors it down.
+//
+// It is deliberately a Phase 1 bridge. DAOGovernor will later be constituted in its own
+// right, with its own rules and a seat count that is not 5, and StewardCouncil stands down
+// then. That handover is the Owner's decision, announced by the Owner -- nothing here
+// infers it and nothing here should act as though it can. The only thing this code reads
+// is `daoActive`, which is a flag the Owner has already flipped on chain, and its answer
+// to that flag is to stop, not to adapt.
+//
+// So: fail loudly and do nothing, rather than half-apply, whenever the shapes stop
+// matching what Phase 1 assumed.
+
+export type GovernorSyncResult =
+  | { synced: true; txHash: string; members: string[] }
+  | { synced: false; reason: string }
+
+/**
+ * Mirror the current StewardCouncil seats into DAOGovernor.
+ *
+ * Never throws: a council write that already succeeded must not be reported as a failure
+ * because the mirror could not follow. The caller surfaces `reason` instead.
+ */
+export async function syncDaoGovernorSeats(): Promise<GovernorSyncResult> {
+  try {
+    const A = getActiveAddresses() as Record<string, string>
+    const signer = getSigner()
+
+    if (!A.DAOGovernor || !A.StewardCouncil) {
+      return { synced: false, reason: 'DAOGovernor or StewardCouncil is not deployed on this network.' }
+    }
+
+    const governor = new Contract(A.DAOGovernor, DAO_GOVERNOR_ABI, signer)
+
+    // Phase 2 revokes the Owner's admin role, so setTemporaryMembers reverts by design.
+    if (await governor.daoActive()) {
+      return {
+        synced: false,
+        reason: 'DAOGovernor has transitioned to DAO mode — seats can now only change through a governance vote.',
+      }
+    }
+
+    const council = new Contract(A.StewardCouncil, STEWARD_COUNCIL_READ_ABI, signer)
+    const seats = ((await council.getActiveMembers()) as string[]).map((a) => a.toLowerCase())
+
+    // setTemporaryMembers takes address[5] exactly -- it cannot express four or six.
+    if (seats.length !== 5) {
+      return {
+        synced: false,
+        reason: `DAOGovernor needs exactly 5 seats and the council currently has ${seats.length}. `
+          + 'Governance voting stays closed until the council is back to 5.',
+      }
+    }
+
+    // Skip a pointless transaction when the two lists already agree.
+    const current: string[] = []
+    for (let i = 0; i < 5; i++) current.push(String(await governor.btcMembers(i)).toLowerCase())
+    if (current.join(',') === seats.join(',')) {
+      return { synced: false, reason: 'DAOGovernor already holds these 5 seats — nothing to send.' }
+    }
+
+    const result = await sendAndWait(governor.setTemporaryMembers(seats))
+    return { synced: true, txHash: result.txHash, members: seats }
+  } catch (e: any) {
+    return {
+      synced: false,
+      reason: `Could not mirror the seats into DAOGovernor: ${e?.shortMessage || e?.message || 'unknown error'}`,
+    }
+  }
 }
 
 // ─── OperationalSalaryPoolV3 ──────────────────────────────────────────

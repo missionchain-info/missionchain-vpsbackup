@@ -16,6 +16,7 @@ import {
   submitUpdateCouncilMember,
   submitSetCouncilActive,
   submitRemoveCouncilMember,
+  syncDaoGovernorSeats,
   extractRevertReason,
 } from '../services/onChainAdminWrites.js'
 
@@ -135,7 +136,9 @@ export const stewardCouncilRoutes: FastifyPluginAsync = async (app) => {
         },
       })
       auditLog(app, auditCtx(req, 'steward.council.add', wallet, { memberId: body.memberId, role: body.role, txHash }))
-      return reply.status(201).send({ data: created, txHash })
+      const governorSync = await syncDaoGovernorSeats()
+      app.log.info({ wallet, governorSync }, 'steward-council add — DAOGovernor mirror')
+      return reply.status(201).send({ data: created, txHash, governorSync })
     } catch (e: any) {
       if (e?.code === 'P2002') {
         // On-chain succeeded but DB already has this row (rare race). Surface as warning, not failure.
@@ -222,7 +225,9 @@ export const stewardCouncilRoutes: FastifyPluginAsync = async (app) => {
         data,
       })
       auditLog(app, auditCtx(req, 'steward.council.update', wallet, { ...data, txs }))
-      return reply.send({ data: updated, txs })
+      const governorSync = await syncDaoGovernorSeats()
+      app.log.info({ wallet, governorSync }, 'steward-council update — DAOGovernor mirror')
+      return reply.send({ data: updated, txs, governorSync })
     } catch (e: any) {
       if (e?.code === 'P2025') {
         return reply.status(404).send({ error: 'NOT_FOUND' })
@@ -271,9 +276,12 @@ export const stewardCouncilRoutes: FastifyPluginAsync = async (app) => {
     try {
       await app.prisma.stewardCouncilMember.delete({ where: { wallet } })
       auditLog(app, auditCtx(req, 'steward.council.delete', wallet, { txHash, notOnChain }))
+      const governorSync = await syncDaoGovernorSeats()
+      app.log.info({ wallet, governorSync }, 'steward-council delete — DAOGovernor mirror')
       return reply.send({
         success: true,
         txHash,
+        governorSync,
         ...(notOnChain && {
           warning: 'This member was not on-chain — only the database row was removed.',
         }),
