@@ -106,7 +106,7 @@ export const ADDRESSES = {
     MFPRewardPool:          "0xFb79deC4F0CDe13A667018e567dD636255D61d6d",
     LiquidityPoolV6:    "0xf6AB7103d1072416366D34Ce5E8A41074feCC98e",
     P2PEscrowMFP:       "0xcff25169c783B84eFBa746eF4A51271764f24b8B", // 2026-05-10, fee 1.5%. BROKEN: MAX_PRICE_USDT is 1_000_000e6 = $0.000001 and it is constant, so every real listing reverts. Needs a redeploy; do not enable in the UI until then.
-    P2PEscrowMIC:       "0xb44223c62385040245Fbee960d68D4F102592FD9", // MIC/USDT P2P, 2026-08-11. Floor $0.005, adjustable via setPriceBounds. Supersedes 0x4Db0B480, whose bounds were constant.
+    P2PEscrowMIC:       "0x7388ed77c06A917B572C1429B2a323a171c3c5ea", // MIC/USDT P2P, 2026-08-11. Floor $0.005, adjustable via setPriceBounds. Supersedes 0x4Db0B480, whose bounds were constant.
   },
 } as const;
 

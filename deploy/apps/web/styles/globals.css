@@ -13335,3 +13335,20 @@ body.light {
   line-height: 1.4;
   color: var(--gray2, #8b8b9a);
 }
+
+.p2p-side { display: flex; gap: 8px; margin: 14px 0 4px; flex-wrap: wrap; }
+.p2p-side button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: transparent;
+  color: var(--gray2, #8b8b9a);
+  font-size: .74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.p2p-side button.p2p-side-on {
+  background: var(--gold, #F0B54A);
+  border-color: transparent;
+  color: #141018;
+}

@@ -41,6 +41,10 @@ const USDT = '0x55d398326f99059fF775485246999027B3197955'
 
 const ESCROW_ABI = [
   'function createOrder(uint256 amountMic, uint256 priceUsdt, uint64 expirySeconds) returns (uint256)',
+  'function createBuyOrder(uint256 amountMic, uint256 priceUsdt, uint64 expirySeconds) returns (uint256)',
+  'function fillBuyOrder(uint256 id, uint256 minPriceUsdt)',
+  'function cancelBuyOrder(uint256 id)',
+  'function expireBuyOrder(uint256 id)',
   'function matchOrder(uint256 id, uint256 maxPriceUsdt)',
   'function cancelOrder(uint256 id)',
   'function expireOrder(uint256 id)',
@@ -76,17 +80,22 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   /** Price for ONE MIC. The contract prices the whole lot; the multiply happens on submit. */
   const [price, setPrice] = useState('')
   const [tradable, setTradable] = useState<string | null>(null)
+  /** Which side of the book this member is opening. */
+  const [side, setSide] = useState<'sell' | 'buy'>('sell')
+  const [bids, setBids] = useState<Order[]>([])
   const [locked, setLocked] = useState<string | null>(null)
   const [days, setDays] = useState('7')
 
   const load = useCallback(async () => {
     try {
-      const [c, o] = await Promise.all([
+      const [c, o, bd] = await Promise.all([
         fetch(`${API}/p2p-mic/config`).then((r) => (r.ok ? r.json() : null)),
         fetch(`${API}/p2p-mic/orders?status=open`).then((r) => (r.ok ? r.json() : null)),
+        fetch(`${API}/p2p-mic/bids?status=open`).then((r) => (r.ok ? r.json() : null)),
       ])
       if (c) setCfg(c.data)
       if (o) setOrders(o.data)
+      if (bd) setBids(bd.data)
       if (address) {
         const m = await fetch(`${API}/p2p-mic/orders?status=all&seller=${address}`).then((r) =>
           r.ok ? r.json() : null,
@@ -190,6 +199,54 @@ export default function MicP2PPanel({ address }: { address?: string }) {
     setBusy('')
   }
 
+  const createBid = () =>
+    run(
+      'create',
+      async () => {
+        const { Contract, parseUnits } = await import('ethers')
+        const amt = parseUnits(amount || '0', 18)
+        const px = (parseUnits(price || '0', 18) * amt) / 10n ** 18n
+        // The buyer's USDT is escrowed, so that is what needs the allowance.
+        await ensureAllowance(USDT, px)
+        const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
+        const tx = await c.createBuyOrder(amt, px, BigInt(Number(days) * 86400))
+        await tx.wait()
+        setAmount('')
+        setPrice('')
+        return tx.hash
+      },
+      'Bid posted',
+    )
+
+  /** Deliver MIC into someone's standing bid. */
+  const sellInto = (o: Order) =>
+    run(
+      `fill-${o.id}`,
+      async () => {
+        const { Contract, parseUnits } = await import('ethers')
+        await ensureAllowance(MIC, parseUnits(o.amountMic, 18))
+        const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
+        // Floor at exactly the posted bid: a stale screen fails instead of selling for less.
+        const tx = await c.fillBuyOrder(o.id, parseUnits(o.priceUsdt, 18))
+        await tx.wait()
+        return tx.hash
+      },
+      'Sold',
+    )
+
+  const cancelBid = (o: Order) =>
+    run(
+      `cancel-bid-${o.id}`,
+      async () => {
+        const { Contract } = await import('ethers')
+        const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
+        const tx = await (o.expiredButOpen ? c.expireBuyOrder(o.id) : c.cancelBuyOrder(o.id))
+        await tx.wait()
+        return tx.hash
+      },
+      'USDT returned to your wallet',
+    )
+
   const createOrder = () =>
     run(
       'create',
@@ -261,10 +318,26 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         seller&apos;s MIC and settles both sides in one transaction, so neither side has to go first.
         Fee {cfg.feePct}%, paid by the seller out of the sale.
       </div>
+      <div className="p2p-side">
+        <button
+          type="button"
+          className={side === 'sell' ? 'p2p-side-on' : ''}
+          onClick={() => setSide('sell')}
+        >
+          I want to sell MIC
+        </button>
+        <button
+          type="button"
+          className={side === 'buy' ? 'p2p-side-on' : ''}
+          onClick={() => setSide('buy')}
+        >
+          I want to buy MIC
+        </button>
+      </div>
       <div className="nft-pool-note">
-        <strong>Buying?</strong> Every open offer below has a Buy button — pay the asking price in
-        USDT and the MIC arrives in the same transaction. Posting your own bid at a price you
-        choose is not available yet; today a buyer takes an existing offer.
+        {side === 'sell'
+          ? 'Your MIC is held by the contract until someone buys it. Cancel any time and it comes straight back.'
+          : 'Your USDT is held by the contract until someone sells into your bid. Cancel any time and it comes straight back.'}
       </div>
 
       {cfg.paused ? (
@@ -280,10 +353,12 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       {/* ── Sell ─────────────────────────────────────────────── */}
       <div className="p2p-form">
         <label>
-          <span>MIC to sell</span>
+          <span>{side === 'sell' ? 'MIC to sell' : 'MIC to buy'}</span>
           <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="1000" inputMode="decimal" />
           <small className="p2p-hint">
-            {!address ? (
+            {side === 'buy' ? (
+              'You pay in USDT; the MIC arrives when a seller fills your bid.'
+            ) : !address ? (
               'Connect your wallet to see how much MIC you can sell'
             ) : tradable === null ? (
               'Could not read your MIC balance — check that your wallet is connected to BSC'
@@ -317,21 +392,31 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         </label>
         <button
           className="nft-claim-btn"
-          disabled={!address || cfg.paused || busy === 'create' || !amount || !price || overBalance}
-          onClick={createOrder}
+          disabled={
+            !address || cfg.paused || busy === 'create' || !amount || !price ||
+            (side === 'sell' && overBalance)
+          }
+          onClick={side === 'sell' ? createOrder : createBid}
         >
-          {busy === 'create' ? 'Listing…' : !address ? 'Connect wallet' : 'List for sale'}
+          {busy === 'create'
+            ? side === 'sell' ? 'Listing…' : 'Posting…'
+            : !address ? 'Connect wallet'
+            : side === 'sell' ? 'List for sale' : 'Post bid'}
         </button>
       </div>
 
       {total > 0 ? (
         <div className="nft-pool-note">
-          Total <strong>${num(String(total), 4)}</strong> for {num(amount)} MIC · you receive{' '}
-          <strong>${num(String(net), 4)}</strong> after the {cfg.feePct}% fee (${num(String(fee), 4)}).
+          Total <strong>${num(String(total), 4)}</strong> for {num(amount)} MIC ·{' '}
+          {side === 'sell' ? (
+            <>you receive <strong>${num(String(net), 4)}</strong> after the {cfg.feePct}% fee (${num(String(fee), 4)}).</>
+          ) : (
+            <>you escrow the full <strong>${num(String(total), 4)}</strong>; the seller nets ${num(String(net), 4)} after the {cfg.feePct}% fee.</>
+          )}
           {total < Number(cfg.minPriceUsdt) ? (
             <> <span style={{ color: '#ff8f8f' }}>Below the ${cfg.minPriceUsdt} minimum for a listing.</span></>
           ) : null}
-          {overBalance ? (
+          {side === 'sell' && overBalance ? (
             <> <span style={{ color: '#ff8f8f' }}>
               You only have {num(tradable!)} MIC available — the rest is locked by vesting and cannot be sold.
             </span></>
@@ -363,6 +448,40 @@ export default function MicP2PPanel({ address }: { address?: string }) {
                 ) : (
                   <button className="nft-claim-btn" disabled={!address || busy === `buy-${o.id}`} onClick={() => buy(o)}>
                     {busy === `buy-${o.id}` ? 'Buying…' : 'Buy'}
+                  </button>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Bids ─────────────────────────────────────────────── */}
+      <div className="nft-section-header" style={{ marginTop: 20 }}>
+        <span className="nft-section-title">Open bids</span>
+      </div>
+      {bids.length === 0 ? (
+        <div className="nft-pool-note">No bids yet. Post one above and any holder can sell into it.</div>
+      ) : (
+        <div className="p2p-table">
+          <div className="p2p-row p2p-head">
+            <span>MIC wanted</span><span>Pays</span><span>Per MIC</span><span>Buyer</span><span>Time</span><span />
+          </div>
+          {bids.map((o: any) => (
+            <div className="p2p-row" key={o.id}>
+              <span>{num(o.amountMic)}</span>
+              <span>${num(o.priceUsdt, 2)}</span>
+              <span>${num(o.pricePerMic, 6)}</span>
+              <span>{short(o.buyer)}</span>
+              <span>{timeLeft(o.expiresAt)}</span>
+              <span>
+                {address && o.buyer.toLowerCase() === address.toLowerCase() ? (
+                  <button className="nft-claim-btn" disabled={busy === `cancel-bid-${o.id}`} onClick={() => cancelBid(o)}>
+                    {busy === `cancel-bid-${o.id}` ? 'Working…' : 'Cancel'}
+                  </button>
+                ) : (
+                  <button className="nft-claim-btn" disabled={!address || busy === `fill-${o.id}`} onClick={() => sellInto(o)}>
+                    {busy === `fill-${o.id}` ? 'Selling…' : 'Sell'}
                   </button>
                 )}
               </span>

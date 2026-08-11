@@ -32,6 +32,11 @@ async function fixture() {
   await usdt.mint(buyer.address, E18(100_000))
   await mic.connect(seller).approve(await p2p.getAddress(), ethers.MaxUint256)
   await usdt.connect(buyer).approve(await p2p.getAddress(), ethers.MaxUint256)
+  // Either side may now go first, so both need both approvals.
+  await usdt.connect(seller).approve(await p2p.getAddress(), ethers.MaxUint256)
+  await mic.connect(buyer).approve(await p2p.getAddress(), ethers.MaxUint256)
+  await usdt.mint(seller.address, E18(10_000))
+  await mic.mint(buyer.address, E18(500_000))
 
   return { p2p, usdt, mic, admin, seller, buyer, treasury, stranger }
 }
@@ -147,15 +152,19 @@ describe('P2PEscrowMIC', () => {
       const { p2p, usdt, mic, seller, buyer, treasury } = await fixture()
       await p2p.connect(seller).createOrder(E18(1000), E18(100), DAY)
 
+      // Assert the delta: the seller now starts with USDT of their own, since either side
+      // may open a trade.
+      const sellerUsdtBefore = await usdt.balanceOf(seller.address)
+
       const [pays, receives] = await p2p.quote(0)
       expect(pays).to.equal(E18(100))
       expect(receives).to.equal(E18(98.5)) // 1.5%
 
       await p2p.connect(buyer).matchOrder(0, E18(100))
 
-      expect(await usdt.balanceOf(seller.address)).to.equal(E18(98.5))
+      expect(await usdt.balanceOf(seller.address)).to.equal(sellerUsdtBefore + E18(98.5))
       expect(await usdt.balanceOf(treasury.address)).to.equal(E18(1.5))
-      expect(await mic.balanceOf(buyer.address)).to.equal(E18(1000))
+      expect(await mic.balanceOf(buyer.address)).to.equal(E18(500_000) + E18(1000))
       expect(await p2p.totalEscrowedMic()).to.equal(0)
       expect((await p2p.getOrder(0)).status).to.equal(1) // EXECUTED
     })
@@ -269,6 +278,119 @@ describe('P2PEscrowMIC', () => {
 
       await p2p.connect(admin).sweepStray(await p2p.mic(), admin.address, E18(7))
       expect(await mic.balanceOf(await p2p.getAddress())).to.equal(E18(1000))
+    })
+  })
+
+  describe('buy orders (bids)', () => {
+    it('escrows the buyer USDT when the bid is posted', async () => {
+      const { p2p, usdt, buyer } = await fixture()
+      const before = await usdt.balanceOf(buyer.address)
+
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+
+      expect(await usdt.balanceOf(buyer.address)).to.equal(before - E18(8))
+      expect(await p2p.totalEscrowedUsdt()).to.equal(E18(8))
+      expect((await p2p.getBuyOrder(0)).buyer).to.equal(buyer.address)
+    })
+
+    it('settles both legs when a seller fills it', async () => {
+      const { p2p, usdt, mic, seller, buyer, treasury } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+
+      const micBefore = await mic.balanceOf(seller.address)
+      const usdtBefore = await usdt.balanceOf(seller.address)
+
+      const [need, net] = await p2p.quoteBuyOrder(0)
+      expect(need).to.equal(E18(1000))
+      expect(net).to.equal(E18(7.88)) // 8 minus 1.5%
+
+      await p2p.connect(seller).fillBuyOrder(0, E18(8))
+
+      expect(await mic.balanceOf(seller.address)).to.equal(micBefore - E18(1000))
+      expect(await mic.balanceOf(buyer.address)).to.equal(E18(500_000) + E18(1000))
+      expect(await usdt.balanceOf(seller.address)).to.equal(usdtBefore + E18(7.88))
+      expect(await usdt.balanceOf(treasury.address)).to.equal(E18(0.12))
+      expect(await p2p.totalEscrowedUsdt()).to.equal(0)
+    })
+
+    it('refuses when the seller floor is above the bid', async () => {
+      const { p2p, seller, buyer } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await expect(p2p.connect(seller).fillBuyOrder(0, E18(9))).to.be.revertedWith('P2P: price moved')
+    })
+
+    it('refuses a self-trade', async () => {
+      const { p2p, buyer } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await expect(p2p.connect(buyer).fillBuyOrder(0, E18(8))).to.be.revertedWith('P2P: self-trade')
+    })
+
+    it('returns the USDT on cancel', async () => {
+      const { p2p, usdt, buyer } = await fixture()
+      const before = await usdt.balanceOf(buyer.address)
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await p2p.connect(buyer).cancelBuyOrder(0)
+      expect(await usdt.balanceOf(buyer.address)).to.equal(before)
+      expect(await p2p.totalEscrowedUsdt()).to.equal(0)
+    })
+
+    it('lets nobody but the buyer cancel', async () => {
+      const { p2p, buyer, stranger } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await expect(p2p.connect(stranger).cancelBuyOrder(0)).to.be.revertedWith('P2P: not buyer')
+    })
+
+    it('lets a stranger expire an old bid, and the USDT still goes to the buyer', async () => {
+      const { p2p, usdt, buyer, stranger } = await fixture()
+      const before = await usdt.balanceOf(buyer.address)
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await time.increase(DAY + 1)
+      await p2p.connect(stranger).expireBuyOrder(0)
+      expect(await usdt.balanceOf(buyer.address)).to.equal(before)
+    })
+
+    it('cannot be filled after expiry, or twice', async () => {
+      const { p2p, seller, buyer } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await p2p.connect(seller).fillBuyOrder(0, E18(8))
+      await expect(p2p.connect(seller).fillBuyOrder(0, E18(8))).to.be.revertedWith('P2P: not open')
+
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await time.increase(DAY + 1)
+      await expect(p2p.connect(seller).fillBuyOrder(1, E18(8))).to.be.revertedWith('P2P: expired')
+    })
+
+    it('honours the price floor for bids too', async () => {
+      const { p2p, buyer } = await fixture()
+      await expect(
+        p2p.connect(buyer).createBuyOrder(E18(1000), ethers.parseUnits('0.004', 18), DAY),
+      ).to.be.revertedWith('P2P: price out of range')
+    })
+
+    it('will not let an admin sweep USDT a buyer has escrowed', async () => {
+      const { p2p, usdt, admin, buyer } = await fixture()
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+
+      await expect(
+        p2p.connect(admin).sweepStray(await p2p.usdt(), admin.address, E18(1)),
+      ).to.be.revertedWith('P2P: no stray USDT')
+
+      // A genuine stray on top may be taken -- but not one wei more.
+      await usdt.mint(await p2p.getAddress(), E18(3))
+      await expect(
+        p2p.connect(admin).sweepStray(await p2p.usdt(), admin.address, E18(4)),
+      ).to.be.revertedWith('P2P: would touch escrow')
+      await p2p.connect(admin).sweepStray(await p2p.usdt(), admin.address, E18(3))
+      expect(await usdt.balanceOf(await p2p.getAddress())).to.equal(E18(8))
+    })
+
+    it('lets a buyer cancel a bid while paused — a pause must not trap escrow', async () => {
+      const { p2p, usdt, admin, buyer } = await fixture()
+      const before = await usdt.balanceOf(buyer.address)
+      await p2p.connect(buyer).createBuyOrder(E18(1000), E18(8), DAY)
+      await p2p.connect(admin).setPaused(true)
+      await p2p.connect(buyer).cancelBuyOrder(0)
+      expect(await usdt.balanceOf(buyer.address)).to.equal(before)
     })
   })
 })

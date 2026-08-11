@@ -12,8 +12,9 @@ interface ITreasuryManager {
 }
 
 /// @title P2PEscrowMIC — peer-to-peer MIC ↔ USDT at a price the two sides agree
-/// @notice A seller escrows MIC and names a total USDT price. A buyer pays that price and
-///         both legs settle in one transaction. No pool, no curve, no slippage — this is a
+/// @notice Either side may go first. A seller escrows MIC and names a price; a buyer
+///         escrows USDT and names a bid. Whoever takes the other side settles both legs in
+///         one transaction. No pool, no curve, no slippage — this is a
 ///         private sale with the contract standing in for trust.
 ///
 /// @dev ## Both tokens are 18 decimals, and the constructor refuses anything else
@@ -92,9 +93,35 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
     mapping(uint256 => Order) public orders;
     uint256 public nextOrderId;
 
-    /// Escrowed MIC belonging to open orders. Anything above this is a stray transfer and
-    /// is the only thing an admin may sweep — seller funds can never be reached.
+    /// A standing bid: the buyer has escrowed the USDT and waits for someone to deliver MIC.
+    ///
+    /// Kept in its own mapping rather than folded into `Order` behind a side flag. The sell
+    /// path settles real money and is already proven; entangling the two to save a little
+    /// duplication would put every future change to one side inside the other's blast radius.
+    struct BuyOrder {
+        uint256 id;
+        address buyer;
+        uint256 amountMic;   // what the buyer wants delivered
+        uint256 priceUsdt;   // escrowed here, in full, from the moment the bid is posted
+        uint64  createdAt;
+        uint64  expiresAt;
+        Status  status;
+        address seller;
+        uint64  closedAt;
+    }
+
+    mapping(uint256 => BuyOrder) public buyOrders;
+    uint256 public nextBuyOrderId;
+
+    /// Escrowed MIC belonging to open sell orders. Anything above this is a stray transfer
+    /// and is the only MIC an admin may sweep — seller funds can never be reached.
     uint256 public totalEscrowedMic;
+
+    /// Escrowed USDT belonging to open bids. Before bids existed this contract held no USDT
+    /// at all, and `sweepStray` was written on that assumption: any USDT balance was by
+    /// definition a stray. That is no longer true, and without this counter the sweep would
+    /// have been able to take money buyers had committed.
+    uint256 public totalEscrowedUsdt;
 
     event OrderCreated(
         uint256 indexed id,
@@ -110,6 +137,22 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
         uint256 feeAmount,
         uint256 sellerNet
     );
+    event BuyOrderCreated(
+        uint256 indexed id,
+        address indexed buyer,
+        uint256 amountMic,
+        uint256 priceUsdt,
+        uint64  expiresAt
+    );
+    event BuyOrderFilled(
+        uint256 indexed id,
+        address indexed seller,
+        uint256 priceUsdt,
+        uint256 feeAmount,
+        uint256 sellerNet
+    );
+    event BuyOrderCancelled(uint256 indexed id, address indexed by);
+    event BuyOrderExpired(uint256 indexed id, address indexed by);
     event OrderCancelled(uint256 indexed id, address indexed by);
     event OrderExpired(uint256 indexed id, address indexed by);
 
@@ -274,6 +317,116 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
         emit OrderExpired(id, msg.sender);
     }
 
+    // ─── Buyer posts a bid ───────────────────────────────────────────────────
+
+    /// @notice Escrow `priceUsdt` and offer it for `amountMic` MIC.
+    /// @dev The USDT moves here immediately, for the same reason the sell side escrows MIC:
+    ///      a seller should not have to trust that a bidder is still good for the money.
+    function createBuyOrder(uint256 amountMic, uint256 priceUsdt, uint64 expirySeconds)
+        external
+        nonReentrant
+        notPaused
+        returns (uint256 id)
+    {
+        require(amountMic >= minAmountMic && amountMic <= maxAmountMic, "P2P: amount out of range");
+        require(priceUsdt >= minPriceUsdt && priceUsdt <= maxPriceUsdt, "P2P: price out of range");
+        require(
+            expirySeconds >= MIN_EXPIRY_SECONDS && expirySeconds <= MAX_EXPIRY_SECONDS,
+            "P2P: expiry out of range"
+        );
+
+        uint256 before = usdt.balanceOf(address(this));
+        usdt.safeTransferFrom(msg.sender, address(this), priceUsdt);
+        require(usdt.balanceOf(address(this)) - before == priceUsdt, "P2P: USDT transfer shortfall");
+
+        id = nextBuyOrderId++;
+        buyOrders[id] = BuyOrder({
+            id: id,
+            buyer: msg.sender,
+            amountMic: amountMic,
+            priceUsdt: priceUsdt,
+            createdAt: uint64(block.timestamp),
+            expiresAt: uint64(block.timestamp + expirySeconds),
+            status: Status.PENDING,
+            seller: address(0),
+            closedAt: 0
+        });
+        totalEscrowedUsdt += priceUsdt;
+
+        emit BuyOrderCreated(id, msg.sender, amountMic, priceUsdt, buyOrders[id].expiresAt);
+    }
+
+    /// @notice Deliver the MIC a bid asks for and take the escrowed USDT.
+    /// @param id            the bid being filled
+    /// @param minPriceUsdt  the least the seller will accept
+    /// @dev The mirror of `matchOrder`'s cap: a seller signing against a stale screen fails
+    ///      rather than parting with MIC for less than they meant to.
+    function fillBuyOrder(uint256 id, uint256 minPriceUsdt) external nonReentrant notPaused {
+        BuyOrder storage o = buyOrders[id];
+        require(o.status == Status.PENDING, "P2P: not open");
+        require(block.timestamp < o.expiresAt, "P2P: expired");
+        require(msg.sender != o.buyer, "P2P: self-trade");
+        require(o.priceUsdt >= minPriceUsdt, "P2P: price moved");
+
+        uint256 fee = (o.priceUsdt * feeBps) / 10_000;
+        uint256 sellerNet = o.priceUsdt - fee;
+
+        o.status = Status.EXECUTED;
+        o.seller = msg.sender;
+        o.closedAt = uint64(block.timestamp);
+        totalEscrowedUsdt -= o.priceUsdt;
+
+        // MIC straight from the seller to the buyer; the contract never holds it on this path.
+        mic.safeTransferFrom(msg.sender, o.buyer, o.amountMic);
+
+        usdt.safeTransfer(msg.sender, sellerNet);
+        if (fee > 0) {
+            usdt.safeTransfer(feeRecipient, fee);
+        }
+
+        emit BuyOrderFilled(id, msg.sender, o.priceUsdt, fee, sellerNet);
+    }
+
+    /// @notice Buyer withdraws an unfilled bid and takes the USDT back.
+    function cancelBuyOrder(uint256 id) external nonReentrant {
+        BuyOrder storage o = buyOrders[id];
+        require(o.status == Status.PENDING, "P2P: not open");
+        require(o.buyer == msg.sender, "P2P: not buyer");
+
+        o.status = Status.CANCELLED;
+        o.closedAt = uint64(block.timestamp);
+        totalEscrowedUsdt -= o.priceUsdt;
+
+        usdt.safeTransfer(o.buyer, o.priceUsdt);
+        emit BuyOrderCancelled(id, msg.sender);
+    }
+
+    /// @notice Return an expired bid's USDT to its buyer. Callable by anyone, for the same
+    ///         reason `expireOrder` is: the money goes to the buyer no matter who calls.
+    function expireBuyOrder(uint256 id) external nonReentrant {
+        BuyOrder storage o = buyOrders[id];
+        require(o.status == Status.PENDING, "P2P: not open");
+        require(block.timestamp >= o.expiresAt, "P2P: not yet expired");
+
+        o.status = Status.EXPIRED;
+        o.closedAt = uint64(block.timestamp);
+        totalEscrowedUsdt -= o.priceUsdt;
+
+        usdt.safeTransfer(o.buyer, o.priceUsdt);
+        emit BuyOrderExpired(id, msg.sender);
+    }
+
+    function getBuyOrder(uint256 id) external view returns (BuyOrder memory) {
+        return buyOrders[id];
+    }
+
+    /// @notice What a seller nets by filling this bid, before they sign anything.
+    function quoteBuyOrder(uint256 id) external view returns (uint256 micRequired, uint256 sellerReceives) {
+        BuyOrder storage o = buyOrders[id];
+        micRequired = o.amountMic;
+        sellerReceives = o.priceUsdt - (o.priceUsdt * feeBps) / 10_000;
+    }
+
     // ─── Admin ───────────────────────────────────────────────────────────────
 
     function setFee(uint16 newBps) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -315,9 +468,13 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
     }
 
     /// @notice Sweep tokens sent here by mistake.
-    /// @dev For MIC this can only ever take the surplus above `totalEscrowedMic`, so no
-    ///      admin — compromised or otherwise — can reach coins that belong to an open order.
-    ///      USDT is never held here at all, so any USDT balance is by definition a stray.
+    /// @dev Only ever the surplus above what open orders have escrowed — of either token —
+    ///      so no admin, compromised or otherwise, can reach money that belongs to a member.
+    ///
+    ///      The USDT arm is not theoretical caution. Before bids existed this contract held
+    ///      no USDT, and the earlier version of this function said so and checked nothing.
+    ///      Adding `createBuyOrder` without adding this check would have handed the admin
+    ///      role every buyer's escrow.
     function sweepStray(address token, address to, uint256 amount)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -328,6 +485,10 @@ contract P2PEscrowMIC is AccessControl, ReentrancyGuard {
             uint256 balance = mic.balanceOf(address(this));
             require(balance > totalEscrowedMic, "P2P: no stray MIC");
             require(amount <= balance - totalEscrowedMic, "P2P: would touch escrow");
+        } else if (token == address(usdt)) {
+            uint256 balance = usdt.balanceOf(address(this));
+            require(balance > totalEscrowedUsdt, "P2P: no stray USDT");
+            require(amount <= balance - totalEscrowedUsdt, "P2P: would touch escrow");
         }
         IERC20(token).safeTransfer(to, amount);
         emit StraySwept(token, to, amount);

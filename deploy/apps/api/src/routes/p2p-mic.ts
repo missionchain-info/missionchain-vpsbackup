@@ -17,6 +17,9 @@ const ZERO = '0x0000000000000000000000000000000000000000'
 
 const ABI = [
   'function nextOrderId() view returns (uint256)',
+  'function nextBuyOrderId() view returns (uint256)',
+  'function totalEscrowedUsdt() view returns (uint256)',
+  'function getBuyOrder(uint256) view returns (tuple(uint256 id, address buyer, uint256 amountMic, uint256 priceUsdt, uint64 createdAt, uint64 expiresAt, uint8 status, address seller, uint64 closedAt))',
   'function feeBps() view returns (uint16)',
   'function paused() view returns (bool)',
   'function totalEscrowedMic() view returns (uint256)',
@@ -64,12 +67,13 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
     const c = contract()
     if (!c) return reply.status(503).send({ error: 'NOT_DEPLOYED', message: 'MIC P2P is not deployed on this network.' })
 
-    const [feeBps, paused, minP, maxP, minA, maxA, minE, maxE, escrowed] = await Promise.all([
+    const [feeBps, paused, minP, maxP, minA, maxA, minE, maxE, escrowed, escrowedUsdt] = await Promise.all([
       c.feeBps(), c.paused(),
       c.minPriceUsdt(), c.maxPriceUsdt(),
       c.minAmountMic(), c.maxAmountMic(),
       c.MIN_EXPIRY_SECONDS(), c.MAX_EXPIRY_SECONDS(),
       c.totalEscrowedMic(),
+      c.totalEscrowedUsdt(),
     ])
 
     return {
@@ -85,8 +89,58 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
         minExpirySeconds: Number(minE),
         maxExpirySeconds: Number(maxE),
         totalEscrowedMic: formatUnits(escrowed, 18),
+        totalEscrowedUsdt: formatUnits(escrowedUsdt, 18),
       },
     }
+  })
+
+  /**
+   * The bid side of the book: buyers who have already escrowed their USDT.
+   *
+   * Same contract-only reading as /orders, and the same rule about expiry — an expired bid
+   * is never offered as fillable, only surfaced under `status=all` so its buyer can find it.
+   */
+  app.get<{ Querystring: { status?: string; buyer?: string } }>('/bids', async (req, reply) => {
+    const c = contract()
+    if (!c) return reply.status(503).send({ error: 'NOT_DEPLOYED', message: 'MIC P2P is not deployed on this network.' })
+
+    const want = (req.query.status || 'open').toLowerCase()
+    const buyer = req.query.buyer?.toLowerCase()
+
+    const total = Number(await c.nextBuyOrderId())
+    const from = Math.max(0, total - MAX_ORDERS_READ)
+    const now = Math.floor(Date.now() / 1000)
+
+    const raw = await Promise.all(
+      Array.from({ length: total - from }, (_, i) => c.getBuyOrder(from + i)),
+    )
+
+    let out = raw.map((o: any) => {
+      const amount = o.amountMic as bigint
+      const price = o.priceUsdt as bigint
+      const status = STATUS[Number(o.status)] ?? 'UNKNOWN'
+      return {
+        id: Number(o.id),
+        buyer: String(o.buyer),
+        amountMic: formatUnits(amount, 18),
+        priceUsdt: formatUnits(price, 18),
+        pricePerMic: amount > 0n ? formatUnits((price * 10n ** 18n) / amount, 18) : '0',
+        createdAt: Number(o.createdAt),
+        expiresAt: Number(o.expiresAt),
+        status,
+        seller: o.seller === ZERO ? null : String(o.seller),
+        expiredButOpen: status === 'PENDING' && Number(o.expiresAt) <= now,
+      }
+    })
+
+    if (buyer) out = out.filter((o) => o.buyer.toLowerCase() === buyer)
+    if (want === 'open') out = out.filter((o) => o.status === 'PENDING' && !o.expiredButOpen)
+    else if (want !== 'all') out = out.filter((o) => o.status === want.toUpperCase())
+
+    // Best bid first — what a seller is looking for.
+    out.sort((a, b) => Number(b.pricePerMic) - Number(a.pricePerMic))
+
+    return { data: out, meta: { totalEverCreated: total, returned: out.length } }
   })
 
   /**
