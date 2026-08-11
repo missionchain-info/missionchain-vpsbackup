@@ -1038,7 +1038,17 @@ function OperationalPoolPanel({ isOwner }: { isOwner: boolean }) {
       setCouncil(cRes.data || []);
     } catch (err: any) {
       console.error('Failed to load Op pool', err);
-      setLoadErr(err?.message || 'Failed to read OperationalSalaryPoolV3 on-chain');
+      // Say what actually failed. This blamed the contract for every failure, including
+      // an expired session — and the contract is the one thing almost never at fault.
+      // The wrong message sent the last person debugging this to read bytecode.
+      const raw = String(err?.message ?? '');
+      setLoadErr(
+        /failed to fetch|networkerror|load failed/i.test(raw)
+          ? 'Could not reach the API from this browser. Your admin session may have expired — reconnect your wallet and try again.'
+          : /401|unauthor/i.test(raw)
+            ? 'Your admin session has expired. Reconnect your wallet.'
+            : `Could not load the salary pool: ${raw || 'unknown error'}`,
+      );
     } finally {
       setOpLoading(false);
     }
