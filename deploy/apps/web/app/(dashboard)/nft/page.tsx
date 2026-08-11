@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import RewardLedger from '../../../components/RewardLedger'
 import { useAccount, useReadContract } from 'wagmi'
 import SubNav, { EARN_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
@@ -307,6 +308,16 @@ export default function NftPage() {
   const luminaryCount = Math.max(heldByTier('Luminary'), chainCommunity?.luminary ?? 0)
   const communityCount = builderCount + makerCount + luminaryCount
 
+  // What a US$ claim actually pays out: the pool keeps one balance per wallet, so this is
+  // the same figure in both tabs and both Claim buttons send the same transaction.
+  const usdWeeklyAmount = Number(rewards?.weekly?.claimable ?? 0)
+  const usdMonthlyAmount = Number(rewards?.monthly?.claimable ?? 0)
+  const usdPools = [
+    { address: rewards?.ledgers?.pools?.usdWeekly ?? null, label: 'Claim weekly US$', amount: usdWeeklyAmount },
+    { address: rewards?.ledgers?.pools?.usdMonthly ?? null, label: 'Claim monthly US$', amount: usdMonthlyAmount },
+  ]
+  const usdMerged = usdWeeklyAmount + usdMonthlyAmount
+
   return (
     <>
     <SubNav items={EARN_TABS} />
@@ -337,6 +348,18 @@ export default function NftPage() {
         <>
           {/* Mint card (allowance + mint + reveal + Your Collection grid) */}
           <MfpMintCard />
+
+          <RewardLedger
+            title="My NFT Rewards — MFP-NFTs"
+            usd={rewards?.ledgers?.mfp?.usd}
+            micLedger={rewards?.ledgers?.mfp?.mic}
+            usdReliable={rewards?.ledgers?.usdSplitReliable}
+            usdMerged={usdMerged}
+            micPool={rewards?.ledgers?.pools?.mfpMic}
+            usdPools={usdPools}
+            busy={claiming}
+            onClaim={claimFrom}
+          />
 
           {/* MFP-only Reward Pools */}
           <div className="nft-section-card">
@@ -564,6 +587,18 @@ export default function NftPage() {
               </button>
             </div>
           )}
+
+          <RewardLedger
+            title="My NFT Rewards — Community NFTs"
+            usd={rewards?.ledgers?.community?.usd}
+            micLedger={rewards?.ledgers?.community?.mic}
+            usdReliable={rewards?.ledgers?.usdSplitReliable}
+            usdMerged={usdMerged}
+            micPool={rewards?.ledgers?.pools?.communityMic}
+            usdPools={usdPools}
+            busy={claiming}
+            onClaim={claimFrom}
+          />
 
           {/* Community NFT Reward Pool 5% Daily Emission */}
           <div className="nft-section-card">

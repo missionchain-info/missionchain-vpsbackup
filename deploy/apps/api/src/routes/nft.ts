@@ -726,6 +726,65 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       readMicPool(A.MFPRewardPool),
     ])
 
+    // ── Total accumulated / claimed / unclaimed, split by NFT type ────────
+    //
+    // The pools above answer "what are you owed right now". They cannot say what a wallet
+    // has already taken out, and the USDT pools cannot say which NFT type earned it -- one
+    // bucket per wallet, credited by two different calls. nftRewardHistory recovers both
+    // from the chain's own record; see that file for why the split is exact and not an
+    // apportionment.
+    const { readUsdtLedger, readMicLedger } = await import('../services/nftRewardHistory.js')
+
+    const ledgerOr = async <T>(fn: () => Promise<T>, label: string): Promise<T | null> => {
+      try {
+        return await fn()
+      } catch (e: any) {
+        app.log.warn({ err: e?.shortMessage || e?.message, label }, 'nft rewards: ledger read failed')
+        return null
+      }
+    }
+
+    const [weeklyLedger, monthlyLedger, communityMicLedger, mfpMicLedger] = await Promise.all([
+      live(A.NFTRewardPoolWeekly)
+        ? ledgerOr(() => readUsdtLedger(p, A.NFTRewardPoolWeekly, wallet), 'weekly') : null,
+      live(A.NFTRewardPoolMonthly)
+        ? ledgerOr(() => readUsdtLedger(p, A.NFTRewardPoolMonthly, wallet), 'monthly') : null,
+      live(A.CommunityNFTRewardPool)
+        ? ledgerOr(() => readMicLedger(p, A.CommunityNFTRewardPool, wallet), 'communityMic') : null,
+      live(A.MFPRewardPool)
+        ? ledgerOr(() => readMicLedger(p, A.MFPRewardPool, wallet), 'mfpMic') : null,
+    ])
+
+    const addLedgers = (...rows: Array<{ accumulated: string; claimed: string; unclaimed: string } | null | undefined>) => {
+      const sum = (k: 'accumulated' | 'claimed' | 'unclaimed') =>
+        rows.reduce((t, r) => t + Number(r?.[k] ?? 0), 0).toFixed(6)
+      return { accumulated: sum('accumulated'), claimed: sum('claimed'), unclaimed: sum('unclaimed') }
+    }
+
+    // A null USDT ledger means the split failed its own consistency check. Rolling it into
+    // a total would quietly understate what the holder is owed, so the flag travels with
+    // the figures and the UI falls back to the merged balance.
+    const usdSplitReliable = weeklyLedger !== null && monthlyLedger !== null
+
+    const ledgers = {
+      community: {
+        usd: addLedgers(weeklyLedger?.community, monthlyLedger?.community),
+        mic: communityMicLedger ?? { accumulated: '0', claimed: '0', unclaimed: '0' },
+      },
+      mfp: {
+        usd: addLedgers(weeklyLedger?.mfp, monthlyLedger?.mfp),
+        mic: mfpMicLedger ?? { accumulated: '0', claimed: '0', unclaimed: '0' },
+      },
+      usdSplitReliable,
+      // Where each Claim button must send its transaction.
+      pools: {
+        usdWeekly: live(A.NFTRewardPoolWeekly) ? A.NFTRewardPoolWeekly : null,
+        usdMonthly: live(A.NFTRewardPoolMonthly) ? A.NFTRewardPoolMonthly : null,
+        communityMic: live(A.CommunityNFTRewardPool) ? A.CommunityNFTRewardPool : null,
+        mfpMic: live(A.MFPRewardPool) ? A.MFPRewardPool : null,
+      },
+    }
+
     let luckyDraw: { address: string; claimable: string; currency: string } | null = null
     if (live(A.LuckyDraw)) {
       try {
@@ -752,6 +811,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
         mining,
         mfpMining,
         luckyDraw,
+        ledgers,
         totals: { usdt: totalUsdt.toFixed(6), mic: totalMic.toFixed(6) },
         // Stated so the UI never has to guess why a figure is zero.
         note:

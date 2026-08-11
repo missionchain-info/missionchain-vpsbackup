@@ -13188,3 +13188,55 @@ body.light {
 .swap-dir-btn.dim { opacity: 0.42; }
 .swap-dir-btn.dim.active { opacity: 0.75; }
 .swap-price-tag { opacity: 0.55; font-size: 0.66rem; }
+
+
+/* ── My NFT Rewards ledger (US$ / MIC x accumulated / claimed / unclaimed) ── */
+.nft-ledger-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  flex-wrap: wrap;
+}
+.nft-ledger-row:last-of-type { border-bottom: none; }
+.nft-ledger-cur {
+  min-width: 52px;
+  font-weight: 700;
+  font-size: .82rem;
+  color: var(--gold, #F0B54A);
+  letter-spacing: .04em;
+}
+.nft-ledger-cells {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  flex: 1 1 320px;
+}
+.nft-ledger-cells > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.nft-ledger-cells span {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gray2, #8b8b9a);
+}
+.nft-ledger-cells strong {
+  font-size: .92rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.nft-ledger-foot {
+  flex: 1 1 100%;
+  font-size: .68rem;
+  color: var(--gray2, #8b8b9a);
+  line-height: 1.5;
+}
+.nft-ledger-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+@media (max-width: 560px) {
+  .nft-ledger-cells { grid-template-columns: 1fr 1fr; }
+}
