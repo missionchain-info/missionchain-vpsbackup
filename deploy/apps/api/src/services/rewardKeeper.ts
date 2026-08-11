@@ -317,6 +317,16 @@ export async function runRewardKeeperTick(app: FastifyInstance): Promise<void> {
     }
   }
 
+  // Community NFTs earned by milestone or rank. Runs before the draw because a member
+  // who just qualified should hold the credential before the week they qualified in is
+  // settled.
+  try {
+    const { mintDueCommunityNfts } = await import('./autoMint.js')
+    await mintDueCommunityNfts(app, signer.wallet)
+  } catch (e: any) {
+    app.log.error({ err: e?.shortMessage || e?.message }, 'rewardKeeper: auto-mint step failed')
+  }
+
   // The weekly draw runs on the same clock as the credits, and is deliberately last:
   // a failure here must not hold up money people are already owed.
   try {
