@@ -8,6 +8,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { getActiveChain } from '@missionchain/sdk'
 
 type Order = {
   id: number
@@ -33,6 +34,7 @@ type Config = {
   maxExpirySeconds: number
 }
 
+const ACTIVE_CHAIN = getActiveChain()
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.missionchain.io'
 const MIC = '0xf27ec0c311728b923b22828002c992c799326182'
 const USDT = '0x55d398326f99059fF775485246999027B3197955'
@@ -74,6 +76,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   /** Price for ONE MIC. The contract prices the whole lot; the multiply happens on submit. */
   const [price, setPrice] = useState('')
   const [tradable, setTradable] = useState<string | null>(null)
+  const [locked, setLocked] = useState<string | null>(null)
   const [days, setDays] = useState('7')
 
   const load = useCallback(async () => {
@@ -90,20 +93,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         )
         if (m) setMine(m.data)
 
-        // What this wallet can actually offer. MIC under vesting cannot leave the wallet at
-        // all, so listing it would fail inside the token with an error nobody could read.
-        try {
-          const { BrowserProvider, Contract, formatUnits } = await import('ethers')
-          const eth = (window as any).ethereum
-          if (eth) {
-            const prov = new BrowserProvider(eth)
-            const t = new Contract(MIC, ERC20_ABI, prov)
-            const bal: bigint = await t.balanceOf(address)
-            let locked = 0n
-            try { locked = await t.lockedBalanceOf(address) } catch { /* no lock manager wired */ }
-            setTradable(formatUnits(bal > locked ? bal - locked : 0n, 18))
-          }
-        } catch { setTradable(null) }
+        // Read server-side: a balance is public, and routing it through the browser wallet
+        // meant any wallet hiccup blanked the one figure the seller needs.
+        const b = await fetch(`${API}/p2p-mic/balance/${address}`).then((r) => (r.ok ? r.json() : null))
+        setTradable(b ? b.data.tradable : null)
+        setLocked(b ? b.data.locked : null)
       }
     } catch {
       setMsg({ ok: false, text: 'Could not reach the marketplace. Check your connection and retry.' })
@@ -116,13 +110,60 @@ export default function MicP2PPanel({ address }: { address?: string }) {
     return () => clearInterval(t)
   }, [load])
 
-  /** Shared prelude: a wallet, on BSC, with a signer. */
+  /**
+   * A wallet, on the active chain, with a signer.
+   *
+   * The first version compared a raw eth_chainId against a hard-coded '0x38' and threw. It
+   * told a member on the correct network to switch to it, and never said which network the
+   * wallet was actually on, so there was nothing to act on. This asks the wallet to switch
+   * (adding the chain if it does not know it), the way the rest of this page already does,
+   * and if it still will not move it reports the chain id it found.
+   */
   async function signer() {
     const eth = (window as any).ethereum
-    if (!eth) throw new Error('No wallet found')
-    if ((await eth.request({ method: 'eth_chainId' })) !== '0x38') throw new Error('Switch to BSC Mainnet')
+    if (!eth) throw new Error('No wallet detected. Install MetaMask or another BSC wallet.')
+
     const { BrowserProvider } = await import('ethers')
-    return new (await import('ethers')).BrowserProvider(eth).getSigner()
+    let provider = new BrowserProvider(eth)
+    let network = await provider.getNetwork()
+
+    if (Number(network.chainId) !== ACTIVE_CHAIN.chainId) {
+      try {
+        await eth.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: ACTIVE_CHAIN.chainIdHex }],
+        })
+      } catch (e: any) {
+        // 4902: the wallet has never heard of this chain. Offer to add it rather than
+        // leaving the member to type an RPC URL by hand.
+        if (e?.code === 4902) {
+          await eth.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: ACTIVE_CHAIN.chainIdHex,
+              chainName: ACTIVE_CHAIN.name,
+              nativeCurrency: ACTIVE_CHAIN.nativeCurrency,
+              rpcUrls: ACTIVE_CHAIN.rpcUrls,
+              blockExplorerUrls: [ACTIVE_CHAIN.explorerUrl],
+            }],
+          })
+        } else {
+          throw e
+        }
+      }
+
+      provider = new BrowserProvider(eth)
+      network = await provider.getNetwork()
+      if (Number(network.chainId) !== ACTIVE_CHAIN.chainId) {
+        throw new Error(
+          `Your wallet is on chain ${Number(network.chainId)}; ${ACTIVE_CHAIN.name} is ` +
+          `${ACTIVE_CHAIN.chainId}. If you have more than one wallet extension enabled, the ` +
+          `page may be talking to a different one than you think.`,
+        )
+      }
+    }
+
+    return provider.getSigner()
   }
 
   /** Approve only when the current allowance is short — a needless approval is a needless fee. */
@@ -239,22 +280,27 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       {/* ── Sell ─────────────────────────────────────────────── */}
       <div className="p2p-form">
         <label>
-          <span>
-            MIC to sell
-            {tradable !== null ? (
-              <>
-                {' · '}
-                <button
-                  type="button"
-                  className="p2p-max"
-                  onClick={() => setAmount(tradable)}
-                >
-                  max {num(tradable)}
-                </button>
-              </>
-            ) : null}
-          </span>
+          <span>MIC to sell</span>
           <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="1000" inputMode="decimal" />
+          <small className="p2p-hint">
+            {!address ? (
+              'Connect your wallet to see how much MIC you can sell'
+            ) : tradable === null ? (
+              'Could not read your MIC balance — check that your wallet is connected to BSC'
+            ) : (
+              <>
+                Available to sell:{' '}
+                <button type="button" className="p2p-max" onClick={() => setAmount(tradable)}>
+                  {num(tradable)} MIC
+                </button>
+                {Number(tradable) === 0
+                  ? ' — nothing spendable in this wallet'
+                  : Number(locked || 0) > 0
+                    ? ` (${num(locked!)} MIC is locked by vesting and cannot be sold)`
+                    : ''}
+              </>
+            )}
+          </small>
         </label>
         <label>
           <span>Price per MIC (USDT)</span>

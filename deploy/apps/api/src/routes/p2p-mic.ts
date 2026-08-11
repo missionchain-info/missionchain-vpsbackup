@@ -90,6 +90,55 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
   })
 
   /**
+   * What this wallet can actually offer: balance minus whatever vesting still locks.
+   *
+   * Read here rather than through the browser wallet. A balance is public data, and making
+   * it depend on the wallet provider meant that any wallet hiccup -- wrong network, a second
+   * extension answering, a locked account -- silently blanked the figure the seller needs
+   * most.
+   */
+  app.get<{ Params: { wallet: string } }>('/balance/:wallet', async (req, reply) => {
+    const wallet = req.params.wallet
+    if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+      return reply.status(400).send({ error: 'BAD_WALLET', message: 'Not a wallet address' })
+    }
+
+    const micAddr = (getActiveAddresses() as Record<string, string>).MICToken
+    if (!micAddr || micAddr === ZERO) {
+      return reply.status(503).send({ error: 'NOT_DEPLOYED', message: 'MIC is not deployed on this network.' })
+    }
+
+    const mic = new Contract(
+      micAddr,
+      [
+        'function balanceOf(address) view returns (uint256)',
+        'function lockedBalanceOf(address) view returns (uint256)',
+      ],
+      new JsonRpcProvider(rpc()),
+    )
+
+    const balance = (await mic.balanceOf(wallet)) as bigint
+    // Older MIC deployments predate the lock manager; treat a missing getter as nothing
+    // locked rather than failing the whole read.
+    let locked = 0n
+    try {
+      locked = (await mic.lockedBalanceOf(wallet)) as bigint
+    } catch {
+      locked = 0n
+    }
+    const tradable = balance > locked ? balance - locked : 0n
+
+    return {
+      data: {
+        wallet,
+        balance: formatUnits(balance, 18),
+        locked: formatUnits(locked, 18),
+        tradable: formatUnits(tradable, 18),
+      },
+    }
+  })
+
+  /**
    * The order book.
    *
    * `?status=open` (default) returns only what a buyer can actually fill right now — still

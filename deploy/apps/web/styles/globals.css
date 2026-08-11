@@ -13329,3 +13329,9 @@ body.light {
   text-transform: none;
 }
 .p2p-max:hover { text-decoration: underline; }
+
+.p2p-hint {
+  font-size: .66rem;
+  line-height: 1.4;
+  color: var(--gray2, #8b8b9a);
+}
