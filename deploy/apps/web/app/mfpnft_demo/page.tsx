@@ -132,7 +132,7 @@ export default function PreviewMfpPage() {
               transition: 'color 0.4s ease',
             }}
           >
-            &ldquo;Inspired by Faith. Built for People.&rdquo;
+            &ldquo;Born of Faith. Built for People.&rdquo;
           </p>
           <p
             style={{

@@ -30,9 +30,9 @@ interface SubNavProps {
 
 /* ── Pre-defined groups ── */
 export const SALES_TABS: SubNavItem[] = [
-  { label: 'SEED', href: '/seed', badge: 'HOT', menuId: 'seed' },
+  { label: 'SEED', href: '/seed', menuId: 'seed' },
   { label: 'Pre-Sale', href: '/presale', menuId: 'presale' },
-  { label: 'MICE Licenses', href: '/mice', menuId: 'mice' },
+  { label: 'MICE Licenses', href: '/mice', badge: 'HOT', menuId: 'mice' },
 ]
 
 export const EARN_TABS: SubNavItem[] = [

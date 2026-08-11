@@ -146,7 +146,7 @@ export default function LandingPage() {
 
         <h1 className="landing-title">MISSION CHAIN</h1>
         <p className="landing-subtitle">WEB3 &middot; CREATOR ECONOMY</p>
-        <p className="landing-tagline">&ldquo;Inspired by Faith. Built for People.&rdquo;</p>
+        <p className="landing-tagline">&ldquo;Born of Faith. Built for People.&rdquo;</p>
         <p className="landing-verse">&#10022; You are the light of the world. A city on a hill cannot be hidden. &mdash; Matthew 5:14 &#10022;</p>
 
         {/* ── White Paper link ── */}

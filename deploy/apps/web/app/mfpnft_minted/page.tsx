@@ -219,7 +219,7 @@ export default function MfpMintedPage() {
               padding: '0 12px',
             }}
           >
-            &ldquo;Inspired by Faith. Built for People.&rdquo;
+            &ldquo;Born of Faith. Built for People.&rdquo;
           </p>
           <p
             style={{
