@@ -4,15 +4,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useMcUi } from '@/components/ui/McUi';
 import { isOwnerWallet } from '@/lib/auth';
-import { USDT_DECIMALS } from '@missionchain/sdk';
+import { USDT_DECIMALS, getActiveAddresses } from '@missionchain/sdk';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 const BSC_CHAIN_ID = 56;
 const BSC_RPC = 'https://bsc-dataseed.binance.org/';
 
-/* ── P2PEscrowMFP Contract ── */
-const P2P_ESCROW_MFP = '0xD378AeffD194338E1F5E211D9E14287eC862d3b6';
+/* ── Contracts, resolved for whichever network this build points at ──
+   The address here used to be a literal, and it was the TESTNET one. On mainnet every
+   on-chain read hit an address with no code, which is why the four state fields showed
+   a dash and no error: the calls did not fail loudly, they returned nothing. */
+const P2P_ESCROW_MFP = (getActiveAddresses() as Record<string, string>).P2PEscrowMFP || '';
+const P2P_ESCROW_MIC = (getActiveAddresses() as Record<string, string>).P2PEscrowMIC || '';
 const P2P_ADMIN_ABI = [
   'function pauseTrading(bool _paused) external',
   'function setFee(uint16 newBps) external',
@@ -195,12 +199,56 @@ export default function P2pAdminPage() {
     }
   }, []);
 
-  useEffect(() => {
-    // Load backend config
+  /**
+   * Read back what was saved.
+   *
+   * The line that used to be here was the comment "Load backend config" followed by
+   * setLoading(false) and nothing else. So every toggle on this page rendered its
+   * useState default rather than its stored value: the Owner enabled P2P, the write
+   * succeeded, and the next page load showed the switch off. The page was not reporting
+   * state, it was reporting its own initial values.
+   */
+  const loadConfig = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/system-config`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('mc-admin-jwt') || ''}` },
+      });
+      if (!res.ok) throw new Error(`config ${res.status}`);
+      const body = await res.json();
+      const rows: Array<{ key: string; value: string }> = body.data ?? body ?? [];
+      const byKey = new Map(rows.map((r) => [r.key, r.value]));
+
+      const flag = byKey.get('p2p_enabled');
+      if (flag !== undefined) setP2pEnabled(flag === 'true' || flag === '1');
+
+      const raw = byKey.get('p2p-config');
+      if (raw) {
+        const c = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (c.kycRequired !== undefined) setKycRequired(!!c.kycRequired);
+        if (c.platformFee !== undefined) setPlatformFee(String(c.platformFee));
+        if (c.feeRecipient) setFeeRecipient(String(c.feeRecipient));
+        if (c.minOrderUsdt !== undefined) setMinOrderUsdt(String(c.minOrderUsdt));
+        if (c.maxOrderUsdt !== undefined) setMaxOrderUsdt(String(c.maxOrderUsdt));
+        const sa = c.supportedAssets || {};
+        if (sa.MIC !== undefined) setAssetMIC(!!sa.MIC);
+        if (sa.MFP !== undefined) setAssetMFP(!!sa.MFP);
+        if (sa.BUILDER !== undefined) setAssetBuilder(!!sa.BUILDER);
+        if (sa.MAKER !== undefined) setAssetMaker(!!sa.MAKER);
+        if (sa.LUMINARY !== undefined) setAssetLuminary(!!sa.LUMINARY);
+      }
+      // Loading finished with real values, so nothing the user sees now is a default.
+      setDirty(false);
+    } catch (e) {
+      // Say so rather than presenting defaults as if they were the saved state.
+      setMsg('Could not load the saved P2P settings — the switches below may not reflect what is stored.');
+    }
     setLoading(false);
-    // Load on-chain state in parallel
+  }, []);
+
+  useEffect(() => {
+    loadConfig();
     loadChainState();
-  }, [loadChainState]);
+  }, [loadConfig, loadChainState]);
 
   const markDirty = () => setDirty(true);
 
