@@ -13362,3 +13362,10 @@ body.light {
 .p2p-form select { text-align: left; font-variant-numeric: tabular-nums; }
 .p2p-form .nft-claim-btn { height: 38px; }
 .p2p-hint { display: block; padding-left: 10px; margin-top: 8px; }
+
+.p2p-form label span {
+  min-height: 1.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

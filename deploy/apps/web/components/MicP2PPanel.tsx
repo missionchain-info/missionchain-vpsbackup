@@ -100,9 +100,14 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   /** Price for ONE MIC. The contract prices the whole lot; the multiply happens on submit. */
   const [price, setPrice] = useState('')
   const [tradable, setTradable] = useState<string | null>(null)
-  /** Which side of the book this member is opening. */
-  const [side, setSide] = useState<'sell' | 'buy'>('sell')
+  /**
+   * Which tab is open. `side` follows from it: the form only appears on the two trading
+   * tabs, and each tab shows one book instead of stacking all four on top of each other.
+   */
+  const [tab, setTab] = useState<'sell' | 'buy' | 'myOrders' | 'myBids'>('sell')
+  const side: 'sell' | 'buy' = tab === 'buy' ? 'buy' : 'sell'
   const [bids, setBids] = useState<Order[]>([])
+  const [myBids, setMyBids] = useState<any[]>([])
   const [locked, setLocked] = useState<string | null>(null)
   const [usdtBal, setUsdtBal] = useState<string | null>(null)
   const [days, setDays] = useState('7')
@@ -118,10 +123,12 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       if (o) setOrders(o.data)
       if (bd) setBids(bd.data)
       if (address) {
-        const m = await fetch(`${API}/p2p-mic/orders?status=all&seller=${address}`).then((r) =>
-          r.ok ? r.json() : null,
-        )
+        const [m, mb] = await Promise.all([
+          fetch(`${API}/p2p-mic/orders?status=all&seller=${address}`).then((r) => (r.ok ? r.json() : null)),
+          fetch(`${API}/p2p-mic/bids?status=all&buyer=${address}`).then((r) => (r.ok ? r.json() : null)),
+        ])
         if (m) setMine(m.data)
+        if (mb) setMyBids(mb.data)
 
         // Read server-side: a balance is public, and routing it through the browser wallet
         // meant any wallet hiccup blanked the one figure the seller needs.
@@ -329,6 +336,8 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const net = total - fee
   const overBalance = tradable !== null && Number(amount || 0) > Number(tradable)
   const overUsdt = usdtBal !== null && total > Number(usdtBal)
+  const myOrders = mine.filter((o) => o.status === 'PENDING')
+  const myOpenBids = myBids.filter((o: any) => o.status === 'PENDING')
 
   return (
     <div className="nft-section-card">
@@ -342,26 +351,29 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         Fee {cfg.feePct}%, paid by the seller out of the sale.
       </div>
       <div className="p2p-side">
-        <button
-          type="button"
-          className={side === 'sell' ? 'p2p-side-on' : ''}
-          onClick={() => setSide('sell')}
-        >
-          I want to sell MIC
-        </button>
-        <button
-          type="button"
-          className={side === 'buy' ? 'p2p-side-on' : ''}
-          onClick={() => setSide('buy')}
-        >
-          I want to buy MIC
-        </button>
+        {([
+          ['sell', 'I want to sell MIC'],
+          ['buy', 'I want to buy MIC'],
+          ['myOrders', `My orders${myOrders.length ? ` (${myOrders.length})` : ''}`],
+          ['myBids', `My bids${myOpenBids.length ? ` (${myOpenBids.length})` : ''}`],
+        ] as const).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={tab === key ? 'p2p-side-on' : ''}
+            onClick={() => setTab(key)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      <div className="nft-pool-note">
-        {side === 'sell'
-          ? 'Your MIC is held by the contract until someone buys it. Cancel any time and it comes straight back.'
-          : 'Your USDT is held by the contract until someone sells into your bid. Cancel any time and it comes straight back.'}
-      </div>
+      {tab === 'sell' || tab === 'buy' ? (
+        <div className="nft-pool-note">
+          {side === 'sell'
+            ? 'Your MIC is held by the contract until someone buys it. Cancel any time and it comes straight back.'
+            : 'Your USDT is held by the contract until someone sells into your bid. Cancel any time and it comes straight back.'}
+        </div>
+      ) : null}
 
       {cfg.paused ? (
         <div className="nft-pool-note" style={{ color: 'var(--gold)' }}>
@@ -374,6 +386,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       ) : null}
 
       {/* ── Sell ─────────────────────────────────────────────── */}
+      {tab === 'sell' || tab === 'buy' ? (
       <div className="p2p-form">
         <label>
           <span>{side === 'sell' ? 'MIC to sell' : 'MIC to buy'}</span>
@@ -416,7 +429,10 @@ export default function MicP2PPanel({ address }: { address?: string }) {
             : side === 'sell' ? 'List for Sale' : 'Post Bid'}
         </button>
       </div>
+      ) : null}
 
+      {tab === 'sell' || tab === 'buy' ? (
+      <>
       {/* Below the row, not inside a cell: a hint tucked into one label stretched that
           column and knocked the four fields out of alignment. */}
       <div className="p2p-hint">
@@ -474,6 +490,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         </div>
       ) : null}
 
+      </>
+      ) : null}
+
+      {tab === 'sell' ? (
+      <>
       {/* ── Book ─────────────────────────────────────────────── */}
       <div className="nft-section-header" style={{ marginTop: 20 }}>
         <span className="nft-section-title">Open offers</span>
@@ -506,6 +527,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         </div>
       )}
 
+      </>
+      ) : null}
+
+      {tab === 'buy' ? (
+      <>
       {/* ── Bids ─────────────────────────────────────────────── */}
       <div className="nft-section-header" style={{ marginTop: 20 }}>
         <span className="nft-section-title">Open bids</span>
@@ -540,30 +566,88 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         </div>
       )}
 
-      {/* ── Mine ─────────────────────────────────────────────── */}
-      {address && mine.length > 0 ? (
+      </>
+      ) : null}
+
+      {/* ── My orders ────────────────────────────────────────── */}
+      {/* Everything this wallet has sold or tried to sell, filled and cancelled included:
+          a member looking for their own history should not have to hunt on a block explorer. */}
+      {tab === 'myOrders' ? (
         <>
-          <div className="nft-section-header" style={{ marginTop: 20 }}>
-            <span className="nft-section-title">My orders</span>
+          <div className="nft-section-header">
+            <span className="nft-section-title">My sell orders</span>
           </div>
-          <div className="p2p-table">
-            {mine.map((o) => (
-              <div className="p2p-row" key={o.id}>
-                <span>{num(o.amountMic)} MIC</span>
-                <span>${num(o.priceUsdt, 2)}</span>
-                <span>{o.expiredButOpen ? 'EXPIRED' : o.status}</span>
-                <span>{o.status === 'PENDING' ? timeLeft(o.expiresAt) : '—'}</span>
-                <span />
-                <span>
-                  {o.status === 'PENDING' ? (
-                    <button className="nft-claim-btn" disabled={busy === `cancel-${o.id}`} onClick={() => cancel(o)}>
-                      {busy === `cancel-${o.id}` ? 'Working…' : o.expiredButOpen ? 'Take back' : 'Cancel'}
-                    </button>
-                  ) : null}
-                </span>
+          {!address ? (
+            <div className="nft-pool-note">Connect your wallet to see your orders.</div>
+          ) : mine.length === 0 ? (
+            <div className="nft-pool-note">
+              You have not listed any MIC yet. Open <strong>I want to sell MIC</strong> to place your first order.
+            </div>
+          ) : (
+            <div className="p2p-table">
+              <div className="p2p-row p2p-head">
+                <span>MIC</span><span>Price</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
               </div>
-            ))}
+              {mine.map((o) => (
+                <div className="p2p-row" key={o.id}>
+                  <span>{num(o.amountMic)}</span>
+                  <span>${num(o.priceUsdt, 2)}</span>
+                  <span>${num(o.pricePerMic, 6)}</span>
+                  <span>{o.expiredButOpen ? 'EXPIRED' : o.status}</span>
+                  <span>{o.status === 'PENDING' && !o.expiredButOpen ? timeLeft(o.expiresAt) : '—'}</span>
+                  <span>
+                    {o.status === 'PENDING' ? (
+                      <button className="nft-claim-btn" disabled={busy === `cancel-${o.id}`} onClick={() => cancel(o)}>
+                        {busy === `cancel-${o.id}` ? 'Working…' : o.expiredButOpen ? 'Take back' : 'Cancel'}
+                      </button>
+                    ) : null}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : null}
+
+      {/* ── My bids ──────────────────────────────────────────── */}
+      {tab === 'myBids' ? (
+        <>
+          <div className="nft-section-header">
+            <span className="nft-section-title">My bids</span>
           </div>
+          {!address ? (
+            <div className="nft-pool-note">Connect your wallet to see your bids.</div>
+          ) : myBids.length === 0 ? (
+            <div className="nft-pool-note">
+              You have not posted any bids yet. Open <strong>I want to buy MIC</strong> to place your first one.
+            </div>
+          ) : (
+            <div className="p2p-table">
+              <div className="p2p-row p2p-head">
+                <span>MIC wanted</span><span>Escrowed</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
+              </div>
+              {myBids.map((o: any) => (
+                <div className="p2p-row" key={o.id}>
+                  <span>{num(o.amountMic)}</span>
+                  <span>${num(o.priceUsdt, 2)}</span>
+                  <span>${num(o.pricePerMic, 6)}</span>
+                  <span>{o.expiredButOpen ? 'EXPIRED' : o.status}</span>
+                  <span>{o.status === 'PENDING' && !o.expiredButOpen ? timeLeft(o.expiresAt) : '—'}</span>
+                  <span>
+                    {o.status === 'PENDING' ? (
+                      <button
+                        className="nft-claim-btn"
+                        disabled={busy === `cancel-bid-${o.id}`}
+                        onClick={() => cancelBid(o)}
+                      >
+                        {busy === `cancel-bid-${o.id}` ? 'Working…' : o.expiredButOpen ? 'Take back' : 'Cancel'}
+                      </button>
+                    ) : null}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       ) : null}
     </div>
