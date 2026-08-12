@@ -338,6 +338,8 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const overUsdt = usdtBal !== null && total > Number(usdtBal)
   const myOrders = mine.filter((o) => o.status === 'PENDING')
   const myOpenBids = myBids.filter((o: any) => o.status === 'PENDING')
+  const myPastOrders = mine.filter((o) => o.status !== 'PENDING')
+  const myPastBids = myBids.filter((o: any) => o.status !== 'PENDING')
 
   return (
     <div className="nft-section-card">
@@ -574,21 +576,21 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           a member looking for their own history should not have to hunt on a block explorer. */}
       {tab === 'myOrders' ? (
         <>
-          <div className="nft-section-header">
-            <span className="nft-section-title">My sell orders</span>
+          <div className="nft-section-header p2p-section">
+            <span className="nft-section-title">My active orders</span>
           </div>
           {!address ? (
             <div className="nft-pool-note">Connect your wallet to see your orders.</div>
-          ) : mine.length === 0 ? (
+          ) : myOrders.length === 0 ? (
             <div className="nft-pool-note">
-              You have not listed any MIC yet. Open <strong>I want to sell MIC</strong> to place your first order.
+              No orders open right now. Open <strong>I want to sell MIC</strong> to place one.
             </div>
           ) : (
             <div className="p2p-table">
               <div className="p2p-row p2p-head">
                 <span>MIC</span><span>Price</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
               </div>
-              {mine.map((o) => (
+              {myOrders.map((o) => (
                 <div className="p2p-row" key={o.id}>
                   <span>{num(o.amountMic)}</span>
                   <span>${num(o.priceUsdt, 2)}</span>
@@ -606,27 +608,47 @@ export default function MicP2PPanel({ address }: { address?: string }) {
               ))}
             </div>
           )}
+
+          {myPastOrders.length > 0 ? (
+            <>
+              <div className="nft-section-header p2p-section">
+                <span className="nft-section-title">Past orders</span>
+              </div>
+              <div className="p2p-table">
+                {myPastOrders.map((o) => (
+                  <div className="p2p-row" key={o.id}>
+                    <span>{num(o.amountMic)}</span>
+                    <span>${num(o.priceUsdt, 2)}</span>
+                    <span>${num(o.pricePerMic, 6)}</span>
+                    <span>{o.status}</span>
+                    <span>—</span>
+                    <span />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
         </>
       ) : null}
 
       {/* ── My bids ──────────────────────────────────────────── */}
       {tab === 'myBids' ? (
         <>
-          <div className="nft-section-header">
-            <span className="nft-section-title">My bids</span>
+          <div className="nft-section-header p2p-section">
+            <span className="nft-section-title">My active bids</span>
           </div>
           {!address ? (
             <div className="nft-pool-note">Connect your wallet to see your bids.</div>
-          ) : myBids.length === 0 ? (
+          ) : myOpenBids.length === 0 ? (
             <div className="nft-pool-note">
-              You have not posted any bids yet. Open <strong>I want to buy MIC</strong> to place your first one.
+              No bids open right now. Open <strong>I want to buy MIC</strong> to place one.
             </div>
           ) : (
             <div className="p2p-table">
               <div className="p2p-row p2p-head">
                 <span>MIC wanted</span><span>Escrowed</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
               </div>
-              {myBids.map((o: any) => (
+              {myOpenBids.map((o: any) => (
                 <div className="p2p-row" key={o.id}>
                   <span>{num(o.amountMic)}</span>
                   <span>${num(o.priceUsdt, 2)}</span>
@@ -648,6 +670,26 @@ export default function MicP2PPanel({ address }: { address?: string }) {
               ))}
             </div>
           )}
+
+          {myPastBids.length > 0 ? (
+            <>
+              <div className="nft-section-header p2p-section">
+                <span className="nft-section-title">Past bids</span>
+              </div>
+              <div className="p2p-table">
+                {myPastBids.map((o: any) => (
+                  <div className="p2p-row" key={o.id}>
+                    <span>{num(o.amountMic)}</span>
+                    <span>${num(o.priceUsdt, 2)}</span>
+                    <span>${num(o.pricePerMic, 6)}</span>
+                    <span>{o.status}</span>
+                    <span>—</span>
+                    <span />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
         </>
       ) : null}
     </div>

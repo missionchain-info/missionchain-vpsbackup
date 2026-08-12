@@ -13369,3 +13369,7 @@ body.light {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Section headings need air under the tab bar; they were sitting straight on it. */
+.p2p-section { margin-top: 22px; }
+.p2p-side { margin-bottom: 4px; }
