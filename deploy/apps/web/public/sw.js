@@ -1,7 +1,7 @@
 /* Mission Chain DApp — minimal service worker (installability + app-shell cache).
    IMPORTANT: never caches API / RPC / WalletConnect (all cross-origin) — DApp needs live data.
    Bump CACHE version when the shell caching strategy changes. */
-var CACHE = 'mc-shell-v1';
+var CACHE = 'mc-shell-v2';
 var SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {

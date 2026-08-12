@@ -13373,3 +13373,26 @@ body.light {
 /* Section headings need air under the tab bar; they were sitting straight on it. */
 .p2p-section { margin-top: 22px; }
 .p2p-side { margin-bottom: 4px; }
+
+
+/* ── P2P table column alignment ───────────────────────────────────────────
+   Positional, so every table on the page obeys the same rule: the six tables
+   (open offers, open bids, active orders, active bids, and the two history
+   tables) all share the shape amount | price | per-unit | who-or-status |
+   time | action, and styling by position keeps them from drifting apart as
+   one of them gets edited later.
+
+   Header and body use the same .p2p-row, so a column and its heading can
+   never end up aligned differently. */
+.p2p-row > :nth-child(1) { text-align: left; }
+.p2p-row > :nth-child(2),
+.p2p-row > :nth-child(3) { text-align: right; }
+.p2p-row > :nth-child(4),
+.p2p-row > :nth-child(5) { text-align: center; }
+.p2p-row > :nth-child(6) { text-align: right; }
+
+/* Fixed-width digits: without them the decimals wander as values change and a
+   right-aligned column stops reading as a column. */
+.p2p-row > :nth-child(1),
+.p2p-row > :nth-child(2),
+.p2p-row > :nth-child(3) { font-variant-numeric: tabular-nums; }
