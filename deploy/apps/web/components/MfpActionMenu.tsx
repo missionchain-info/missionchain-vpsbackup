@@ -46,9 +46,13 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
   const elementUrl = isMainnet
     ? `https://element.market/collections/${CONTRACTS.mfpNft}?chain=bsc`
     : null
-  const magicEdenUrl = isMainnet
-    ? `https://magiceden.io/collections/bsc/${CONTRACTS.mfpNft}`
-    : null
+  /*
+   * OKX indexes BNB Chain collections under a *slug*, not a contract address: the
+   * contract-address path returns 404 (checked). MFP-NFT has no slug there yet, so the
+   * only honest link is the BNB Chain marketplace itself — the member searches from there.
+   * Swap this for the slug URL the day the collection is indexed.
+   */
+  const okxUrl = isMainnet ? 'https://web3.okx.com/nft' : null
 
   const handleTransfer = async () => {
     setError('')
@@ -144,12 +148,12 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
             <ActionButton
               icon={'\u{1F4B0}'}
               title="Sell on P2P"
-              desc="List internally (5% royalty enforced)"
+              desc="Set your price and listing duration (5% royalty enforced)"
               onClick={() => router.push(`/p2p?action=sell&tokenId=${tokenId}`)}
             />
             <ActionButton
               icon={'\u{1F30A}'}
-              title="List on Element"
+              title="List on Element Market"
               desc={isMainnet
                 ? 'BSC-native marketplace, ERC-2981 royalty'
                 : 'BSC mainnet only — not available on testnet'}
@@ -159,13 +163,13 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
               badge={!isMainnet ? 'Mainnet only' : undefined}
             />
             <ActionButton
-              icon={'\u{1F52E}'}
-              title="List on Magic Eden"
+              icon={'\u{1F310}'}
+              title="List on OKX NFT"
               desc={isMainnet
-                ? 'Multi-chain marketplace, growing BSC'
+                ? 'Multi-chain marketplace — search for the collection there'
                 : 'BSC mainnet only — not available on testnet'}
               external={isMainnet}
-              href={magicEdenUrl ?? undefined}
+              href={okxUrl ?? undefined}
               disabled={!isMainnet}
               badge={!isMainnet ? 'Mainnet only' : undefined}
             />

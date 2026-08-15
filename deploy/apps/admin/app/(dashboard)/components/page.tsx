@@ -701,7 +701,10 @@ function CommunityPoolTab() {
         </div>
         <div className="stat-box">
           <div className="stat-lbl">Total Entries</div>
-          <div className="stat-val">{total}</div>
+          {/* `total` here is the MFP-NFT supply from the tab above, which is why this box read
+              0 while six Community NFTs were active in the pool. The pool endpoint now reports
+              the collection's own minted count, read from the chain. */}
+          <div className="stat-val">{stats?.totalEntries ?? '-'}</div>
         </div>
       </div>
 

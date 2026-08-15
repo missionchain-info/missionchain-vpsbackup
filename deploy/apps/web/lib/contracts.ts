@@ -72,7 +72,13 @@ export const CONTRACTS = {
   // at a pool that has no swap.
   liquidityPoolV6: hex(A.LiquidityPoolV6),
   foundersVault: hex(A.FoundersVault),
-  p2pEscrowMFP: hex(A.P2PEscrowMFP),
+  // The NFT escrows, both P2PEscrowNFT, live 2026-08-12. `p2pEscrowMFP` keeps its name so
+  // callers do not all have to change, but it points at the new contract — the one it
+  // named could never accept an order at any real price.
+  p2pEscrowMFP: hex(A.P2PEscrowNFT_MFP),
+  p2pEscrowCommunity: hex(A.P2PEscrowNFT_Community),
+  /** Members claim their own Community Growth Award NFTs here. */
+  rankBonusClaim: hex(A.RankBonusClaim),
 } as const
 
 /** True once a contract has a real address — use this to gate UI, not a hardcoded flag. */
@@ -299,16 +305,34 @@ export const MFPNFT_ABI = [
   },
 ] as const
 
+/**
+ * CommunityNFTv2 — an ERC-721, and this ABI now says so.
+ *
+ * What was here described the ERC-1155 original: `balanceOf(account, id)`,
+ * `activeCountOf(user, tier)`, `tierInfo(...)`. CommunityNFT (ERC-1155) was superseded by
+ * CommunityNFTv2, which mints a unique serial per token, and none of those functions
+ * exists on it. Every call reverted, and both call sites wrapped them in
+ * `.catch(() => 0n)`, so a wallet holding three NFTs displayed "-" and nothing was logged.
+ *
+ * Verified on chain 2026-08-12: supportsInterface(0x80ac58cd) true, (0xd9b67a26) false.
+ */
 export const COMMUNITY_NFT_ABI = [
-  { type: 'function', name: 'highestActiveTier', inputs: [{ name: 'user', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'activeCountOf', inputs: [{ name: 'user', type: 'address' }, { name: 'tierId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'remainingDays', inputs: [{ name: 'user', type: 'address' }, { name: 'instanceIndex', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { type: 'function', name: 'balanceOf', inputs: [{ name: 'account', type: 'address' }, { name: 'id', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'balanceOf', inputs: [{ name: 'owner', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // Unexpired holdings of one tier. Verified present on chain 2026-08-12 — kept because
+  // the dashboard counts with it, and "how many are still valid" is the number that
+  // belongs on a dashboard.
+  { type: 'function', name: 'activeCountOf', inputs: [{ name: 'user', type: 'address' }, { name: 'tier', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'tokenOfOwnerByIndex', inputs: [{ name: 'owner', type: 'address' }, { name: 'index', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'ownerOf', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'tierOf', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'expiresAt', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   {
-    type: 'function', name: 'tierInfo', inputs: [{ name: '', type: 'uint256' }],
-    outputs: [{ name: 'name', type: 'string' }, { name: 'multiplierX10', type: 'uint256' }, { name: 'durationDays', type: 'uint256' }],
+    type: 'function', name: 'meta', inputs: [{ name: 'tokenId', type: 'uint256' }],
+    outputs: [{ name: 'tier', type: 'uint8' }, { name: 'mintTime', type: 'uint64' }, { name: 'expiryTime', type: 'uint64' }],
     stateMutability: 'view',
   },
+  { type: 'function', name: 'tierMultiplier', inputs: [{ name: 'tier', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'totalSerials', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const
 
 // Helper: format token amounts

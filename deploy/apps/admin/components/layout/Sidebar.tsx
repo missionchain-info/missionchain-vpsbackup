@@ -136,8 +136,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   const expanded = openGroups[item.href] ?? active;
                   return (
                     <div key={item.href} className="nav-parent">
-                      <div className={`nav-item ${active ? 'active' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 0, paddingRight: 8 }}>
-                        <Link href={item.children[0].href} style={{ display: 'flex', alignItems: 'center', flex: 1, color: 'inherit', textDecoration: 'none', gap: 0 }}>
+                      <div className={`nav-item ${active ? 'active' : ''}`} style={{ display: 'flex', alignItems: 'center', paddingRight: 8 }}>
+                        <Link href={item.children[0].href} style={{ display: 'flex', alignItems: 'center', flex: 1, color: 'inherit', textDecoration: 'none', gap: 10 }}>
                           <span className="nav-icon">{item.icon}</span>
                           {item.label}
                         </Link>

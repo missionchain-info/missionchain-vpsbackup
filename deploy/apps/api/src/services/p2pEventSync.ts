@@ -1,5 +1,9 @@
 /**
- * P2P Event Sync — polls P2PEscrowMFP events every 30s, upserts DB.
+ * P2P Event Sync — polls the MFP-NFT escrow's events every 30s, upserts DB.
+ *
+ * Repointed to P2PEscrowNFT_MFP on 2026-08-12. Event arguments are read by NAME here, not
+ * by index: the new contract added an indexed `tokenId` to `OrderExecuted`, and positional
+ * reads would have silently filed the price as the royalty.
  *
  * Mirrors seedEventSync.ts:
  *   - Chunked getLogs scan (2K blocks per chunk, sequential to stay under publicnode rate limit)
@@ -12,6 +16,7 @@ import type { PrismaClient } from '@missionchain/db'
 import type { FastifyBaseLogger } from 'fastify'
 import { getActiveAddresses, isMainnet, USDT_DECIMALS } from '@missionchain/sdk'
 import { getLogProvider, P2P_EVENT_ABI } from './p2pTreasury.js'
+import { buildSignerProvider } from './blockchain.js'
 
 const POLL_INTERVAL_MS = 30_000
 const SCAN_CHUNK_BLOCKS = 2_000
@@ -87,9 +92,9 @@ export class P2PEventSync {
     })
     if (expired.length === 0) return
 
-    const provider = new JsonRpcProvider(getSweepTxRpc(), undefined, { batchMaxCount: 1 })
+    const provider = buildSignerProvider()
     const signer = new Wallet(pk, provider)
-    const p2p = new Contract(getActiveAddresses().P2PEscrowMFP, P2P_WRITE_ABI, signer)
+    const p2p = new Contract(getActiveAddresses().P2PEscrowNFT_MFP, P2P_WRITE_ABI, signer)
 
     let released = 0
     let skipped = 0
@@ -128,7 +133,7 @@ export class P2PEventSync {
     const fromBlock = this.lastScannedBlock + 1
     if (fromBlock > currentBlock) return  // no new blocks
 
-    const p2pAddr = getActiveAddresses().P2PEscrowMFP
+    const p2pAddr = getActiveAddresses().P2PEscrowNFT_MFP
     let totalEvents = 0
     let chunkFrom = fromBlock
 
@@ -176,11 +181,11 @@ export class P2PEventSync {
     const txHash = log.transactionHash as string
 
     if (parsed.name === 'OrderCreated') {
-      const id = BigInt(parsed.args[0])
-      const seller = (parsed.args[1] as string).toLowerCase()
-      const tokenId = parsed.args[2] as bigint
-      const priceUsdt = Number(formatUnits(parsed.args[3] as bigint, USDT_DECIMALS))
-      const expiresAt = Number(parsed.args[4])
+      const id = BigInt(parsed.args.id)
+      const seller = (parsed.args.seller as string).toLowerCase()
+      const tokenId = parsed.args.tokenId as bigint
+      const priceUsdt = Number(formatUnits(parsed.args.priceUsdt as bigint, USDT_DECIMALS))
+      const expiresAt = Number(parsed.args.expiresAt)
       await this.prisma.p2POrder.upsert({
         where: { onChainId: id },
         create: {
@@ -197,11 +202,15 @@ export class P2PEventSync {
       })
     }
     else if (parsed.name === 'OrderExecuted') {
-      const id = BigInt(parsed.args[0])
-      const buyer = (parsed.args[1] as string).toLowerCase()
-      const royaltyAmount = Number(formatUnits(parsed.args[3] as bigint, USDT_DECIMALS))
-      const feeAmount = Number(formatUnits(parsed.args[4] as bigint, USDT_DECIMALS))
-      const sellerNet = Number(formatUnits(parsed.args[5] as bigint, USDT_DECIMALS))
+      // Named, not positional. P2PEscrowNFT inserted an indexed `tokenId` in third place,
+      // which shifted every money argument down by one: read positionally, the price lands
+      // in royaltyAmount, the royalty in feeAmount and the fee in sellerNet. Nothing
+      // throws — the trade just gets recorded with the wrong numbers.
+      const id = BigInt(parsed.args.id)
+      const buyer = (parsed.args.buyer as string).toLowerCase()
+      const royaltyAmount = Number(formatUnits(parsed.args.royaltyAmount as bigint, USDT_DECIMALS))
+      const feeAmount = Number(formatUnits(parsed.args.feeAmount as bigint, USDT_DECIMALS))
+      const sellerNet = Number(formatUnits(parsed.args.sellerNet as bigint, USDT_DECIMALS))
       await this.prisma.p2POrder.updateMany({
         where: { onChainId: id },
         data: {
@@ -216,14 +225,14 @@ export class P2PEventSync {
       })
     }
     else if (parsed.name === 'OrderCancelled') {
-      const id = BigInt(parsed.args[0])
+      const id = BigInt(parsed.args.id)
       await this.prisma.p2POrder.updateMany({
         where: { onChainId: id },
         data: { status: 'CANCELLED', closedAt: new Date(), cancelledTxHash: txHash },
       })
     }
     else if (parsed.name === 'OrderExpired') {
-      const id = BigInt(parsed.args[0])
+      const id = BigInt(parsed.args.id)
       await this.prisma.p2POrder.updateMany({
         where: { onChainId: id },
         data: { status: 'EXPIRED', closedAt: new Date(), expiredTxHash: txHash },

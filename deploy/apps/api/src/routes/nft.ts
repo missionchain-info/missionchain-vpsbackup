@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { buildProvider } from '../services/blockchain.js'
 
 // ─── NFT Constants ────────────────────────────────────────────────────────
 
@@ -114,9 +115,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       const A = getActiveAddresses() as Record<string, string>
       const ZERO = '0x0000000000000000000000000000000000000000'
       if (A.MFPNFT && A.MFPNFT !== ZERO) {
-        const p = new ethers.JsonRpcProvider(
-          process.env.INDEXER_RPC_URL || process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || getActiveChain().rpcUrls[0],
-        )
+        const p = buildProvider()
         const c = new ethers.Contract(
           A.MFPNFT, ['function totalSupply() view returns (uint256)'], p,
         )
@@ -278,11 +277,91 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
     const totalBurned = burned.reduce((s, e) => s + e._count, 0)
     const totalWeight = active.reduce((s, e) => s + (e._sum.weight || 0), 0)
 
+    /*
+     * The pool contract is the truth; the table is a cache that nothing fills.
+     *
+     * `nftPoolEntry` is written by an indexer that is not running, so this endpoint
+     * reported zero weight and zero active NFTs while the pool itself held 85,000 — the
+     * member had enrolled three NFTs, seen the transactions confirm, and the panel still
+     * read "-". Weight is a live figure and belongs to the contract that computes it.
+     *
+     * `totalWeight` is in ten-thousandths (a Luminary is 50,000 = x5.0), which is the unit
+     * the pool does its arithmetic in. It is converted here rather than in the DApp so
+     * every caller shows the same multiplier.
+     */
+    let chainWeight: number | null = null
+    let chainActive: number | null = null
+    let chainMinted: number | null = null
+    let chainRetired: number | null = null
+    let chainTiers: Record<string, { count: number; weight: number }> | null = null
+    try {
+      const { Contract } = await import('ethers')
+      const { getActiveAddresses } = await import('@missionchain/sdk')
+      const poolAddr = (getActiveAddresses() as Record<string, string>).CommunityNFTRewardPool
+      if (poolAddr && !/^0x0+$/.test(poolAddr)) {
+        const c = new Contract(poolAddr, [
+          'function totalWeight() view returns (uint256)',
+          'function heapSize() view returns (uint256)',
+          'function tokenWeight(uint256) view returns (uint256)',
+        ], buildProvider())
+        const [w, n] = await Promise.all([c.totalWeight(), c.heapSize()])
+        chainWeight = Number(w) / 10_000
+        chainActive = Number(n)
+
+        /*
+         * Per-tier split, minted total and retired count — all from the chain, for the same
+         * reason as the weight above: the table behind them is empty, so the admin panel
+         * showed six active entries inside a total of zero, and every tier as "-".
+         *
+         * The collection is small and capped by how many credentials have ever been issued,
+         * so walking it is cheap and exact. `tokenWeight` is zero for a token that was never
+         * enrolled or has since been retired, which is what separates the two counts.
+         */
+        const nftAddr = (getActiveAddresses() as Record<string, string>).CommunityNFTv2
+        if (nftAddr && !/^0x0+$/.test(nftAddr)) {
+          const nft = new Contract(nftAddr, [
+            'function totalSupply() view returns (uint256)',
+            'function tokenByIndex(uint256) view returns (uint256)',
+            'function tierOf(uint256) view returns (uint256)',
+          ], buildProvider())
+
+          const minted = Number(await nft.totalSupply())
+          chainMinted = minted
+
+          const TIER_NAME: Record<number, string> = { 1: 'builder', 2: 'maker', 3: 'luminary' }
+          const split: Record<string, { count: number; weight: number }> = {}
+          let retired = 0
+
+          for (let i = 0; i < minted; i++) {
+            const id = await nft.tokenByIndex(i)
+            const [tier, tw] = await Promise.all([nft.tierOf(id), c.tokenWeight(id)])
+            const name = TIER_NAME[Number(tier)]
+            if (!name) continue
+            const weight = Number(tw)
+            if (weight === 0) { retired++; continue }
+            const row = split[name] ?? (split[name] = { count: 0, weight: 0 })
+            row.count += 1
+            row.weight += weight / 10_000
+          }
+
+          chainTiers = split
+          chainRetired = retired
+        }
+      }
+    } catch {
+      // Fall back to the table rather than failing the panel; the numbers are stale, not
+      // wrong-shaped, and the DApp shows "-" for a null.
+    }
+
     return {
-      totalWeightedShares: totalWeight,
-      activeEntries: totalActive,
-      burnedTotal: totalBurned,
-      tierBreakdown,
+      totalWeightedShares: chainWeight ?? totalWeight,
+      activeEntries: chainActive ?? totalActive,
+      /** `chain` when read live, `db` when the fallback was used. */
+      source: chainWeight !== null ? 'chain' : 'db',
+      burnedTotal: chainRetired ?? totalBurned,
+      /** Every credential ever issued, active or not. */
+      totalEntries: chainMinted ?? (totalActive + totalBurned),
+      tierBreakdown: chainTiers ?? tierBreakdown,
     }
   })
 
@@ -457,9 +536,9 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       // Fallback: read pair directly on-chain (indexer may not have caught up yet)
       try {
         const { JsonRpcProvider, Contract } = await import('ethers')
-        const rpcUrl = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
+
         const mfpAddr = process.env.MFPNFT_ADDRESS || '0xC53DfA185D29A10124a57c27eA4131c504B8097F'
-        const provider = new JsonRpcProvider(rpcUrl)
+        const provider = buildProvider()
         const ABI = [
           'function pairOf(uint256) view returns (uint8, uint8)',
           'function totalMinted() view returns (uint256)',
@@ -650,8 +729,7 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
     const A = getActiveAddresses() as Record<string, string>
     const ZERO = '0x0000000000000000000000000000000000000000'
 
-    const rpc = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
-    const p = new ethers.JsonRpcProvider(rpc)
+    const p = buildProvider()
 
     const live = (a?: string) => !!a && a !== ZERO
 

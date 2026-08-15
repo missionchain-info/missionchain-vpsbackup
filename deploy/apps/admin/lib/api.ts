@@ -10,7 +10,12 @@ interface FetchOptions extends RequestInit {
 }
 
 async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
-  const { timeout = 10000, ...fetchOptions } = options;
+  /* 10s was too tight for the admin reads that aggregate on-chain state. The council
+     panel calls two of them at once, and each fans out across five members; when the
+     total crossed ten seconds the AbortController fired and the page said the member
+     list was unavailable — which reads as "the members are gone" rather than "this took
+     too long". */
+  const { timeout = 30000, ...fetchOptions } = options;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 

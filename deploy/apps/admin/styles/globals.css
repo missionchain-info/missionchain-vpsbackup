@@ -618,7 +618,8 @@ tr:last-child td { border-bottom: none; }
 /* INPUTS */
 .input-wrap { margin-bottom: 14px; }
 .input-label { font-family: var(--font-m); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--gray2); margin-bottom: 7px; }
-input[type=text], input[type=email], input[type=number], input[type=password], select, textarea {
+input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]):not([type=submit]):not([type=button]),
+select, textarea {
   width: 100%;
   background: var(--bg4);
   border: 1px solid var(--border);
@@ -847,7 +848,10 @@ select option { background: var(--bg3); }
 /* DAO MATRIX ROW */
 .dao-row {
   display: grid;
-  grid-template-columns: 1.4fr 120px 110px 100px 100px 100px 120px;
+  /* Six columns since Benefit went. Username is fixed rather than 1.4fr so the wallet
+     sits beside the name instead of being pushed across the row, and Role takes the slack
+     because its labels are whole job titles. */
+  grid-template-columns: 160px 130px 1.4fr 90px 100px 120px;
   gap: 10px; align-items: center;
   padding: 11px 16px;
   border-bottom: 1px solid rgba(200,168,200,.05);
@@ -1186,10 +1190,7 @@ select option { background: var(--bg3); }
   color: var(--white);
 }
 
-[data-theme="light"] input[type=text],
-[data-theme="light"] input[type=email],
-[data-theme="light"] input[type=number],
-[data-theme="light"] input[type=password],
+[data-theme="light"] input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]):not([type=submit]):not([type=button]),
 [data-theme="light"] select,
 [data-theme="light"] textarea {
   background: var(--bg4);

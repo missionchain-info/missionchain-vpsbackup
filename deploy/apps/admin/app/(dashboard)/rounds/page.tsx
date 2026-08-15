@@ -656,7 +656,7 @@ function RoundsInner() {
           <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">25%</span></div>
           <div className="info-row"><span className="info-key">Management</span><span className="info-val">7.5%</span></div>
           <div className="info-row"><span className="info-key">DAO Treasury</span><span className="info-val">12.5%</span></div>
-          <div className="info-row"><span className="info-key">Reserved Staking</span><span className="info-val">5%</span></div>
+          <div className="info-row"><span className="info-key">Reserved Listing</span><span className="info-val">5%</span></div>
           <div className="info-row"><span className="info-key">Liquidity Pool</span><span className="info-val">40%</span></div>
         </div>
         <div className="card" style={{ padding: 16 }}>

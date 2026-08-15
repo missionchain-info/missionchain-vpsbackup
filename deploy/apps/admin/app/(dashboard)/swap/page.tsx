@@ -1,9 +1,57 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { BrowserProvider, Contract, formatUnits as fmtUnits, parseUnits } from 'ethers';
 import { fetchStatsOverview } from '@/lib/api';
+import { getActiveAddresses, getActiveChain, USDT_DECIMALS } from '@missionchain/sdk';
+import { useMcUi } from '@/components/ui/McUi';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+const A = getActiveAddresses() as Record<string, string>;
+const CHAIN = getActiveChain();
+
+/**
+ * The pool's own read surface. Everything on this page that describes the pool comes from
+ * here — the figures used to be `const poolMic = 0` with a note saying they would come
+ * from the contract "later", which is why Pool MIC and Pool USDT rendered as dashes long
+ * after the pool held fifty million MIC.
+ */
+const POOL_ABI = [
+  'function isSeeded() view returns (bool)',
+  'function reserveMic() view returns (uint256)',
+  'function reserveUsdt() view returns (uint256)',
+  'function virtualReserve() view returns (uint256)',
+  'function spotPrice() view returns (uint256)',
+  'function poolAgeDays() view returns (uint256)',
+  'function startTime() view returns (uint256)',
+  'function SELL_OPEN_DAY() view returns (uint256)',
+  'function BUY_FEE_BPS() view returns (uint256)',
+  'function sellFeeBps() view returns (uint256)',
+  'function MAX_TRADE_BPS() view returns (uint256)',
+  'function remainingDailyOut() view returns (uint256)',
+  'function LISTING_THRESHOLD() view returns (uint256)',
+];
+
+const MIC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
+
+type PoolState = {
+  seeded: boolean;
+  reserveMic: number;
+  reserveUsdt: number;
+  virtualReserve: number;
+  spotPrice: number;
+  ageDays: number;
+  startTime: number;
+  sellOpenDay: number;
+  buyFeeBps: number;
+  sellFeeBps: number;
+  maxTradeBps: number;
+  remainingDailyOut: number;
+  listingThreshold: number;
+  vaultMic: number;   // MIC still held by ListingReserveVault
+  error?: string;
+};
 
 const fmtN = (n: number) => (!n || isNaN(n)) ? '-' : n.toLocaleString('en-US');
 const fmtUsd = (n: number) => (!n || isNaN(n)) ? '-' : '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -11,7 +59,15 @@ const fmtUsd = (n: number) => (!n || isNaN(n)) ? '-' : '$' + n.toLocaleString('e
 const SZ = '0.62rem';
 
 export default function SwapPage() {
+  // Mission Chain's own modal, not window.confirm. The native one renders as
+  // "admin.missionchain.io says" in the browser's chrome — an unbranded box that looks
+  // like a phishing prompt, cannot carry the warning's emphasis, and is what a member is
+  // taught to distrust. McUi was written to replace it and 13 call sites still had not moved.
+  const mcUi = useMcUi();
   const [swapEnabled, setSwapEnabled] = useState(false);
+  /* Whether members see the pool's remaining daily outflow on the DApp. Read live here
+     either way — an operator should always be able to see it. */
+  const [showDailyCap, setShowDailyCap] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,15 +77,64 @@ export default function SwapPage() {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
 
+  const [pool, setPool] = useState<PoolState | null>(null);
+
+  /** Read the pool itself. Tries each public endpoint in turn — one dead host must not
+   *  leave this page reporting an empty pool, which reads as "nothing is there". */
+  const loadPool = useCallback(async () => {
+    const { JsonRpcProvider, Contract, formatUnits } = await import('ethers');
+    const addr = A.LiquidityPoolV6;
+    if (!addr || addr === '0x0000000000000000000000000000000000000000') {
+      setPool({ ...({} as PoolState), error: 'LiquidityPoolV6 is not set in the SDK addresses' });
+      return;
+    }
+    for (const url of CHAIN.rpcUrls) {
+      try {
+        const p = new JsonRpcProvider(url);
+        const c = new Contract(addr, POOL_ABI, p);
+        const mic = new Contract(A.MICToken, MIC_BAL_ABI, p);
+        const [seeded, rMic, rUsdt, vRes, spot, age, start, sellOpen, buyFee, sellFee, maxTrade, remOut, listThr, vaultMic] =
+          await Promise.all([
+            c.isSeeded(), c.reserveMic(), c.reserveUsdt(), c.virtualReserve(), c.spotPrice(),
+            c.poolAgeDays(), c.startTime(), c.SELL_OPEN_DAY(), c.BUY_FEE_BPS(), c.sellFeeBps(),
+            c.MAX_TRADE_BPS(), c.remainingDailyOut(), c.LISTING_THRESHOLD(),
+            mic.balanceOf(A.ListingReserveVault),
+          ]);
+        setPool({
+          seeded: Boolean(seeded),
+          reserveMic: Number(formatUnits(rMic, 18)),
+          reserveUsdt: Number(formatUnits(rUsdt, USDT_DECIMALS)),
+          virtualReserve: Number(formatUnits(vRes, USDT_DECIMALS)),
+          spotPrice: Number(formatUnits(spot, 18)),
+          ageDays: Number(age),
+          startTime: Number(start),
+          sellOpenDay: Number(sellOpen),
+          buyFeeBps: Number(buyFee),
+          sellFeeBps: Number(sellFee),
+          maxTradeBps: Number(maxTrade),
+          remainingDailyOut: Number(formatUnits(remOut, USDT_DECIMALS)),
+          listingThreshold: Number(formatUnits(listThr, USDT_DECIMALS)),
+          vaultMic: Number(formatUnits(vaultMic, 18)),
+        });
+        return;
+      } catch { /* next endpoint */ }
+    }
+    setPool({ ...({} as PoolState), error: 'Could not reach any BSC endpoint' });
+  }, []);
+
   useEffect(() => {
     Promise.all([
       fetchStatsOverview().catch(() => null),
       fetch(`${API_BASE}/rounds/system-info`).then(r => r.json()).catch(() => null),
+      loadPool(),
     ]).then(([statsRes, sysRes]) => {
       if (statsRes?.data) setStats(statsRes.data);
-      if (sysRes?.data) setSwapEnabled(sysRes.data.swapEnabled || false);
+      if (sysRes?.data) {
+        setSwapEnabled(sysRes.data.swapEnabled || false);
+        setShowDailyCap(sysRes.data.swapShowDailyCap || false);
+      }
     }).finally(() => setLoading(false));
-  }, []);
+  }, [loadPool]);
 
   // Derived values from stats
   const seedUsdt = Number(stats?.seed?.usdtRaised || 0);
@@ -43,12 +148,24 @@ export default function SwapPage() {
   const miceLiqUsdt = miceUsdt * 0.40;
   const totalLiqUsdt = seedLiqUsdt + presaleLiqUsdt + miceLiqUsdt;
 
-  // MIC source: 105M pre-issued for DEX/CEX
-  const preIssuedMic = 105_000_000;
+  /**
+   * The original DEX/CEX listing allocation, and where it actually went.
+   *
+   * The page used to present all 105,000,000 as sitting in `LiquidityPool.sol` waiting to
+   * be added. None of that is true any more:
+   *   - 31,500,000 went to LiquidityPool v5, which has no withdrawal path of any kind.
+   *     It could only ever leave by being burned, and it was, on 2026-08-05.
+   *   - 73,500,000 went to ListingReserveVault, of which 50,000,000 was withdrawn on
+   *     2026-08-12 and seeded into this pool.
+   * The remainder is read from the vault rather than assumed, so it stays right.
+   */
+  const LISTING_ALLOCATION_MIC = 105_000_000;
+  const BURNED_IN_V5_MIC = 31_500_000;
 
-  // Pool state (placeholder — will come from contract/API later)
-  const poolMic = 0;
-  const poolUsdt = 0;
+  const poolMic = pool?.reserveMic ?? 0;
+  /** REAL USDT only. The virtual reserve is reported beside it, never folded into it. */
+  const poolUsdt = pool?.reserveUsdt ?? 0;
+  const virtualUsdt = pool?.virtualReserve ?? 0;
 
   const handleActivate = async () => {
     const micVal = parseFloat(addMic);
@@ -57,7 +174,21 @@ export default function SwapPage() {
       setMsg('Enter both MIC and USDT amounts to activate SWAP');
       return;
     }
-    if (!confirm(`Activate SWAP with ${fmtN(micVal)} MIC + $${fmtN(usdtVal)} USDT?\n\nThis pool will be LOCKED for 10 years. This action cannot be undone.`)) return;
+    const ok = await mcUi.confirm({
+      title: 'Activate SWAP',
+      message: (
+        <>
+          Seed the pool with <strong>{fmtN(micVal)} MIC</strong> and <strong>${fmtN(usdtVal)} USDT</strong>?
+          <br /><br />
+          Assets added here can <strong>never be withdrawn</strong> — the contract has no
+          withdrawal function for anyone, including the Owner and the DAO. They leave only
+          through member trades. This cannot be undone.
+        </>
+      ),
+      confirmLabel: 'Activate',
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     setSaving(true);
     setMsg('');
@@ -80,20 +211,248 @@ export default function SwapPage() {
     }
   };
 
-  const handleAddLiquidity = async (type: 'usdt' | 'mic') => {
-    const val = type === 'usdt' ? parseFloat(addUsdt) : parseFloat(addMic);
-    if (!val || val <= 0) { setMsg(`Enter a valid ${type.toUpperCase()} amount`); return; }
-    if (!confirm(`Add ${type === 'usdt' ? '$' : ''}${fmtN(val)} ${type.toUpperCase()} to liquidity pool?`)) return;
+  /*
+   * Adding liquidity is a real transaction signed by the Owner's own wallet.
+   *
+   * This handler used to end at `setMsg(...)` under a comment saying the contract call
+   * would come "in production" — so the button reported success and moved nothing. The
+   * pool's two deposit paths are role-gated and both pull from `msg.sender`, so each needs
+   * an ERC-20 approval first:
+   *
+   *   MIC  -> seedMic(amount)      DEFAULT_ADMIN_ROLE
+   *   USDT -> receiveUSDT(amount)  DISTRIBUTOR_ROLE   (the router's role, not the admin's)
+   *
+   * The role is checked before the wallet is opened. The Owner holds DEFAULT_ADMIN but not
+   * DISTRIBUTOR, and without this check the USDT path would prompt, spend gas and revert
+   * with `AccessControlUnauthorizedAccount`, which reads like a wallet fault.
+   */
+  const POOL_WRITE_ABI = [
+    'function seedMic(uint256 amount)',
+    'function receiveUSDT(uint256 amount)',
+    'function DEFAULT_ADMIN_ROLE() view returns (bytes32)',
+    'function DISTRIBUTOR_ROLE() view returns (bytes32)',
+    'function hasRole(bytes32,address) view returns (bool)',
+    'function grantRole(bytes32 role, address account)',
+  ];
+  /* The revenue USDT does not sit in the admin's wallet — it sits in the legacy
+     `LiquidityPool` (0x0F01…), which is where the router delivered the liquidity slice.
+     `withdrawUSDT` is its only way out and is gated on DEFAULT_ADMIN_ROLE, which the Owner
+     holds. So ADD USDT is two steps: pull it out to the signer, then push it into V6. */
+  const LEGACY_POOL_ABI = [
+    'function withdrawUSDT(address to, uint256 amount)',
+    'function usdtBalance() view returns (uint256)',
+    'function DEFAULT_ADMIN_ROLE() view returns (bytes32)',
+    'function hasRole(bytes32,address) view returns (bool)',
+  ];
+  const ERC20_ABI = [
+    'function approve(address spender, uint256 amount) returns (bool)',
+    'function allowance(address owner, address spender) view returns (uint256)',
+    'function balanceOf(address) view returns (uint256)',
+  ];
+
+  /** Wallet, on the right chain, ready to sign. */
+  const getSigner = async () => {
+    const eth = (window as any).ethereum;
+    if (!eth) throw new Error('No wallet detected in this browser.');
+    await eth.request({ method: 'eth_requestAccounts' });
+    const hex = '0x' + CHAIN.chainId.toString(16);
+    const current = await eth.request({ method: 'eth_chainId' });
+    if (current !== hex) {
+      await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: hex }] });
+    }
+    return new BrowserProvider(eth).getSigner();
+  };
+
+  /*
+   * Whether the connected wallet may call `receiveUSDT`.
+   *
+   * DISTRIBUTOR_ROLE belongs to the RevenueRouter, which is the pool's normal source of
+   * USDT. The Owner wallet holds DEFAULT_ADMIN but not this one, so without the check the
+   * button would prompt, spend gas and revert with AccessControlUnauthorizedAccount, which
+   * reads like a wallet fault. `null` means not yet known.
+   */
+  const [canAddUsdt, setCanAddUsdt] = useState<boolean | null>(null);
+  /** USDT reachable for a manual top-up: the wallet plus the legacy liquidity contract. */
+  const [walletUsdt, setWalletUsdt] = useState<number | null>(null);
+
+  const probeDistributorRole = useCallback(async () => {
+    try {
+      const eth = (window as any).ethereum;
+      const poolAddr = A.LiquidityPoolV6;
+      if (!eth || !poolAddr) return;
+      const accounts: string[] = await eth.request({ method: 'eth_accounts' });
+      if (!accounts?.length) return;               // wallet not connected — leave unknown
+      const bp = new BrowserProvider(eth);
+      const pool = new Contract(poolAddr, POOL_WRITE_ABI, bp);
+      setCanAddUsdt(await pool.hasRole(await pool.DISTRIBUTOR_ROLE(), accounts[0]));
+
+      const usdt = new Contract(A.USDT, ERC20_ABI, bp);
+      const inWallet: bigint = await usdt.balanceOf(accounts[0]);
+      const legacy = A.LiquidityPool ? new Contract(A.LiquidityPool, LEGACY_POOL_ABI, bp) : null;
+      const inLegacy: bigint = legacy ? await legacy.usdtBalance().catch(() => 0n) : 0n;
+      setWalletUsdt(Number(fmtUnits(inWallet + inLegacy, 18)));
+    } catch {
+      // A failed probe must not disable a button that might work.
+    }
+  }, []);
+
+  useEffect(() => { probeDistributorRole(); }, [probeDistributorRole]);
+
+  /** Owner grants the pool's distributor role to their own wallet. */
+  const handleGrantDistributor = async () => {
+    const ok = await mcUi.confirm({
+      title: 'Grant DISTRIBUTOR_ROLE',
+      message: (
+        <>
+          Give this wallet permission to call <code>receiveUSDT</code> on the liquidity pool?
+          <br /><br />
+          The role normally belongs to the RevenueRouter. Granting it here lets an admin add USDT by
+          hand as well; it does not remove it from the router.
+        </>
+      ),
+      confirmLabel: 'Grant',
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     setSaving(true);
     setMsg('');
     try {
-      // Placeholder — will call smart contract in production
-      setMsg(`${fmtN(val)} ${type.toUpperCase()} added to pool`);
-      if (type === 'usdt') setAddUsdt(''); else setAddMic('');
-      setTimeout(() => setMsg(''), 5000);
-    } catch {
-      setMsg('Error adding liquidity');
+      const signer = await getSigner();
+      const me = await signer.getAddress();
+      const pool = new Contract(A.LiquidityPoolV6, POOL_WRITE_ABI, signer);
+      setMsg('Sign grantRole in your wallet\u2026');
+      const tx = await pool.grantRole(await pool.DISTRIBUTOR_ROLE(), me);
+      const receipt = await tx.wait(1);
+      if (!receipt || receipt.status !== 1) throw new Error('Transaction reverted');
+      setCanAddUsdt(true);
+      mcUi.toast({ type: 'success', message: 'DISTRIBUTOR_ROLE granted' });
+      setMsg(`DISTRIBUTOR_ROLE granted \u2713 ${tx.hash.slice(0, 10)}\u2026`);
+      setTimeout(() => setMsg(''), 8000);
+    } catch (e: any) {
+      const m = e?.code === 4001 || e?.code === 'ACTION_REJECTED'
+        ? 'Transaction rejected in wallet'
+        : 'Grant failed: ' + (e?.shortMessage || e?.message || 'Unknown error');
+      setMsg(m);
+      mcUi.toast({ type: 'error', message: m });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleDailyCapVisibility = async (next: boolean) => {
+    setSaving(true);
+    try {
+      const jwt = typeof window !== 'undefined' ? localStorage.getItem('mc-admin-jwt') : null;
+      const res = await fetch(`${API_BASE}/admin/system-config/swap_show_daily_cap`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}) },
+        body: JSON.stringify({ value: String(next) }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setShowDailyCap(next);
+      mcUi.toast({ type: 'success', message: next ? 'Members will see the daily cap' : 'Hidden from members' });
+    } catch (e: any) {
+      mcUi.toast({ type: 'error', message: 'Could not save: ' + (e?.message || 'unknown error') });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddLiquidity = async (type: 'usdt' | 'mic') => {
+    const val = type === 'usdt' ? parseFloat(addUsdt) : parseFloat(addMic);
+    if (!val || val <= 0) { setMsg(`Enter a valid ${type.toUpperCase()} amount`); return; }
+    const ok = await mcUi.confirm({
+      title: `Add ${type.toUpperCase()} to the pool`,
+      message: (
+        <>
+          Add <strong>{type === 'usdt' ? '$' : ''}{fmtN(val)} {type.toUpperCase()}</strong> to the
+          liquidity pool?
+          <br /><br />
+          This cannot be undone — the pool has no withdrawal path.
+        </>
+      ),
+      confirmLabel: 'Add',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
+    setSaving(true);
+    setMsg('');
+    try {
+      const poolAddr = A.LiquidityPoolV6;
+      if (!poolAddr) throw new Error('LiquidityPoolV6 address is not configured for this build.');
+
+      const signer = await getSigner();
+      const me = await signer.getAddress();
+      const pool = new Contract(poolAddr, POOL_WRITE_ABI, signer);
+
+      const isMic = type === 'mic';
+      const tokenAddr = isMic ? A.MICToken : A.USDT;
+      const role = isMic ? await pool.DEFAULT_ADMIN_ROLE() : await pool.DISTRIBUTOR_ROLE();
+      if (!(await pool.hasRole(role, me))) {
+        const denied = isMic
+          ? 'This wallet does not hold DEFAULT_ADMIN_ROLE on the pool — seedMic would revert.'
+          : 'This wallet does not hold DISTRIBUTOR_ROLE on the pool. receiveUSDT is the RevenueRouter\u2019s entry point; grant the role to this wallet first, or let the router deliver the USDT.';
+        setMsg(denied);
+        mcUi.toast({ type: 'error', message: denied });
+        return;
+      }
+
+      // Both deposits are 18 decimals on BSC — BSC-USD included.
+      const amount = parseUnits(String(val), 18);
+      const token = new Contract(tokenAddr, ERC20_ABI, signer);
+
+      let held = await token.balanceOf(me);
+
+      // Top up from the legacy pool when the wallet is short. Without this the button
+      // refused while $10 of revenue USDT sat in a contract the Owner can already empty.
+      if (!isMic && held < amount) {
+        const legacyAddr = A.LiquidityPool;
+        const legacy = legacyAddr ? new Contract(legacyAddr, LEGACY_POOL_ABI, signer) : null;
+        const inLegacy: bigint = legacy ? await legacy.usdtBalance() : 0n;
+        const shortfall = amount - held;
+
+        if (legacy && inLegacy >= shortfall && await legacy.hasRole(await legacy.DEFAULT_ADMIN_ROLE(), me)) {
+          setMsg(`Withdrawing ${fmtN(Number(fmtUnits(shortfall, 18)))} USDT from the liquidity contract\u2026`);
+          await (await legacy.withdrawUSDT(me, shortfall)).wait();
+          held = await token.balanceOf(me);
+        }
+      }
+
+      if (held < amount) {
+        const short =
+          `Only ${fmtN(Number(fmtUnits(held, 18)))} ${type.toUpperCase()} is reachable \u2014 not enough to ` +
+          `add ${fmtN(val)}. The pool pulls from the signing wallet, topped up from the liquidity ` +
+          `contract when that wallet is short.`;
+        setMsg(short);
+        mcUi.toast({ type: 'error', message: short });
+        return;
+      }
+
+      if ((await token.allowance(me, poolAddr)) < amount) {
+        setMsg(`Approve ${type.toUpperCase()} in your wallet\u2026`);
+        await (await token.approve(poolAddr, amount)).wait();
+      }
+
+      setMsg(`Sign ${isMic ? 'seedMic' : 'receiveUSDT'} in your wallet\u2026`);
+      const tx = isMic ? await pool.seedMic(amount) : await pool.receiveUSDT(amount);
+      setMsg(`Confirming ${tx.hash.slice(0, 10)}\u2026`);
+      const receipt = await tx.wait(1);
+      if (!receipt || receipt.status !== 1) throw new Error('Transaction reverted');
+
+      setMsg(`${fmtN(val)} ${type.toUpperCase()} added to the pool \u2713 ${tx.hash.slice(0, 10)}\u2026`);
+      mcUi.toast({ type: 'success', message: `${fmtN(val)} ${type.toUpperCase()} added to the pool` });
+      if (isMic) setAddMic(''); else setAddUsdt('');
+      await loadPool();
+      setTimeout(() => setMsg(''), 8000);
+    } catch (e: any) {
+      const code = e?.code;
+      const failed = code === 4001 || code === 'ACTION_REJECTED'
+        ? 'Transaction rejected in wallet'
+        : 'Add liquidity failed: ' + (e?.shortMessage || e?.reason || e?.message || 'Unknown error');
+      setMsg(failed);
+      mcUi.toast({ type: 'error', message: failed });
     } finally {
       setSaving(false);
     }
@@ -110,13 +469,33 @@ export default function SwapPage() {
       </div>
 
       {/* STATUS ALERT */}
-      {!swapEnabled ? (
-        <div className="alert alert-warn" style={{ marginBottom: 16 }}>
-          {'\u26A0\uFE0F'} SWAP is currently <strong>INACTIVE</strong>. Add MIC + USDT to the pool and activate to enable on-chain trading. Once activated, the pool is <strong>locked for 10 years</strong>.
+      {/*
+        "Locked for 10 years" was not true and never had been. LiquidityPoolV6 has no lock
+        period and no unlock: it has no withdrawal function at all. Its complete set of
+        state-changing entry points is poke, advancePhase, seedMic, receiveUSDT,
+        reportDailyEmission and the two swaps. Nothing takes assets out except a member's
+        trade \u2014 no admin, no DAO, no timelock that eventually opens.
+
+        The earlier text also described a PancakeSwap V3 pair. There is no PancakeSwap
+        anywhere in this system; V6 is the protocol's own AMM with a virtual reserve, a
+        30-day sell gate, a TWAP and a variable sell fee.
+      */}
+      {!pool?.seeded ? (
+        <div className="alert alert-warn" style={{ marginBottom: 16, fontSize: '0.64rem', lineHeight: 1.75 }}>
+          <div>
+            {'\u26A0\uFE0F'} SWAP pool is <strong>NOT SEEDED</strong>. It quotes no price and
+            refuses every trade until MIC is added with <code>seedMic</code>.
+          </div>
         </div>
       ) : (
-        <div className="alert alert-ok" style={{ marginBottom: 16 }}>
-          {'\u2705'} SWAP is <strong>ACTIVE</strong>. Pool is locked for 10 years. You can add MIC or USDT to rebalance price.
+        <div className="alert alert-ok" style={{ marginBottom: 16, fontSize: '0.64rem', lineHeight: 1.75 }}>
+          <div>
+            {'\u2705'} SWAP is <strong>LIVE</strong>. Buying is open; selling opens on day{' '}
+            {pool.sellOpenDay} (day {pool.ageDays} now). Assets can be added but{' '}
+            <strong>never removed</strong> \u2014 the contract has no withdrawal function for
+            anyone, including the Owner and the DAO. MIC leaves only when a member buys it,
+            USDT only when a member sells.
+          </div>
         </div>
       )}
 
@@ -138,15 +517,43 @@ export default function SwapPage() {
         </div>
         <div className="stat-box">
           <div className="stat-lbl">Pool MIC</div>
-          <div className="stat-val p">{poolMic > 0 ? fmtN(poolMic) : '-'}</div>
-          <div className="stat-delta">In liquidity</div>
+          <div className="stat-val p">{pool ? fmtN(Math.round(poolMic)) : '—'}</div>
+          <div className="stat-delta">
+            {pool ? `spot $${pool.spotPrice.toFixed(6)}` : 'reading…'}
+          </div>
         </div>
         <div className="stat-box">
-          <div className="stat-lbl">Pool USDT</div>
-          <div className="stat-val gold">{poolUsdt > 0 ? fmtUsd(poolUsdt) : '-'}</div>
-          <div className="stat-delta">In liquidity</div>
+          <div className="stat-lbl">Pool USDT (real)</div>
+          <div className="stat-val gold">{pool ? fmtUsd(poolUsdt) : '—'}</div>
+          {/*
+            Stated separately, never summed into the figure above. The virtual reserve is
+            not money: it exists so a two-sided price is definable on day one and it retires
+            as real USDT arrives. Showing $2 alone understates what sets the price; showing
+            $500,001 would imply the pool holds half a million dollars it does not have.
+          */}
+          <div className="stat-delta">
+            {pool ? `+ ${fmtUsd(virtualUsdt)} virtual · price basis ${fmtUsd(poolUsdt + virtualUsdt)}` : 'reading…'}
+          </div>
         </div>
       </div>
+
+      {pool?.error && (
+        <div className="alert alert-warn" style={{ marginBottom: 16, fontSize: '0.64rem', lineHeight: 1.75 }}>
+          <div>Could not read the pool: {pool.error}</div>
+        </div>
+      )}
+
+      {pool && !pool.error && (
+        <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 16 }}>
+          <div>
+            <strong>Virtual reserve.</strong> The price basis above is real USDT plus{' '}
+            {fmtUsd(virtualUsdt)} of virtual reserve — an accounting figure, not a balance.
+            It lets the pool quote a two-sided price from the first day and is retired as
+            real USDT arrives, so the price converges on genuine depth rather than jumping
+            when the first buyer appears. Only the real figure can ever be paid out.
+          </div>
+        </div>
+      )}
 
       {/* ═══ LIQUIDITY SOURCES ═══ */}
       <div className="sep-lbl">Liquidity Sources</div>
@@ -157,14 +564,35 @@ export default function SwapPage() {
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: '1.1rem' }}>{'\uD83E\uDE99'}</span> MIC Source {'\u2014'} Pre-Issued
           </div>
-          <div className="callout" style={{ marginBottom: 12 }}>
-            105,000,000 MIC (1.5% of total supply) allocated for DEX/CEX Listing at contract deployment. Held in LiquidityPool.sol, ready to be added to SWAP pool.
+          <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 12 }}>
+            <div>
+              105,000,000 MIC was allocated at deployment for listing liquidity &mdash;{' '}
+              <strong>10.3%</strong> of the 1,018,500,000 supply, not the 1.5% this card used
+              to claim. It is no longer in one place, and one third of it no longer exists.
+            </div>
           </div>
-          <div className="info-row"><span className="info-key">Allocated</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>105,000,000 MIC</span></div>
-          <div className="info-row"><span className="info-key">Added to Pool</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{poolMic > 0 ? fmtN(poolMic) + ' MIC' : '-'}</span></div>
-          <div className="info-row"><span className="info-key">Available</span><span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--green2)' }}>{fmtN(preIssuedMic - poolMic)} MIC</span></div>
+          <div className="info-row"><span className="info-key">Allocated at deploy</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>105,000,000 MIC</span></div>
+          <div className="info-row">
+            <span className="info-key">Burned in LiquidityPool v5</span>
+            <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--crimson2)' }}>
+              −{fmtN(BURNED_IN_V5_MIC)} MIC
+            </span>
+          </div>
+          <div className="info-row"><span className="info-key">Seeded into this pool</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{pool ? fmtN(Math.round(poolMic)) + ' MIC' : '—'}</span></div>
+          <div className="info-row">
+            <span className="info-key">Still in ListingReserveVault</span>
+            <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--green2)' }}>
+              {pool ? fmtN(Math.round(pool.vaultMic)) + ' MIC' : '—'}
+            </span>
+          </div>
           <div style={{ marginTop: 10 }}>
-            <div className="prog-bar"><div className="prog-fill p" style={{ width: `${poolMic > 0 ? (poolMic / preIssuedMic * 100) : 0}%` }} /></div>
+            <div className="prog-bar"><div className="prog-fill p" style={{ width: `${poolMic > 0 ? Math.min(100, poolMic / LISTING_ALLOCATION_MIC * 100) : 0}%` }} /></div>
+          </div>
+          <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 8, lineHeight: 1.7 }}>
+            The 31,500,000 was burned on 2026-08-05 because LiquidityPool v5 has no
+            withdrawal path of any kind &mdash; burning was the only way it could ever leave.
+            Withdrawing from the vault takes a 7-day request &rarr; execute; it is not
+            instant.
           </div>
         </div>
 
@@ -173,8 +601,15 @@ export default function SwapPage() {
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: '1.1rem' }}>{'\uD83D\uDCB5'}</span> USDT Source {'\u2014'} Revenue Allocation
           </div>
-          <div className="callout" style={{ marginBottom: 12 }}>
-            Pre-Sale &amp; MICE revenue flows 40% to Liquidity Contract. SEED V5c does NOT fund liquidity (managed by Reserved 50% via DAO vote). These funds accumulate automatically and can be added to SWAP pool by Admin.
+          {/* Same type size as the MIC source callout opposite — the two sat side by side at
+              different sizes. */}
+          <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 12 }}>
+            <div>
+              Pre-Sale &amp; MICE revenue flows 40% straight into the SWAP pool. RevenueRouter holds
+              DISTRIBUTOR_ROLE on the pool and calls receiveUSDT in the same transaction as the sale, so no
+              admin step is involved. Each real USDT that arrives also retires half a USDT of virtual
+              reserve, so the phantom depth shrinks as the real depth grows.
+            </div>
           </div>
           <div className="info-row"><span className="info-key">From SEED</span><span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--gray2)' }}>$0 <em style={{ fontSize: 10 }}>(V5c: 0% to LP)</em></span></div>
           <div className="info-row"><span className="info-key">From Pre-Sale (40%)</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{fmtUsd(presaleLiqUsdt)}</span></div>
@@ -192,7 +627,11 @@ export default function SwapPage() {
           <div className="sep-lbl">Step 1 {'\u2014'} Create Initial Pool &amp; Activate SWAP</div>
           <div className="card" style={{ padding: 20, marginBottom: 16 }}>
             <div className="callout" style={{ marginBottom: 16, borderLeftColor: 'var(--gold)' }}>
-              <strong>First-time activation:</strong> Add both MIC and USDT to create the initial liquidity pair on PancakeSwap V3. The initial ratio determines the starting MIC price. Once activated, the pool is <strong>locked for 10 years</strong> and cannot be withdrawn.
+              <strong>First-time activation:</strong> seeding MIC starts the pool&rsquo;s clock,
+              fixes the opening price and opens buying. There is no PancakeSwap pair &mdash;
+              LiquidityPoolV6 is the protocol&rsquo;s own AMM. Assets added here can{' '}
+              <strong>never be withdrawn</strong> by anyone: the contract has no withdrawal
+              function at all. They leave only when a member trades.
             </div>
 
             <div className="g2" style={{ marginBottom: 16 }}>
@@ -206,7 +645,7 @@ export default function SwapPage() {
                   style={{ width: '100%' }}
                 />
                 <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 4, fontFamily: 'var(--font-m)' }}>
-                  Source: {fmtN(preIssuedMic)} MIC from Pre-Issued (LiquidityPool.sol)
+                  Source: ListingReserveVault ({pool ? fmtN(Math.round(pool.vaultMic)) : '—'} MIC available, 7-day withdrawal cooldown)
                 </div>
               </div>
               <div>
@@ -251,106 +690,156 @@ export default function SwapPage() {
 
       {/* ═══ ADD LIQUIDITY (always visible) ═══ */}
       <div className="sep-lbl">{swapEnabled ? 'Add Liquidity to SWAP Pool' : 'Step 2 (after activation) \u2014 Add Liquidity to Rebalance'}</div>
-      <div className="g2" style={{ marginBottom: 16 }}>
-        {/* ADD MIC */}
-        <div className="card" style={{ padding: 20 }}>
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            Add MIC to SWAP Pool
-          </div>
-          <div style={{ fontSize: SZ, color: 'var(--gray2)', marginBottom: 12, lineHeight: 1.5 }}>
-            Add MIC from LiquidityPool.sol contract to increase MIC supply in the pool. This <strong>lowers</strong> MIC price {'\u2014'} use when price is too high.
-          </div>
-          <div className="info-row" style={{ marginBottom: 8 }}>
-            <span className="info-key">Available in Contract</span>
-            <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--green2)' }}>{fmtN(preIssuedMic - poolMic)} MIC</span>
-          </div>
-          <div className="info-row" style={{ marginBottom: 12 }}>
-            <span className="info-key">Currently in Pool</span>
-            <span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{poolMic > 0 ? fmtN(poolMic) + ' MIC' : '-'}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input
-              type="number"
-              value={swapEnabled ? addMic : ''}
-              onChange={(e) => setAddMic(e.target.value)}
-              placeholder="MIC amount"
-              disabled={!swapEnabled}
-              style={{ flex: 1, opacity: swapEnabled ? 1 : 0.5 }}
-            />
-            <button
-              className="btn btn-gold"
-              onClick={() => handleAddLiquidity('mic')}
-              disabled={saving || !swapEnabled || !addMic}
-              style={{ padding: '8px 20px', fontWeight: 700, opacity: swapEnabled ? 1 : 0.5 }}
-            >
-              {saving ? '...' : 'ADD MIC'}
-            </button>
-          </div>
-          {!swapEnabled && (
-            <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 6, fontStyle: 'italic' }}>
-              Activate SWAP first to enable adding liquidity
-            </div>
-          )}
+      {/*
+        External funding only. The 40% revenue share reaches the pool by itself — RevenueRouter
+        calls `receiveUSDT` inside the sale transaction — so a button that "adds the 40%" would
+        be adding what is already there. What still needs a person is money arriving from
+        outside the protocol, and that has one safe route: the legacy contract, which can give
+        it back if it lands wrongly. The pool itself cannot.
+      */}
+      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          Add USDT from outside
+        </div>
+        <div style={{ fontSize: SZ, color: 'var(--gray2)', marginBottom: 14, lineHeight: 1.6 }}>
+          The 40% revenue share already flows into the pool on its own. Use this only for USDT coming
+          from outside the protocol {'\u2014'} it <strong>raises</strong> the MIC price.
         </div>
 
-        {/* ADD USDT */}
-        <div className="card" style={{ padding: 20 }}>
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            Add USDT to SWAP Pool
-          </div>
-          <div style={{ fontSize: SZ, color: 'var(--gray2)', marginBottom: 12, lineHeight: 1.5 }}>
-            Add USDT from Liquidity Contract (revenue allocation) to increase USDT in the pool. This <strong>raises</strong> MIC price {'\u2014'} use when price is too low.
-          </div>
-          <div className="info-row" style={{ marginBottom: 8 }}>
-            <span className="info-key">Available in Contract</span>
-            <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--gold)' }}>{fmtUsd(totalLiqUsdt - poolUsdt)}</span>
-          </div>
-          <div className="info-row" style={{ marginBottom: 12 }}>
-            <span className="info-key">Currently in Pool</span>
-            <span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{poolUsdt > 0 ? fmtUsd(poolUsdt) : '-'}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input
-              type="number"
-              value={swapEnabled ? addUsdt : ''}
-              onChange={(e) => setAddUsdt(e.target.value)}
-              placeholder="USDT amount"
-              disabled={!swapEnabled}
-              style={{ flex: 1, opacity: swapEnabled ? 1 : 0.5 }}
-            />
-            <button
-              className="btn btn-gold"
-              onClick={() => handleAddLiquidity('usdt')}
-              disabled={saving || !swapEnabled || !addUsdt}
-              style={{ padding: '8px 20px', fontWeight: 700, opacity: swapEnabled ? 1 : 0.5 }}
+        <div className="g2" style={{ gap: 16, alignItems: 'start' }}>
+          {/* Step 1 — where the money goes first */}
+          <div>
+            <div className="info-key" style={{ marginBottom: 6 }}>1 {'\u00B7'} Send BSC-USD here</div>
+            <div
+              style={{
+                fontFamily: 'var(--font-m)', fontSize: '0.62rem', color: 'var(--gold)',
+                background: 'rgba(0,0,0,.25)', border: '1px solid var(--border)',
+                borderRadius: 8, padding: '10px 12px', wordBreak: 'break-all', marginBottom: 8,
+              }}
             >
-              {saving ? '...' : 'ADD USDT'}
-            </button>
-          </div>
-          {!swapEnabled && (
-            <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 6, fontStyle: 'italic' }}>
-              Activate SWAP first to enable adding liquidity
+              {A.LiquidityPool}
             </div>
-          )}
+            <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', lineHeight: 1.7 }}>
+              Do <strong>not</strong> send USDT to the pool address. The pool counts only what arrives
+              through <code>receiveUSDT</code>; it has no sync, skim or rescue function, so a direct
+              transfer is lost for good. This contract has <code>withdrawUSDT</code>, so a mistake here
+              is recoverable.
+            </div>
+          </div>
+
+          {/* Step 2 — push it into the pool */}
+          <div>
+            <div className="info-key" style={{ marginBottom: 6 }}>2 {'\u00B7'} Move it into the pool</div>
+            <div className="info-row" style={{ marginBottom: 6 }}>
+              <span className="info-key">Waiting in the contract</span>
+              <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: walletUsdt ? 'var(--green2)' : 'var(--gray2)' }}>
+                {walletUsdt === null ? '-' : fmtUsd(walletUsdt)}
+              </span>
+            </div>
+            <div className="info-row" style={{ marginBottom: 10 }}>
+              <span className="info-key">Currently in the pool</span>
+              <span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{poolUsdt > 0 ? fmtUsd(poolUsdt) : '-'}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                type="number"
+                value={swapEnabled ? addUsdt : ''}
+                onChange={(e) => setAddUsdt(e.target.value)}
+                placeholder="USDT amount"
+                disabled={!swapEnabled}
+                style={{ flex: 1, opacity: swapEnabled ? 1 : 0.5 }}
+              />
+              <button
+                className="btn btn-gold"
+                onClick={() => handleAddLiquidity('usdt')}
+                disabled={saving || !swapEnabled || !addUsdt}
+                style={{ padding: '8px 20px', fontWeight: 700, opacity: swapEnabled ? 1 : 0.5 }}
+              >
+                {saving ? '...' : 'ADD USDT'}
+              </button>
+            </div>
+            {!swapEnabled && (
+              <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 6, fontStyle: 'italic' }}>
+                Activate SWAP first to enable adding liquidity
+              </div>
+            )}
+            {canAddUsdt === false && (
+              <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 8, lineHeight: 1.7 }}>
+                This wallet cannot call <code>receiveUSDT</code> yet.{' '}
+                <button className="btn" onClick={handleGrantDistributor} disabled={saving}
+                  style={{ padding: '4px 12px', fontSize: '0.58rem', marginLeft: 4 }}>
+                  GRANT DISTRIBUTOR_ROLE
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/*
+        The listing reserve is operated on the Treasury Vaults page, which already implements
+        request -> 7-day cooldown -> execute AND refuses the addresses that would swallow the
+        MIC (LiquidityPool v5, TreasuryManager). A second copy here was a duplicate without
+        that guard, so this is a pointer instead.
+      */}
+      <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 16 }}>
+        <div>
+          <strong>Listing reserve.</strong> {pool ? fmtN(Math.round(pool.vaultMic)) + ' MIC' : 'The remaining MIC'} is
+          held for exchange listings and other approved destinations {'\u2014'} it is not pool liquidity and is
+          never added to SWAP. Move it from <a href="/treasury" style={{ color: 'var(--gold)' }}>Treasury Vaults</a>,
+          where a withdrawal is requested, waits 7 days, and can then be executed by anyone.
         </div>
       </div>
 
       {/* Rebalance hint when active */}
       {swapEnabled && (
-        <div className="callout" style={{ marginBottom: 16, borderLeftColor: 'var(--green2)' }}>
+        <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 16, borderLeftColor: 'var(--green2)' }}>
           <strong>Price stabilization:</strong> Phase 1 (current) {'\u2014'} Manual rebalancing by Admin. If MIC price drops, add USDT to raise it. If MIC price rises too fast, add MIC to lower it. Phase 2 {'\u2014'} AI Stabilizer will auto-rebalance based on TWAP deviation.
         </div>
       )}
 
       {/* ═══ PRICE ORACLE ═══ */}
-      <div className="sep-lbl">Price Oracle</div>
+      <div className="sep-lbl">Price Source</div>
       <div className="g2" style={{ marginBottom: 16 }}>
         <div className="card" style={{ padding: 20 }}>
-          <div className="card-title">Oracle Configuration</div>
-          <div className="info-row"><span className="info-key">Primary</span><span className="info-val">PancakeSwap V3 TWAP</span></div>
-          <div className="info-row"><span className="info-key">Fallback</span><span className="info-val">Chainlink Price Feed</span></div>
-          <div className="info-row"><span className="info-key">TWAP Window</span><span className="info-val">30 minutes</span></div>
-          <div className="info-row"><span className="info-key">Price Floor</span><span className="info-val">$0.001 MIC</span></div>
+          {/* Every row here named a component that does not exist: there is no PancakeSwap
+              pair, no Chainlink feed and no 30-minute window. The pool is its own oracle —
+              price is reserves, and its TWAP is kept on chain in daily snapshots. */}
+          <div className="card-title">Price Source</div>
+          <div className="info-row"><span className="info-key">Oracle</span><span className="info-val">LiquidityPoolV6 reserves (own AMM)</span></div>
+          <div className="info-row"><span className="info-key">Spot price</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{pool ? `$${pool.spotPrice.toFixed(6)}` : '—'}</span></div>
+          <div className="info-row"><span className="info-key">Buy fee</span><span className="info-val">{pool ? `${(pool.buyFeeBps / 100).toFixed(2)}%` : '—'}</span></div>
+          <div className="info-row"><span className="info-key">Sell fee (current)</span><span className="info-val">{pool ? `${(pool.sellFeeBps / 100).toFixed(2)}%` : '—'}</span></div>
+          <div className="info-row"><span className="info-key">Max single trade</span><span className="info-val">{pool ? `${(pool.maxTradeBps / 100).toFixed(2)}% of reserve` : '—'}</span></div>
+          <div className="info-row"><span className="info-key">Sells open</span><span className="info-val">{pool ? `day ${pool.sellOpenDay} (now day ${pool.ageDays})` : '—'}</span></div>
+          <div className="info-row"><span className="info-key">External listing at</span><span className="info-val" style={{ fontFamily: 'var(--font-m)' }}>{pool ? fmtUsd(pool.listingThreshold) : '—'}</span></div>
+          {/* remainingDailyOut(): USDT the pool will still release in the current rolling
+              24 hours. Sells consume it, buys do not; it is measured against the real USDT
+              reserve, so the virtual reserve does not inflate it. */}
+          <div className="info-row">
+            <span className="info-key">Daily outflow left</span>
+            <span className="info-val" style={{ fontFamily: 'var(--font-m)', color: 'var(--gold)' }}>
+              {pool ? `${fmtUsd(pool.remainingDailyOut)} of ${fmtUsd(pool.reserveUsdt * 0.05)}` : '—'}
+            </span>
+          </div>
+          <div className="info-row" style={{ alignItems: 'center' }}>
+            <span className="info-key">
+              Show to members
+              <div style={{ color: 'var(--gray2)', fontSize: '0.55rem', marginTop: 2 }}>
+                Displays the remaining allowance on the DApp SWAP screen
+              </div>
+            </span>
+            <span style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                className={`btn ${showDailyCap ? 'btn-gold' : ''}`}
+                disabled={saving}
+                onClick={() => toggleDailyCapVisibility(!showDailyCap)}
+                style={{ padding: '4px 14px', fontSize: '0.58rem', fontWeight: 700 }}
+              >
+                {showDailyCap ? 'VISIBLE' : 'HIDDEN'}
+              </button>
+            </span>
+          </div>
         </div>
         <div className="card" style={{ padding: 20 }}>
           <div className="card-title">Stabilization</div>
@@ -362,22 +851,31 @@ export default function SwapPage() {
       </div>
 
       {/* ═══ POOL LOCK & FUTURE ═══ */}
-      <div className="sep-lbl">Pool Lock &amp; Roadmap</div>
+      <div className="sep-lbl">Withdrawals &amp; Roadmap</div>
       <div className="card" style={{ padding: 20 }}>
         <div className="g2">
           <div>
-            <div className="card-title">Pool Lock</div>
-            <div className="info-row"><span className="info-key">Lock Duration</span><span className="info-val">10 years from activation</span></div>
-            <div className="info-row"><span className="info-key">Lock Status</span><span className="info-val">{swapEnabled ? <span className="badge b-ok">Locked</span> : <span className="badge b-gray">Not yet activated</span>}</span></div>
-            <div className="info-row"><span className="info-key">Withdrawal</span><span className="info-val">Not possible during lock</span></div>
-            <div className="info-row"><span className="info-key">Additional Deposits</span><span className="info-val">Allowed (Admin only)</span></div>
+            {/* Not a lock with a duration. There is no withdrawal function in the contract
+                at all, so there is nothing to expire and nobody it could open for. */}
+            <div className="card-title">Withdrawals</div>
+            <div className="info-row"><span className="info-key">Withdrawal function</span><span className="info-val" style={{ color: 'var(--crimson2)' }}>None exists</span></div>
+            <div className="info-row"><span className="info-key">Owner can withdraw</span><span className="info-val">No</span></div>
+            <div className="info-row"><span className="info-key">DAO can withdraw</span><span className="info-val">No</span></div>
+            <div className="info-row"><span className="info-key">Assets leave only by</span><span className="info-val">A member&rsquo;s trade</span></div>
+            <div className="info-row"><span className="info-key">Additional deposits</span><span className="info-val">Allowed (seedMic / router)</span></div>
+            <div style={{ fontSize: '0.58rem', color: 'var(--gray2)', marginTop: 10, lineHeight: 1.7 }}>
+              This is deliberate: a pool an admin can drain is not liquidity. The cost is that
+              anything sent <strong>directly</strong> to the pool address is stranded for
+              good &mdash; the contract has no rescue path for stray tokens either. Only ever
+              fund it through <code>seedMic</code> or the revenue router.
+            </div>
           </div>
           <div>
             <div className="card-title">Future Roadmap</div>
             <div className="info-row"><span className="info-key">Community Farming</span><span className="info-val badge b-gray">Planned</span></div>
             <div className="info-row"><span className="info-key">LP Token Rewards</span><span className="info-val badge b-gray">Planned</span></div>
             <div className="info-row"><span className="info-key">Multi-pair Support</span><span className="info-val badge b-gray">Planned</span></div>
-            <div className="callout" style={{ marginTop: 10 }}>
+            <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginTop: 10 }}>
               Community members will be able to provide liquidity and earn farming rewards. LP tokens will be issued as proof of liquidity provision.
             </div>
           </div>

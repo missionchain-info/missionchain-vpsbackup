@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify'
 import { ethers } from 'ethers'
+import { buildProvider } from '../services/blockchain.js'
 
 // ─── Vesting Schedule Parameters ──────────────────────────────────────────
 
@@ -93,7 +94,7 @@ async function fetchOnChainVesting(
   rpcUrl: string,
 ) {
   try {
-    const provider = new ethers.JsonRpcProvider(rpcUrl)
+    const provider = buildProvider()
     const lockManager = new ethers.Contract(lockManagerAddress, LOCK_MANAGER_ABI, provider)
     const micToken = new ethers.Contract(micTokenAddress, MIC_TOKEN_ABI, provider)
 

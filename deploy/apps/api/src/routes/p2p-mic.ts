@@ -10,7 +10,9 @@
  * money, so they are signed by the user's wallet in the browser and never by a server key.
  */
 import { FastifyPluginAsync } from 'fastify'
-import { Contract, JsonRpcProvider, formatUnits } from 'ethers'
+import { Contract, formatUnits } from 'ethers'
+import { buildProvider } from '../services/blockchain.js'
+import { advanceOrderTxIndex, orderTxHash } from '../services/orderTxIndex.js'
 import { getActiveAddresses } from '@missionchain/sdk'
 
 const ZERO = '0x0000000000000000000000000000000000000000'
@@ -53,13 +55,27 @@ type OrderOut = {
 }
 
 const p2pMicRoutes: FastifyPluginAsync = async (app) => {
-  const rpc = () =>
-    process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'
+  /*
+   * One shared provider, built by the blockchain service.
+   *
+   * This route used to resolve its endpoint with `INDEXER_RPC_URL || BSC_RPC_URL ||
+   * dataseed` — a chain that reads like a fallback and is not one, because `||` picks on
+   * whether a variable is SET, once. INDEXER_RPC_URL is always set, so when that key hit
+   * its monthly cap on 2026-08-12 the order book, the bid book and the market config all
+   * returned 500 together.
+   *
+   * The replacement lives in `blockchain.ts` rather than here, because the same mistake
+   * had to be fixed in three files and a fourth copy would be a fourth thing to forget:
+   * public dataseeds first (these are plain `eth_call` reads that any node serves), a hard
+   * 4s per-attempt timeout so a dead host cannot hold the request, and no inner retry —
+   * the retry is moving to the next endpoint, not asking the same dead one again.
+   */
+  const provider = buildProvider()
 
   function contract() {
     const addr = (getActiveAddresses() as Record<string, string>).P2PEscrowMIC
     if (!addr || addr === ZERO) return null
-    return new Contract(addr, ABI, new JsonRpcProvider(rpc()))
+    return new Contract(addr, ABI, provider)
   }
 
   /** Fee, bounds and the address the browser must sign against. */
@@ -140,7 +156,11 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
     // Best bid first — what a seller is looking for.
     out.sort((a, b) => Number(b.pricePerMic) - Number(a.pricePerMic))
 
-    return { data: out, meta: { totalEverCreated: total, returned: out.length } }
+    const escrowAddr = (getActiveAddresses() as Record<string, string>).P2PEscrowMIC
+    advanceOrderTxIndex(escrowAddr).catch(() => {})
+    const withTx = out.map((o) => ({ ...o, createdTxHash: orderTxHash('bid', o.id) ?? null }))
+
+    return { data: withTx, meta: { totalEverCreated: total, returned: out.length } }
   })
 
   /**
@@ -168,7 +188,7 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
         'function balanceOf(address) view returns (uint256)',
         'function lockedBalanceOf(address) view returns (uint256)',
       ],
-      new JsonRpcProvider(rpc()),
+      provider,
     )
 
     // A bidder escrows USDT, so they need the same "what can I actually commit" figure a
@@ -178,7 +198,7 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
     const usdtToken = new Contract(
       usdtAddr,
       ['function balanceOf(address) view returns (uint256)'],
-      new JsonRpcProvider(rpc()),
+      provider,
     )
 
     const balance = (await mic.balanceOf(wallet)) as bigint
@@ -259,8 +279,15 @@ const p2pMicRoutes: FastifyPluginAsync = async (app) => {
     // Cheapest per MIC first — what a buyer is looking for.
     out.sort((a, b) => Number(a.pricePerMic) - Number(b.pricePerMic))
 
+    // The transaction that created each order. Read from a chunked log index that fills in
+    // over a few requests; an order whose hash is not known yet simply omits it rather than
+    // holding up the book.
+    const escrowAddr = (getActiveAddresses() as Record<string, string>).P2PEscrowMIC
+    advanceOrderTxIndex(escrowAddr).catch(() => {})
+    const withTx = out.map((o) => ({ ...o, createdTxHash: orderTxHash('sell', o.id) ?? null }))
+
     return {
-      data: out,
+      data: withTx,
       meta: {
         totalEverCreated: total,
         returned: out.length,

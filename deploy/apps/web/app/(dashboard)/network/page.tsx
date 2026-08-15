@@ -450,17 +450,19 @@ export default function NetworkPage() {
               <div key={t.rank} style={{
                 background: isActive ? 'rgba(201,168,76,.1)' : 'rgba(123,45,139,.06)',
                 border: `1px solid ${isActive ? 'rgba(201,168,76,.35)' : 'rgba(123,45,139,.12)'}`,
-                borderRadius: 10, padding: '12px 10px', position: 'relative', overflow: 'hidden',
+                borderRadius: 10, padding: '14px 10px', position: 'relative', overflow: 'hidden',
+                textAlign: 'center',
               }}>
                 {isActive && <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--gold)', color: '#0C0812', fontSize: '0.5rem', fontWeight: 700, padding: '2px 8px', borderRadius: '0 0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>You</div>}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: '1.1rem' }}>{t.icon}</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: t.color }}>{t.rank}</span>
-                </div>
+                {/* Icon on its own line above the name, everything centred. Side by side, the
+                    six cards had six different left edges depending on how wide each emoji
+                    rendered, so nothing lined up across the grid. */}
+                <div style={{ fontSize: '1.4rem', lineHeight: 1.1, marginBottom: 4 }}>{t.icon}</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: t.color, marginBottom: 8 }}>{t.rank}</div>
                 <div style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-d)', color: t.color, marginBottom: 4 }}>{t.rate}</div>
-                <div style={{ fontSize: '0.6rem', color: 'var(--muted)', marginBottom: 6 }}>{t.threshold}</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--muted)', marginBottom: 8 }}>{t.threshold}</div>
                 {nftBonus ? (
-                  <div style={{ fontSize: '0.58rem', color: 'var(--cream)', background: 'rgba(201,168,76,.1)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 4, padding: '3px 6px', display: 'inline-block' }}>
+                  <div style={{ fontSize: '0.58rem', color: 'var(--cream)', background: 'rgba(201,168,76,.1)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 4, padding: '3px 8px', display: 'inline-block' }}>
                     {nftBonus}
                   </div>
                 ) : (

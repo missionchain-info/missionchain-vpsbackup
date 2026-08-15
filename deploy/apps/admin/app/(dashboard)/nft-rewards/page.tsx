@@ -13,14 +13,20 @@ import {
 /**
  * NFT Rewards — the two programmes that had no way to be paid.
  *
- * `ClaimRewardsV2.mintMilestoneNFT` / `mintRankBonus` and the two pools' `distribute`
- * have existed on chain since their deploy, and nothing in the platform ever called them.
- * The reward engine could work out who was owed what and then had nowhere to send it.
+ * `ClaimRewardsV2.mintMilestoneNFT` / `mintRankBonus` have existed on chain since their
+ * deploy, and nothing in the platform ever called them. The reward engine could work out
+ * who was owed what and then had nowhere to send it.
  *
  * Signing happens here, in the operator's own wallet — never on the server. Minting is
- * irreversible and distributing moves real MIC, and the roles that authorise them
- * (CREDITOR_ROLE, DISTRIBUTOR_ROLE) belong to wallets whose keys should not exist in a
- * server's environment. The API works out the numbers; the key holder decides.
+ * irreversible and the role that authorises it (CREDITOR_ROLE) belongs to a wallet whose
+ * key should not exist in a server's environment. The API works out the numbers; the key
+ * holder decides.
+ *
+ * The Reward Pools section signs nothing at all. It used to carry a Distribute button
+ * against `distribute(recipients[], amounts[])`, which is a function of the push-based
+ * pools replaced on 2026-08-10. The live pools are `NftRewardPoolV2`: MIC streams in and
+ * each holder pulls their own with `claim()`. There is no operator step left, so the
+ * section reports state instead of offering an action that would revert.
  */
 
 const A = getActiveAddresses() as Record<string, string>;
@@ -31,12 +37,6 @@ const CLAIM_REWARDS_ABI = [
   'function mintMilestoneNFT(address user, uint256 milestoneIndex)',
   'function mintRankBonus(address user, uint256 tier, uint256 quantity)',
   'function CREDITOR_ROLE() view returns (bytes32)',
-  'function hasRole(bytes32,address) view returns (bool)',
-];
-
-const POOL_ABI = [
-  'function distribute(address[] recipients, uint256[] amounts)',
-  'function DISTRIBUTOR_ROLE() view returns (bytes32)',
   'function hasRole(bytes32,address) view returns (bool)',
 ];
 
@@ -192,42 +192,6 @@ export default function NftRewardsPage() {
     setBusy('');
   };
 
-  const distribute = async (which: 'community' | 'mfp') => {
-    setBusy(`dist-${which}`); setMsg(null);
-    try {
-      const plan = pools?.data?.plan;
-      if (!plan) throw new Error('No distribution plan — nothing to pay out');
-      const rows = (which === 'community' ? plan.community : plan.mfp)
-        .filter((r: any) => BigInt(r.amountWei) > 0n);
-      if (rows.length === 0) throw new Error('Every allocation in this pool is zero');
-
-      const address = which === 'community'
-        ? pools.data.pools.community.address
-        : pools.data.pools.mfp.address;
-
-      const signer = await walletSigner();
-      const { Contract } = await import('ethers');
-      const c = new Contract(address, POOL_ABI, signer);
-
-      const role = await c.DISTRIBUTOR_ROLE();
-      const me = await signer.getAddress();
-      if (!(await c.hasRole(role, me))) {
-        throw new Error(`${short(me)} does not hold DISTRIBUTOR_ROLE on this pool`);
-      }
-
-      const tx = await c.distribute(
-        rows.map((r: any) => r.wallet),
-        rows.map((r: any) => BigInt(r.amountWei)),
-      );
-      await tx.wait();
-      setMsg({ ok: true, text: `Paid ${rows.length} wallets — ${tx.hash.slice(0, 12)}…` });
-      load();
-    } catch (e: any) {
-      setMsg({ ok: false, text: e?.shortMessage || e?.message || 'Distribution failed' });
-    }
-    setBusy('');
-  };
-
   const notDeployed = !A.ClaimRewardsV2 || A.ClaimRewardsV2 === ZERO;
 
   return (
@@ -235,8 +199,9 @@ export default function NftRewardsPage() {
       <div className="page-title">NFT Rewards</div>
       <p style={{ fontSize: '0.68rem', color: 'var(--gray2)', lineHeight: 1.7, maxWidth: 780, marginBottom: 16 }}>
         Community NFTs earned through referral milestones and Community Growth Award ranks,
-        and the MIC held by the two emission-funded reward pools. Every transaction here is
-        signed from your own wallet — the server holds no key for either programme.
+        and the state of the two emission-funded reward pools. Every transaction here is
+        signed from your own wallet — the server holds no key for either programme. The
+        pools themselves take no action from this page: holders claim their own MIC.
       </p>
 
       {msg && (
@@ -342,12 +307,17 @@ export default function NftRewardsPage() {
 
       {/* ── Rank bonus ── */}
       <div className="card" style={{ marginTop: 16 }}>
-        <div className="card-title">Community Growth Award — rank bonus</div>
+        <div className="card-title">Rank bonus — discretionary award (outside KPI)</div>
         <p style={{ fontSize: '0.62rem', color: 'var(--gray2)', lineHeight: 1.65, marginBottom: 10 }}>
-          A one-time batch issued when a member reaches a rank. Rank eligibility is decided
-          off chain and approved before minting — the contract does not track ranks, so this
-          is a deliberate act, not an automatic one. Each batch is capped on chain, so a
-          mistyped quantity cannot mint thousands.
+          <strong>This is not how a rank bonus is normally issued.</strong> Reaching a rank
+          is recorded automatically by the reward engine on <code>RankBonusClaim</code>, and
+          the member then sees it on their own NFT page and presses MINT — the NFTs go to
+          their wallet, signed by them, and they pay the gas.
+          <br /><br />
+          Use this button only for a bonus given <strong>outside</strong> that programme —
+          a discretionary award for something the KPI rules do not cover. It mints
+          immediately, from this wallet, without the member asking. Each batch is capped on
+          chain, so a mistyped quantity cannot mint thousands.
         </p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <input
@@ -541,9 +511,10 @@ export default function NftRewardsPage() {
         <div className="card-title">Reward Pools</div>
         <p style={{ fontSize: '0.62rem', color: 'var(--gray2)', lineHeight: 1.65, marginBottom: 12 }}>
           Community NFT holders receive 5% of daily emission and MFP holders 1%. The MIC
-          arrives on its own each day; paying it out is this button. The split is computed
-          fresh from who currently holds an active NFT, because Community NFTs expire and a
-          stored holder list would quietly go stale.
+          arrives on its own each day and streams into an accumulator; each holder pulls
+          their own share with <code>claim()</code>. <strong>There is nothing to press here.</strong>{' '}
+          This section is a read of what is true on chain — the pools have no operator
+          payout step, and claiming a month late pays exactly what claiming hourly would.
         </p>
 
         {pools?.error && <div style={{ fontSize: '0.66rem', color: 'var(--error)' }}>{pools.error}</div>}
@@ -557,10 +528,6 @@ export default function NftRewardsPage() {
           <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))' }}>
             {(['community', 'mfp'] as const).map((which) => {
               const pool = pools.data.pools[which];
-              const rows = pools.data.plan
-                ? (which === 'community' ? pools.data.plan.community : pools.data.plan.mfp)
-                    .filter((r: any) => BigInt(r.amountWei) > 0n)
-                : [];
               return (
                 <div key={which} style={{
                   padding: '13px 15px', borderRadius: 8, border: '1px solid var(--border)',
@@ -571,43 +538,77 @@ export default function NftRewardsPage() {
                   </div>
                   <div style={{
                     fontFamily: 'var(--font-m)', fontSize: '1rem', fontWeight: 700,
-                    color: Number(pool.balance) > 0 ? 'var(--success)' : 'var(--gray2)', margin: '6px 0',
+                    color: Number(pool.held) > 0 ? 'var(--success)' : 'var(--gray2)', margin: '6px 0',
                   }}>
-                    {Number(pool.balance).toLocaleString(undefined, { maximumFractionDigits: 2 })} MIC
+                    {Number(pool.held).toLocaleString(undefined, { maximumFractionDigits: 2 })} MIC
+                    <span style={{ fontSize: '0.58rem', fontWeight: 400, color: 'var(--gray2)' }}> held</span>
                   </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--gray2)', lineHeight: 1.6 }}>
-                    Paid out so far: {Number(pool.totalDistributed).toLocaleString(undefined, { maximumFractionDigits: 0 })} MIC
-                    {' '}across {pool.distributionCount} batch{pool.distributionCount === 1 ? '' : 'es'}
-                    <br />
+
+                  <div style={{ fontSize: '0.6rem', color: 'var(--gray2)', lineHeight: 1.75 }}>
+                    <div>
+                      Streaming:{' '}
+                      <span style={{ color: pool.streaming ? 'var(--success)' : 'var(--warning)' }}>
+                        {pool.streaming
+                          ? `${Number(pool.rewardPerDay).toLocaleString(undefined, { maximumFractionDigits: 2 })} MIC/day`
+                          : 'stopped'}
+                      </span>
+                    </div>
+                    <div>
+                      Notified in: {Number(pool.totalNotified).toLocaleString(undefined, { maximumFractionDigits: 0 })} MIC
+                    </div>
+                    <div>
+                      Claimed out: {Number(pool.totalClaimed).toLocaleString(undefined, { maximumFractionDigits: 0 })} MIC
+                      {' · '}unclaimed {Number(pool.unclaimed).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </div>
+                    <div>Total weight: {pool.totalWeight}</div>
+                    {pool.pendingExpiries !== null && pool.pendingExpiries > 0 && (
+                      <div style={{ color: 'var(--warning)' }}>
+                        {pool.pendingExpiries} expired NFT{pool.pendingExpiries === 1 ? '' : 's'} awaiting sync()
+                      </div>
+                    )}
                     <a href={`${CHAIN.explorerUrl}/address/${pool.address}`} target="_blank"
                        rel="noopener noreferrer" style={{ color: 'var(--gold)', textDecoration: 'none', fontFamily: 'var(--font-m)' }}>
                       {short(pool.address)} ↗
                     </a>
                   </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--gray2)', marginTop: 8 }}>
-                    {rows.length > 0
-                      ? `${rows.length} wallet${rows.length === 1 ? '' : 's'} would be paid`
-                      : 'No eligible holder'}
-                  </div>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{ marginTop: 9 }}
-                    disabled={busy === `dist-${which}` || rows.length === 0}
-                    onClick={() => distribute(which)}
-                  >
-                    {busy === `dist-${which}` ? 'Distributing…' : 'Distribute'}
-                  </button>
                 </div>
               );
             })}
           </div>
         )}
 
-        {pools?.data?.note && (
-          <div style={{ fontSize: '0.62rem', color: 'var(--gray2)', marginTop: 12, lineHeight: 1.65 }}>
-            {pools.data.note}
+        {pools?.data?.holders?.length > 0 && (
+          <div style={{ marginTop: 14, overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: '0.62rem', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ color: 'var(--gray2)', textAlign: 'left' }}>
+                  <th style={{ padding: '6px 8px' }}>Wallet</th>
+                  <th style={{ padding: '6px 8px' }}>Pool</th>
+                  <th style={{ padding: '6px 8px' }}>Weight</th>
+                  <th style={{ padding: '6px 8px' }}>Claimable</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pools.data.holders.map((h: any) => (
+                  <tr key={`${h.pool}-${h.wallet}`} style={{ borderTop: '1px solid var(--border)' }}>
+                    <td style={{ padding: '6px 8px', fontFamily: 'var(--font-m)' }}>{short(h.wallet)}</td>
+                    <td style={{ padding: '6px 8px' }}>{h.pool === 'community' ? 'Community' : 'MFP'}</td>
+                    <td style={{ padding: '6px 8px', fontFamily: 'var(--font-m)' }}>{h.weight}</td>
+                    <td style={{ padding: '6px 8px', fontFamily: 'var(--font-m)' }}>
+                      {Number(h.claimable).toLocaleString(undefined, { maximumFractionDigits: 4 })} MIC
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
+
+        {pools?.data?.notes?.map((n: string, i: number) => (
+          <div key={i} style={{ fontSize: '0.62rem', color: 'var(--gray2)', marginTop: 10, lineHeight: 1.65 }}>
+            {n}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -13,9 +13,10 @@
  *
  * Idempotent: Purchase.txHash is unique → safe to re-run.
  */
-import { Contract, JsonRpcProvider, formatUnits, type EventLog, type Log } from 'ethers'
+import { Contract, JsonRpcProvider, formatUnits, type EventLog, type Log, Provider } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
 import { USDT_DECIMALS } from '@missionchain/sdk';
+import { buildArchiveProvider } from './blockchain.js'
 
 const POLL_INTERVAL_MS = 300_000     // 5 minutes (rate-limit safe on BSC testnet)
 const BATCH_BLOCKS     = 100         // small batch — public RPCs throttle aggressively
@@ -63,13 +64,13 @@ export class PreSaleEventSync {
     }
   }
 
-  private async tryRpc<T>(fn: (provider: JsonRpcProvider) => Promise<T>): Promise<T> {
+  private async tryRpc<T>(fn: (provider: Provider) => Promise<T>): Promise<T> {
     // Try primary RPC first, then failover
     const endpoints = [this.rpcUrl, ...RPC_ENDPOINTS.filter((u) => u !== this.rpcUrl)]
     let lastErr: any
     for (const url of endpoints) {
       try {
-        const provider = new JsonRpcProvider(url)
+        const provider = buildArchiveProvider()
         return await fn(provider)
       } catch (err: any) {
         lastErr = err

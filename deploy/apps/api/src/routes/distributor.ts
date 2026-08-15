@@ -63,6 +63,99 @@ export const distributorRoutes: FastifyPluginAsync = async (app) => {
     }
   })
 
+  /**
+   * GET /admin/distributors/commission-slot — SEED slot 0, on chain and off.
+   *
+   * The 20% distributor share is cut from every SEED purchase and held in
+   * `SeedBudgetV5c.slotBalance(0)`. Nothing in the console showed that balance or offered a
+   * way to pay it out, so the money had no visible home: commissions were tracked in the
+   * database while the USDT backing them sat in a contract nobody could see.
+   *
+   * The two sides answer different questions and are reported separately rather than
+   * reconciled into one number:
+   *   - on chain: what the contract holds, has received and has already released
+   *   - database: what agents have earned, what they have been paid, what is outstanding
+   *
+   * They will not match, and should not be made to: the slot takes 20% of every sale
+   * whether or not an agent was involved, so a purchase with no referrer still adds to the
+   * balance while creating no earning. That difference is the unallocated remainder, and it
+   * is surfaced as its own figure.
+   */
+  app.get('/commission-slot', async (_req, reply) => {
+    try {
+      const { Interface } = await import('ethers')
+      const { multicall } = await import('../services/multicall.js')
+      const { buildProvider } = await import('../services/blockchain.js')
+      const { getActiveAddresses, USDT_DECIMALS } = await import('@missionchain/sdk')
+      const { formatUnits } = await import('ethers')
+
+      const sb = (getActiveAddresses() as Record<string, string>).SeedBudgetV5c
+      const iface = new Interface([
+        'function slotBalance(uint8) view returns (uint256)',
+        'function slotTotalReceived(uint8) view returns (uint256)',
+        'function slotTotalReleased(uint8) view returns (uint256)',
+        'function slotController(uint8) view returns (address)',
+        'function feeBps() view returns (uint16)',
+      ])
+      const r = await multicall(buildProvider(), [
+        { target: sb, iface, fn: 'slotBalance', args: [0] },
+        { target: sb, iface, fn: 'slotTotalReceived', args: [0] },
+        { target: sb, iface, fn: 'slotTotalReleased', args: [0] },
+        { target: sb, iface, fn: 'slotController', args: [0] },
+        { target: sb, iface, fn: 'feeBps' },
+      ])
+      const usd = (v: any) => Number(formatUnits(v ?? 0n, USDT_DECIMALS))
+
+      const [agents, paid, pending] = await Promise.all([
+        app.prisma.distributor.findMany({
+          orderBy: { totalEarned: 'desc' },
+          select: { wallet: true, isActive: true, commissionRate: true, totalEarned: true, totalOrders: true },
+        }),
+        app.prisma.payoutRequest.aggregate({ where: { status: 'PAID' }, _sum: { grossAmount: true } }),
+        app.prisma.payoutRequest.aggregate({
+          where: { status: { in: ['PENDING', 'APPROVED'] } },
+          _sum: { grossAmount: true },
+        }),
+      ])
+
+      const earned = agents.reduce((sum, a) => sum + Number(a.totalEarned ?? 0), 0)
+      const claimed = Number(paid._sum.grossAmount ?? 0)
+      const inFlight = Number(pending._sum.grossAmount ?? 0)
+
+      return reply.send({
+        data: {
+          contract: sb,
+          controller: r[3] ? String(r[3][0]) : null,
+          feeBps: r[4] ? Number(r[4][0]) : 0,
+          onChain: {
+            received: usd(r[1]?.[0]),
+            released: usd(r[2]?.[0]),
+            balance:  usd(r[0]?.[0]),
+          },
+          agents: agents.map((a) => ({
+            wallet: a.wallet,
+            active: a.isActive,
+            ratePct: Number(a.commissionRate ?? 0) * 100,
+            earned: Number(a.totalEarned ?? 0),
+            orders: a.totalOrders,
+          })),
+          totals: {
+            earned,
+            claimed,
+            inFlight,
+            /** Earned but not yet requested or paid. */
+            unclaimed: Math.max(0, earned - claimed - inFlight),
+            /** Slot money not attributable to any agent — sales made without a referrer. */
+            unallocated: Math.max(0, usd(r[1]?.[0]) - earned),
+          },
+        },
+      })
+    } catch (e: any) {
+      app.log.error({ err: e?.message }, 'commission-slot read failed')
+      return reply.status(503).send({ error: 'CHAIN_READ_FAILED', message: 'Could not read the commission slot' })
+    }
+  })
+
   // ─── POST /admin/distributors — Grant new distributor ───────────────
   app.post('/', async (req, reply) => {
     const body = req.body as { wallet?: string; commissionRate?: number; notes?: string }

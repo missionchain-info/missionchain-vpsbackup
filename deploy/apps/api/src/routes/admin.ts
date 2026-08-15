@@ -3,6 +3,7 @@ import { formatUnits } from 'ethers'
 import { connect as tlsConnect } from 'node:tls'
 import { requireAdmin, requireLevel, ADMIN_LEVELS, auditLog, auditCtx, isOwnerWallet, type AdminLevel } from '../plugins/rbac.js'
 import { buildXlsx, fileTimestamp } from '../services/xlsxBuilder.js'
+import { buildArchiveProvider, archiveEndpoints } from '../services/blockchain.js'
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // Apply admin auth to all routes in this plugin (any admin level + authorized admin)
@@ -968,7 +969,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
             'Marketing & Sales': '25%',
             'Management & Operational': '7.5%',
             'DAO Treasury': '12.5%',
-            'Reserved Staking': '5%',
+            'Reserved Listing': '5%',
             'Liquidity Pool & Buffer': '40%',
           },
         },
@@ -1762,13 +1763,14 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       return reply.status(503).send({ error: 'SALE_NOT_DEPLOYED', message: 'No SEED contract is configured' })
     }
 
-    const rpc = process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL
-    if (!rpc) {
+    // eth_getLogs below, so this needs an archive-capable endpoint. The public dataseeds
+    // that buildProvider() prefers refuse log queries outright.
+    if (archiveEndpoints().length === 0) {
       return reply.status(503).send({ error: 'NO_RPC', message: 'No archive-capable RPC configured' })
     }
 
     try {
-      const provider = new ethers.JsonRpcProvider(rpc)
+      const provider = buildArchiveProvider()
       const head = await provider.getBlockNumber()
 
       // The contract was deployed 2026-08-09; 200k blocks is a bit under a week on BSC

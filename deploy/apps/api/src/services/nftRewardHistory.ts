@@ -30,7 +30,7 @@
  * The MIC pools need none of this: Community and MFP are separate contracts with their own
  * `Claimed(address indexed account, uint256)`, so the split is just which contract you read.
  */
-import { Contract, Interface, JsonRpcProvider, id, formatUnits } from 'ethers'
+import { Contract, Interface, JsonRpcProvider, id, formatUnits, Provider } from 'ethers'
 
 /** Both USDT pools were deployed well after this; scanning from 0 is what Alchemy prefers. */
 const FROM_BLOCK = 0
@@ -68,7 +68,7 @@ const asTopic = (wallet: string) => '0x' + wallet.toLowerCase().replace(/^0x/, '
  * balance rather than a confident wrong one.
  */
 export async function readUsdtLedger(
-  provider: JsonRpcProvider,
+  provider: Provider,
   poolAddress: string,
   wallet: string,
 ): Promise<{ community: RewardLedger; mfp: RewardLedger } | null> {
@@ -152,7 +152,7 @@ export async function readUsdtLedger(
  * per wallet and the live `claimable()` is the rest.
  */
 export async function readMicLedger(
-  provider: JsonRpcProvider,
+  provider: Provider,
   poolAddress: string,
   wallet: string,
 ): Promise<RewardLedger> {

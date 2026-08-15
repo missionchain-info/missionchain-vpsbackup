@@ -272,18 +272,16 @@ export default function MfpMintCard() {
               MFP-NFT Mint
             </div>
           </div>
-          <div
-            style={{
-              fontSize: 11,
-              padding: '4px 10px',
-              borderRadius: 12,
-              background: 'rgba(212,160,23,0.12)',
-              color: 'var(--gold)',
-              border: '1px solid rgba(212,160,23,0.3)',
-            }}
-          >
-            DAO governance × 10 staking weight
-          </div>
+          {/*
+            Removed: "DAO governance × 10 staking weight".
+
+            Both halves were wrong. NFTStaking has carried no NFT tier multipliers since
+            April 2026 — weight there is amount × time-lock only — so an MFP contributes
+            nothing extra to staking. The ×10 is a REWARD-POOL weight, applied when the
+            USDT reward pools are split, which is a different mechanism entirely. And
+            governance votes by head on the Steward Council, with no token or NFT weight
+            anywhere in DAOGovernor.
+          */}
         </div>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>

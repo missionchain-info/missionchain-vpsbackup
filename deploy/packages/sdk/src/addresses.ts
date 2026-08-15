@@ -105,8 +105,33 @@ export const ADDRESSES = {
     CommunityNFTRewardPool: "0xae26BA0f1c639beA93e5a4dD9313F5765A29Ee5a",
     MFPRewardPool:          "0xFb79deC4F0CDe13A667018e567dD636255D61d6d",
     LiquidityPoolV6:    "0xf6AB7103d1072416366D34Ce5E8A41074feCC98e",
-    P2PEscrowMFP:       "0xcff25169c783B84eFBa746eF4A51271764f24b8B", // 2026-05-10, fee 1.5%. BROKEN: MAX_PRICE_USDT is 1_000_000e6 = $0.000001 and it is constant, so every real listing reverts. Needs a redeploy; do not enable in the UI until then.
     P2PEscrowMIC:       "0x7388ed77c06A917B572C1429B2a323a171c3c5ea", // MIC/USDT P2P, 2026-08-11. Floor $0.005, adjustable via setPriceBounds. Supersedes 0x4Db0B480, whose bounds were constant.
+
+    // ── NFT escrows, both P2PEscrowNFT, deployed 2026-08-12 ──
+    //
+    // One contract serves both collections: MFPNFT and CommunityNFTv2 are each a plain
+    // ERC-721 (verified on chain — supportsInterface(0x80ac58cd) true, (0xd9b67a26)
+    // false), so the ERC-1155 the old docs describe does not exist any more.
+    //
+    // Royalty is detected once at construction, not assumed: MFPNFT answers ERC-2981 and
+    // pays 5%, CommunityNFTv2 does not implement it at all and reverts on royaltyInfo.
+    // Calling it unconditionally — as the old MFP escrow did — would revert every
+    // Community NFT trade.
+    //
+    // Price bounds are $1 … $1,000,000 and SETTABLE via setPriceBounds, behind hard
+    // fences of $0.01 … $100,000,000. That is the whole point of the redeploy.
+    P2PEscrowNFT_MFP:       "0xFf730a5E231255b8AD5FFa1a07D7011fc8D77924",
+    P2PEscrowNFT_Community: "0x8477d9c0239D9218f259AdF75704aDF5c8e29B07",
+
+    /** Members claim their own Community Growth Award NFTs here; an AWARDER_ROLE wallet
+     *  only records the entitlement. Holds CREDITOR_ROLE on ClaimRewardsV2. */
+    RankBonusClaim:     "0xa95F3f13Ae93FBf8db9BB1833C7A8f8C81e9609F",
+
+    /** DEAD. MAX_PRICE_USDT is 1_000_000e6 = $0.000001 against 18-decimal BSC-USD, and it
+     *  is `constant` — not a proxy, not a storage slot, inlined in the bytecode, so no
+     *  transaction can change it. nextOrderId is 0: nobody could ever list, so nothing was
+     *  lost. Replaced by P2PEscrowNFT_MFP above. Kept only so old references resolve. */
+    P2PEscrowMFP:       "0xcff25169c783B84eFBa746eF4A51271764f24b8B",
   },
 } as const;
 

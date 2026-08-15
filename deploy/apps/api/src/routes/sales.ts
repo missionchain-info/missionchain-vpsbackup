@@ -1,5 +1,7 @@
 import { FastifyPluginAsync } from 'fastify'
 import { getActiveAddresses, USDT_DECIMALS } from '@missionchain/sdk'
+import { buildProvider } from '../services/blockchain.js'
+import type { Provider } from 'ethers'
 
 /**
  * Reading a purchase back off the chain.
@@ -61,12 +63,12 @@ async function verifyPurchaseTx(
   // told us something; a node that threw has not. Only if NONE answered is this a chain
   // problem — otherwise the honest reply is that the transaction does not exist.
   let receipt: Awaited<ReturnType<typeof provider.getTransactionReceipt>> | null = null
-  let provider!: InstanceType<typeof ethers.JsonRpcProvider>
+  let provider!: Provider
   let anyAnswered = false
   let lastErr: unknown = null
   for (const url of rpcUrls) {
     try {
-      provider = new ethers.JsonRpcProvider(url)
+      provider = buildProvider()
       receipt = await provider.getTransactionReceipt(txHash)
       anyAnswered = true
       if (receipt) break

@@ -19,6 +19,8 @@ type Order = {
   expiresAt: number
   status: string
   expiredButOpen: boolean
+  /** Creation transaction. Null while the log index has not reached it yet. */
+  createdTxHash?: string | null
 }
 
 type Config = {
@@ -35,6 +37,9 @@ type Config = {
 }
 
 const ACTIVE_CHAIN = getActiveChain()
+
+/** Where this browser keeps hashes for orders it created, until the server indexes them. */
+const LOCAL_TX_KEY = 'mc-p2p-mic-tx'
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.missionchain.io'
 const MIC = '0xf27ec0c311728b923b22828002c992c799326182'
 const USDT = '0x55d398326f99059fF775485246999027B3197955'
@@ -48,6 +53,11 @@ const ESCROW_ABI = [
   'function matchOrder(uint256 id, uint256 maxPriceUsdt)',
   'function cancelOrder(uint256 id)',
   'function expireOrder(uint256 id)',
+  // The creation events. Without these in the ABI `parseLog` matches nothing, the new
+  // order's id is never learned, and its hash is never recorded — the TXID cell then stays
+  // empty until the server backfill catches up, which is exactly the bug this fixes.
+  'event OrderCreated(uint256 indexed id, address indexed seller, uint256 amountMic, uint256 priceUsdt, uint64 expiresAt)',
+  'event BuyOrderCreated(uint256 indexed id, address indexed buyer, uint256 amountMic, uint256 priceUsdt, uint64 expiresAt)',
 ]
 const ERC20_ABI = [
   'function allowance(address,address) view returns (uint256)',
@@ -77,6 +87,21 @@ function onNumeric(v: string, set: (s: string) => void) {
   const cleaned = v.replace(/,/g, '')
   if (cleaned === '' || /^\d*\.?\d*$/.test(cleaned)) set(cleaned)
 }
+
+/**
+ * A price field, where a comma means a decimal point.
+ *
+ * `onNumeric` strips every comma, because `grouped()` puts them in as thousands
+ * separators. On a phone whose locale uses a comma for decimals, the iOS numeric keypad
+ * offers a comma and no dot at all — so typing 0,008 became 0008 and there was no way to
+ * enter a sub-dollar price from a phone. Prices are never large enough to need thousands
+ * grouping, so this field takes the raw value and treats a comma as what the member
+ * clearly meant by it.
+ */
+function onDecimal(v: string, set: (s: string) => void) {
+  const cleaned = v.replace(/,/g, '.')
+  if (cleaned === '' || /^\d*\.?\d*$/.test(cleaned)) set(cleaned)
+}
 const num = (v: string, dp = 4) =>
   Number(v).toLocaleString('en-US', { maximumFractionDigits: dp })
 
@@ -94,7 +119,10 @@ export default function MicP2PPanel({ address }: { address?: string }) {
   const [orders, setOrders] = useState<Order[]>([])
   const [mine, setMine] = useState<Order[]>([])
   const [busy, setBusy] = useState<string>('')
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  /** `sell:12` / `bid:3` → hash, for orders this browser created. */
+  const [localTx, setLocalTx] = useState<Record<string, string>>({})
+  /** `hash` turns the message into a link to the explorer. Absent on plain errors. */
+  const [msg, setMsg] = useState<{ ok: boolean; text: string; hash?: string } | null>(null)
 
   const [amount, setAmount] = useState('')
   /** Price for ONE MIC. The contract prices the whole lot; the multiply happens on submit. */
@@ -106,7 +134,18 @@ export default function MicP2PPanel({ address }: { address?: string }) {
    */
   const [tab, setTab] = useState<'sell' | 'buy' | 'myOrders' | 'myBids'>('sell')
   const side: 'sell' | 'buy' = tab === 'buy' ? 'buy' : 'sell'
+
   const [bids, setBids] = useState<Order[]>([])
+  /*
+   * The public books, without this wallet's own entries.
+   *
+   * Your own order is not something you can trade against — it rendered as an inert
+   * "yours" row taking up a line in a list of things to act on. It has a home already:
+   * My orders and My bids.
+   */
+  const meLower = (address || '').toLowerCase()
+  const othersOffers = orders.filter((o) => o.seller.toLowerCase() !== meLower)
+  const othersBids = (bids as any[]).filter((o) => String(o.buyer).toLowerCase() !== meLower)
   const [myBids, setMyBids] = useState<any[]>([])
   const [locked, setLocked] = useState<string | null>(null)
   const [usdtBal, setUsdtBal] = useState<string | null>(null)
@@ -141,6 +180,10 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       setMsg({ ok: false, text: 'Could not reach the marketplace. Check your connection and retry.' })
     }
   }, [address])
+
+  useEffect(() => {
+    try { setLocalTx(JSON.parse(localStorage.getItem(LOCAL_TX_KEY) || '{}')) } catch { /* ignore */ }
+  }, [])
 
   useEffect(() => {
     load()
@@ -215,15 +258,76 @@ export default function MicP2PPanel({ address }: { address?: string }) {
     await tx.wait()
   }
 
-  async function run(key: string, fn: () => Promise<string>, done: string) {
+  /**
+   * The reason the contract actually gave.
+   *
+   * `e.shortMessage` is often "missing revert data", which is ethers describing its own
+   * decoding, not the contract. `P2P: amount out of range` was sitting one level down the
+   * whole time — the member was told nothing while the chain had told us exactly why.
+   */
+  function revertReason(e: any): string {
+    const nested =
+      e?.reason ||
+      e?.revert?.args?.[0] ||
+      e?.info?.error?.message ||
+      e?.error?.message ||
+      e?.data?.message
+    const raw = String(nested || e?.shortMessage || e?.message || 'Transaction failed')
+    // Strip the wrapper ethers adds so the member reads the contract's sentence, not ours.
+    return raw.replace(/^execution reverted:?\s*/i, '').replace(/^"|"$/g, '')
+  }
+
+  /*
+   * Hashes for orders this browser created.
+   *
+   * The server backfills these from logs, which takes a while and needs an endpoint that
+   * will serve `eth_getLogs`. But for an order the member just placed, the hash was in
+   * hand the moment the transaction confirmed — so it is recorded here and shown at once.
+   * Kept in localStorage so a reload does not lose it while the backfill catches up.
+   */
+  function rememberTx(kind: 'sell' | 'bid', id: string, hash: string) {
+    try {
+      const m = JSON.parse(localStorage.getItem(LOCAL_TX_KEY) || '{}')
+      m[`${kind}:${id}`] = hash
+      localStorage.setItem(LOCAL_TX_KEY, JSON.stringify(m))
+      setLocalTx({ ...m })
+    } catch { /* a full or blocked store must not break a trade */ }
+  }
+
+  /** Shortest useful form of a hash, with a link out. Blank when not yet indexed. */
+  function TxCell({ hash, kind, id }: { hash?: string | null; kind: 'sell' | 'bid'; id: number | string }) {
+    const h = hash || localTx[`${kind}:${id}`]
+    if (!h) return <span style={{ opacity: 0.45 }}>—</span>
+    return (
+      <a
+        href={`${ACTIVE_CHAIN.explorerUrl}/tx/${h}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="swap-msg-link"
+        title={h}
+      >
+        {h.slice(0, 4)}…{h.slice(-4)}{' ↗'}
+      </a>
+    )
+  }
+
+  /**
+   * @param inColumn  true when the action creates a row that will carry its own TXID cell.
+   *                  Those confirmations leave the hash out: a 66-character string across
+   *                  the top of the panel does not say WHICH order it belongs to, and the
+   *                  same hash on the row does. Buy, cancel and fill keep it — the row they
+   *                  refer to is gone by the time the message appears, so the banner is the
+   *                  only place left to put it.
+   */
+  async function run(key: string, fn: () => Promise<string>, done: string, inColumn = false) {
     setBusy(key)
     setMsg(null)
     try {
       const hash = await fn()
-      setMsg({ ok: true, text: `${done} — ${hash.slice(0, 12)}…` })
+      setMsg(inColumn ? { ok: true, text: done } : { ok: true, text: done, hash })
       await load()
     } catch (e: any) {
-      setMsg({ ok: false, text: e?.shortMessage || e?.message || 'Transaction failed' })
+      setMsg({ ok: false, text: revertReason(e) })
     }
     setBusy('')
   }
@@ -239,12 +343,29 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         await ensureAllowance(USDT, px)
         const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
         const tx = await c.createBuyOrder(amt, px, BigInt(Number(days) * 86400))
-        await tx.wait()
+        const receipt = await tx.wait()
+        // The id is in the receipt we already have. Waiting for the server's log backfill
+        // to tell us the hash of an order we just created would be slower and can fail;
+        // this cannot.
+        try {
+          const parsed = receipt.logs
+            .map((l: any) => { try { return c.interface.parseLog(l) } catch { return null } })
+            .find((x: any) => x?.name === 'BuyOrderCreated')
+          // Fall back to the raw topic. The id is the first indexed argument, so it is
+          // topics[1] of the escrow's own log whether or not the fragment decodes.
+          const topicId = parsed ? null : receipt.logs
+            .filter((l: any) => String(l.address).toLowerCase() === cfg!.address.toLowerCase())
+            .map((l: any) => l.topics?.[1])
+            .find(Boolean)
+          const newId = parsed ? String(parsed.args[0]) : (topicId ? String(BigInt(topicId)) : null)
+          if (newId) rememberTx('bid', newId, tx.hash)
+        } catch { /* the trade succeeded; the bookkeeping is best-effort */ }
         setAmount('')
         setPrice('')
         return tx.hash
       },
       'Bid posted',
+      true,
     )
 
   /** Deliver MIC into someone's standing bid. */
@@ -289,12 +410,26 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         await ensureAllowance(MIC, amt)
         const c = new Contract(cfg!.address, ESCROW_ABI, await signer())
         const tx = await c.createOrder(amt, px, BigInt(Number(days) * 86400))
-        await tx.wait()
+        const receipt = await tx.wait()
+        try {
+          const parsed = receipt.logs
+            .map((l: any) => { try { return c.interface.parseLog(l) } catch { return null } })
+            .find((x: any) => x?.name === 'OrderCreated')
+          // Fall back to the raw topic. The id is the first indexed argument, so it is
+          // topics[1] of the escrow's own log whether or not the fragment decodes.
+          const topicId = parsed ? null : receipt.logs
+            .filter((l: any) => String(l.address).toLowerCase() === cfg!.address.toLowerCase())
+            .map((l: any) => l.topics?.[1])
+            .find(Boolean)
+          const newId = parsed ? String(parsed.args[0]) : (topicId ? String(BigInt(topicId)) : null)
+          if (newId) rememberTx('sell', newId, tx.hash)
+        } catch { /* the trade succeeded; the bookkeeping is best-effort */ }
         setAmount('')
         setPrice('')
         return tx.hash
       },
       'Order listed',
+      true,
     )
 
   const buy = (o: Order) =>
@@ -331,6 +466,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
     return <div className="nft-pool-note">Loading the MIC marketplace…</div>
   }
 
+  const amountNum = Number(amount || 0)
+  /** True when the amount is outside what the contract will accept. */
+  const amountOutOfRange = cfg
+    ? amountNum > 0 && (amountNum < Number(cfg.minAmountMic) || amountNum > Number(cfg.maxAmountMic))
+    : false
   const total = Number(price || 0) * Number(amount || 0)
   const fee = (total * cfg.feeBps) / 10_000
   const net = total - fee
@@ -356,8 +496,8 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         {([
           ['sell', 'I want to sell MIC'],
           ['buy', 'I want to buy MIC'],
-          ['myOrders', `My orders${myOrders.length ? ` (${myOrders.length})` : ''}`],
-          ['myBids', `My bids${myOpenBids.length ? ` (${myOpenBids.length})` : ''}`],
+          ['myOrders', `My Offers${myOrders.length ? ` (${myOrders.length})` : ''}`],
+          ['myBids', `My Bids${myOpenBids.length ? ` (${myOpenBids.length})` : ''}`],
         ] as const).map(([key, label]) => (
           <button
             key={key}
@@ -384,7 +524,24 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       ) : null}
 
       {msg ? (
-        <div className="nft-pool-note" style={{ color: msg.ok ? '#7ddc9a' : '#ff8f8f' }}>{msg.text}</div>
+        <div className="nft-pool-note" style={{ color: msg.ok ? '#7ddc9a' : '#ff8f8f' }}>
+          {msg.text}
+          {msg.hash && (
+            <>
+              {' — '}
+              <a
+                href={`${ACTIVE_CHAIN.explorerUrl}/tx/${msg.hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="swap-msg-link"
+                title={msg.hash}
+              >
+                <span className="swap-msg-hash">{msg.hash}</span>
+                {' ↗'}
+              </a>
+            </>
+          )}
+        </div>
       ) : null}
 
       {/* ── Sell ─────────────────────────────────────────────── */}
@@ -402,8 +559,8 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         <label>
           <span>Price per MIC (USDT)</span>
           <input
-            value={grouped(price)}
-            onChange={(e) => onNumeric(e.target.value, setPrice)}
+            value={price}
+            onChange={(e) => onDecimal(e.target.value, setPrice)}
             placeholder="0.008"
             inputMode="decimal"
           />
@@ -421,6 +578,8 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           className="nft-claim-btn"
           disabled={
             !address || cfg.paused || busy === 'create' || !amount || !price ||
+            // Stop it at the button rather than at a revert the member pays gas to reach.
+            amountOutOfRange || total < Number(cfg.minPriceUsdt) ||
             (side === 'sell' && overBalance) || (side === 'buy' && overUsdt)
           }
           onClick={side === 'sell' ? createOrder : createBid}
@@ -479,6 +638,22 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           {total < Number(cfg.minPriceUsdt) ? (
             <> <span style={{ color: '#ff8f8f' }}>Below the ${cfg.minPriceUsdt} minimum for a listing.</span></>
           ) : null}
+          {/*
+            The amount bound was read from the contract and never checked against. A 5 MIC
+            bid reverted with "P2P: amount out of range" and the screen showed
+            "missing revert data", so there was no way to learn that the floor is
+            {cfg.minAmountMic} MIC except by guessing.
+          */}
+          {amountNum > 0 && amountNum < Number(cfg.minAmountMic) ? (
+            <> <span style={{ color: '#ff8f8f' }}>
+              Minimum is {num(cfg.minAmountMic, 0)} MIC per order.
+            </span></>
+          ) : null}
+          {amountNum > Number(cfg.maxAmountMic) ? (
+            <> <span style={{ color: '#ff8f8f' }}>
+              Maximum is {num(cfg.maxAmountMic, 0)} MIC per order.
+            </span></>
+          ) : null}
           {side === 'buy' && overUsdt ? (
             <> <span style={{ color: '#ff8f8f' }}>
               That is more than the {num(usdtBal!, 2)} USDT in your wallet.
@@ -495,34 +670,38 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       </>
       ) : null}
 
-      {tab === 'sell' ? (
+      {/*
+        The books were attached to the wrong tabs.
+        Someone who wants to SELL has no use for a list of other sellers — they need the
+        BIDS they can sell into. Someone who wants to BUY needs the OFFERS. Each tab now
+        shows the other side of the trade, which is the side you can actually act on.
+      */}
+      {tab === 'buy' ? (
       <>
-      {/* ── Book ─────────────────────────────────────────────── */}
+      {/* ── Offers: what a buyer can buy ─────────────────────── */}
       <div className="nft-section-header" style={{ marginTop: 20 }}>
-        <span className="nft-section-title">Open offers</span>
+        <span className="nft-section-title">Open offers — sellers you can buy from</span>
       </div>
-      {orders.length === 0 ? (
-        <div className="nft-pool-note">No offers yet. List one above and it appears here for every member.</div>
+      {othersOffers.length === 0 ? (
+        <div className="nft-pool-note">No offers from other members right now.</div>
       ) : (
         <div className="p2p-table">
           <div className="p2p-row p2p-head">
-            <span>MIC</span><span>Price</span><span>Per MIC</span><span>Seller</span><span>Time</span><span />
+            <span>MIC</span><span>TXID</span><span>Price</span><span>Per MIC</span><span>Seller</span><span>Time</span><span />
           </div>
-          {orders.map((o) => (
+          {othersOffers.map((o) => (
             <div className="p2p-row" key={o.id}>
               <span>{num(o.amountMic)}</span>
+              <span><TxCell hash={o.createdTxHash} kind="sell" id={o.id} /></span>
               <span>${num(o.priceUsdt, 2)}</span>
               <span>${num(o.pricePerMic, 6)}</span>
               <span>{short(o.seller)}</span>
               <span>{timeLeft(o.expiresAt)}</span>
               <span>
-                {address && o.seller.toLowerCase() === address.toLowerCase() ? (
-                  <em style={{ opacity: 0.6, fontSize: '.7rem' }}>yours</em>
-                ) : (
-                  <button className="nft-claim-btn" disabled={!address || busy === `buy-${o.id}`} onClick={() => buy(o)}>
-                    {busy === `buy-${o.id}` ? 'Buying…' : 'Buy'}
-                  </button>
-                )}
+                {/* No "yours" branch: this book excludes your own offers by construction. */}
+                <button className="nft-claim-btn" disabled={!address || busy === `buy-${o.id}`} onClick={() => buy(o)}>
+                  {busy === `buy-${o.id}` ? 'Buying…' : 'Buy'}
+                </button>
               </span>
             </div>
           ))}
@@ -532,36 +711,32 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       </>
       ) : null}
 
-      {tab === 'buy' ? (
+      {tab === 'sell' ? (
       <>
-      {/* ── Bids ─────────────────────────────────────────────── */}
+      {/* ── Bids: what a seller can sell into ────────────────── */}
       <div className="nft-section-header" style={{ marginTop: 20 }}>
-        <span className="nft-section-title">Open bids</span>
+        <span className="nft-section-title">Open bids — buyers you can sell to</span>
       </div>
-      {bids.length === 0 ? (
-        <div className="nft-pool-note">No bids yet. Post one above and any holder can sell into it.</div>
+      {othersBids.length === 0 ? (
+        <div className="nft-pool-note">No bids from other members right now.</div>
       ) : (
         <div className="p2p-table">
           <div className="p2p-row p2p-head">
-            <span>MIC wanted</span><span>Pays</span><span>Per MIC</span><span>Buyer</span><span>Time</span><span />
+            <span>MIC wanted</span><span>TXID</span><span>Pays</span><span>Per MIC</span><span>Buyer</span><span>Time</span><span />
           </div>
-          {bids.map((o: any) => (
+          {othersBids.map((o: any) => (
             <div className="p2p-row" key={o.id}>
               <span>{num(o.amountMic)}</span>
+              <span><TxCell hash={o.createdTxHash} kind="bid" id={o.id} /></span>
               <span>${num(o.priceUsdt, 2)}</span>
               <span>${num(o.pricePerMic, 6)}</span>
               <span>{short(o.buyer)}</span>
               <span>{timeLeft(o.expiresAt)}</span>
               <span>
-                {address && o.buyer.toLowerCase() === address.toLowerCase() ? (
-                  <button className="nft-claim-btn" disabled={busy === `cancel-bid-${o.id}`} onClick={() => cancelBid(o)}>
-                    {busy === `cancel-bid-${o.id}` ? 'Working…' : 'Cancel'}
-                  </button>
-                ) : (
-                  <button className="nft-claim-btn" disabled={!address || busy === `fill-${o.id}`} onClick={() => sellInto(o)}>
-                    {busy === `fill-${o.id}` ? 'Selling…' : 'Sell'}
-                  </button>
-                )}
+                {/* Cancelling your own bid belongs on the My bids tab, not here. */}
+                <button className="nft-claim-btn" disabled={!address || busy === `fill-${o.id}`} onClick={() => sellInto(o)}>
+                  {busy === `fill-${o.id}` ? 'Selling…' : 'Sell'}
+                </button>
               </span>
             </div>
           ))}
@@ -577,7 +752,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       {tab === 'myOrders' ? (
         <>
           <div className="nft-section-header p2p-section">
-            <span className="nft-section-title">My active orders</span>
+            <span className="nft-section-title">My active offers</span>
           </div>
           {!address ? (
             <div className="nft-pool-note">Connect your wallet to see your orders.</div>
@@ -588,11 +763,12 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           ) : (
             <div className="p2p-table">
               <div className="p2p-row p2p-head">
-                <span>MIC</span><span>Price</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
+                <span>MIC</span><span>TXID</span><span>Price</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
               </div>
               {myOrders.map((o) => (
                 <div className="p2p-row" key={o.id}>
                   <span>{num(o.amountMic)}</span>
+                  <span><TxCell hash={o.createdTxHash} kind="sell" id={o.id} /></span>
                   <span>${num(o.priceUsdt, 2)}</span>
                   <span>${num(o.pricePerMic, 6)}</span>
                   <span>{o.expiredButOpen ? 'EXPIRED' : o.status}</span>
@@ -612,12 +788,13 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           {myPastOrders.length > 0 ? (
             <>
               <div className="nft-section-header p2p-section">
-                <span className="nft-section-title">Past orders</span>
+                <span className="nft-section-title">Past offers</span>
               </div>
               <div className="p2p-table">
                 {myPastOrders.map((o) => (
                   <div className="p2p-row" key={o.id}>
                     <span>{num(o.amountMic)}</span>
+                    <span><TxCell hash={o.createdTxHash} kind="sell" id={o.id} /></span>
                     <span>${num(o.priceUsdt, 2)}</span>
                     <span>${num(o.pricePerMic, 6)}</span>
                     <span>{o.status}</span>
@@ -646,11 +823,12 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           ) : (
             <div className="p2p-table">
               <div className="p2p-row p2p-head">
-                <span>MIC wanted</span><span>Escrowed</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
+                <span>MIC wanted</span><span>TXID</span><span>Escrowed</span><span>Per MIC</span><span>Status</span><span>Time</span><span />
               </div>
               {myOpenBids.map((o: any) => (
                 <div className="p2p-row" key={o.id}>
                   <span>{num(o.amountMic)}</span>
+                  <span><TxCell hash={o.createdTxHash} kind="bid" id={o.id} /></span>
                   <span>${num(o.priceUsdt, 2)}</span>
                   <span>${num(o.pricePerMic, 6)}</span>
                   <span>{o.expiredButOpen ? 'EXPIRED' : o.status}</span>
@@ -680,6 +858,7 @@ export default function MicP2PPanel({ address }: { address?: string }) {
                 {myPastBids.map((o: any) => (
                   <div className="p2p-row" key={o.id}>
                     <span>{num(o.amountMic)}</span>
+                    <span><TxCell hash={o.createdTxHash} kind="bid" id={o.id} /></span>
                     <span>${num(o.priceUsdt, 2)}</span>
                     <span>${num(o.pricePerMic, 6)}</span>
                     <span>{o.status}</span>

@@ -43,6 +43,7 @@ import {
   type NftRecord,
 } from './rewardEngine/nftPools.js'
 import { TIER, type CommunityTier } from './rewardEngine/tiers.js'
+import { buildSignerProvider } from './blockchain.js'
 
 const ZERO = '0x0000000000000000000000000000000000000000'
 const DAY = 86_400
@@ -78,9 +79,7 @@ export function getKeeperSigner(): { wallet: Wallet; provider: JsonRpcProvider }
   const raw = process.env.KEEPER_PK?.trim()
   if (!raw) return null
   const pk = raw.startsWith('0x') ? raw : '0x' + raw
-  const provider = new JsonRpcProvider(
-    process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/',
-  )
+  const provider = buildSignerProvider()
   return { wallet: new Wallet(pk, provider), provider }
 }
 

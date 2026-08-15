@@ -740,7 +740,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <ul class="dot-list">
         <li>Fornecimento máximo: 100.000 licenças MICE.</li>
         <li>Duração da licença: 360 dias a partir da ativação.</li>
-        <li>Estrutura de pagamento: 50% USDT + 50% MIC usando TWAP de 7 dias no dia da ativação.</li>
+        <li>Estrutura de pagamento: 50% USDT + 50% MIC. A parte MIC é precificada no momento da compra, tomando o menor entre o preço spot e o TWAP de 7 dias. Até que o liquidity pool seja semeado, aplica-se um preço inicial fixo de $0.01.</li>
         <li>Política de reciclagem: licenças expiradas são recicladas pelo protocolo; DAO governa termos de reemissão.</li>
       </ul>
     </div>
@@ -749,11 +749,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Rodada</th><th>Serial # MICE</th><th>Preço (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20.000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20.001 – 40.000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40.001 – 60.000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60.001 – 80.000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80.001 – 100.000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20.000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20.001 – 40.000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40.001 – 60.000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60.001 – 80.000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80.001 – 100.000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
@@ -824,7 +824,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Blockchain Base (Fase I–III)</td><td>BNB Smart Chain (BSC)</td><td>Liquidação de alta velocidade e baixo custo acessível a mercados emergentes</td></tr>
         <tr><td>Contrato de Token</td><td>Padrão BEP-20</td><td>Token utilitário MIC com fornecimento com limite máximo e emissão governada por Hindex</td></tr>
         <tr><td>Motor de Mineração</td><td>Algoritmo Hindex</td><td>Emissão diária de MIC adaptativa, responsiva à liquidez, com decaimento temporal</td></tr>
-        <tr><td>Camada NFT</td><td>ERC-721 (MFP-NFT) + ERC-1155 (Licença MICE, NFT Comunitário)</td><td>MFP-NFT (ERC-721): credencial de governança permanente ativada por staking e re-verificação. Licença MICE + NFT Comunitário (ERC-1155): contrato multi-token para licenças de mineração e credenciais de níveis Builder/Maker/Luminary com operações em lote eficientes.</td></tr>
+        <tr><td>Camada NFT</td><td>ERC-721 (MFP-NFT, NFT Comunitário) + ERC-1155 (Licença MICE)</td><td>MFP-NFT (ERC-721): credencial de governança permanente ativada por staking e re-verificação. Licença MICE (ERC-1155) + NFT Comunitário (ERC-721): contrato multi-token para licenças de mineração e credenciais de níveis Builder/Maker/Luminary com operações em lote eficientes.</td></tr>
         <tr><td>Contratos MICE</td><td>Contratos NFT de licença com prazo determinado</td><td>Licenças de nó de 360 dias com expiração automática, lógica de reciclagem, e precificação dinâmica</td></tr>
         <tr><td>Camada de Governança</td><td>Contratos DAO com timelocks e quorum</td><td>Aplica parâmetros imutáveis e executa votos de framework dentro de limites constitucionais</td></tr>
         <tr><td>Camada de IA</td><td>Oráculo Econômico + Motor de Análise</td><td>Monitoramento consultivo, detecção de anomalias, e suporte a propostas de governança</td></tr>
@@ -1361,16 +1361,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Rodada</th><th>Serial # MICE</th><th>Preço (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout gold">
-    <p><strong>Estrutura de Pagamento:</strong> Cada compra de MICE é liquidada como <strong>50% USDT + 50% MIC (Burned)</strong>. A parte USDT flui para o Revenue Router; a parte MIC é queimada on-chain, reduzindo o fornecimento circulante total. A quantidade de MIC é calculada no momento da ativação usando o TWAP de 7 dias para garantir a divisão 50/50 do valor USD. Este mecanismo de pagamento duplo cria pressão natural de compra-queima sobre MIC enquanto o protocolo recebe liquidez estável em USDT.</p>
+    <p><strong>Estrutura de Pagamento:</strong> Cada compra de MICE é liquidada como <strong>50% USDT + 50% MIC (Burned)</strong>. A parte USDT flui para o Revenue Router; a parte MIC é queimada on-chain, reduzindo o fornecimento circulante total. A quantidade de MIC é calculada no momento da compra, tomando o menor entre o preço spot e o TWAP de 7 dias, para garantir a divisão 50/50 do valor USD. Tomar o menor dos dois impede que um pico de preço passageiro reduza o MIC queimado. Até que o liquidity pool seja semeado, usa-se em seu lugar um preço inicial fixo de $0.01. Este mecanismo de pagamento duplo cria pressão natural de compra-queima sobre MIC enquanto o protocolo recebe liquidez estável em USDT.</p>
   </div>
 
   <h3 class="sub-title">C.4 Regras de Participação na Mineração</h3>
@@ -1671,11 +1671,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Rodada</th><th>Licenças (1–20.000)</th><th>Preço/MICE</th><th>Valor MIC (50% Queimado)</th><th>USDT (50%)</th><th>Receita da Rodada</th></tr></thead>
       <tbody>
-        <tr><td><strong>Rodada 1</strong></td><td class="mono">1–20.000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
-        <tr><td><strong>Rodada 2</strong></td><td class="mono">20.001–40.000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
-        <tr><td><strong>Rodada 3</strong></td><td class="mono">40.001–60.000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
-        <tr><td><strong>Rodada 4</strong></td><td class="mono">60.001–80.000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
-        <tr><td><strong>Rodada 5</strong></td><td class="mono">80.001–100.000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
+        <tr><td><strong>Rodada&nbsp;1</strong></td><td class="mono">1–20.000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
+        <tr><td><strong>Rodada&nbsp;2</strong></td><td class="mono">20.001–40.000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
+        <tr><td><strong>Rodada&nbsp;3</strong></td><td class="mono">40.001–60.000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
+        <tr><td><strong>Rodada&nbsp;4</strong></td><td class="mono">60.001–80.000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
+        <tr><td><strong>Rodada&nbsp;5</strong></td><td class="mono">80.001–100.000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="4"><strong>RECEITA TOTAL MICE</strong></td><td colspan="2" style="text-align:right"><strong class="td-gold">$30M bruto ($15M USDT)</strong></td></tr>
       </tbody>
     </table>
@@ -2120,6 +2120,35 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 <div id="appG" class="section">
   <div class="app-header">
     <div class="app-header-num">APÊNDICE G</div>
+<h3>F.6 SWAP — Protocolo de Plataforma AMM (em operação)</h3>
+<p><strong>LiquidityPoolV6</strong> é o mercado de produto constante da própria Mission Chain, não uma listagem em uma DEX de terceiros. Foi semeado com <strong>50.000.000 MIC</strong> e seu preço de abertura é ancorado por uma <strong>reserva virtual de 500.000 USDT</strong> — uma constante contábil, nunca um saldo.</p>
+<table>
+<tr><th>Parâmetro</th><th>Valor</th><th>Por Quê</th></tr>
+<tr><td>Retirada da reserva virtual</td><td class="mono">1 : 2</td><td>Cada 2 USDT de reserva real retiram 1 USDT de profundidade virtual. Chega a zero quando as reservas reais ultrapassam 1.000.000 USDT. A retirada é contínua, portanto não ocorre degrau de preço na conclusão.</td></tr>
+<tr><td>Taxa de compra</td><td class="mono">0,30%</td><td>Fixa.</td></tr>
+<tr><td>Taxa de venda</td><td class="mono">0,30% – 10,00%</td><td>Calculada pela parcela da curva lastreada por USDT real. O teto de 10% é uma constante rígida: nenhum detentor de chaves e nenhuma votação de governança pode elevá-lo.</td></tr>
+<tr><td>Abertura das vendas</td><td class="mono">Dia 30</td><td>A compra está aberta desde o momento em que o fundo é semeado. A venda espera, de modo que o fundo acumule profundidade antes de ter de absorver saídas.</td></tr>
+<tr><td>Operação individual máxima</td><td class="mono">1% das reservas</td><td>Nenhuma transação isolada pode mover o preço arbitrariamente.</td></tr>
+<tr><td>Limite de saída diária</td><td class="mono">5%</td><td>Limita o que pode sair do fundo em um dia.</td></tr>
+<tr><td>Financiamento contínuo</td><td class="mono">40% do bruto</td><td>O RevenueRouter encaminha a parcela de Liquidez de cada compra de Pre-Sale e de MICE para o fundo dentro da mesma transação. Nenhum administrador a movimenta.</td></tr>
+</table>
+<p><strong>O fundo não possui função de saque.</strong> Não há saque de administrador, não há via de resgate e não há bloqueio temporal que venha a abrir uma. Os ativos só saem quando um membro negocia. Tokens transferidos diretamente para o endereço do fundo não são creditados às suas reservas e não podem ser recuperados — o aporte externo deve passar pelo contrato de liquidez, nunca ir ao fundo em si.</p>
+
+
+<p><strong>Como os dois limites diferem.</strong> Costumam ser lidos como uma única regra dita duas vezes. Não são.</p>
+<p>O <strong>limite de 1% aplica-se a uma única transação</strong>, nos dois sentidos, e é medido sobre o MIC mantido pelo fundo. Com cerca de 50.000.000 MIC em reserva, nenhuma negociação pode mover mais do que cerca de 500.000 MIC; uma posição maior precisa ser dividida. Em um mercado de produto constante o preço se desloca mais quanto maior for a operação em relação ao fundo, de modo que isso obriga qualquer reprecificação relevante a acontecer em etapas, e não de uma só vez. Uma carteira também só pode negociar uma vez por bloco, então o limite não pode ser contornado disparando muitas operações pequenas ao mesmo tempo.</p>
+<p>O <strong>limite de 5% aplica-se a 24 horas móveis</strong>, é medido sobre a reserva de USDT <em>real</em> do fundo — a reserva virtual fica de fora — e é compartilhado por todos. Apenas a venda o consome, porque só a venda retira USDT; a compra não o toca. Esgotada a cota do dia, as vendas seguintes revertem até a janela avançar. O fundo expõe <code>remainingDailyOut()</code> para que o número possa ser lido antes de negociar.</p>
+<p>Juntos, delimitam dois riscos diferentes: o primeiro limita um choque isolado, o segundo limita um dreno constante. Nenhum impede alguém de vender — eles definem o ritmo, para que a parcela de 40% da receita tenha tempo de chegar. Ambos são valores <code>constant</code> compilados no contrato. Não há setter nem caminho de governança para alterá-los; apenas implantar um novo fundo faria isso, e o MIC do fundo atual não poderia ser transferido para ele.</p>
+
+<h3>F.7 Taxas do Mercado P2P</h3>
+<p>A negociação P2P liquida os dois lados em uma única transação por meio de um contrato de custódia, de modo que nenhuma das partes precisa ir primeiro. As taxas são lidas dos contratos e pagas pelo vendedor a partir da venda.</p>
+<table>
+<tr><th>Mercado</th><th>Taxa</th><th>Adicional</th></tr>
+<tr><td>MIC &#8646; USDT</td><td class="mono">2,5%</td><td>—</td></tr>
+<tr><td>MFP-NFT</td><td class="mono">1,5%</td><td>Mais 5% de royalty ERC-2981 em cada revenda.</td></tr>
+<tr><td>Community NFT</td><td class="mono">1,5%</td><td>Sem royalty — a credencial não implementa ERC-2981.</td></tr>
+</table>
+
     <h2>Gestão DAO</h2>
   </div>
 
@@ -2665,7 +2694,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Volatilidade do Preço do Token</td><td>O preço do MIC pode ser altamente volátil e pode cair a zero. Desempenho de ativos comparáveis não é preditivo.</td><td class="hl">ALTA</td></tr>
         <tr><td>Risco de Liquidez</td><td>Liquidez de DEX e CEX pode ser insuficiente para saídas desejadas, criando deslizamento durante períodos de baixa liquidez.</td><td class="hl">ALTA</td></tr>
         <tr><td>Diluição de Rendimento MICE</td><td>À medida que mais licenças MICE ativam, a recompensa de mineração por licença diminui por design.</td><td>MÉDIA</td></tr>
-        <tr><td>Risco de Faixa de Liquidez DEX</td><td>O preço MICE está vinculado ao TWAP de 7 dias da liquidez DEX e pode mudar automaticamente.</td><td>MÉDIA</td></tr>
+        <tr><td>Risco de Transição de Preço do MICE</td><td>O MICE opera por rodadas de venda com preço fixo, e condições de mercado em evolução ainda podem afetar o valor percebido, a atividade secundária e o momento da participação.</td><td>MÉDIA</td></tr>
       </tbody>
     </table>
   </div>

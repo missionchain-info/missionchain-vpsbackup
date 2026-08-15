@@ -6994,6 +6994,10 @@ body.light .pool-table td { border-bottom-color: rgba(0,0,0,.04); }
   padding: 24px; margin-bottom: 16px;
   background: linear-gradient(145deg, rgba(38,20,58,.85), rgba(22,14,35,.9));
   border: 1px solid rgba(201,168,76,.15);
+  box-shadow:
+    0 8px 40px rgba(0,0,0,.5),
+    0 0 60px rgba(201,168,76,.06),
+    inset 0 1px 0 rgba(255,255,255,.05);
 }
 .p2p-hero-bg {
   position: absolute; inset: 0;
@@ -7008,6 +7012,9 @@ body.light .pool-table td { border-bottom-color: rgba(0,0,0,.04); }
   background: linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.05));
   border: 1px solid rgba(201,168,76,.25);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow:
+    0 3px 10px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.09);
 }
 .p2p-hero-label {
   font-size: 0.9rem; font-weight: 800; font-family: var(--font-d);
@@ -7478,7 +7485,24 @@ body.light .pool-table td { border-bottom-color: rgba(0,0,0,.04); }
 }
 
 /* Light mode: P2P */
-body.light .p2p-hero { background: linear-gradient(145deg, rgba(248,245,240,.95), #fff); border-color: rgba(154,123,46,.15); }
+body.light .p2p-hero {
+  background: linear-gradient(145deg, rgba(248,245,240,.95), #fff);
+  border-color: rgba(154,123,46,.15);
+  box-shadow:
+    0 6px 24px rgba(0,0,0,.08),
+    0 1px 3px rgba(154,123,46,.12),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+body.light .nft-section-card {
+  box-shadow:
+    0 4px 18px rgba(0,0,0,.06),
+    inset 0 1px 0 rgba(255,255,255,.85);
+}
+body.light .p2p-hero-icon {
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.85);
+}
 body.light .p2p-hero-bg { opacity: 0.5; }
 body.light .p2p-toggle-row { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.06); }
 body.light .p2p-toggle-btn { color: #6A5A6A; }
@@ -7588,6 +7612,10 @@ body.light .p2p-step-title { color: #241426; }
   border-radius: 16px; padding: 22px 24px; margin-bottom: 16px;
   background: linear-gradient(145deg, rgba(38,20,58,.75), rgba(22,14,35,.85));
   border: 1px solid rgba(90,42,110,.2);
+  box-shadow:
+    0 6px 28px rgba(0,0,0,.42),
+    0 0 48px rgba(201,168,76,.045),
+    inset 0 1px 0 rgba(255,255,255,.045);
 }
 .nft-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
 .nft-section-title { font-size: 0.9rem; font-weight: 700; font-family: var(--font-d); color: var(--gold); }
@@ -9438,6 +9466,16 @@ body.light .nft-pool-multipliers .nft-pool-mult { background: rgba(154,123,46,.0
   /* PRE-SALE */
   .pre-packages { grid-template-columns: repeat(2, 1fr); }
   .pre-packages .pre-pkg:last-child { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; }
+
+  /* One column: the half-width cap above would leave the last card narrower than the one
+     it sits under. Full width is what "same size as the others" means here. */
+  @media (max-width: 560px) {
+    .pre-packages { grid-template-columns: 1fr; }
+    .pre-packages .pre-pkg:last-child { max-width: none; margin: 0; }
+  }
+
+  /* The amount field is one line of input, not a panel. Without a height of its own it
+     stretched to fill the flex row. */
   .pre-hero { padding: 22px; }
   .pre-hero-price { font-size: 1.3rem; }
   .pre-orders-table { display: none; }
@@ -13155,11 +13193,44 @@ body.light {
   padding: 2px 9px; border-radius: 6px; cursor: pointer; font-size: 0.68rem;
   border: 1px solid rgba(255,255,255,0.14); background: none; color: inherit;
 }
+
+/* Custom slippage: a narrow box sitting with the presets, not a form field of its own.
+   Capped at 15% in the component — the cap is real protection, not a style choice. */
+.swap-slip-input {
+  width: 48px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .04);
+  color: inherit;
+  font: inherit;
+  font-size: .72rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.swap-slip-input:focus { outline: none; border-color: var(--gold, #F0B54A); }
+.swap-slip-unit { font-size: .72rem; opacity: .7; margin-left: 2px; }
+
 .swap-slip-btn.active { border-color: rgba(240,181,74,0.55); color: #F5D56E; }
 
 .swap-msg { padding: 10px 13px; border-radius: 8px; font-size: 0.76rem; margin-bottom: 10px; }
 .swap-msg.ok { background: rgba(76,175,80,0.12); color: #66BB6A; }
 .swap-msg.err { background: rgba(244,67,54,0.12); color: #EF5350; }
+
+/* Explorer link on the swap result.
+
+   A transaction hash is 66 characters with no spaces in it, so it will not wrap on its
+   own and pushes the panel wider than the phone reading it. `anywhere` lets the break
+   fall mid-hash, which is fine — the whole string is still selectable and copyable, and
+   the arrow stays attached to the end. */
+.swap-msg-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.swap-msg-link:hover { opacity: 0.8; }
+.swap-msg-hash {
+  font-family: var(--font-m, ui-monospace, monospace);
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
 
 .swap-go {
   width: 100%; padding: 13px 0; border-radius: 10px; border: none; cursor: pointer;
@@ -13286,13 +13357,19 @@ body.light {
 .p2p-table { margin-top: 10px; overflow-x: auto; }
 .p2p-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
-  gap: 10px;
+  /* The last track is a fixed width, not `auto`.
+     Each row is its own grid, so an `auto` final column made the header (empty cell), a
+     row with a Buy button and a row reading "yours" resolve three different sets of
+     column widths — the figures were right-aligned to three different edges. A fixed
+     track makes every row solve the same layout.
+     Amount is widest: it carries values like 15,000,000. */
+  grid-template-columns: 1.35fr 0.7fr 1fr 1fr 1.25fr 1.1fr 88px;
+  column-gap: 22px;
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, .06);
-  font-size: .82rem;
-  min-width: 560px;
+  font-size: .72rem;
+  min-width: 720px;
 }
 .p2p-row:last-child { border-bottom: none; }
 .p2p-head {
@@ -13301,8 +13378,40 @@ body.light {
   letter-spacing: .06em;
   color: var(--gray2, #8b8b9a);
 }
+/* Column alignment for every P2P order table.
+
+   All six tables — open offers, open bids, my active orders, my active bids, past
+   orders, past bids — share this one grid, so they are aligned together and cannot
+   drift apart. Column 4 holds Seller or Buyer in the public books and Status in the
+   personal ones; it is centred in both so the tables line up with each other.
+
+   tabular-nums is what makes a right-aligned column actually read as aligned: without
+   it a 1 is narrower than a 0 and the decimal points wander. */
+.p2p-row > *:nth-child(1) { text-align: left; }
+/* TXID is a label, not a figure — left, beside the amount it belongs to, and always on
+   one line: it wrapped after the ellipsis and doubled the row height. */
+.p2p-row > *:nth-child(2) {
+  text-align: left;
+  white-space: nowrap;
+  font-size: .64rem;
+}
+.p2p-row > *:nth-child(2) a { white-space: nowrap; }
+.p2p-row > *:nth-child(3),
+.p2p-row > *:nth-child(4) { text-align: right; }
+.p2p-row > *:nth-child(5),
+.p2p-row > *:nth-child(6) { text-align: center; }
+.p2p-row > *:nth-child(7) { text-align: right; }
+
+/* Every figure, including the wallet and the countdown: a proportional font gives 1 a
+   narrower advance than 0, so a right-aligned column still wobbles without this. */
+.p2p-row > * { font-variant-numeric: tabular-nums; }
+
+/* The button fills its fixed track, so Buy and Cancel are the same width down the
+   column instead of each sizing to its own label. */
+.p2p-row .nft-claim-btn { width: 100%; }
+
 .p2p-row .nft-claim-btn {
-  padding: 6px 14px;
+  padding: 5px 12px;
   border: none;
   border-radius: 7px;
   font-size: .68rem;
@@ -13396,3 +13505,22 @@ body.light {
 .p2p-row > :nth-child(1),
 .p2p-row > :nth-child(2),
 .p2p-row > :nth-child(3) { font-variant-numeric: tabular-nums; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   Pre-Sale custom amount — field height on narrow screens
+   Placed last on purpose: `.pre-custom-input-wrap` is defined twice above, the second
+   time without a media query, so anything earlier is overridden regardless of breakpoint.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 420px) {
+  /* In a column flex container the 220px basis is a height, not a width. */
+  .pre-custom-input-wrap {
+    flex: 0 0 auto;
+    align-self: stretch;
+  }
+  .pre-custom-input {
+    flex: 1;
+    padding: 11px 0;
+    font-size: 0.95rem;
+  }
+}

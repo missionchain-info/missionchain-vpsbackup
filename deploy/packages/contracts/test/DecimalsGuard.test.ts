@@ -186,12 +186,62 @@ describe("USDT decimals guard", () => {
     });
   });
 
+  describe("P2PEscrowNFT", () => {
+    async function nft() {
+      const [admin] = await ethers.getSigners();
+      const n = await (await ethers.getContractFactory("MockNFT721")).deploy();
+      return { nftAddr: await n.getAddress(), adminAddr: admin.address };
+    }
+
+    it("deploys against an 18-decimal token", async () => {
+      const { nftAddr, adminAddr } = await nft();
+      const F = await ethers.getContractFactory("P2PEscrowNFT");
+      await F.deploy(await usdt18.getAddress(), nftAddr, adminAddr, adminAddr);
+    });
+
+    it("refuses a 6-decimal token", async () => {
+      const { nftAddr, adminAddr } = await nft();
+      const F = await ethers.getContractFactory("P2PEscrowNFT");
+      await expect(
+        F.deploy(await usdt6.getAddress(), nftAddr, adminAddr, adminAddr),
+      ).to.be.revertedWith("P2PN: USDT must be 18 decimals");
+    });
+
+    it("its price ceiling is a real $1,000,000, not the $0.000001 that killed its predecessor", async () => {
+      const { nftAddr, adminAddr } = await nft();
+      const F = await ethers.getContractFactory("P2PEscrowNFT");
+      const e: any = await F.deploy(await usdt18.getAddress(), nftAddr, adminAddr, adminAddr);
+
+      // P2PEscrowMFP `0xcff2…4b8B` shipped MAX_PRICE_USDT = 1_000_000e6. Against
+      // 18-decimal BSC-USD that is 0.000001 USDT, so every listing at a real price
+      // reverted and `nextOrderId` still read 0 three months later. Both bounds were
+      // `constant`, so only a redeploy could fix it.
+      expect(await e.maxPriceUsdt()).to.equal(ethers.parseEther("1000000"));
+      expect(await e.minPriceUsdt()).to.equal(ethers.parseEther("1"));
+      expect(await e.maxPriceUsdt()).to.be.greaterThan(ethers.parseEther("1"));
+    });
+
+    it("keeps those bounds settable, so the next wrong number is not a redeploy", async () => {
+      const { nftAddr, adminAddr } = await nft();
+      const F = await ethers.getContractFactory("P2PEscrowNFT");
+      const e: any = await F.deploy(await usdt18.getAddress(), nftAddr, adminAddr, adminAddr);
+      await e.setPriceBounds(ethers.parseEther("5"), ethers.parseEther("50000"));
+      expect(await e.minPriceUsdt()).to.equal(ethers.parseEther("5"));
+      expect(await e.maxPriceUsdt()).to.equal(ethers.parseEther("50000"));
+    });
+  });
+
   it("no contract in the priced set accepts a 6-decimal token", async () => {
     const usdt6Addr = await usdt6.getAddress();
     const cases: Array<[string, any[]]> = [
       ["ReferralRegistry", [usdt6Addr, admin.address]],
       ["LuckyDraw", [usdt6Addr, admin.address]],
       ["PreSale", [usdt6Addr, await usdt18.getAddress(), ZERO, ZERO, ZERO, ZERO, admin.address]],
+      ["P2PEscrowNFT", [
+        usdt6Addr,
+        await (await (await ethers.getContractFactory("MockNFT721")).deploy()).getAddress(),
+        admin.address, admin.address,
+      ]],
     ];
     for (const [name, args] of cases) {
       const F = await ethers.getContractFactory(name);

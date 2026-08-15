@@ -13,8 +13,18 @@ const ACTIVE_CHAIN = getActiveChain()
 interface DashboardData {
   data?: {
     micPrice?: string
+    /** `swap` = the live AMM. `admin` / `admin-fallback` = a configured figure. */
+    micPriceSource?: string
+    /** Design cap once all mining has happened. Kept under its old name so nothing that
+     *  already reads it shifts meaning; `maxSupply` is the same number, named honestly. */
     totalSupply?: number
+    maxSupply?: number
+    /** What exists on chain right now. */
+    currentSupply?: string
+    /** Issued at genesis — a historical fact, unchanged by later burns. */
     preIssued?: number
+    /** How much of that genesis issuance still exists, after the 2026-08-05 burn. */
+    preIssuedNow?: string
     miningPool?: number
     circulatingSupply?: string
     totalEmitted?: string
@@ -225,9 +235,16 @@ export default function DashboardPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg>
           </div>
           <div className="scroll-stat-info">
-            <div className="scroll-stat-label">Pre-Issued</div>
-            <div className="scroll-stat-value">{fmt(d.preIssued, '-')}</div>
-            <div className="scroll-stat-sub">of {fmt(d.totalSupply, '-')} total</div>
+            {/*
+              This read "1.05B of 7.00B total" — two numbers that are each true of a
+              different thing, sitting side by side as if they were one ratio. 1.05B is
+              what was issued at genesis, of which 31.5M has since been burned; 7.00B is
+              the design cap once all mining has happened, which is not supply that exists.
+              Showing what exists now is the figure a member is actually asking for.
+            */}
+            <div className="scroll-stat-label">Supply Now</div>
+            <div className="scroll-stat-value">{fmt(d.currentSupply ?? d.preIssuedNow, '-')}</div>
+            <div className="scroll-stat-sub">max {fmt(d.maxSupply ?? d.totalSupply, '-')} when fully mined</div>
           </div>
         </div>
         <div className="scroll-stat cyan">

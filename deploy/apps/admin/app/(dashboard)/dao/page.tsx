@@ -1,7 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useMcUi } from '@/components/ui/McUi';
+
+/** BSC-USD is 18 decimals, not the 6 that Ethereum USDT uses. */
+const USDT_DECIMALS = 18;
 import { fetchDAOBoard, addDAOMember, updateDAOMember, deleteDAOMember } from '@/lib/api';
+
+/** A row as the board table renders it: a stored appointee, or a Council seat merged in. */
+type BoardRow = BoardMember & { autoCouncil: boolean };
 
 interface BoardMember {
   id: string;
@@ -52,7 +59,12 @@ const PERM_MATRIX = [
 const shortWallet = (w: string) => w.length > 12 ? `${w.slice(0, 6)}...${w.slice(-4)}` : w;
 
 export default function DAOPage() {
-  const [board, setBoard] = useState<BoardMember[]>([]);
+  /** Appointed members only — Council seats are merged in below, never stored twice. */
+  const [rawBoard, setRawBoard] = useState<BoardMember[]>([]);
+  const [council, setCouncil] = useState<any[]>([]);
+
+  /** An appointee from outside the Council may not out-vote a Council seat. */
+  const MAX_APPOINTED_VP = 0.5;
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -82,7 +94,16 @@ export default function DAOPage() {
     setLoading(true);
     try {
       const res = await fetchDAOBoard();
-      if (res?.data) setBoard(res.data);
+      if (res?.data) setRawBoard(res.data);
+
+      /* Council roster, fetched alongside so the board reflects it without a second entry. */
+      try {
+        const jwt = typeof window !== 'undefined' ? localStorage.getItem('mc-admin-jwt') : null;
+        const cRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/admin/steward-council`, {
+          headers: jwt ? { Authorization: `Bearer ${jwt}` } : {},
+        });
+        if (cRes.ok) setCouncil((await cRes.json()).data || []);
+      } catch { /* the appointed list still renders */ }
     } catch (err: any) {
       console.error('Failed to load board', err);
     }
@@ -169,7 +190,41 @@ export default function DAOPage() {
     setDeleting(false);
   };
 
-  const owners = board.filter(m => m.role === 'OWNER');
+  /*
+   * Council seats are not typed in here — they are read from the Steward Council and merged
+   * in with a coefficient of 1.0. Maintaining the same roster twice guarantees the two
+   * drift, and the one that drifts is always the copy nobody is looking at.
+   *
+   * An appointee from outside the Council keeps whatever coefficient was set for them,
+   * capped at MAX_APPOINTED_VP, and stays editable here.
+   */
+  const board = useMemo<BoardRow[]>(() => {
+    const fromCouncil: BoardRow[] = council
+      .filter(c => c.active)
+      .map(c => ({
+        id: `council-${c.wallet}`,
+        username: c.memberId || String(c.wallet).slice(0, 8),
+        wallet: c.wallet,
+        role: c.role || 'COUNCIL',
+        votePower: '1',
+        // Pay is set on the Steward Council page; nothing here writes it.
+        benefitRate: '',
+        benefitCap: '',
+        status: 'ACTIVE',
+        notes: c.notes ?? '',
+        autoCouncil: true,
+      }));
+    const seen = new Set(fromCouncil.map(m => m.wallet.toLowerCase()));
+    const appointed: BoardRow[] = rawBoard
+      .filter(m => !seen.has(String(m.wallet).toLowerCase()))
+      .map(m => ({
+        ...m,
+        votePower: String(Math.min(parseFloat(m.votePower || '0') || 0, MAX_APPOINTED_VP)),
+        autoCouncil: false,
+      }));
+    return [...fromCouncil, ...appointed];
+  }, [council, rawBoard]);
+
   const totalVP = board.reduce((sum, m) => sum + parseFloat(m.votePower || '0'), 0);
 
   const renderPerm = (val: boolean | string) => {
@@ -316,20 +371,23 @@ export default function DAOPage() {
       </div>
 
       {/* ═══ STATS ═══ */}
-      <div className="g3" style={{ marginBottom: 16 }}>
+      {/* Vote power is a COEFFICIENT, not a percentage: a Council seat carries 1.0 and an
+          appointed member at most 0.5. Showing it as "%" invited the reading that the board
+          shares out a fixed 100, which is not how it works — the total simply grows as seats
+          are added. The Owners tile went with it; the Owner does not vote. */}
+      <div className="g2" style={{ marginBottom: 16 }}>
         <div className="stat-box">
           <div className="stat-lbl">Board Members</div>
           <div className="stat-val g">{loading ? '...' : fmt(board.length)}</div>
-          <div className="stat-delta">{fmt(board.filter(m => m.status === 'ACTIVE').length)} active</div>
+          <div className="stat-delta">
+            {fmt(board.filter(m => m.status === 'ACTIVE').length)} active {'\u00B7'}{' '}
+            {fmt(board.filter(m => m.autoCouncil).length)} from Steward Council
+          </div>
         </div>
         <div className="stat-box">
           <div className="stat-lbl">Total Vote Power</div>
-          <div className="stat-val p">{totalVP > 0 ? `${totalVP.toFixed(1)}%` : '-'}</div>
-          <div className="stat-delta">Distributed via stake</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-lbl">Owners</div>
-          <div className="stat-val gold">{fmt(owners.length)}</div>
+          <div className="stat-val p">{totalVP > 0 ? totalVP.toFixed(1) : '-'}</div>
+          <div className="stat-delta">Sum of every member&rsquo;s coefficient</div>
         </div>
       </div>
 
@@ -338,6 +396,10 @@ export default function DAOPage() {
         <div className="card card-g" style={{ marginBottom: 16 }}>
           <div className="card-title">Add Governing Board Member <span className="badge b-gold" style={{ marginLeft: 8 }}>Owner Only</span></div>
           <div className="g2">
+            {/* Two fields a side, so the form reads evenly. Role is no longer chosen from a
+                list — an appointee who is not on the Council is a GUARDIAN by definition, and
+                the pay fields left with the pool that pays them: benefits are set on the
+                Steward Council page, not here. */}
             <div>
               <div className="input-wrap">
                 <div className="input-label">Username</div>
@@ -347,34 +409,24 @@ export default function DAOPage() {
                 <div className="input-label">Full Wallet Address</div>
                 <input type="text" placeholder="0x..." value={addForm.wallet} onChange={e => setAddForm(p => ({ ...p, wallet: e.target.value }))} />
               </div>
-              <div className="input-wrap">
-                <div className="input-label">Role</div>
-                <select value={addForm.role} onChange={e => setAddForm(p => ({ ...p, role: e.target.value }))}>
-                  {VALID_ROLES.filter(r => r !== 'OWNER').map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
-              </div>
-              <div className="input-wrap">
-                <div className="input-label">Vote Power (%)</div>
-                <input type="number" step="0.1" placeholder="e.g. 5.0" value={addForm.votePower} onChange={e => setAddForm(p => ({ ...p, votePower: e.target.value }))} />
-              </div>
             </div>
             <div>
               <div className="input-wrap">
-                <div className="input-label">Benefit % of Pool</div>
-                <input type="number" step="0.1" placeholder="e.g. 8.5" value={addForm.benefitRate} onChange={e => setAddForm(p => ({ ...p, benefitRate: e.target.value }))} />
-              </div>
-              <div className="input-wrap">
-                <div className="input-label">Weekly Benefit CAP (MIC)</div>
-                <input type="number" placeholder="e.g. 50000" value={addForm.benefitCap} onChange={e => setAddForm(p => ({ ...p, benefitCap: e.target.value }))} />
+                <div className="input-label">Vote Power (coefficient, max {MAX_APPOINTED_VP})</div>
+                <input type="number" step="0.1" min="0" max={MAX_APPOINTED_VP}
+                  placeholder={`e.g. ${MAX_APPOINTED_VP}`} value={addForm.votePower}
+                  onChange={e => setAddForm(p => ({ ...p, votePower: e.target.value }))} />
               </div>
               <div className="input-wrap">
                 <div className="input-label">Notes / Responsibilities</div>
-                <textarea rows={3} placeholder="Region, role description, appointment reason..." value={addForm.notes} onChange={e => setAddForm(p => ({ ...p, notes: e.target.value }))} />
+                <textarea rows={2} placeholder="Region, role description, appointment reason..." value={addForm.notes} onChange={e => setAddForm(p => ({ ...p, notes: e.target.value }))} />
               </div>
             </div>
           </div>
           <div className="alert alert-warn" style={{ marginBottom: 12 }}>
-            {'\u26A0\uFE0F'} Currently Owner-decided. After Phase III, this will require full DAO vote.
+            {'\u26A0\uFE0F'} Steward Council members appear here automatically with a coefficient of 1.0 and
+            are managed on the Steward Council page. Use this form only for someone outside the Council,
+            whose coefficient is capped at {MAX_APPOINTED_VP}.
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="btn btn-primary" onClick={handleAdd} disabled={addSaving}>
@@ -400,7 +452,8 @@ export default function DAOPage() {
         ) : (
           <>
             <div className="dao-row dao-hdr">
-              <span>Username / Wallet</span><span>Full Address</span><span>Role</span><span>Vote Power</span><span>Benefit</span><span>Status</span><span>Actions</span>
+              <span>Username / Wallet</span><span>Full Address</span><span>Role</span>
+              <span style={{ textAlign: 'center' }}>Vote Power</span><span>Status</span><span>Actions</span>
             </div>
             {board.map((m) => (
               <div className="dao-row" key={m.id || m.wallet}>
@@ -413,11 +466,12 @@ export default function DAOPage() {
                     {m.role === 'OWNER' && '\u2B21 '}{m.role}
                   </span>
                 </span>
-                <span style={{ color: ROLE_COLOR[m.role] || 'var(--gray)', fontWeight: 700 }}>
-                  {parseFloat(m.votePower) > 0 ? `${m.votePower}%` : '-'}
-                </span>
-                <span style={{ color: 'var(--gray)' }}>
-                  {parseFloat(m.benefitRate) > 0 ? `${m.benefitRate}% / ${fmt(Number(m.benefitCap))}` : '-'}
+                {/* A coefficient, not a percentage — a Council seat is 1, an appointee at
+                    most 0.5. The Benefit column left with the pay fields: what a member is
+                    paid is set on the Steward Council page, and showing a permanent "-" here
+                    only invited the question of why it was always empty. */}
+                <span style={{ color: ROLE_COLOR[m.role] || 'var(--gray)', fontWeight: 700, textAlign: 'center' }}>
+                  {parseFloat(m.votePower) > 0 ? parseFloat(m.votePower).toFixed(1) : '-'}
                 </span>
                 <span>
                   <span className={`badge ${m.status === 'ACTIVE' ? 'b-active' : m.status === 'PENDING' ? 'b-warn' : 'b-danger'}`}>
@@ -439,10 +493,21 @@ export default function DAOPage() {
         )}
       </div>
 
+      {/* The two SEED spending pools moved to the member app, where the votes are cast.
+          Mirroring them here as well meant three places showed the same orders and only one
+          of them was the place a member could act. */}
+
       {/* ═══ PERMISSION MATRIX ═══ */}
-      <div className="card" style={{ padding: 0 }}>
+      {/* Dimmed on purpose: the rows below describe the old Admin/Guardian/Senator model and
+          have not been rewritten for the Council-centred design. Left visible rather than
+          deleted so the rebuild has something to work from, but greyed so nobody reads it as
+          current. */}
+      <div className="card" style={{ padding: 0, opacity: 0.45, pointerEvents: 'none' }}>
         <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
-          <div className="card-title" style={{ margin: 0 }}>DAO Governance Permission Matrix</div>
+          <div className="card-title" style={{ margin: 0 }}>
+            DAO Governance Permission Matrix
+            <span className="badge b-gray" style={{ marginLeft: 8, fontSize: '0.5rem' }}>BEING REBUILT</span>
+          </div>
         </div>
         <div className="tbl-wrap">
           <table>
@@ -471,6 +536,27 @@ export default function DAOPage() {
   );
 }
 
+/**
+ * The two SEED slots the Council spends by vote: Management Bonus (10%) and the
+ * Contingency Reserve (50%).
+ *
+ * Both follow the same three steps — a member raises an order, members approve it, and once
+ * the threshold is met anyone may execute it, which calls `SeedBudgetV5c.release()` for that
+ * slot. One component serves both, because a second hand-written copy would drift from the
+ * first the moment either contract changed.
+ *
+ * They are NOT identical underneath, and the adapter below is where that lives:
+ *
+ *   ManagementBonusPoolV3  orders(id) -> (id, recipient, amount, content, requester,
+ *                                        createdAt, status enum, executedAt)
+ *                          approvals counted in `approvalsCount(id)`, threshold `thresholdBps()`
+ *   ReservedExpensesPoolV3 orders(id) -> (proposer, recipient, amount, content,
+ *                                        approvalCount, executed, cancelled)
+ *                          approvals inline on the struct, threshold `threshold()`
+ *
+ * Status is an enum in one and two booleans in the other; both are normalised to a single
+ * string so the rendering below never has to know which pool it is drawing.
+ */
 /* ─── InfoRow helper ─── */
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (

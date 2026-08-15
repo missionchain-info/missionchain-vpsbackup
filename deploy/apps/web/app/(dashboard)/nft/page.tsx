@@ -8,7 +8,13 @@ import { useApi } from '@/hooks/useApi'
 import { api } from '@/lib/api'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import MfpMintCard from '@/components/MfpMintCard'
+import RankBonusClaimPanel from '@/components/RankBonusClaimPanel'
+import CommunityNftTable from '@/components/CommunityNftTable'
 import { CONTRACTS, MFPNFT_ABI, COMMUNITY_NFT_ABI } from '@/lib/contracts'
+import { getActiveChain } from '@missionchain/sdk'
+
+/** Every endpoint worth trying, so one dead host cannot read as an empty wallet. */
+const ACTIVE_CHAIN_RPCS = getActiveChain().rpcUrls
 
 interface MyNft {
   id: string
@@ -238,7 +244,34 @@ export default function NftPage() {
     args: address ? [address as `0x${string}`] : undefined,
     query: { enabled: !!address },
   })
-  const mfpUserCount = mfpUserBalance ? Number(mfpUserBalance) : 0
+  /*
+   * MFP holdings, with a direct chain read behind the wagmi hook.
+   *
+   * The hook alone reported 0 for a wallet holding 3. wagmi resolves through one
+   * configured transport, and when that endpoint refuses the call `data` is simply
+   * undefined — which `? :` then turns into a confident zero. Same failure the Community
+   * counts had, from a different direction.
+   */
+  const [chainMfp, setChainMfp] = useState<number | null>(null)
+  useEffect(() => {
+    if (!address) { setChainMfp(null); return }
+    ;(async () => {
+      const { JsonRpcProvider, Contract } = await import('ethers')
+      for (const url of ACTIVE_CHAIN_RPCS) {
+        try {
+          const c = new Contract(CONTRACTS.mfpNft, ['function balanceOf(address) view returns (uint256)'], new JsonRpcProvider(url))
+          setChainMfp(Number(await c.balanceOf(address)))
+          return
+        } catch { /* next endpoint */ }
+      }
+    })()
+  }, [address])
+
+  // Whichever source answered. Never let one failing read present itself as "you own none".
+  const mfpUserCount = Math.max(
+    mfpUserBalance ? Number(mfpUserBalance) : 0,
+    chainMfp ?? 0,
+  )
 
   // ── On-chain reads for Community NFTs (Builder/Maker/Luminary) ──
   // Uses public JsonRpcProvider so it works on mobile browsers without injected wallet.
@@ -253,10 +286,14 @@ export default function NftPage() {
           : 'https://bsc-dataseed.binance.org/'
         const provider = new JsonRpcProvider(rpcUrl)
         const cnft = new Contract(CONTRACTS.communityNft, COMMUNITY_NFT_ABI as any, provider)
+        // `balanceOf(address, tier)` is the ERC-1155 signature and CommunityNFTv2 is
+        // ERC-721, so these three calls could only ever revert — and `.catch(() => 0n)`
+        // turned that into a confident "0". A wallet holding three NFTs showed "-".
+        // `activeCountOf` is what v2 exposes, and it counts only unexpired tokens.
         const [b, m, l] = await Promise.all([
-          cnft.balanceOf(address, 1).catch(() => 0n) as Promise<bigint>,
-          cnft.balanceOf(address, 2).catch(() => 0n) as Promise<bigint>,
-          cnft.balanceOf(address, 3).catch(() => 0n) as Promise<bigint>,
+          cnft.activeCountOf(address, 1).catch(() => 0n) as Promise<bigint>,
+          cnft.activeCountOf(address, 2).catch(() => 0n) as Promise<bigint>,
+          cnft.activeCountOf(address, 3).catch(() => 0n) as Promise<bigint>,
         ])
         setChainCommunity({ builder: Number(b), maker: Number(m), luminary: Number(l) })
       } catch (err) {
@@ -440,19 +477,19 @@ export default function NftPage() {
               </div>
               <div className="nft-action-pill">
                 <span>{'\u{1F4B0}'}</span>
-                <span><strong>Sell on P2P</strong> — list internally (5% royalty enforced)</span>
+                <span><strong>Sell on P2P</strong> — set your price and listing duration (5% royalty enforced)</span>
+              </div>
+              <div className="nft-action-pill">
+                <span>{'\u{1F310}'}</span>
+                <span><strong>OKX NFT</strong> — list on the OKX marketplace (multi-chain)</span>
               </div>
               <div className="nft-action-pill">
                 <span>{'\u{1F30A}'}</span>
-                <span><strong>Element</strong> — list on element.market (BSC native)</span>
-              </div>
-              <div className="nft-action-pill">
-                <span>{'\u{1F52E}'}</span>
-                <span><strong>Magic Eden</strong> — list on magiceden.io (multi-chain)</span>
+                <span><strong>Element Market</strong> — list on element.market (BSC native)</span>
               </div>
             </div>
             <div className="nft-pool-note" style={{ marginTop: 10, fontStyle: 'italic', fontSize: '0.7rem' }}>
-              Tap any MFP-NFT card above → action menu. Transfer + external marketplaces ready. P2P contract shipping next sprint.
+              Tap any MFP-NFT card above to open its action menu, then pick where to sell.
             </div>
           </div>
         </>
@@ -498,6 +535,24 @@ export default function NftPage() {
               </div>
             </div>
           </div>
+
+          {/* Every NFT this wallet holds, read from the token contract: serial, tier, when
+              it was minted and how long it has left. Ten per page. */}
+          <CommunityNftTable
+            address={address}
+            txHashes={Object.fromEntries(
+              myNfts.filter((n) => n.txid).map((n) => [String(n.serial), n.txid as string]),
+            )}
+          />
+
+          {/*
+            Rank bonus — the KPI path, and the member's own to mint.
+            Sits above the discretionary grants because the two are different things: this
+            one is earned by reaching a Community Growth Award rank and appears on its own,
+            the one below is given at the Owner's discretion. Renders nothing until there
+            is something to claim.
+          */}
+          <RankBonusClaimPanel address={address} />
 
           {/*
             Only rendered when something is actually awarded. An empty "you have no awards"

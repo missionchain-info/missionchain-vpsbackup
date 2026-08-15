@@ -11,6 +11,7 @@
  */
 import { JsonRpcProvider, Contract, Wallet } from 'ethers'
 import { getActiveAddresses } from '@missionchain/sdk'
+import { buildSignerProvider } from './blockchain.js'
 
 const BSC_MAINNET_RPC = 'https://bsc-dataseed.binance.org/'
 
@@ -50,7 +51,7 @@ function getSigner(): Wallet {
   const rawPk = process.env.DEPLOYER_PK?.trim()
   if (!rawPk) throw new Error('DEPLOYER_PK env not set — admin on-chain writes disabled')
   const pk = rawPk.startsWith('0x') ? rawPk : '0x' + rawPk
-  const provider = new JsonRpcProvider(getRpcUrl())
+  const provider = buildSignerProvider()
   return new Wallet(pk, provider)
 }
 

@@ -49,7 +49,8 @@ const GROUPS: Group[] = [
       { label: 'TreasuryManager', key: 'TreasuryManager', note: 'DAO Treasury 12.5%, USDT only' },
       { label: 'ManagementPool', key: 'ManagementPool', note: '7.5% · six roles claim their own share' },
       { label: 'ListingReserve', key: 'ListingReserve', note: '5% · two-step withdrawal, 24h timelock' },
-      { label: 'LiquidityPool', key: 'LiquidityPool', note: '40%' },
+      { label: 'LiquidityPool (revenue holder)', key: 'LiquidityPool', note: '40% of gross lands here · admin moves it into the AMM pool' },
+      { label: 'LiquidityPoolV6 (live AMM)', key: 'LiquidityPoolV6', note: 'The SWAP pool · seeded · virtual reserve, 7-day TWAP, 30-day sell gate · no withdrawal path' },
     ],
   },
   {
@@ -59,6 +60,8 @@ const GROUPS: Group[] = [
       { label: 'NFT Reward Pool — Weekly', key: 'NFTRewardPoolWeekly', note: '5.5% of gross' },
       { label: 'NFT Reward Pool — Monthly', key: 'NFTRewardPoolMonthly', note: '8% of gross' },
       { label: 'LuckyDraw', key: 'LuckyDraw', note: '1% · commit-reveal, 18 prizes, $5,000 cap' },
+      { label: 'Community NFT Reward Pool', key: 'CommunityNFTRewardPool', note: 'Weight comes from enrol, not from mint' },
+      { label: 'MFP Reward Pool', key: 'MFPRewardPool', note: 'Same enrol-based weighting as the Community pool' },
     ],
   },
   {
@@ -66,7 +69,11 @@ const GROUPS: Group[] = [
     rows: [
       { label: 'MFP-NFT', key: 'MFPNFT', note: 'ERC-721 · cap 2,500' },
       { label: 'Community NFT (v2)', key: 'CommunityNFTv2', note: 'ERC-721, unique serial, on-chain SVG' },
-      { label: 'P2P Escrow (MFP)', key: 'P2PEscrowMFP', note: 'Disabled — price bounds are 6-decimal, needs redeploy', warn: true },
+      { label: 'P2P Escrow (MIC)', key: 'P2PEscrowMIC', note: 'MIC ⇄ USDT between members · 2.5% fee, paid by the seller' },
+      { label: 'P2P Escrow (MFP-NFT)', key: 'P2PEscrowNFT_MFP', note: 'P2PEscrowNFT · $1–$1,000,000, adjustable · 5% ERC-2981 royalty' },
+      { label: 'P2P Escrow (Community NFT)', key: 'P2PEscrowNFT_Community', note: 'P2PEscrowNFT · no royalty — CommunityNFTv2 has no ERC-2981' },
+      { label: 'Rank Bonus Claim', key: 'RankBonusClaim', note: 'Members mint their own rank NFTs' },
+      { label: 'P2P Escrow (MFP, retired)', key: 'P2PEscrowMFP', note: 'DEAD — $0.000001 ceiling is a constant; never took an order', warn: true },
     ],
   },
   {
@@ -96,6 +103,12 @@ const GROUPS: Group[] = [
       { label: 'SeedSaleV7', key: 'SeedSaleV7', note: 'Halted 2026-08-08 — 6-decimal prices sold 4,000,000 MIC for $0.00000001', warn: true },
       { label: 'SeedSaleV8', key: 'SeedSaleV8', note: 'Never activated — shipped without the whitelist. Empty', warn: true },
       { label: 'LiquidityPoolV5', key: 'LiquidityPoolV5', note: 'No withdrawal path — its 31,500,000 MIC was burned 2026-08-05', warn: true },
+      { label: 'SeedSaleV6', key: 'SeedSaleV6', note: 'Superseded by V9', warn: true },
+      { label: 'Community NFT (v1, ERC-1155)', key: 'CommunityNFT', note: 'Superseded by CommunityNFTv2 (ERC-721). Reading balances here returns nothing useful', warn: true },
+      { label: 'SeedBudgetV5b', key: 'SeedBudgetV5b', note: 'Superseded by V5c', warn: true },
+      { label: 'Operational Salary Pool V2', key: 'OperationalSalaryPoolV2', note: 'Superseded by V3', warn: true },
+      { label: 'Management Bonus Pool V2', key: 'ManagementBonusPoolV2', note: 'Superseded by V3', warn: true },
+      { label: 'Reserved Expenses Pool V2', key: 'ReservedExpensesPoolV2', note: 'Superseded by V3', warn: true },
     ],
   },
 ];

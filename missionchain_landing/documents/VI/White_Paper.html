@@ -741,7 +741,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <ul class="dot-list">
         <li>Nguồn cung tối đa: 100,000 MICE credentials.</li>
         <li>Thời hạn giấy phép: 360 ngày kể từ khi kích hoạt.</li>
-        <li>Cấu trúc thanh toán: 50% USDT + 50% MIC sử dụng TWAP 7 ngày vào ngày kích hoạt.</li>
+        <li>Cấu trúc thanh toán: 50% USDT + 50% MIC. Phần MIC được định giá tại thời điểm mua, lấy giá thấp hơn giữa giá spot và TWAP 7 ngày. Cho tới khi liquidity pool được nạp vốn, áp dụng mức giá khởi tạo cố định $0.01.</li>
         <li>Chính sách tái chế: giấy phép hết hạn được tái chế bởi giao thức; DAO quản lý các điều khoản phát hành lại.</li>
       </ul>
     </div>
@@ -750,11 +750,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Vòng</th><th>Serial # MICE</th><th>Giá (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
@@ -825,7 +825,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Chuỗi Cơ Sở (Giai Đoạn I–III)</td><td>BNB Smart Chain (BSC)</td><td>Thanh toán tốc độ cao, chi phí thấp có thể tiếp cận với các thị trường mới nổi</td></tr>
         <tr><td>Hợp Đồng Token</td><td>Tiêu chuẩn BEP-20</td><td>Token tiện ích MIC với nguồn cung giới hạn cứng và phát hành được quản lý bởi Hindex</td></tr>
         <tr><td>Động Cơ Đào</td><td>Thuật Toán Hindex</td><td>Phát hành MIC hàng ngày thích ứng, đáp ứng thanh khoản, suy giảm theo thời gian</td></tr>
-        <tr><td>Lớp NFT</td><td>ERC-721 (MFP-NFT) + ERC-1155 (Giấy phép MICE, NFT Cộng đồng)</td><td>MFP-NFT (ERC-721): chứng chỉ quản trị vĩnh viễn, được kích hoạt bằng staking và xác minh lại. Giấy phép MICE + NFT Cộng đồng (ERC-1155): hợp đồng đa token cho giấy phép khai thác và chứng chỉ cấp độ Builder/Maker/Luminary với batch operations hiệu quả.</td></tr>
+        <tr><td>Lớp NFT</td><td>ERC-721 (MFP-NFT, NFT Cộng đồng) + ERC-1155 (Giấy phép MICE)</td><td>MFP-NFT (ERC-721): chứng chỉ quản trị vĩnh viễn, được kích hoạt bằng staking và xác minh lại. Giấy phép MICE (ERC-1155) + NFT Cộng đồng (ERC-721): hợp đồng đa token cho giấy phép khai thác và chứng chỉ cấp độ Builder/Maker/Luminary với batch operations hiệu quả.</td></tr>
         <tr><td>Hợp Đồng MICE</td><td>Hợp đồng NFT giấy phép có giới hạn thời gian</td><td>Giấy phép node 360 ngày với tự động hết hạn, logic tái chế và định giá động</td></tr>
         <tr><td>Lớp Quản Trị</td><td>Hợp đồng DAO với timelock và quorum</td><td>Thực thi các tham số bất biến và thực hiện bỏ phiếu khung trong giới hạn hiến pháp</td></tr>
         <tr><td>Lớp AI</td><td>Economic Oracle + Động Cơ Phân Tích</td><td>Giám sát tư vấn, phát hiện bất thường và hỗ trợ đề xuất quản trị</td></tr>
@@ -1360,16 +1360,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Vòng</th><th>Serial # MICE</th><th>Giá (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout gold">
-    <p><strong>Cấu Trúc Thanh Toán:</strong> Mỗi lần mua MICE được thanh toán <strong>50% USDT + 50% MIC (Burned)</strong>. Phần USDT chuyển về Revenue Router; phần MIC được burn on-chain, giảm tổng cung lưu hành. Lượng MIC tính tại thời điểm kích hoạt dựa trên TWAP 7 ngày để đảm bảo chia đôi giá trị USD. Cơ chế thanh toán kép này tạo áp lực buy-burn tự nhiên trên MIC trong khi giao thức nhận thanh khoản ổn định bằng USDT.</p>
+    <p><strong>Cấu Trúc Thanh Toán:</strong> Mỗi lần mua MICE được thanh toán <strong>50% USDT + 50% MIC (Burned)</strong>. Phần USDT chuyển về Revenue Router; phần MIC được burn on-chain, giảm tổng cung lưu hành. Lượng MIC được tính tại thời điểm mua, lấy giá thấp hơn giữa giá spot và TWAP 7 ngày, để đảm bảo chia đôi giá trị USD. Lấy mức thấp hơn giúp một cú tăng giá ngắn hạn không làm giảm lượng MIC bị burn. Cho tới khi liquidity pool được nạp vốn, hệ thống dùng mức giá khởi tạo cố định $0.01 thay thế. Cơ chế thanh toán kép này tạo áp lực buy-burn tự nhiên trên MIC trong khi giao thức nhận thanh khoản ổn định bằng USDT.</p>
   </div>
 
   <h3 class="sub-title">C.4 Quy Tắc Tham Gia Khai Thác</h3>
@@ -1666,11 +1666,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Vòng</th><th>Giấy Phép (1–20,000)</th><th>Giá/MICE</th><th>Giá Trị MIC (50% Đốt)</th><th>USDT (50%)</th><th>Doanh Thu Vòng</th></tr></thead>
       <tbody>
-        <tr><td><strong>Vòng 1</strong></td><td class="mono">1–20,000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
-        <tr><td><strong>Vòng 2</strong></td><td class="mono">20,001–40,000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
-        <tr><td><strong>Vòng 3</strong></td><td class="mono">40,001–60,000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
-        <tr><td><strong>Vòng 4</strong></td><td class="mono">60,001–80,000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
-        <tr><td><strong>Vòng 5</strong></td><td class="mono">80,001–100,000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
+        <tr><td><strong>Vòng&nbsp;1</strong></td><td class="mono">1–20,000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
+        <tr><td><strong>Vòng&nbsp;2</strong></td><td class="mono">20,001–40,000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
+        <tr><td><strong>Vòng&nbsp;3</strong></td><td class="mono">40,001–60,000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
+        <tr><td><strong>Vòng&nbsp;4</strong></td><td class="mono">60,001–80,000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
+        <tr><td><strong>Vòng&nbsp;5</strong></td><td class="mono">80,001–100,000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="4"><strong>TỔNG DOANH THU MICE</strong></td><td colspan="2" style="text-align:right"><strong class="td-gold">$30M tổng ($15M USDT)</strong></td></tr>
       </tbody>
     </table>
@@ -2115,6 +2115,35 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 <div id="appG" class="section">
   <div class="app-header">
     <div class="app-header-num">PHỤ LỤC G</div>
+<h3>F.6 SWAP — Giao Thức Nền Tảng AMM (đang hoạt động)</h3>
+<p><strong>LiquidityPoolV6</strong> là thị trường tích số không đổi của riêng Mission Chain, không phải một niêm yết trên DEX của bên thứ ba. Pool được nạp <strong>50.000.000 MIC</strong> và giá mở cửa được neo bằng <strong>dự trữ ảo 500.000 USDT</strong> — một hằng số kế toán, không bao giờ là số dư.</p>
+<table>
+<tr><th>Tham Số</th><th>Giá Trị</th><th>Lý Do</th></tr>
+<tr><td>Rút dần dự trữ ảo</td><td class="mono">1 : 2</td><td>Mỗi 2 USDT dự trữ thật sẽ rút đi 1 USDT độ sâu ảo. Dự trữ ảo về không khi dự trữ thật vượt 1.000.000 USDT. Việc rút diễn ra liên tục nên không tạo bước nhảy giá khi hoàn tất.</td></tr>
+<tr><td>Phí mua</td><td class="mono">0,30%</td><td>Cố định.</td></tr>
+<tr><td>Phí bán</td><td class="mono">0,30% – 10,00%</td><td>Được tính theo tỉ lệ đường cong được bảo chứng bằng USDT thật. Trần 10% là hằng số cứng: không người giữ khoá nào và không cuộc biểu quyết quản trị nào có thể nâng nó lên.</td></tr>
+<tr><td>Mở bán</td><td class="mono">Ngày 30</td><td>Chiều mua mở ngay từ lúc pool được nạp. Chiều bán phải chờ, để pool tích đủ độ sâu trước khi phải hấp thụ dòng ra.</td></tr>
+<tr><td>Giao dịch đơn lẻ tối đa</td><td class="mono">1% dự trữ</td><td>Không giao dịch đơn lẻ nào có thể đẩy giá tuỳ ý.</td></tr>
+<tr><td>Trần dòng ra mỗi ngày</td><td class="mono">5%</td><td>Giới hạn lượng tài sản có thể rời pool trong một ngày.</td></tr>
+<tr><td>Nguồn bổ sung liên tục</td><td class="mono">40% doanh thu gộp</td><td>RevenueRouter chuyển phần Thanh khoản của mọi giao dịch mua Pre-Sale và MICE vào pool ngay trong cùng một giao dịch. Không quản trị viên nào phải chuyển tay.</td></tr>
+</table>
+<p><strong>Pool không có hàm rút.</strong> Không có lệnh rút của quản trị viên, không có đường cứu hộ, và không có khoá thời gian nào rồi sẽ mở ra một đường như vậy. Tài sản chỉ rời pool khi có thành viên giao dịch. Token chuyển thẳng vào địa chỉ pool sẽ không được ghi nhận vào dự trữ và không thể thu hồi — mọi khoản nạp từ bên ngoài phải đi qua hợp đồng thanh khoản, tuyệt đối không gửi thẳng vào pool.</p>
+
+
+<p><strong>Hai hạn mức này khác nhau thế nào.</strong> Người ta thường đọc chúng như một quy tắc được nói hai lần. Không phải vậy.</p>
+<p>Hạn mức <strong>1% áp cho từng giao dịch đơn lẻ</strong>, ở cả hai chiều, tính trên lượng MIC pool đang giữ. Với khoảng 50.000.000 MIC trong dự trữ, không lệnh nào được dịch chuyển quá khoảng 500.000 MIC; vị thế lớn hơn phải chia nhỏ. Trong thị trường tích số không đổi, giá dịch chuyển càng mạnh khi lệnh càng lớn so với pool, nên quy tắc này buộc mọi lần định giá lại đáng kể phải diễn ra theo từng bước thay vì trong một nhát. Mỗi ví cũng chỉ được giao dịch một lần trong mỗi khối, nên không thể lách hạn mức bằng cách bắn nhiều lệnh nhỏ cùng lúc.</p>
+<p>Hạn mức <strong>5% áp cho khung 24 giờ trượt</strong>, tính trên dự trữ USDT <em>thật</em> của pool — dự trữ ảo không được tính — và dùng chung cho tất cả mọi người. Chỉ lệnh bán tiêu hao hạn mức này, vì chỉ bán mới rút USDT ra; mua không đụng tới. Khi hạn mức trong ngày đã dùng hết, các lệnh bán tiếp theo sẽ bị revert cho tới khi cửa sổ trượt sang. Pool công bố hàm <code>remainingDailyOut()</code> để đọc con số này trước khi giao dịch.</p>
+<p>Hai hạn mức chặn hai loại rủi ro khác nhau: hạn mức thứ nhất giới hạn một cú sốc đơn lẻ, hạn mức thứ hai giới hạn dòng rút đều đặn. Cả hai đều không ngăn ai bán — chúng chỉ định nhịp, để phần doanh thu 40% có thời gian chảy về. Cả hai là giá trị <code>constant</code> được biên dịch thẳng vào hợp đồng. Không có hàm setter và không có con đường quản trị nào thay đổi được chúng; chỉ việc triển khai một pool mới mới làm được, mà khi đó lượng MIC của pool hiện tại cũng không thể chuyển sang.</p>
+
+<h3>F.7 Phí Thị Trường P2P</h3>
+<p>Giao dịch P2P tất toán cả hai chiều trong cùng một giao dịch thông qua hợp đồng ký quỹ, nên không bên nào phải đi trước. Phí được đọc từ hợp đồng và do bên bán trả từ khoản bán.</p>
+<table>
+<tr><th>Thị Trường</th><th>Phí</th><th>Bổ Sung</th></tr>
+<tr><td>MIC &#8646; USDT</td><td class="mono">2,5%</td><td>—</td></tr>
+<tr><td>MFP-NFT</td><td class="mono">1,5%</td><td>Cộng thêm 5% phí bản quyền ERC-2981 trên mỗi lần bán lại.</td></tr>
+<tr><td>Community NFT</td><td class="mono">1,5%</td><td>Không có phí bản quyền — chứng chỉ này không triển khai ERC-2981.</td></tr>
+</table>
+
     <h2>Quản Trị DAO</h2>
   </div>
 
@@ -2660,7 +2689,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Biến động Giá Token</td><td>Giá MIC có thể biến động cao và có thể giảm về 0. Hiệu suất tài sản tương tự không mang tính dự đoán.</td><td class="hl">CAO</td></tr>
         <tr><td>Rủi Ro Thanh Khoản</td><td>Thanh khoản DEX và CEX có thể không đủ cho lối ra mong muốn, tạo ra trượt giá trong thời kỳ thanh khoản thấp.</td><td class="hl">CAO</td></tr>
         <tr><td>Pha Loãng Allocation của MICE</td><td>Khi nhiều MICE credentials được kích hoạt hơn, allocation trên mỗi credential sẽ giảm theo thiết kế.</td><td>TRUNG BÌNH</td></tr>
-        <tr><td>Rủi Ro Dải Thanh Khoản DEX</td><td>Giá MICE được gắn với TWAP 7 ngày của thanh khoản DEX và có thể thay đổi tự động.</td><td>TRUNG BÌNH</td></tr>
+        <tr><td>Rủi Ro Chuyển Vòng Giá MICE</td><td>MICE vận hành theo các vòng bán có giá cố định; điều kiện thị trường thay đổi vẫn có thể ảnh hưởng tới giá trị cảm nhận, hoạt động thứ cấp và thời điểm tham gia.</td><td>TRUNG BÌNH</td></tr>
       </tbody>
     </table>
   </div>

@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify'
-import { MIC_DISPLAY_PRICE_USD } from '@missionchain/sdk'
+import { MIC_DISPLAY_PRICE_USD, getActiveAddresses } from '@missionchain/sdk'
+import { resolveMicPrice, poolSpotPrice } from '../services/micPrice.js'
 
 /**
  * PUBLIC round config endpoints — no auth required.
@@ -68,38 +69,15 @@ export const roundsRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── GET /rounds/mic-price — Current MIC price (public) ──────────
   app.get('/mic-price', async () => {
-    // First check if swap is enabled (use DEX price)
     const swapConfig = await app.prisma.systemConfig.findUnique({
       where: { key: 'swap_enabled' },
     })
-
-    const priceMode = await app.prisma.systemConfig.findUnique({
-      where: { key: 'mic_price_mode' },
-    })
-
-    const adminPrice = await app.prisma.systemConfig.findUnique({
-      where: { key: 'mic_price' },
-    })
-
-    const isSwapEnabled = swapConfig?.value === 'true'
-    const mode = priceMode?.value ?? 'admin'
-
-    if (isSwapEnabled && mode === 'twap') {
-      // TODO: Fetch from PancakeSwap TWAP oracle
-      return {
-        data: {
-          price: null,
-          source: 'twap',
-          note: 'TWAP oracle not yet configured',
-        },
-      }
-    }
+    const resolved = await resolveMicPrice(app.prisma)
 
     return {
       data: {
-        price: adminPrice?.value ?? String(MIC_DISPLAY_PRICE_USD),
-        source: 'admin',
-        swapEnabled: isSwapEnabled,
+        ...resolved,
+        swapEnabled: swapConfig?.value === 'true',
       },
     }
   })
@@ -109,7 +87,8 @@ export const roundsRoutes: FastifyPluginAsync = async (app) => {
     const configs = await app.prisma.systemConfig.findMany({
       where: {
         key: {
-          in: ['swap_enabled', 'mic_price', 'mic_price_mode', 'p2p_enabled', 'p2p-config'],
+          in: ['swap_enabled', 'mic_price', 'mic_price_mode', 'p2p_enabled', 'p2p-config', 'p2p_assets',
+               'swap_show_daily_cap'],
         },
       },
     })
@@ -126,13 +105,53 @@ export const roundsRoutes: FastifyPluginAsync = async (app) => {
       }
     } catch { /* ignore parse errors, use default */ }
 
+    /*
+     * Which P2P markets the DApp should offer.
+     *
+     * These used to be hard-coded in the DApp — `disabled: true` written into the asset
+     * list — so opening or closing a market meant a rebuild and a deploy. The admin
+     * console had five switches for exactly this and nothing read them.
+     *
+     * This is a display gate, not an enforcement one: it decides what the DApp offers,
+     * while the escrow contracts decide what can actually settle. Turning MFP on here
+     * does not make MFP tradeable — its escrow rejects every realistic price until it is
+     * redeployed. The admin page says so next to the switch.
+     *
+     * Defaults describe today's chain state, so an absent key changes nothing: MIC trades,
+     * the rest do not.
+     */
+    const P2P_ASSET_DEFAULTS: Record<string, boolean> = {
+      MIC: true, MFP: false, BUILDER: false, MAKER: false, LUMINARY: false,
+    }
+    const p2pAssets = { ...P2P_ASSET_DEFAULTS }
+    try {
+      const raw = configMap['p2p_assets']
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        for (const k of Object.keys(P2P_ASSET_DEFAULTS)) {
+          if (typeof parsed?.[k] === 'boolean') p2pAssets[k] = parsed[k]
+        }
+      }
+    } catch { /* a malformed value falls back to the defaults rather than opening a market */ }
+
+    // The AMM is the price of record once the pool is seeded. Cached for 30s, so this adds
+    // one chain read per half-minute rather than one per page load.
+    const livePrice = await poolSpotPrice()
+
     return {
       data: {
         swapEnabled: configMap['swap_enabled'] === 'true',
-        micPrice: configMap['mic_price'] ?? String(MIC_DISPLAY_PRICE_USD),
-        micPriceMode: configMap['mic_price_mode'] ?? 'admin',
+        /* Whether members see how much USDT the pool will still let out today. Off by
+           default: a visible cap is useful when the pool is deep and reads as a warning
+           when it is not, so it is the Owner's call, not a permanent part of the screen. */
+        swapShowDailyCap: configMap['swap_show_daily_cap'] === 'true',
+        micPrice: livePrice !== null
+          ? String(livePrice)
+          : (configMap['mic_price'] ?? String(MIC_DISPLAY_PRICE_USD)),
+        micPriceMode: livePrice !== null ? 'swap' : (configMap['mic_price_mode'] ?? 'admin'),
         p2pEnabled: configMap['p2p_enabled'] === 'true',
         p2pFee,
+        p2pAssets,
       },
     }
   })

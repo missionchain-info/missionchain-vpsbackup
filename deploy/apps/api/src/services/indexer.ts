@@ -9,10 +9,11 @@
  * Polls every 15 seconds. Gracefully handles RPC errors and DB outages.
  */
 
-import { Contract, Log, EventLog, Interface, formatUnits, JsonRpcProvider, id} from 'ethers'
+import { Contract, Log, EventLog, Interface, formatUnits, JsonRpcProvider, id, Provider } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
 import { BlockchainService } from './blockchain'
 import { getActiveAddresses, USDT_DECIMALS, seedPackageName, preSalePackageName } from '@missionchain/sdk';
+import { buildArchiveProvider } from './blockchain.js'
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -42,7 +43,7 @@ export class EventIndexer {
   private readonly blockchain: BlockchainService
   private readonly pollIntervalMs: number
   private readonly batchSize: number
-  private readonly logsProvider: JsonRpcProvider | null
+  private readonly logsProvider: Provider | null
   private timer: ReturnType<typeof setInterval> | null = null
   private running = false
   private processing = false
@@ -56,7 +57,7 @@ export class EventIndexer {
     // eth_getLogs ("archive required"). INDEXER_RPC_URL points to a getLogs-capable
     // endpoint (e.g. 1rpc.io/bnb). Falls back to the shared provider when unset.
     const indexerRpc = process.env.INDEXER_RPC_URL
-    this.logsProvider = indexerRpc ? new JsonRpcProvider(indexerRpc) : null
+    this.logsProvider = indexerRpc ? buildArchiveProvider() : null
     if (indexerRpc) console.log(`[Indexer] getLogs via dedicated RPC: ${indexerRpc}`)
   }
 

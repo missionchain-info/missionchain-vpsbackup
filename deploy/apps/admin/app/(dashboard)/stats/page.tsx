@@ -72,11 +72,29 @@ export default function StatsPage() {
   const vestingLocked      = Number(oc.vestingLocked || 0);       // Refined Option 2 (2026-05-10)
   const circulating = Number(oc.circulatingSupply || 0);
   const totalEmittedAll = preIssued + mined;
-  const hardCap = Number(oc.totalSupply || 7_000_000_000);
+  // The design cap — 15% pre-issued plus 85% mined, once all mining has happened. Not
+  // supply that exists; `supplyNow` is that.
+  const hardCap = Number(oc.maxSupply || oc.totalSupply || 7_000_000_000);
+  // What exists on chain right now, read from MICToken.
+  const supplyNow = Number(oc.currentSupply || 0);
+  // How much of the genesis issuance survives. 31,500,000 was burned on 2026-08-05.
+  const preIssuedNow = Number(oc.preIssuedNow || 0);
 
-  // MIC price: before SWAP → use current sale round price
-  const micPrice = MIC_DISPLAY_PRICE_USD;
-  const priceSource = MIC_DISPLAY_PRICE_SOURCE;
+  /*
+   * MIC price, from the API rather than from a constant compiled into this page.
+   *
+   * `MIC_DISPLAY_PRICE_USD` is the pre-market figure ($0.005, the Pre-Sale round price).
+   * It was correct while there was no market and wrong the moment the AMM opened at $0.01
+   * — and because it is a build-time constant, this screen went on quoting $0.005, and
+   * market cap with it, while every other screen had moved. The dashboard payload this
+   * page already fetches now carries the resolved price, so there is nothing extra to call.
+   */
+  const micPrice = Number(oc.micPrice ?? MIC_DISPLAY_PRICE_USD);
+  const priceSource = oc.micPriceSource === 'swap'
+    ? 'Live AMM price'
+    : oc.micPriceSource === 'admin-fallback'
+      ? 'Configured price — pool unreadable'
+      : MIC_DISPLAY_PRICE_SOURCE;
 
   // Sales
   const seed = s.seed || {};
@@ -116,7 +134,10 @@ export default function StatsPage() {
       <div className="sep-lbl">MIC Token</div>
 
       <div className="g4" style={{ marginBottom: 10 }}>
-        <StatBox icon={'\u{1F4E6}'} label="Pre-issued (15%)" value={fmt(preIssued)} color="gold" loading={loading} />
+        {/* Was a bare "Pre-issued (15%) 1,050,000,000" — true of genesis, and unchanged by
+            the 31.5M burn that has happened since, so it read as current supply and was not. */}
+        <StatBox icon={'\u{1F4E6}'} label="Supply Now" value={fmt(supplyNow || preIssuedNow)} color="gold" loading={loading}
+          sub={`Genesis ${fmt(preIssued)} − burned`} />
         <StatBox icon={'\u{1F3E6}'} label="In-Contract Reserves" value={fmt(inContractReserves)} color="c" loading={loading}
           sub="Vault / Treasury / Sale" />
         <StatBox icon={'\u{1F512}'} label="Vesting (Locked)" value={fmt(vestingLocked)} color="c" loading={loading}
@@ -348,7 +369,7 @@ export default function StatsPage() {
             <AllocBar label="DAO Treasury" pct={12.5} value={fmtUsd(rev.daoTreasury || 0)} color="var(--crimson)" />
             <AllocBar label="Referral (F1 7% + F2 3%)" pct={10} value={fmtUsd(rev.referral || 0)} color="var(--cyan)" />
             <AllocBar label="Management" pct={7.5} value={fmtUsd(rev.management || 0)} color="var(--copper)" />
-            <AllocBar label="Reserved Staking" pct={5} value={fmtUsd(rev.reservedStaking || 0)} color="var(--purple2)" />
+            <AllocBar label="Reserved Listing" pct={5} value={fmtUsd(rev.reservedStaking || 0)} color="var(--purple2)" />
           </div>
         </div>
       </div>

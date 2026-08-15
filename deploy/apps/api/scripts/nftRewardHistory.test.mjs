@@ -6,7 +6,7 @@
  * the wallet sharing each batch with other people.
  */
 import { Interface, id } from 'ethers'
-import { readUsdtLedger } from './src/services/nftRewardHistory.ts'
+import { readUsdtLedger } from '../src/services/nftRewardHistory.ts'
 
 const ME = '0xD32e666381b56f979D60C57831838f05F33AD6c2'
 const OTHER = '0x1111111111111111111111111111111111111111'

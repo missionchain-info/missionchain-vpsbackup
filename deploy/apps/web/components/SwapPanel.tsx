@@ -8,6 +8,9 @@ import { CONTRACTS, USDT_ABI } from '@/lib/contracts'
 
 const ACTIVE_CHAIN = getActiveChain()
 
+/** Highest slippage a trader may set. Above this the protection stops being protection. */
+const MAX_SLIPPAGE_PCT = 15
+
 /**
  * Swap USDT ↔ MIC against LiquidityPoolV6.
  *
@@ -28,6 +31,8 @@ const ACTIVE_CHAIN = getActiveChain()
  * always sent, always derived from the live quote, and the tolerance is theirs to set.
  * A swap that would return less reverts and costs nothing but gas.
  */
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.missionchain.io'
 
 const POOL_ABI = [
   'function isSeeded() view returns (bool)',
@@ -72,34 +77,72 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
   const [dir, setDir] = useState<Dir>('buy')
   const [amount, setAmount] = useState('')
   const [slippage, setSlippage] = useState(1)          // percent
+  /** Free-text box, so a trader is not limited to the three presets. Empty = use a preset. */
+  const [slipInput, setSlipInput] = useState('')
   const [pool, setPool] = useState<PoolState | null>(null)
+  /** True only when every RPC endpoint failed — never merely because the pool is unseeded. */
+  const [readFailed, setReadFailed] = useState(false)
   const [bal, setBal] = useState<{ usdt: number; mic: number; micFree: number } | null>(null)
   const [quote, setQuote] = useState<number | null>(null)
   const [busy, setBusy] = useState('')
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  /** `hash` turns the message into a link to the explorer. Absent on plain errors. */
+  const [msg, setMsg] = useState<{ ok: boolean; text: string; hash?: string } | null>(null)
 
   const poolAddr = CONTRACTS.liquidityPoolV6
   const live = !!poolAddr && poolAddr !== ZERO
 
-  const readProvider = useCallback(
-    () => new ethers.JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0]),
-    [],
-  )
+  /*
+   * Read through every endpoint in turn, not just the first.
+   *
+   * ACTIVE_CHAIN.rpcUrls carries four hosts and its own comment calls the later ones
+   * "fallbacks" — but this panel only ever used rpcUrls[0], publicnode, which answers
+   * eth_blockNumber promptly and then times out on real eth_calls. One bad response
+   * rejected the Promise.all below and the panel reported "Could not read the pool" while
+   * every one of those ten calls succeeds against the very next host in the list.
+   */
+  const readWithFallback = useCallback(async <T,>(fn: (p: ethers.JsonRpcProvider) => Promise<T>): Promise<T> => {
+    let lastErr: unknown
+    for (const url of ACTIVE_CHAIN.rpcUrls) {
+      try {
+        return await fn(new ethers.JsonRpcProvider(url))
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr
+  }, [])
+
+  /*
+   * Whether to show the pool's remaining daily outflow.
+   *
+   * The figure is already read from the chain for the sell-side checks; this only decides
+   * whether members see it. It defaults to hidden, so a failed config fetch errs towards
+   * showing less rather than surfacing a number the Owner has not chosen to publish.
+   */
+  const [showDailyCap, setShowDailyCap] = useState(false)
+
+  useEffect(() => {
+    fetch(`${API_BASE}/rounds/system-info`)
+      .then((r) => r.json())
+      .then((j) => setShowDailyCap(Boolean(j?.data?.swapShowDailyCap)))
+      .catch(() => { /* stays hidden */ })
+  }, [])
 
   /* ── pool state and balances ─────────────────────────────────────────── */
   const load = useCallback(async () => {
     if (!live) return
     try {
-      const p = readProvider()
-      const c = new ethers.Contract(poolAddr, POOL_ABI, p)
-
       const [seeded, phase, ageDays, spot, sellFee, buyFee, maxBps, reserveMic, remOut, openDay] =
-        await Promise.all([
-          c.isSeeded(), c.phase(), c.poolAgeDays(), c.spotPrice(),
-          c.sellFeeBps().catch(() => 30n), c.BUY_FEE_BPS(), c.MAX_TRADE_BPS(),
-          c.reserveMic(), c.remainingDailyOut().catch(() => 0n), c.SELL_OPEN_DAY(),
-        ])
+        await readWithFallback((p) => {
+          const c = new ethers.Contract(poolAddr, POOL_ABI, p)
+          return Promise.all([
+            c.isSeeded(), c.phase(), c.poolAgeDays(), c.spotPrice(),
+            c.sellFeeBps().catch(() => 30n), c.BUY_FEE_BPS(), c.MAX_TRADE_BPS(),
+            c.reserveMic(), c.remainingDailyOut().catch(() => 0n), c.SELL_OPEN_DAY(),
+          ])
+        })
 
+      setReadFailed(false)
       setPool({
         seeded: Boolean(seeded),
         phase: Number(phase),
@@ -113,28 +156,37 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
       })
 
       if (address) {
-        const usdtC = new ethers.Contract(CONTRACTS.usdt, USDT_ABI, p)
-        const micC = new ethers.Contract(CONTRACTS.mic, USDT_ABI, p)
-        const lockC = new ethers.Contract(CONTRACTS.lockManager,
-          ['function lockedOf(address) view returns (uint256)'], p)
-        const [u, m, l] = await Promise.all([
-          usdtC.balanceOf(address), micC.balanceOf(address),
-          lockC.lockedOf(address).catch(() => 0n),
-        ])
-        const mic = Number(ethers.formatUnits(m, 18))
-        const locked = Number(ethers.formatUnits(l, 18))
-        setBal({
-          usdt: Number(ethers.formatUnits(u, 18)),
-          mic,
-          // Vesting locks are enforced by MICToken on transfer, so selling MIC you
-          // cannot move fails at the transfer rather than at the quote.
-          micFree: Math.max(0, mic - locked),
-        })
+        // Balances are their own read. Folding them into the block above meant a hiccup
+        // fetching one wallet balance wiped out the pool state that had already arrived.
+        const [u, m, l] = await readWithFallback((p) => Promise.all([
+          new ethers.Contract(CONTRACTS.usdt, USDT_ABI, p).balanceOf(address),
+          new ethers.Contract(CONTRACTS.mic, USDT_ABI, p).balanceOf(address),
+          new ethers.Contract(CONTRACTS.lockManager,
+            ['function lockedOf(address) view returns (uint256)'], p)
+            .lockedOf(address).catch(() => 0n),
+        ])).catch(() => [null, null, null] as const)
+
+        if (u !== null && m !== null) {
+          const mic = Number(ethers.formatUnits(m, 18))
+          const locked = Number(ethers.formatUnits(l ?? 0n, 18))
+          setBal({
+            usdt: Number(ethers.formatUnits(u, 18)),
+            mic,
+            // Vesting locks are enforced by MICToken on transfer, so selling MIC you
+            // cannot move fails at the transfer rather than at the quote.
+            micFree: Math.max(0, mic - locked),
+          })
+        }
       }
     } catch {
+      // Every endpoint refused. Distinguished from "the pool says it is not seeded",
+      // because those need opposite things from the reader: one is wait, the other is
+      // retry. Reporting them with the same sentence is what put "Try again in a moment"
+      // in front of a pool that simply has not been funded yet.
+      setReadFailed(true)
       setPool(null)
     }
-  }, [live, poolAddr, address, readProvider])
+  }, [live, poolAddr, address, readWithFallback])
 
   useEffect(() => { load() }, [load])
 
@@ -145,16 +197,18 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
     if (!live || !pool?.seeded || !n || n <= 0) { setQuote(null); return }
     ;(async () => {
       try {
-        const c = new ethers.Contract(poolAddr, POOL_ABI, readProvider())
         const wei = ethers.parseUnits(String(n), 18)
-        const out: bigint = dir === 'buy' ? await c.quoteBuy(wei) : await c.quoteSell(wei)
+        const out: bigint = await readWithFallback((p) => {
+          const c = new ethers.Contract(poolAddr, POOL_ABI, p)
+          return dir === 'buy' ? c.quoteBuy(wei) : c.quoteSell(wei)
+        })
         if (!cancelled) setQuote(Number(ethers.formatUnits(out, 18)))
       } catch {
         if (!cancelled) setQuote(null)
       }
     })()
     return () => { cancelled = true }
-  }, [amount, dir, live, pool?.seeded, poolAddr, readProvider])
+  }, [amount, dir, live, pool?.seeded, poolAddr, readWithFallback])
 
   /* ── the trade ───────────────────────────────────────────────────────── */
   const doSwap = async () => {
@@ -194,7 +248,10 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
         : await c.swapMicToUsdt(amountIn, minOut)
       await tx.wait()
 
-      setMsg({ ok: true, text: `Swapped — ${tx.hash.slice(0, 12)}…` })
+      // Carry the whole hash, not a 12-character stub. A truncated hash cannot be pasted
+      // into an explorer or quoted in support, so it proved the trade happened and then
+      // gave the trader no way to look at it.
+      setMsg({ ok: true, text: 'Swapped', hash: tx.hash })
       setAmount('')
       await load()
       onDone?.()
@@ -228,7 +285,8 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
 
   let blocked: string | null = null
   if (!live) blocked = 'The liquidity pool is not deployed on this network.'
-  else if (!pool) blocked = 'Could not read the pool. Try again in a moment.'
+  else if (readFailed) blocked = 'Could not reach the network right now. This is a connection problem, not a change to your funds — try again in a moment.'
+  else if (!pool) blocked = 'Reading the liquidity pool…'
   else if (!pool.seeded) blocked = 'SWAP opens when the liquidity pool is funded with MIC. Nothing can be traded until then.'
   else if (dir === 'sell' && !sellsOpen) blocked = sellNotice
 
@@ -288,11 +346,18 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
           )}
         </div>
         <div className="swap-input-row">
+          {/* `type="number"` hands iOS a keypad whose decimal key follows the phone's
+              locale — a comma on a Vietnamese device, which this field then rejected, so
+              no fractional amount could be typed at all. A text field with
+              inputMode="decimal" gives the same keypad and lets us accept either mark. */}
           <input
-            type="number"
-            min={0}
+            type="text"
+            inputMode="decimal"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value.replace(/,/g, '.')
+              if (v === '' || /^\d*\.?\d*$/.test(v)) setAmount(v)
+            }}
             placeholder="0.00"
             disabled={!!blocked}
           />
@@ -329,11 +394,46 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
             <span className="swap-slip">
               {[0.5, 1, 3].map(v => (
                 <button key={v}
-                  className={'swap-slip-btn' + (slippage === v ? ' active' : '')}
-                  onClick={() => setSlippage(v)}>{v}%</button>
+                  className={'swap-slip-btn' + (slippage === v && slipInput === '' ? ' active' : '')}
+                  onClick={() => { setSlippage(v); setSlipInput('') }}>{v}%</button>
               ))}
+              {/*
+                A typed value, capped at 15%.
+                The cap is not decoration: slippage tolerance is the trader's ONLY
+                protection against the price moving between quote and mine — it becomes
+                `minOut` on the transaction. Setting it high does not make a trade more
+                likely to succeed, it makes a bad fill more likely to be accepted, and at
+                100% it would accept receiving nothing at all.
+              */}
+              <input
+                className="swap-slip-input"
+                value={slipInput}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(',', '.')
+                  if (raw !== '' && !/^\d*\.?\d*$/.test(raw)) return
+                  setSlipInput(raw)
+                  const n = parseFloat(raw)
+                  if (!isNaN(n) && n > 0) setSlippage(Math.min(n, MAX_SLIPPAGE_PCT))
+                }}
+                onBlur={() => {
+                  const n = parseFloat(slipInput)
+                  if (isNaN(n) || n <= 0) { setSlipInput(''); return }
+                  const capped = Math.min(n, MAX_SLIPPAGE_PCT)
+                  setSlipInput(String(capped))
+                  setSlippage(capped)
+                }}
+                placeholder="custom"
+                inputMode="decimal"
+                aria-label={`Custom slippage, up to ${MAX_SLIPPAGE_PCT}%`}
+              />
+              <span className="swap-slip-unit">%</span>
             </span>
           </div>
+          {parseFloat(slipInput) > MAX_SLIPPAGE_PCT && (
+            <div style={{ color: '#ffb400', fontSize: '0.72rem' }}>
+              Capped at {MAX_SLIPPAGE_PCT}% — a higher tolerance only accepts a worse fill.
+            </div>
+          )}
           <div>
             <span>Minimum received</span>
             <strong>{fmt(quote * (1 - slippage / 100), 4)} {outSym}</strong>
@@ -342,7 +442,26 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
       )}
 
       {msg && (
-        <div className={'swap-msg ' + (msg.ok ? 'ok' : 'err')}>{msg.text}</div>
+        <div className={'swap-msg ' + (msg.ok ? 'ok' : 'err')}>
+          {msg.text}
+          {msg.hash && (
+            <>
+              {' — '}
+              <a
+                href={`${ACTIVE_CHAIN.explorerUrl}/tx/${msg.hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="swap-msg-link"
+                title={msg.hash}
+              >
+                {/* Break anywhere: a 66-character hash has no spaces, so without this it
+                    pushes the panel wider than the phone it is being read on. */}
+                <span className="swap-msg-hash">{msg.hash}</span>
+                {' ↗'}
+              </a>
+            </>
+          )}
+        </div>
       )}
 
       <button className="swap-go" disabled={!canSwap} onClick={doSwap}>
@@ -354,6 +473,14 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
           : `Swap ${inSym} → ${outSym}`}
       </button>
 
+      {showDailyCap && pool && (
+        <p className="swap-note" style={{ marginBottom: 6 }}>
+          The pool will release up to{' '}
+          <strong>${fmt(pool.remainingOutUsdt, 2)} USDT</strong> in the next 24 hours. Selling
+          draws on this shared allowance; buying does not. It refills as the window rolls forward
+          and as the pool takes in more USDT.
+        </p>
+      )}
       <p className="swap-note">
         Price comes from the pool's own reserves and moves as you trade. The quote is an
         estimate; your transaction reverts rather than settling below the minimum above.

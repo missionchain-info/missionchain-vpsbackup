@@ -30,6 +30,7 @@ import { nftRewardsRoutes } from './routes/nft-rewards.js'
 import { communityGrantsAdminRoutes, communityGrantsUserRoutes } from './routes/community-grants.js'
 import { stewardCouncilRoutes } from './routes/steward-council'
 import { operationalPoolRoutes } from './routes/operational-pool'
+import { mgmtOpsRoutes } from './routes/mgmt-ops'
 import { governanceRoutes } from './routes/governance'
 import { p2pRoutes } from './routes/p2p'
 import p2pMicRoutes from './routes/p2p-mic'
@@ -127,6 +128,7 @@ async function start() {
   await app.register(communityGrantsAdminRoutes, { prefix: '/admin/community-grants' })
   await app.register(stewardCouncilRoutes, { prefix: '/admin/steward-council' })
   await app.register(operationalPoolRoutes, { prefix: '/admin/seed-budget/operational' })
+  await app.register(mgmtOpsRoutes, { prefix: '/governance/mgmt-ops' })
   await app.register(governanceRoutes, { prefix: '/governance' })
   await app.register(p2pRoutes, { prefix: '/p2p' })
   await app.register(p2pMicRoutes, { prefix: '/p2p-mic' })
@@ -257,8 +259,10 @@ async function start() {
   }
 
   // ── Start P2P Event Sync (Task 12) ───────────────────────────────
-  // Polls P2PEscrowMFP events every 30s; upserts P2POrder DB rows.
-  const p2pAddr = addr.P2PEscrowMFP
+  // Polls the MFP-NFT escrow's events every 30s; upserts P2POrder DB rows.
+  // Repointed to P2PEscrowNFT_MFP on 2026-08-12; the old P2PEscrowMFP could never take an
+  // order, so there is no history on it to miss.
+  const p2pAddr = addr.P2PEscrowNFT_MFP
   const p2pCfg = await app.prisma.systemConfig.findUnique({ where: { key: 'p2p_enabled' } }).catch(() => null)
   const p2pEnabled = p2pCfg?.value === 'true'
   if (p2pAddr && p2pAddr !== '0x0000000000000000000000000000000000000000' && p2pEnabled) {
@@ -267,7 +271,7 @@ async function start() {
   } else if (!p2pEnabled) {
     app.log.info('P2P event sync NOT started (p2p_enabled=false - feature disabled)')
   } else {
-    app.log.warn('P2P event sync NOT started (P2PEscrowMFP not deployed on active network)')
+    app.log.warn('P2P event sync NOT started (P2PEscrowNFT_MFP not deployed on active network)')
   }
 }
 

@@ -27,6 +27,7 @@
 import { JsonRpcProvider, Contract, Wallet } from 'ethers'
 import type { FastifyInstance } from 'fastify'
 import { getActiveAddresses } from '@missionchain/sdk'
+import { buildSignerProvider } from './blockchain.js'
 
 const BSC_MAINNET_RPC = 'https://bsc-dataseed.binance.org/'
 const ZERO = '0x0000000000000000000000000000000000000000'
@@ -79,7 +80,7 @@ export function getKeeperSigner(): { wallet: Wallet; provider: JsonRpcProvider }
   const raw = process.env.KEEPER_PK?.trim()
   if (!raw) return null
   const pk = raw.startsWith('0x') ? raw : '0x' + raw
-  const provider = new JsonRpcProvider(getRpcUrl())
+  const provider = buildSignerProvider()
   return { wallet: new Wallet(pk, provider), provider }
 }
 

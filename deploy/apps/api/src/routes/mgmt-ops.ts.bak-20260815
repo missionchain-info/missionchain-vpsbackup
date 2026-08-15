@@ -1,0 +1,253 @@
+/**
+ * Management & Ops — Council proposals against ManagementPool.
+ *
+ * ManagementPool (Pre-Sale + MICE, 7.5% of gross) has no proposal or voting machinery: its
+ * only entry points are `claim(roleIndex)` for the six role wallets and `distributeBonus`
+ * for the Owner. So the Council process runs here and the payout is the Owner's signature.
+ *
+ * The threshold is 3 of 5 by head — one member, one vote, no token or stake weighting —
+ * matching how the Council votes elsewhere. A proposal can also clear on time: after 72
+ * hours with no objection the Owner may decide it alone. Both paths are recorded, so it is
+ * always visible which one a payout took.
+ *
+ * Nothing here moves money. `POST /:id/execute` records a transfer the Owner has already
+ * signed; it does not perform one.
+ */
+import { FastifyPluginAsync } from 'fastify'
+import {
+  approvalsRequired,
+  eligibilityOf,
+  eligibleCount,
+  THRESHOLD_BPS,
+} from '../services/eligibility.js'
+
+/**
+ * One member, one vote, and the bar is a *share* of the Council — not a fixed count.
+ *
+ * This was `APPROVALS_REQUIRED = 3`, correct only while the Council has exactly five
+ * members. The day a sixth is added, three approvals stop being 60% and the threshold
+ * quietly loosens. The count is therefore read from the membership on every request.
+ */
+
+/**
+ * Funds this route can raise a proposal against.
+ *
+ * The vote is identical for every pool — what differs is only how the approved payment is
+ * finally signed, which happens on the client:
+ *
+ *   MGMT_OPS  ManagementPool  → `distributeBonus(recipient, amount)`, one signature
+ *   LISTING   ListingReserve  → `requestWithdraw` → 24h timelock → `executeWithdraw`,
+ *                               and the contract holds only ONE pending request at a time
+ */
+const POOLS = new Set(['MGMT_OPS', 'LISTING', 'TREASURY', 'MI'])
+const OBJECTION_WINDOW_MS = 72 * 60 * 60 * 1000
+
+export const mgmtOpsRoutes: FastifyPluginAsync = async (app) => {
+  /** Eligibility is the gate — not Council membership directly. */
+  const requireEligible = async (req: any, reply: any) => {
+    const { wallet } = req.user as { wallet: string }
+    const me = await eligibilityOf(app, wallet)
+    if (!me.canVote) {
+      reply.status(403).send({ error: 'NOT_ELIGIBLE', message: me.reason })
+      return null
+    }
+    return me
+  }
+
+  const activeCount = () => eligibleCount(app)
+
+  const shape = (p: any, viewer: string, members: number) => {
+    const forVotes = p.votes.filter((v: any) => v.support).length
+    const againstVotes = p.votes.length - forVotes
+    const mine = p.votes.find((v: any) => v.wallet === viewer)
+    return {
+      id: p.id,
+      pool: p.pool,
+      proposer: p.proposer,
+      content: p.content,
+      amountUsdt: Number(p.amountUsdt),
+      recipient: p.recipient,
+      status: p.status,
+      forVotes,
+      againstVotes,
+      approvalsRequired: approvalsRequired(members, THRESHOLD_BPS),
+      /** Denominator behind that figure, so the UI can show "3 of 5" honestly. */
+      councilSize: members,
+      /** True once the 72-hour window has passed with no objection recorded. */
+      windowClosed: new Date(p.decidesAt).getTime() <= Date.now(),
+      decidesAt: p.decidesAt,
+      myVote: mine ? mine.support : null,
+      adminNote: p.adminNote,
+      executedAt: p.executedAt,
+      executedTx: p.executedTx,
+      createdAt: p.createdAt,
+    }
+  }
+
+  /**
+   * GET /governance/mgmt-ops/me — what this wallet may do.
+   *
+   * The frontend asks once and renders from the answer, rather than deciding for itself who
+   * counts as a voter. When phase 2 opens governance to MFP holders and stakers, the screen
+   * needs no change: the answer simply starts coming back `canVote: true` for more people.
+   */
+  app.get('/me', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const me = await eligibilityOf(app, wallet)
+    const eligible = await eligibleCount(app)
+    return reply.send({
+      data: {
+        ...me,
+        eligibleCount: eligible,
+        thresholdBps: THRESHOLD_BPS,
+        approvalsRequired: approvalsRequired(eligible, THRESHOLD_BPS),
+      },
+    })
+  })
+
+  // ─── GET /governance/mgmt-ops/proposals ────────────────────────────────
+  app.get('/proposals', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const pool = String((req.query as { pool?: string }).pool ?? '').toUpperCase()
+    const rows = await app.prisma.mgmtOpsProposal.findMany({
+      where: pool && POOLS.has(pool) ? { pool } : undefined,
+      include: { votes: true },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    })
+    const members = await activeCount()
+    return reply.send({ data: rows.map((p) => shape(p, wallet.toLowerCase(), members)) })
+  })
+
+  // ─── POST /governance/mgmt-ops/proposals ───────────────────────────────
+  app.post('/proposals', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const me = await requireEligible(req, reply)
+    if (!me) return
+
+    const body = req.body as { content?: string; amountUsdt?: number; recipient?: string; pool?: string }
+    const pool = String(body.pool ?? 'MGMT_OPS').toUpperCase()
+    if (!POOLS.has(pool)) {
+      return reply.status(400).send({ error: 'BAD_INPUT', message: `Unknown pool: ${pool}` })
+    }
+    const content = (body.content ?? '').trim()
+    const recipient = (body.recipient ?? '').trim()
+    const amount = Number(body.amountUsdt)
+
+    if (!content) return reply.status(400).send({ error: 'BAD_INPUT', message: 'Content is required' })
+    if (!/^0x[0-9a-fA-F]{40}$/.test(recipient)) {
+      return reply.status(400).send({ error: 'BAD_INPUT', message: 'Recipient must be a wallet address' })
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return reply.status(400).send({ error: 'BAD_INPUT', message: 'Amount must be greater than zero' })
+    }
+
+    const created = await app.prisma.mgmtOpsProposal.create({
+      data: {
+        pool,
+        proposer: me.wallet,
+        content,
+        amountUsdt: amount,
+        recipient: recipient.toLowerCase(),
+        decidesAt: new Date(Date.now() + OBJECTION_WINDOW_MS),
+        // The proposer's own support is implied and recorded, so a proposal starts at 1.
+        votes: { create: [{ wallet: me.wallet, support: true }] },
+      },
+      include: { votes: true },
+    })
+    app.log.info({ id: created.id, by: me.wallet, amount }, 'mgmt-ops proposal created')
+    return reply.send({ data: shape(created, me.wallet, await activeCount()) })
+  })
+
+  // ─── POST /governance/mgmt-ops/proposals/:id/vote ──────────────────────
+  app.post<{ Params: { id: string } }>('/proposals/:id/vote', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const me = await requireEligible(req, reply)
+    if (!me) return
+
+    const support = Boolean((req.body as { support?: boolean }).support)
+    const p = await app.prisma.mgmtOpsProposal.findUnique({ where: { id: req.params.id } })
+    if (!p) return reply.status(404).send({ error: 'NOT_FOUND' })
+    if (p.status !== 'OPEN') {
+      return reply.status(409).send({ error: 'CLOSED', message: `Proposal is ${p.status}` })
+    }
+
+    await app.prisma.mgmtOpsVote.upsert({
+      where: { proposalId_wallet: { proposalId: p.id, wallet: me.wallet } },
+      create: { proposalId: p.id, wallet: me.wallet, support },
+      update: { support },
+    })
+
+    // Reaching the threshold approves it; the payout is still a separate signature.
+    const votes = await app.prisma.mgmtOpsVote.findMany({ where: { proposalId: p.id } })
+    const forVotes = votes.filter((v) => v.support).length
+    const members = await activeCount()
+    if (forVotes >= approvalsRequired(members, THRESHOLD_BPS) && p.status === 'OPEN') {
+      await app.prisma.mgmtOpsProposal.update({ where: { id: p.id }, data: { status: 'APPROVED' } })
+    }
+
+    const fresh = await app.prisma.mgmtOpsProposal.findUnique({
+      where: { id: p.id },
+      include: { votes: true },
+    })
+    return reply.send({ data: shape(fresh, me.wallet, members) })
+  })
+
+  // ─── POST /governance/mgmt-ops/proposals/:id/decide ────────────────────
+  // Owner-only. Allowed once the threshold is met, or once the 72-hour window has passed.
+  app.post<{ Params: { id: string } }>('/proposals/:id/decide', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const { isOwnerWallet } = await import('../plugins/rbac.js')
+    if (!isOwnerWallet(wallet)) return reply.status(403).send({ error: 'FORBIDDEN' })
+
+    const { approve, note } = req.body as { approve?: boolean; note?: string }
+    const p = await app.prisma.mgmtOpsProposal.findUnique({ where: { id: req.params.id }, include: { votes: true } })
+    if (!p) return reply.status(404).send({ error: 'NOT_FOUND' })
+    if (p.status === 'EXECUTED') return reply.status(409).send({ error: 'CLOSED', message: 'Already executed' })
+
+    const forVotes = p.votes.filter((v) => v.support).length
+    const members = await activeCount()
+    const needed = approvalsRequired(members, THRESHOLD_BPS)
+    const windowClosed = p.decidesAt.getTime() <= Date.now()
+    if (!approve) {
+      const updated = await app.prisma.mgmtOpsProposal.update({
+        where: { id: p.id }, data: { status: 'REJECTED', adminNote: note ?? null }, include: { votes: true },
+      })
+      return reply.send({ data: shape(updated, wallet.toLowerCase(), members) })
+    }
+    if (forVotes < needed && !windowClosed) {
+      return reply.status(409).send({
+        error: 'NOT_DECIDABLE',
+        message: `Needs ${needed} of ${members} approvals (60%), or the 72-hour window to pass.`,
+      })
+    }
+    const updated = await app.prisma.mgmtOpsProposal.update({
+      where: { id: p.id }, data: { status: 'APPROVED', adminNote: note ?? null }, include: { votes: true },
+    })
+    return reply.send({ data: shape(updated, wallet.toLowerCase(), members) })
+  })
+
+  // ─── POST /governance/mgmt-ops/proposals/:id/execute ───────────────────
+  // Records a `distributeBonus` the Owner has already signed. Moves nothing itself.
+  app.post<{ Params: { id: string } }>('/proposals/:id/execute', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const { isOwnerWallet } = await import('../plugins/rbac.js')
+    if (!isOwnerWallet(wallet)) return reply.status(403).send({ error: 'FORBIDDEN' })
+
+    const txHash = String((req.body as { txHash?: string }).txHash ?? '').trim()
+    if (!/^0x[0-9a-fA-F]{64}$/.test(txHash)) {
+      return reply.status(400).send({ error: 'BAD_INPUT', message: 'A transaction hash is required' })
+    }
+    const p = await app.prisma.mgmtOpsProposal.findUnique({ where: { id: req.params.id } })
+    if (!p) return reply.status(404).send({ error: 'NOT_FOUND' })
+    if (p.status !== 'APPROVED') {
+      return reply.status(409).send({ error: 'NOT_APPROVED', message: `Proposal is ${p.status}` })
+    }
+
+    const updated = await app.prisma.mgmtOpsProposal.update({
+      where: { id: p.id },
+      data: { status: 'EXECUTED', executedAt: new Date(), executedTx: txHash },
+      include: { votes: true },
+    })
+    app.log.info({ id: p.id, txHash }, 'mgmt-ops proposal executed')
+    return reply.send({ data: shape(updated, wallet.toLowerCase(), await activeCount()) })
+  })
+}

@@ -8,8 +8,9 @@
  * Phase 2c-pivot (May 2, 2026): replaces the DB-only Phase 2a flow.
  * V5c/V3 cutover (Jun 23, 2026): replaces V5b/V2 trio + V6.
  */
-import { Contract, JsonRpcProvider, formatUnits } from 'ethers'
+import { Contract, Interface, JsonRpcProvider, formatUnits, Provider } from 'ethers'
 import { getActiveAddresses, isMainnet, USDT_DECIMALS } from '@missionchain/sdk'
+import { buildArchiveProvider } from './blockchain.js'
 
 const TESTNET_RPC_FALLBACK = [
   'https://bsc-dataseed.binance.org/',
@@ -82,8 +83,8 @@ export type SlotIdx = 0 | 1 | 2 | 3
  * (data-seed + publicnode) reject the ENTIRE batch when any single call
  * hits rate-limit, which would otherwise crash /governance/proposals.
  */
-let cachedProvider: JsonRpcProvider | null = null
-async function getProvider(): Promise<JsonRpcProvider> {
+let cachedProvider: Provider | null = null
+async function getProvider(): Promise<Provider> {
   if (cachedProvider) {
     try {
       await cachedProvider.getBlockNumber()
@@ -101,7 +102,7 @@ async function getProvider(): Promise<JsonRpcProvider> {
   const endpoints = [primary, ...fallback.filter((u) => u !== primary)]
   for (const url of endpoints) {
     try {
-      const p = new JsonRpcProvider(url, undefined, { batchMaxCount: 1 })
+      const p = buildArchiveProvider()
       await p.getBlockNumber()
       cachedProvider = p
       return p
@@ -133,12 +134,31 @@ export async function readSeedBudgetAllSlots() {
   const provider = await getProvider()
   const sb = new Contract(sbAddr, SB_V5C_ABI, provider)
 
-  const calls = [0, 1, 2, 3].flatMap((s) => [
-    sb.slotBalance(s),
-    sb.slotTotalReceived(s),
-    sb.slotTotalReleased(s),
+  /*
+   * Twelve reads — three fields across four slots — folded into one request.
+   *
+   * The endpoint takes each of these as a separate HTTP round trip, because the BSC
+   * dataseeds refuse batched JSON-RPC and the provider is configured accordingly. The
+   * council screen was taking over thirty seconds to answer, past the browser's patience,
+   * and the page reported the delay as "pool not yet active".
+   */
+  const { multicall } = await import('./multicall.js')
+  const iface = new Interface([
+    'function slotBalance(uint256) view returns (uint256)',
+    'function slotTotalReceived(uint256) view returns (uint256)',
+    'function slotTotalReleased(uint256) view returns (uint256)',
   ])
-  const results = await Promise.all(calls) as bigint[]
+  const decoded = await multicall(
+    provider,
+    [0, 1, 2, 3].flatMap((slotIdx) => [
+      { target: sbAddr, iface, fn: 'slotBalance', args: [slotIdx] },
+      { target: sbAddr, iface, fn: 'slotTotalReceived', args: [slotIdx] },
+      { target: sbAddr, iface, fn: 'slotTotalReleased', args: [slotIdx] },
+    ]),
+  )
+  // A failed individual call reads as zero, matching the previous behaviour of the
+  // `?? 0n` fallbacks below rather than failing the whole panel.
+  const results = decoded.map((r) => (r ? (r[0] as bigint) : 0n))
 
   const slot = (i: number) => ({
     balance:       Number(formatUnits(results[i * 3] ?? 0n, USDT_DECIMALS)),
@@ -197,17 +217,71 @@ export async function readOperationalPoolMember(wallet: string): Promise<OspMemb
   }
 }
 
+/**
+ * Every council member, in three requests instead of twenty-six.
+ *
+ * The per-member reader is still used for a single lookup, but calling it in a loop meant
+ * four round trips per member on an endpoint that refuses batched JSON-RPC. Multicall3
+ * folds each stage into one `eth_call`:
+ *
+ *   1. memberCount + currentWeekIdx
+ *   2. memberAt(0..n-1)
+ *   3. members / claimable / allocatedInWeek for every wallet at once
+ *
+ * Stage 3 needs the week index from stage 1, which is why it is not two requests.
+ */
 export async function readOperationalPoolAllMembers(): Promise<OspMemberOnChain[]> {
   const ospAddr = getActiveAddresses().OperationalSalaryPoolV3
   const provider = await getProvider()
-  const osp = new Contract(ospAddr, OSP_V2_ABI, provider)
-  const count = Number(await osp.memberCount() as bigint)
+  const { multicall } = await import('./multicall.js')
+  const iface = new Interface([
+    'function memberCount() view returns (uint256)',
+    'function currentWeekIdx() view returns (uint256)',
+    'function memberAt(uint256) view returns (address)',
+    'function members(address) view returns (uint256, uint256, uint256, bool)',
+    'function claimable(address) view returns (uint256)',
+    'function allocatedInWeek(address, uint256) view returns (uint256)',
+  ])
+  const at = (fn: string, args?: readonly unknown[]) => ({ target: ospAddr, iface, fn, args })
+
+  const [countRes, weekRes] = await multicall(provider, [at('memberCount'), at('currentWeekIdx')])
+  const count = countRes ? Number(countRes[0]) : 0
+  const weekIdx = weekRes ? BigInt(weekRes[0]) : 0n
   if (count === 0) return []
-  const wallets = await Promise.all(
-    Array.from({ length: count }, (_, i) => osp.memberAt(i) as Promise<string>),
+
+  const walletRes = await multicall(
+    provider,
+    Array.from({ length: count }, (_, i) => at('memberAt', [i])),
   )
-  const results = await Promise.all(wallets.map((w) => readOperationalPoolMember(w)))
-  return results.filter((m): m is OspMemberOnChain => m !== null)
+  const wallets = walletRes
+    .map((r) => (r ? String(r[0]) : null))
+    .filter((w): w is string => w !== null)
+  if (wallets.length === 0) return []
+
+  // Three reads per wallet, laid out so the results can be indexed back by position.
+  const rows = await multicall(provider, wallets.flatMap((w) => [
+    at('members', [w]),
+    at('claimable', [w]),
+    at('allocatedInWeek', [w, weekIdx]),
+  ]))
+
+  const out: OspMemberOnChain[] = []
+  wallets.forEach((wallet, i) => {
+    const m = rows[i * 3]
+    const claimable = rows[i * 3 + 1]
+    const allocated = rows[i * 3 + 2]
+    if (!m || !m[3]) return          // never enrolled, or the read failed
+    out.push({
+      wallet:           wallet.toLowerCase(),
+      enrolled:         true,
+      sharePctBps:      Number(m[0]),
+      weeklyMaxoutUsdt: Number(formatUnits(m[1], USDT_DECIMALS)),
+      totalClaimed:     Number(formatUnits(m[2], USDT_DECIMALS)),
+      claimable:        claimable ? Number(formatUnits(claimable[0], USDT_DECIMALS)) : 0,
+      allocatedThisWeek: allocated ? Number(formatUnits(allocated[0], 6)) : 0,
+    })
+  })
+  return out
 }
 
 export async function readOperationalPoolTotalShareBps(): Promise<number> {
@@ -367,14 +441,14 @@ const LOG_RPC_ENDPOINTS = [
   'https://bsc.publicnode.com',
 ]
 
-let logProvider: JsonRpcProvider | null = null
-async function getLogProvider(): Promise<JsonRpcProvider> {
+let logProvider: Provider | null = null
+async function getLogProvider(): Promise<Provider> {
   if (logProvider) {
     try { await logProvider.getBlockNumber(); return logProvider } catch { logProvider = null }
   }
   for (const url of LOG_RPC_ENDPOINTS) {
     try {
-      const p = new JsonRpcProvider(url, undefined, { batchMaxCount: 1 })
+      const p = buildArchiveProvider()
       await p.getBlockNumber()
       logProvider = p
       return p

@@ -157,7 +157,7 @@ export default function MiningPage() {
 
       await api('/mining/record-activate', {
         method: 'POST',
-        body: JSON.stringify({ txHash: receipt.hash }),
+        body: { txHash: receipt.hash },
       }).catch(() => {})
 
       setActionResult({ ok: true, msg: `Activated ${pendingMice} MICE — locked 360 days, daily rewards live. Tx: ${receipt.hash.slice(0, 10)}...` })
@@ -198,7 +198,7 @@ export default function MiningPage() {
 
       await api('/mining/record-claim', {
         method: 'POST',
-        body: JSON.stringify({ txHash: receipt.hash, licenceIds: activeIds.map(String) }),
+        body: { txHash: receipt.hash, licenceIds: activeIds.map(String) },
       }).catch(() => {})
 
       setActionResult({ ok: true, msg: `Claimed ${unclaimedNum.toLocaleString()} MIC to your wallet. Tx: ${receipt.hash.slice(0, 10)}...` })

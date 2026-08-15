@@ -13,13 +13,18 @@ const ACTIVE_CHAIN = getActiveChain()
 
 /* ─── P2P Contract Constants (network-aware) ─── */
 const _addr = getActiveAddresses()
-const P2P_ESCROW_MFP = _addr.P2PEscrowMFP
+// P2PEscrowNFT, live 2026-08-12. The contract this used to name could not accept a
+// listing at any real price — its $0.000001 ceiling was a `constant`.
+const P2P_ESCROW_MFP = _addr.P2PEscrowNFT_MFP
 const USDT_ADDR = _addr.MockUSDT
 const MFP_ADDR = _addr.MFPNFT
 
 const P2P_ABI = [
   'function createOrder(uint256 tokenId, uint256 priceUsdt, uint64 expirySeconds) returns (uint256)',
-  'function matchOrder(uint256 id)',
+  // `maxPriceAccepted` is new: a buyer signing against a stale screen now fails instead of
+  // overpaying. Calling the old one-argument form against this contract would not compile
+  // a matching selector, so the call would revert with no useful reason.
+  'function matchOrder(uint256 id, uint256 maxPriceAccepted)',
   'function cancelOrder(uint256 id)',
   'function activeOrderForToken(uint256) view returns (uint256)',
   'event OrderCreated(uint256 indexed id, address indexed seller, uint256 indexed tokenId, uint256 priceUsdt, uint64 expiresAt)',
@@ -47,16 +52,45 @@ interface AssetConfig {
 }
 
 interface AssetConfigExt extends AssetConfig {
-  disabled?: boolean
+  /** Why it is off. A bare "Soon" badge tells a member nothing and, when the real reason
+   *  is a broken contract, quietly implies the feature is merely unfinished. */
+  reason?: string
 }
 
+/*
+ * The NFT marketplace tabs.
+ *
+ * MIC is deliberately NOT here. It trades through MicP2PPanel above, on its own contract
+ * (P2PEscrowMIC), with its own order books. It used to sit in this strip carrying
+ * `disabled: true`, so the live MIC market was advertised as "Soon" directly above itself.
+ *
+ * Community NFTs are ERC-721, not ERC-1155 \u2014 CommunityNFTv2 replaced the ERC-1155
+ * original. Verified on chain 2026-08-12: supportsInterface(0x80ac58cd) is true and
+ * (0xd9b67a26) is false.
+ */
 const ASSET_CONFIGS: AssetConfigExt[] = [
-  { id: 'MIC', label: 'MIC Token', icon: '\uD83D\uDCB0', tokenStandard: 'BEP-20', description: 'MissionChain Utility Token', color: 'var(--gold)', disabled: true },
-  { id: 'MFP', label: 'MFP-NFT', icon: '\uD83D\uDC51', tokenStandard: 'ERC-721', description: 'Mission Founders Pass \u00D710', color: '#E040FB' },
-  { id: 'BUILDER', label: 'Builder', icon: '\uD83D\uDEE0\uFE0F', tokenStandard: 'ERC-1155', description: 'Community NFT \u00D71.0', color: '#90A4AE', disabled: true },
-  { id: 'MAKER', label: 'Maker', icon: '\u2B50', tokenStandard: 'ERC-1155', description: 'Community NFT \u00D72.5', color: 'var(--gold)', disabled: true },
-  { id: 'LUMINARY', label: 'Luminary', icon: '\uD83D\uDC8E', tokenStandard: 'ERC-1155', description: 'Community NFT \u00D75.0', color: '#CE93D8', disabled: true },
+  {
+    id: 'MFP', label: 'MFP-NFT', icon: '\uD83D\uDC51', tokenStandard: 'ERC-721',
+    description: 'Mission Founders Pass \u00D710', color: '#E040FB',
+    // Whether this is open is decided by the admin console (system config `p2p_assets`),
+    // not written here.
+    //
+    // The defect that closed it is fixed: this settles on P2PEscrowNFT since 2026-08-12,
+    // whose range is $1 \u2026 $1,000,000 and adjustable by setPriceBounds. The old escrow
+    // capped a listing at $0.000001 in a `constant` with no setter in its bytecode, so
+    // every honest price reverted.
+    reason: 'Temporarily closed',
+  },
+  { id: 'BUILDER', label: 'Builder', icon: '\uD83D\uDEE0\uFE0F', tokenStandard: 'ERC-721', description: 'Community NFT \u00D71.0', color: '#90A4AE', reason: 'Coming soon' },
+  { id: 'MAKER', label: 'Maker', icon: '\u2B50', tokenStandard: 'ERC-721', description: 'Community NFT \u00D72.5', color: 'var(--gold)', reason: 'Coming soon' },
+  { id: 'LUMINARY', label: 'Luminary', icon: '\uD83D\uDC8E', tokenStandard: 'ERC-721', description: 'Community NFT \u00D75.0', color: '#CE93D8', reason: 'Coming soon' },
 ]
+
+/** Closed until the admin console says otherwise \u2014 the same defaults the API applies, so
+ *  a failed fetch never opens a market that should be shut. */
+const ASSET_CLOSED_BY_DEFAULT: Record<string, boolean> = {
+  MFP: false, BUILDER: false, MAKER: false, LUMINARY: false,
+}
 
 // FE shape — mapped from API P2POrder (Prisma model). Phase 1: MFP-NFT only.
 interface P2pOrder {
@@ -151,6 +185,10 @@ export default function P2pPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedTokenId, setSelectedTokenId] = useState<string>('')
   const [p2pEnabled, setP2pEnabled] = useState(false)
+  /** Per-market switches from the admin console. Closed until it says otherwise. */
+  const [assetOpen, setAssetOpen] = useState<Record<string, boolean>>(ASSET_CLOSED_BY_DEFAULT)
+  /** A ?action=sell deep link is waiting for the switches to load. */
+  const [deepLinkSell, setDeepLinkSell] = useState(false)
   const [loading, setLoading] = useState(true)
   const [micPrice, setMicPrice] = useState(0.0025)
   const [platformFee, setPlatformFee] = useState(1.5) // % — fetched from admin config
@@ -206,6 +244,9 @@ export default function P2pPage() {
           setP2pEnabled(data.data.p2pEnabled || false)
           setMicPrice(parseFloat(data.data.micPrice) || 0.0025)
           if (data.data.p2pFee) setPlatformFee(parseFloat(data.data.p2pFee))
+          if (data.data.p2pAssets) {
+            setAssetOpen({ ...ASSET_CLOSED_BY_DEFAULT, ...data.data.p2pAssets })
+          }
         }
       })
       .catch(() => {})
@@ -222,12 +263,27 @@ export default function P2pPage() {
         setTradeAction('sell')
         setSelectedAsset('MFP')
         setSelectedTokenId(tokenIdStr)
-        setShowCreateModal(true)
+        setDeepLinkSell(true)
       }
     }
   }, [])
 
+  /*
+   * Open the sell form only once the switches have arrived AND MFP is actually open.
+   *
+   * The "Sell" entry in the MFP menu links straight here with ?action=sell, so without
+   * this the member landed in a form that cannot submit — and on first paint the switches
+   * have not loaded yet, so the check has to wait for them rather than run on mount.
+   */
+  useEffect(() => {
+    if (deepLinkSell && assetOpen.MFP) {
+      setShowCreateModal(true)
+      setDeepLinkSell(false)
+    }
+  }, [deepLinkSell, assetOpen.MFP])
+
   const assetConfig = ASSET_CONFIGS.find(a => a.id === selectedAsset)!
+  const assetClosed = !assetOpen[selectedAsset]
   const isNFT = selectedAsset !== 'MIC'
 
   // Filter orders based on selection — also exclude own listings (can't buy your own MFP)
@@ -240,16 +296,36 @@ export default function P2pPage() {
     return o.type === 'buy'
   })
 
+  /*
+   * P2P switched OFF in admin.
+   *
+   * The MIC market used to be rendered *here*, inside this branch, which inverted the
+   * switch: turning P2P on made the one working market disappear and left the tab strip
+   * showing "MIC Token — Soon" above nothing. It now lives in the main return below,
+   * where the rest of the marketplace is.
+   */
   if (!loading && !p2pEnabled) {
     return (
       <>
         <SubNav items={EXPLORE_TABS} />
-
-      {/* MIC/USDT — live. The MFP marketplace below it is on a contract whose
-          price ceiling is $0.000001, so it cannot accept a real listing until it
-          is redeployed. */}
-      <MicP2PPanel address={connectedAddr} />
-        {/* The MIC market above is live; the old placeholder was removed with it. */}
+        <div className="p2p-page">
+          <div className="p2p-hero">
+            <div className="p2p-hero-bg" />
+            <div className="p2p-hero-content">
+              <div>
+                <div className="p2p-hero-label">P2P Exchange</div>
+                <div className="p2p-hero-sub">Currently closed</div>
+              </div>
+            </div>
+          </div>
+          <div className="p2p-empty" style={{ padding: '48px 24px', textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>P2P trading is turned off</div>
+            <div style={{ opacity: 0.7, fontSize: '0.85rem' }}>
+              Existing escrowed orders are untouched. Trading will reappear here when it is
+              switched back on.
+            </div>
+          </div>
+        </div>
       </>
     )
   }
@@ -258,6 +334,12 @@ export default function P2pPage() {
     <>
       <SubNav items={EXPLORE_TABS} />
       <div className="p2p-page">
+
+        {/* MIC ⇄ USDT — the live market, and the only one that can currently take a
+            trade. It sits above the NFT tab strip because that strip runs on
+            P2PEscrowMFP, whose $0.000001 price ceiling is a `constant` and rejects every
+            real listing until it is redeployed. */}
+        <MicP2PPanel address={connectedAddr} />
 
         {/* ── Hero ── */}
         <div className="p2p-hero">
@@ -278,20 +360,34 @@ export default function P2pPage() {
           {ASSET_CONFIGS.map(asset => (
             <button
               key={asset.id}
-              className={`p2p-asset-tab ${selectedAsset === asset.id ? 'p2p-asset-tab-active' : ''} ${asset.disabled ? 'p2p-asset-tab-disabled' : ''}`}
-              onClick={() => { if (!asset.disabled) setSelectedAsset(asset.id) }}
-              disabled={asset.disabled}
+              className={`p2p-asset-tab ${selectedAsset === asset.id ? 'p2p-asset-tab-active' : ''} ${!assetOpen[asset.id] ? 'p2p-asset-tab-disabled' : ''}`}
+              onClick={() => { if (assetOpen[asset.id]) setSelectedAsset(asset.id) }}
+              disabled={!assetOpen[asset.id]}
               style={{ '--tab-color': asset.color } as React.CSSProperties}
-              title={asset.disabled ? 'Coming soon — Phase 2' : asset.label}
+              title={!assetOpen[asset.id] ? (asset.reason || 'Not available') : asset.label}
             >
               <span className="p2p-asset-tab-icon">{asset.icon}</span>
               <span className="p2p-asset-tab-label">{asset.label}</span>
-              {asset.disabled && (
-                <span className="p2p-asset-tab-soon">Soon</span>
+              {!assetOpen[asset.id] && (
+                <span className="p2p-asset-tab-soon">
+                  {asset.reason?.startsWith('Paused') ? 'Paused' : 'Soon'}
+                </span>
               )}
             </button>
           ))}
         </div>
+
+        {/* Why a tab is closed, in the member's terms.
+            `nft-pool-note` is the same quiet note style the MIC panel above uses, so this
+            reads as guidance rather than shouting. The engineering reason — a 6-decimal
+            price ceiling written as a constant — belongs in the admin console, not here:
+            a member cannot act on it, and it only makes a safe situation sound alarming. */}
+        {assetClosed && (
+          <div className="nft-pool-note">
+            {assetConfig.label} trading is closed right now. Your {assetConfig.label}s are
+            safe and untouched. MIC ⇄ USDT trading is open in the panel above.
+          </div>
+        )}
 
         {/* ── Asset Info Bar ── */}
         <div className="p2p-asset-info">
@@ -361,7 +457,11 @@ export default function P2pPage() {
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
               </svg>
               <div className="p2p-empty-text">No {tradeAction === 'buy' ? 'sell' : 'buy'} orders for {assetConfig.label}</div>
-              <div className="p2p-empty-hint">Be the first to create an order!</div>
+              <div className="p2p-empty-hint">
+                {assetClosed
+                  ? 'This market is closed, so no order can be placed yet.'
+                  : 'Be the first to create an order!'}
+              </div>
             </div>
           ) : (
             <div className="p2p-order-list">
@@ -400,17 +500,21 @@ export default function P2pPage() {
         </div>
 
         {/* ── Create Order CTA ── */}
-        <div className="p2p-create-row">
-          <button className="p2p-create-btn" onClick={() => setShowCreateModal(true)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Create {tradeAction === 'buy' ? 'Buy' : 'Sell'} Order
-          </button>
-          <div className="p2p-create-hint">
-            {tradeAction === 'sell'
-              ? `Your ${assetConfig.label} will be locked in Escrow until the order is filled or cancelled`
-              : 'Your USDT will be locked in Escrow until a seller matches your order'}
+        {/* Hidden while the asset is closed. A button that opens a form whose transaction
+            reverts is worse than no button: the member pays gas to be told nothing. */}
+        {!assetClosed && (
+          <div className="p2p-create-row">
+            <button className="p2p-create-btn" onClick={() => setShowCreateModal(true)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Create {tradeAction === 'buy' ? 'Buy' : 'Sell'} Order
+            </button>
+            <div className="p2p-create-hint">
+              {tradeAction === 'sell'
+                ? `Your ${assetConfig.label} will be locked in Escrow until the order is filled or cancelled`
+                : 'Your USDT will be locked in Escrow until a seller matches your order'}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── How It Works ── */}
         <HowItWorks isNFT={isNFT} assetLabel={assetConfig.label} platformFee={platformFee} />
@@ -426,6 +530,7 @@ export default function P2pPage() {
           micPrice={micPrice}
           platformFee={platformFee}
           prefilledTokenId={selectedTokenId}
+          ownerAddress={connectedAddr}
           onClose={() => { setShowCreateModal(false); setSelectedTokenId('') }}
           onSubmit={async (order) => {
             try {
@@ -718,7 +823,10 @@ function OrderCard({ order, tradeAction, isNFT, assetConfig, setToast, loadOrder
                   await approveTx.wait()
 
                   setToast('Sign matchOrder tx...')
-                  const tx = await p2p.matchOrder(BigInt(order.onChainId))
+                  // Cap at exactly the price shown on screen. If the listing is not what
+                  // this screen last read, the trade reverts rather than settling at a
+                  // number the buyer never agreed to.
+                  const tx = await p2p.matchOrder(BigInt(order.onChainId), priceWei)
                   setToast(`Confirming on-chain... ${tx.hash.slice(0, 10)}...`)
                   await tx.wait()
                   setToast('Order matched ✓')
@@ -880,15 +988,19 @@ function MyOrderCard({ order, assetConfig, setToast, loadOrders, onPreview }: {
                 const usdt = new Contract(USDT_ADDR, USDT_ABI, signer)
                 const p2p = new Contract(P2P_ESCROW_MFP, P2P_ABI, signer)
 
-                setToast('Sign $10 USDT approval (cancellation fee)...')
-                const approveTx = await usdt.approve(P2P_ESCROW_MFP, 10_000_000n)
-                await approveTx.wait()
-
+                // No approval, and no fee. P2PEscrowNFT charges nothing to cancel:
+                // withdrawing an offer nobody accepted is not a wrong, and charging for it
+                // only punishes sellers who reprice honestly.
+                //
+                // The step removed here approved `10_000_000n` — $10 written at SIX
+                // decimals, so against 18-decimal BSC-USD it authorised one hundred-
+                // billionth of a cent. It never mattered, because the contract it was
+                // paying could not take an order in the first place.
                 setToast('Sign cancelOrder tx...')
                 const tx = await p2p.cancelOrder(BigInt(order.onChainId))
                 setToast(`Confirming on-chain... ${tx.hash.slice(0, 10)}...`)
                 await tx.wait()
-                setToast('Order cancelled ✓ — NFT returned (charged $10 fee)')
+                setToast('Order cancelled ✓ — NFT returned, no fee')
                 setTimeout(() => setToast(null), 5000)
                 setTimeout(loadOrders, 2000)
               } catch (err: any) {
@@ -909,7 +1021,7 @@ function MyOrderCard({ order, assetConfig, setToast, loadOrders, onPreview }: {
 /* ═══════════════════════════════════════════
    CREATE ORDER MODAL
    ═══════════════════════════════════════════ */
-function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, platformFee, prefilledTokenId = '', onClose, onSubmit }: {
+function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, platformFee, prefilledTokenId = '', ownerAddress, onClose, onSubmit }: {
   tradeAction: TradeAction
   asset: AssetType
   assetConfig: AssetConfig
@@ -917,6 +1029,7 @@ function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, pl
   micPrice: number
   platformFee: number
   prefilledTokenId?: string
+  ownerAddress?: string
   onClose: () => void
   onSubmit: (data: any) => void
 }) {
@@ -927,6 +1040,31 @@ function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, pl
   const [expiryDays, setExpiryDays] = useState(7)
   const [tokenId, setTokenId] = useState(prefilledTokenId) // for MFP ERC-721
   const [submitting, setSubmitting] = useState(false)
+  /* The seller's own MFP-NFTs, read from the chain. Typing a token id by hand was the only
+     way to list before, and a wrong number only fails at `ownerOf`, after the wallet prompt. */
+  const [ownedTokens, setOwnedTokens] = useState<string[] | null>(null)
+
+  useEffect(() => {
+    if (asset !== 'MFP' || tradeAction !== 'sell' || !ownerAddress) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { JsonRpcProvider, Contract: C } = await import('ethers')
+        const provider = new JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0], ACTIVE_CHAIN.chainId, { staticNetwork: true })
+        const c = new C(MFP_ADDR, [
+          'function balanceOf(address) view returns (uint256)',
+          'function tokenOfOwnerByIndex(address,uint256) view returns (uint256)',
+        ], provider)
+        const n = Number(await c.balanceOf(ownerAddress))
+        const ids: string[] = []
+        for (let i = 0; i < n; i++) ids.push(String(await c.tokenOfOwnerByIndex(ownerAddress, i)))
+        if (!cancelled) setOwnedTokens(ids)
+      } catch {
+        if (!cancelled) setOwnedTokens([])   // the arrow link below still gets them there
+      }
+    })()
+    return () => { cancelled = true }
+  }, [asset, tradeAction, ownerAddress])
 
   const priceNum = parseFloat(price) || 0
   const amountNum = parseFloat(amount) || 0
@@ -983,18 +1121,57 @@ function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, pl
             </span>
           </div>
 
-          {/* MFP Token ID (ERC-721 only) */}
+          {/* Which MFP-NFT to sell (ERC-721 — one unique token per listing) */}
           {asset === 'MFP' && isSell && (
             <div className="p2p-modal-field">
-              <label className="p2p-modal-label">MFP Token ID</label>
-              <input
-                type="text"
-                className="p2p-modal-input"
-                placeholder="Enter your MFP-NFT Token ID"
-                value={tokenId}
-                onChange={e => setTokenId(e.target.value)}
-              />
-              <div className="p2p-modal-hint">The specific MFP-NFT you want to sell (ERC-721 unique ID)</div>
+              <label className="p2p-modal-label">Select the MFP-NFT to sell</label>
+
+              {ownedTokens === null && (
+                <div className="p2p-modal-hint">Reading your MFP-NFTs from the chain&hellip;</div>
+              )}
+
+              {ownedTokens !== null && ownedTokens.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {ownedTokens.map(id => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setTokenId(id)}
+                        style={{
+                          padding: '7px 12px', borderRadius: 8, cursor: 'pointer',
+                          fontSize: '0.72rem', fontFamily: 'var(--font-m)',
+                          background: tokenId === id ? 'var(--gold)' : 'rgba(255,255,255,0.04)',
+                          color: tokenId === id ? '#000' : 'var(--white)',
+                          border: '1px solid ' + (tokenId === id ? 'var(--gold)' : 'rgba(255,255,255,0.12)'),
+                          fontWeight: tokenId === id ? 700 : 500,
+                        }}
+                      >
+                        #{String(id).padStart(5, '0')}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="p2p-modal-hint">
+                    Available in your wallet. A staked or already-listed token is rejected on submit.
+                  </div>
+                </>
+              )}
+
+              {ownedTokens !== null && ownedTokens.length === 0 && (
+                <div className="p2p-modal-hint">No MFP-NFT found in this wallet.</div>
+              )}
+
+              {/* The route the member is meant to take: open the NFT's own card, where every
+                  selling venue sits side by side instead of only this one. */}
+              <a
+                href="/nft?tab=mfp"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 10,
+                  fontSize: '0.72rem', color: 'var(--gold)', textDecoration: 'none',
+                }}
+              >
+                Open my MFP-NFTs &mdash; choose where to sell (P2P, OKX NFT, Element Market) &rarr;
+              </a>
             </div>
           )}
 

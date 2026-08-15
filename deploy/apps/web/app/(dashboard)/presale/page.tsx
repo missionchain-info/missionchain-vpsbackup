@@ -411,13 +411,18 @@ export default function PresalePage() {
           <div className="pre-custom-input-row">
             <div className="pre-custom-input-wrap">
               <span className="pre-custom-input-prefix">$</span>
+              {/* Same reason as the SWAP field: a number input on a comma-decimal phone
+                  offers no dot key. */}
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 className="pre-custom-input"
                 placeholder="Enter amount (min $25)"
-                min={25}
                 value={customAmount}
-                onChange={(e) => setCustomAmount(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/,/g, '.')
+                  if (v === '' || /^\d*\.?\d*$/.test(v)) setCustomAmount(v)
+                }}
               />
             </div>
             <button
