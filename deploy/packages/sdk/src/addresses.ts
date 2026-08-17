@@ -2,10 +2,12 @@
  * MissionChain Contract Addresses — MAINNET ONLY
  *
  * Phase 0 Genesis MAINNET deploy 2026-05-06 — 16 contracts on BSC chainid 56.
- * Phase 1+ contracts (PreSale, MICELicense, NFTStaking, etc.) NOT YET DEPLOYED.
- * UI hides Phase 1+ entries via menu-config until deployed.
+ * PreSale Phase-1 set deployed 2026-08-08 — 12 contracts, PreSale holds 315,000,000 MIC
+ * with active = false. MICELicense / EmissionController / MiningPool / NFTStaking remain
+ * unset; the UI hides those entries via menu-config until they are.
  *
- * SEED V5c/V7 cutover 2026-06-23 — V5b/V2 trio + V6 deprecated; V5c trio + V7 active.
+ * SEED is on its third contract: V7 halted (6-decimal prices), V8 deployed but never
+ * activated (no whitelist), V9 live and gated. Read SeedSaleV9 — never V7 or V8.
  *
  * Testnet support fully removed May 6, 2026 — code is mainnet-only henceforth.
  * For development/test work, use a forked mainnet via hardhat or anvil locally.
@@ -28,6 +30,27 @@ export const ADDRESSES = {
     OperationalSalaryPoolV3:   "0xB2f318b07B7501f6A03b53066610032418F66b85",
     ManagementBonusPoolV3:     "0x2bfA50146C01d6c4BFA4A2550385988C2619f033",
     ReservedExpensesPoolV3:    "0xe04519547F051AE4388FcdE571EA2301dD9e3495",
+
+    /**
+     * SeedSaleV9 — 18-decimal pricing AND an enforced whitelist. This is the SEED round
+     * to read and to point the app at. Deployed 2026-08-09, holds 181,558,850 MIC,
+     * ships with active = false and whitelistRequired = true.
+     */
+    SeedSaleV9:                "0x5216c5C69FB899CC3De8Aa94165363153B5B589d",
+
+    /**
+     * ⛔ Deployed 2026-08-08, NEVER activated, now empty — do NOT link.
+     * Fixed V7's decimals but carries no whitelist, so activating it would sell MIC at
+     * $0.0025 to anyone while the Pre-Sale asks $0.005. Superseded by SeedSaleV9.
+     */
+    SeedSaleV8:                "0xD855076f200dFa2526303c2242E49DFcB3635B50",
+
+    /**
+     * ⛔ HALTED 2026-08-08, tx 0xc931ff25…72613a — do NOT reactivate, do NOT link.
+     * Priced in 6 decimals against 18-decimal BSC-USD: package 3 sold 4,000,000 MIC and
+     * 20 MFP for 0.00000001 USDT. Caught with totalSold still 0, so nothing was taken.
+     * Replaced by SeedSaleV8.
+     */
     SeedSaleV7:                "0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905",
 
     // ─── DEPRECATED 2026-06-23 (replaced by V5c trio + V7) — kept for legacy reference ───
@@ -43,26 +66,96 @@ export const ADDRESSES = {
     AirdropDistributor:      "0x9Bdd75b6aDf5BA674F74C49601AF7D82d3672EF9",
 
     // Aliases — UPDATED 2026-06-23 to point at active V5c/V7
-    SeedSale:                "0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905", // → V7 (was V6 0x7ce5…)
+    SeedSale:                "0x5216c5C69FB899CC3De8Aa94165363153B5B589d", // → V9 (was V7 0xe4C1…, halted)
     SeedBudget:              "0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef", // → V5c (was zero address)
 
-    // Phase 1 expansion + Phase 2 + Phase 3 — NOT YET DEPLOYED.
-    // UI entries hidden via menu-config until deployed.
-    ManagementPool:     "0x0000000000000000000000000000000000000000",
-    LiquidityPool:      "0x0000000000000000000000000000000000000000",
-    RevenueRouter:      "0x0000000000000000000000000000000000000000",
+    // ─── Phase-1 PreSale set — DEPLOYED 2026-08-08 ───
+    // Anything still at the zero address below belongs to a later batch and is hidden by
+    // menu-config until it lands.
+    ManagementPool:     "0x20C08cb2552E51AA3fA1450FD6811112f8c95cfb",
+    LiquidityPool:      "0x0F01332d5F8b31175D72CdE0aF18cb0E70417763",
+    RevenueRouter:      "0xf86b0cF9ce21250429b522Ed62a5B6b549539672",
     ClaimRewards:       "0x0000000000000000000000000000000000000000",
+
+    // ─── PreSale Phase-1 set — filled in by scripts/deploy-presale-phase1.ts ───
+    // These are the V2 successors actually being deployed; the un-suffixed keys above
+    // are the superseded originals. Apps must read THESE, not the old names.
+    CommunityNFTv2:        "0x28263C00C371A6DE9592E2477f2813408F337E96",
+    ClaimRewardsV2:        "0x1F38FD97a656d80bF873ca2B9262D9EB337E6866",
+    RewardDistributorV2:   "0xDB4Cc75cdD3081557cB68d6dF456df3a1C31cab3",
+    ListingReserve:        "0x9e4f9472E3526635d0001f6986D5daBca72b7D7D",
+    NFTRewardPoolWeekly:   "0x187b221C47b976b39E40F46470f0252f4194B676",
+    NFTRewardPoolMonthly:  "0x8ce8c0fAe3C9E5FE54b49e3654EA9B9ef862CefC",
     PeriodicRewards:    "0x0000000000000000000000000000000000000000",
-    LuckyDraw:          "0x0000000000000000000000000000000000000000",
+    LuckyDraw:          "0x1e3644b764136A3cE572eEe7858208897CFA839d",
     IncentivePool:      "0x0000000000000000000000000000000000000000",
     RewardDistributor:  "0x0000000000000000000000000000000000000000",
-    ReferralRegistry:   "0x0000000000000000000000000000000000000000",
-    PreSale:            "0x0000000000000000000000000000000000000000",
-    MICELicense:        "0x0000000000000000000000000000000000000000",
-    EmissionController: "0x0000000000000000000000000000000000000000",
-    MiningPool:         "0x0000000000000000000000000000000000000000",
-    NFTStaking:         "0x0000000000000000000000000000000000000000",
-    P2PEscrowMFP:       "0xcff25169c783B84eFBa746eF4A51271764f24b8B", // Phase 1 deploy 2026-05-10, fee 1.5%
+    ReferralRegistry:   "0x2a8C0c5c7414fD4f879ba34883652f306403f0f9",
+    PreSale:            "0xC4A6cd57DE0619daCDfD190E9A4D9682Ed78BE23",
+    MICELicense:        "0x4d5147aC4aa44eFc1Ae6196FcE4c87567aA4BD8c",
+    EmissionController: "0x37f38f383b4065BA58C7A6Fc1a91d2dF4f9f86F0",
+    MiningPool:         "0x9178292E960cb17380dd329866e725e33200e04f",
+    NFTStaking:         "0x4eae6376501E975CbF207473E3277417495fd3fE",
+    // The SWAP pool. MICELicense prices its MIC burn off this contract's min(spot, TWAP7d),
+    // and the mining keeper pokes it, so both go quiet while it reads zero.
+    // Deployed 2026-08-10 with the MICE round. The pool is dormant until seeded — it
+    // quotes no price and refuses every trade, so anything reading it stays inert.
+    // Claim-based, replacing the push-only pair deployed earlier the same day. Holders
+    // pull their own MIC; the old pair held nothing and is now unreferenced.
+    CommunityNFTRewardPool: "0xae26BA0f1c639beA93e5a4dD9313F5765A29Ee5a",
+    MFPRewardPool:          "0xFb79deC4F0CDe13A667018e567dD636255D61d6d",
+    /**
+     * ⛔ NOT PUBLIC. Superseded by LiquidityPoolV7 on 2026-08-24.
+     *
+     * V6 prices every buy at 2.006× its own `spotPrice()` — `quoteBuy` evaluates the
+     * constant product at `_effectiveAt(reserveUsdt + inNet)`, and because incoming USDT
+     * also retires virtual reserve at half its size, that denominator moves by only half
+     * the deposit. `spotPrice()` itself is correct, which is why every dashboard read
+     * $0.01 while buyers were charged $0.02. Not upgradeable, no setter reaches it.
+     *
+     * Kept in the address book on purpose: its 49,999,900 MIC can never be withdrawn or
+     * burned, so the pool is a standing offer at ~$0.02 rather than a write-off. It stays
+     * unlisted until V7's effective price reaches $0.02, at which point it becomes usable
+     * for balancing trades. Reachable from the admin console only.
+     *
+     * Anything showing a V6 price MUST compute it from `quoteBuy`, never `spotPrice`.
+     */
+    LiquidityPoolV6:    "0xf6AB7103d1072416366D34Ce5E8A41074feCC98e",
+
+    /**
+     * The public SWAP pool. Linear price, buy-only until the pool holds $25,000 of real
+     * USDT, one-for-one virtual→real substitution, sell fee 15%→0% as backing builds.
+     * Seeded with 23,500,000 MIC at $0.01 — the last movable MIC in the system.
+     * Zero until deployed; every reader already treats the zero address as "not live".
+     */
+    LiquidityPoolV7:    "0x0000000000000000000000000000000000000000",
+    P2PEscrowMIC:       "0x7388ed77c06A917B572C1429B2a323a171c3c5ea", // MIC/USDT P2P, 2026-08-11. Floor $0.005, adjustable via setPriceBounds. Supersedes 0x4Db0B480, whose bounds were constant.
+
+    // ── NFT escrows, both P2PEscrowNFT, deployed 2026-08-12 ──
+    //
+    // One contract serves both collections: MFPNFT and CommunityNFTv2 are each a plain
+    // ERC-721 (verified on chain — supportsInterface(0x80ac58cd) true, (0xd9b67a26)
+    // false), so the ERC-1155 the old docs describe does not exist any more.
+    //
+    // Royalty is detected once at construction, not assumed: MFPNFT answers ERC-2981 and
+    // pays 5%, CommunityNFTv2 does not implement it at all and reverts on royaltyInfo.
+    // Calling it unconditionally — as the old MFP escrow did — would revert every
+    // Community NFT trade.
+    //
+    // Price bounds are $1 … $1,000,000 and SETTABLE via setPriceBounds, behind hard
+    // fences of $0.01 … $100,000,000. That is the whole point of the redeploy.
+    P2PEscrowNFT_MFP:       "0xFf730a5E231255b8AD5FFa1a07D7011fc8D77924",
+    P2PEscrowNFT_Community: "0x8477d9c0239D9218f259AdF75704aDF5c8e29B07",
+
+    /** Members claim their own Community Growth Award NFTs here; an AWARDER_ROLE wallet
+     *  only records the entitlement. Holds CREDITOR_ROLE on ClaimRewardsV2. */
+    RankBonusClaim:     "0xa95F3f13Ae93FBf8db9BB1833C7A8f8C81e9609F",
+
+    /** DEAD. MAX_PRICE_USDT is 1_000_000e6 = $0.000001 against 18-decimal BSC-USD, and it
+     *  is `constant` — not a proxy, not a storage slot, inlined in the bytecode, so no
+     *  transaction can change it. nextOrderId is 0: nobody could ever list, so nothing was
+     *  lost. Replaced by P2PEscrowNFT_MFP above. Kept only so old references resolve. */
+    P2PEscrowMFP:       "0xcff25169c783B84eFBa746eF4A51271764f24b8B",
   },
 } as const;
 
