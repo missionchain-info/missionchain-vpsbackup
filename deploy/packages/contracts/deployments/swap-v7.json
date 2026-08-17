@@ -1,0 +1,9 @@
+{
+  "LiquidityPoolV7": "0x70E28Abcce584e2B3423737Dc3497e3A278641aF",
+  "virtualReserve0": "235000000000000000000000",
+  "sellGateUsdt": "25000000000000000000000",
+  "seedMicPlanned": "23500000000000000000000000",
+  "deployedAt": "2026-08-17T07:52:18.368Z",
+  "deployer": "0xD32e666381b56f979D60C57831838f05F33AD6c2",
+  "routerRepointedAt": "2026-08-17T07:59:16.924Z"
+}

@@ -128,7 +128,7 @@ export const ADDRESSES = {
      * Seeded with 23,500,000 MIC at $0.01 — the last movable MIC in the system.
      * Zero until deployed; every reader already treats the zero address as "not live".
      */
-    LiquidityPoolV7:    "0x0000000000000000000000000000000000000000",
+    LiquidityPoolV7:    "0x70E28Abcce584e2B3423737Dc3497e3A278641aF",
     P2PEscrowMIC:       "0x7388ed77c06A917B572C1429B2a323a171c3c5ea", // MIC/USDT P2P, 2026-08-11. Floor $0.005, adjustable via setPriceBounds. Supersedes 0x4Db0B480, whose bounds were constant.
 
     // ── NFT escrows, both P2PEscrowNFT, deployed 2026-08-12 ──
