@@ -745,8 +745,17 @@ export default function SwapPage() {
                 Linear price: the whole pool over the whole float, fixed for the duration of
                 a trade, so $1 and $50 buy at the same unit price. Every real USDT that
                 arrives replaces exactly one virtual USDT, so the backing holds steady while
-                its composition turns real. <strong>Buy-only</strong> until the pool actually
-                holds {fmtUsd(v7.sellGateUsdt || 0)}.
+                its composition turns real.
+                <br /><br />
+                {/* The two directions are gated on different things, and saying "buy-only
+                    until $25,000" read as though buying were restricted too. It is not.
+                    A buy hands out MIC, which the pool has. A sell hands out real money,
+                    which it does not have yet. */}
+                <strong>Buying</strong> is open as soon as the pool holds MIC {'\u2014'} it
+                pays out in MIC, which it has. <strong>Selling</strong> waits until the pool
+                actually holds <strong>{fmtUsd(v7.sellGateUsdt || 0)}</strong> of real USDT,
+                because a seller is paid in real money and until that point the depth on
+                offer is mostly virtual reserve.
               </div>
 
               <div className="info-row">
