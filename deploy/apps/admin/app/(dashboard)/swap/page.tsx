@@ -31,6 +31,11 @@ const POOL_ABI = [
   'function MAX_TRADE_BPS() view returns (uint256)',
   'function remainingDailyOut() view returns (uint256)',
   'function LISTING_THRESHOLD() view returns (uint256)',
+  // V7 gates selling on real reserves, not on a day count. SELL_OPEN_DAY survives in the
+  // ABI but no longer decides anything, so the page must read these instead.
+  'function sellGateUsdt() view returns (uint256)',
+  'function sellsOpen() view returns (bool)',
+  'function backingBps() view returns (uint256)',
 ];
 
 const MIC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
@@ -108,6 +113,9 @@ type PoolState = {
   maxTradeBps: number;
   remainingDailyOut: number;
   listingThreshold: number;
+  sellGateUsdt: number;
+  sellsOpen: boolean;
+  backingBps: number;
   vaultMic: number;   // MIC still held by ListingReserveVault
   error?: string;
 };
@@ -216,9 +224,9 @@ export default function SwapPage() {
 
   const loadPool = useCallback(async () => {
     const { JsonRpcProvider, Contract, formatUnits } = await import('ethers');
-    const addr = A.LiquidityPoolV6;
+    const addr = (A as any).LiquidityPoolV7;
     if (!addr || addr === '0x0000000000000000000000000000000000000000') {
-      setPool({ ...({} as PoolState), error: 'LiquidityPoolV6 is not set in the SDK addresses' });
+      setPool({ ...({} as PoolState), error: 'LiquidityPoolV7 is not set in the SDK addresses' });
       return;
     }
     for (const url of CHAIN.rpcUrls) {
@@ -226,12 +234,13 @@ export default function SwapPage() {
         const p = new JsonRpcProvider(url);
         const c = new Contract(addr, POOL_ABI, p);
         const mic = new Contract(A.MICToken, MIC_BAL_ABI, p);
-        const [seeded, rMic, rUsdt, vRes, spot, age, start, sellOpen, buyFee, sellFee, maxTrade, remOut, listThr, vaultMic] =
+        const [seeded, rMic, rUsdt, vRes, spot, age, start, sellOpen, buyFee, sellFee, maxTrade, remOut, listThr, vaultMic, gate, sOpen, back] =
           await Promise.all([
             c.isSeeded(), c.reserveMic(), c.reserveUsdt(), c.virtualReserve(), c.spotPrice(),
             c.poolAgeDays(), c.startTime(), c.SELL_OPEN_DAY(), c.BUY_FEE_BPS(), c.sellFeeBps(),
             c.MAX_TRADE_BPS(), c.remainingDailyOut(), c.LISTING_THRESHOLD(),
             mic.balanceOf(A.ListingReserveVault),
+            c.sellGateUsdt(), c.sellsOpen(), c.backingBps(),
           ]);
         setPool({
           seeded: Boolean(seeded),
@@ -248,6 +257,9 @@ export default function SwapPage() {
           remainingDailyOut: Number(formatUnits(remOut, USDT_DECIMALS)),
           listingThreshold: Number(formatUnits(listThr, USDT_DECIMALS)),
           vaultMic: Number(formatUnits(vaultMic, 18)),
+          sellGateUsdt: Number(formatUnits(gate, USDT_DECIMALS)),
+          sellsOpen: Boolean(sOpen),
+          backingBps: Number(back),
         });
         return;
       } catch { /* next endpoint */ }
@@ -412,7 +424,7 @@ export default function SwapPage() {
   const probeDistributorRole = useCallback(async () => {
     try {
       const eth = (window as any).ethereum;
-      const poolAddr = A.LiquidityPoolV6;
+      const poolAddr = (A as any).LiquidityPoolV7;
       if (!eth || !poolAddr) return;
       const accounts: string[] = await eth.request({ method: 'eth_accounts' });
       if (!accounts?.length) return;               // wallet not connected — leave unknown
@@ -454,7 +466,7 @@ export default function SwapPage() {
     try {
       const signer = await getSigner();
       const me = await signer.getAddress();
-      const pool = new Contract(A.LiquidityPoolV6, POOL_WRITE_ABI, signer);
+      const pool = new Contract((A as any).LiquidityPoolV7, POOL_WRITE_ABI, signer);
       setMsg('Sign grantRole in your wallet\u2026');
       const tx = await pool.grantRole(await pool.DISTRIBUTOR_ROLE(), me);
       const receipt = await tx.wait(1);
@@ -514,8 +526,8 @@ export default function SwapPage() {
     setSaving(true);
     setMsg('');
     try {
-      const poolAddr = A.LiquidityPoolV6;
-      if (!poolAddr) throw new Error('LiquidityPoolV6 address is not configured for this build.');
+      const poolAddr = (A as any).LiquidityPoolV7;
+      if (!poolAddr) throw new Error('LiquidityPoolV7 address is not configured for this build.');
 
       const signer = await getSigner();
       const me = await signer.getAddress();
@@ -604,31 +616,37 @@ export default function SwapPage() {
 
       {/* STATUS ALERT */}
       {/*
-        "Locked for 10 years" was not true and never had been. LiquidityPoolV6 has no lock
-        period and no unlock: it has no withdrawal function at all. Its complete set of
-        state-changing entry points is poke, advancePhase, seedMic, receiveUSDT,
-        reportDailyEmission and the two swaps. Nothing takes assets out except a member's
-        trade \u2014 no admin, no DAO, no timelock that eventually opens.
+        This section describes LiquidityPoolV7, the public pool. V6 is on the card further
+        down, held back and not public.
 
-        The earlier text also described a PancakeSwap V3 pair. There is no PancakeSwap
-        anywhere in this system; V6 is the protocol's own AMM with a virtual reserve, a
-        30-day sell gate, a TWAP and a variable sell fee.
+        V7 does have one asset exit that V6 lacked: `requestMicWithdraw`, announced seven
+        days ahead and cancellable. It exists because V5, V6 and TreasuryManager between
+        them hold 155,000,000 MIC that can never be sent anywhere, and repeating that a
+        fourth time was not acceptable. USDT still has no exit at all — it leaves only when
+        a member sells.
+
+        There is no PancakeSwap anywhere in this system; V7 is the protocol's own AMM.
       */}
       {!pool?.seeded ? (
         <div className="alert alert-warn" style={{ marginBottom: 16, fontSize: '0.64rem', lineHeight: 1.75 }}>
           <div>
             {'\u26A0\uFE0F'} SWAP pool is <strong>NOT SEEDED</strong>. It quotes no price and
-            refuses every trade until MIC is added with <code>seedMic</code>.
+            refuses every trade until MIC is added with <code>seedMic</code>. It does accept
+            revenue while dormant {'\u2014'} RevenueRouter already points here, and the 40%
+            liquidity slice is accruing. Seeding{' '}
+            <strong>23,500,000 MIC</strong> opens buying at $0.01; the MIC clears its
+            ListingReserveVault cooldown on <strong>24 Aug 2026, 06:57 UTC</strong>.
           </div>
         </div>
       ) : (
         <div className="alert alert-ok" style={{ marginBottom: 16, fontSize: '0.64rem', lineHeight: 1.75 }}>
           <div>
-            {'\u2705'} SWAP is <strong>LIVE</strong>. Buying is open; selling opens on day{' '}
-            {pool.sellOpenDay} (day {pool.ageDays} now). Assets can be added but{' '}
-            <strong>never removed</strong> \u2014 the contract has no withdrawal function for
-            anyone, including the Owner and the DAO. MIC leaves only when a member buys it,
-            USDT only when a member sells.
+            {'\u2705'} SWAP is <strong>LIVE</strong>. Buying is open at{' '}
+            <strong>${pool.spotPrice.toFixed(4)}</strong>. Selling opens when the pool
+            actually holds <strong>{fmtUsd(pool.sellGateUsdt)}</strong> of real USDT
+            {'\u2014'} not on a date. It holds {fmtUsd(pool.reserveUsdt)} now, so{' '}
+            {pool.sellsOpen ? 'the sell side is open.' : 'the sell side is shut.'}{' '}
+            USDT can never be withdrawn: it leaves only when a member sells.
           </div>
         </div>
       )}
@@ -681,10 +699,14 @@ export default function SwapPage() {
         <div className="callout" style={{ fontSize: '0.64rem', lineHeight: 1.75, marginBottom: 16 }}>
           <div>
             <strong>Virtual reserve.</strong> The price basis above is real USDT plus{' '}
-            {fmtUsd(virtualUsdt)} of virtual reserve — an accounting figure, not a balance.
-            It lets the pool quote a two-sided price from the first day and is retired as
-            real USDT arrives, so the price converges on genuine depth rather than jumping
-            when the first buyer appears. Only the real figure can ever be paid out.
+            {fmtUsd(virtualUsdt)} of virtual reserve {'\u2014'} an accounting figure, not a
+            balance. It lets the pool quote a price from the first day, and every real USDT
+            that arrives retires <strong>exactly one</strong> virtual USDT. So the basis
+            holds steady while its composition turns real, and the opening price is $0.01
+            whether the pool receives nothing before it is seeded or the whole{' '}
+            {fmtUsd(pool.virtualReserve + pool.reserveUsdt)}. Backing is{' '}
+            <strong>{(pool.backingBps / 100).toFixed(1)}%</strong> real so far. Only the
+            real figure can ever be paid out.
           </div>
         </div>
       )}
@@ -923,7 +945,7 @@ export default function SwapPage() {
             <div>
               Pre-Sale &amp; MICE revenue flows 40% straight into the SWAP pool. RevenueRouter holds
               DISTRIBUTOR_ROLE on the pool and calls receiveUSDT in the same transaction as the sale, so no
-              admin step is involved. Each real USDT that arrives also retires half a USDT of virtual
+              admin step is involved. Each real USDT that arrives retires exactly one USDT of virtual
               reserve, so the phantom depth shrinks as the real depth grows.
             </div>
           </div>
