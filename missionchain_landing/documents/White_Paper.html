@@ -346,7 +346,6 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <button class="nav-link" onclick="goTo('s9')">9. Governance — Mission DAO</button>
     <button class="nav-link" onclick="goTo('s10')">10. Roadmap &amp; GTM</button>
     <button class="nav-link" onclick="goTo('s11')">11. Risk &amp; Mitigation</button>
-    <button class="nav-link" onclick="goTo('s12')">12. Founding &amp; Executive Team</button>
     <button class="nav-link" onclick="goTo('s13')">13. Conclusion</button>
   </div>
   <div class="nav-group">
@@ -379,7 +378,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <span class="g-full">MISSION CHAIN</span><br/>
         <span style="font-weight:300;font-size:.65em;color:var(--gray)" data-t="hero-sub">NETWORK</span>
       </h1>
-      <div class="hero-tagline anim a2" data-t="hero-tagline">Inspired by Faith. Built for People.</div>
+      <div class="hero-tagline anim a2" data-t="hero-tagline">Born of Faith. Built for People.</div>
       <div class="hero-quote anim a3">
         <span data-t="hero-quote">"You are the light of the world. A city on a hill cannot be hidden."</span>
         <cite>— Matthew 5:14</cite>
@@ -433,7 +432,6 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <a class="toc-item" onclick="goTo('s9')"><span class="toc-num">09</span><span class="toc-name">Governance — Mission DAO</span></a>
     <a class="toc-item" onclick="goTo('s10')"><span class="toc-num">10</span><span class="toc-name">Roadmap &amp; Go-To-Market Strategy</span></a>
     <a class="toc-item" onclick="goTo('s11')"><span class="toc-num">11</span><span class="toc-name">Risk &amp; Mitigation</span></a>
-    <a class="toc-item" onclick="goTo('s12')"><span class="toc-num">12</span><span class="toc-name">Founding &amp; Executive Team</span></a>
     <a class="toc-item" onclick="goTo('s13')"><span class="toc-num">13</span><span class="toc-name">Conclusion</span></a>
     <a class="toc-item" onclick="goTo('appA')"><span class="toc-num">A</span><span class="toc-name">Appendix A — Seed Round (Private Sale to Early and Strategic Investors)</span></a>
     <a class="toc-item" onclick="goTo('appB')"><span class="toc-num">B</span><span class="toc-name">Appendix B — Pre-Sale Community</span></a>
@@ -697,7 +695,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td>Universal Medium of Exchange</td><td>All internal transactions — course fees, job payments, marketplace purchases, and platform fees — are denominated and settled in MIC.</td><td>Mission Learn, Mission Work, Mission Arts, Hub activity rewards, 50% of each MICE activation</td></tr>
         <tr><td>Governance Stake</td><td>MIC is staked alongside the approved MFP rule to determine governance eligibility and voting weight. No qualifying MIC stake means no governance participation.</td><td>DAO votes, MFP governance, proposal thresholds</td></tr>
-        <tr><td>Protocol Allocation</td><td>MIC is emitted daily through the Hindex Algorithm under protocol-governed allocation rules to network participants, stakers, and DAO Treasury.</td><td>60% MICE Participants, 25% Staking, 10% DAO Treasury, 5% Community NFT Allocation</td></tr>
+        <tr><td>Protocol Allocation</td><td>MIC is emitted daily through the Hindex Algorithm under protocol-governed allocation rules to network participants, stakers, and DAO Treasury.</td><td>59% MICE Participants, 25% Staking, 10% DAO Treasury, 5% Community NFT Allocation</td></tr>
       </tbody>
     </table>
   </div>
@@ -714,11 +712,44 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Incentives &amp; Airdrops</td><td>0.25%</td><td class="mono">17,500,000</td><td>10% after 6 months, then 2.5% monthly</td></tr>
         <tr><td>DEX / CEX Listing</td><td>1.50%</td><td class="mono">105,000,000</td><td>Estimated listing price USD 0.01 · unlocked for market liquidity</td></tr>
         <tr><td>Founders, Operating &amp; Management</td><td>4.00%</td><td class="mono">280,000,000</td><td>10% after 24 months, then 2.5% monthly</td></tr>
-        <tr><td>DAO Treasury</td><td>1.50%</td><td class="mono">105,000,000</td><td>10% after 24 months, then 2.5% monthly</td></tr>
+        <tr><td>DAO Treasury / Churches (genesis)</td><td>1.50%</td><td class="mono">105,000,000</td><td><strong>Immobilised</strong> — held in a contract that cannot send MIC; the schedule below cannot execute. See "Immobilised Genesis Allocation"</td></tr>
         <tr><td><strong>Total Supply</strong></td><td><strong>100%</strong></td><td class="mono"><strong>7,000,000,000</strong></td><td>Immutable hard cap — no additional issuance possible</td></tr>
       </tbody>
     </table>
   </div>
+  <h3 class="sub-title">Token Burn Record</h3>
+  <div class="callout gold">
+    <p><strong>5 August 2026 — 31,500,000 MIC permanently burned.</strong> Pre-issued supply fell from 1,050,000,000 to <strong>1,018,500,000 MIC</strong>. The 7,000,000,000 hard cap is unchanged.</p>
+  </div>
+  <p>The burned MIC was the portion of the DEX/CEX Listing allocation that had been placed in LiquidityPool v5. That contract has no withdrawal function of any kind and its swap entry points revert by design, so the tokens could never have been sold, lent or moved. The one exit that existed was <span class="mono">swapAndBurnMIC</span>, which destroys the contract's own balance. Rather than leave 3% of the pre-issued supply in a dead contract and ask readers to accept a lock-up on trust, the protocol destroyed it.</p>
+  <p><strong>The burn cannot be undone or offset.</strong> The only remaining way MIC can be created is <span class="mono">mintFromMining</span>, bounded by a cumulative counter that a burn does not reset. No key holder, including the founding team, can re-issue these tokens.</p>
+  <div class="wp-table-wrap">
+    <table class="wp-table">
+      <tbody>
+        <tr><td>Amount burned</td><td class="mono">31,500,000 MIC</td></tr>
+        <tr><td>Pre-issued supply after burn</td><td class="mono">1,018,500,000 MIC</td></tr>
+        <tr><td>Source contract</td><td class="mono">LiquidityPool v5 — 0x37091454eB49179D3aFF12402980F63cFC3e050a</td></tr>
+        <tr><td>Transaction</td><td class="mono">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</td></tr>
+        <tr><td>Block</td><td class="mono">114,156,353 — BNB Smart Chain</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Verify independently: <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener">the burn transaction</a> records a transfer of 31,500,000 MIC to the zero address, and the <a href="https://bscscan.com/token/0xf27ec0c311728b923b22828002c992c799326182" target="_blank" rel="noopener">MIC token page</a> reports the reduced total supply.</p>
+  <p><strong>Effect on the DEX / CEX Listing allocation above:</strong> of the 105,000,000 MIC allocated, 31,500,000 are burned and 73,500,000 remain in the Listing Reserve Vault — 50,000,000 of which seed the protocol liquidity pool, and 23,500,000 are held to open an external market.</p>
+
+  <h3 class="sub-title">Immobilised Genesis Allocation</h3>
+  <div class="callout gold">
+    <p><strong>105,000,000 MIC minted at genesis cannot be moved by anyone, including the founding team.</strong> The tokens remain in total supply but can never circulate. They are not a reserve the protocol can draw on, and are not presented as one.</p>
+  </div>
+  <p>The DAO Treasury and Churches allocation was minted to a contract at <span class="mono">0x1ed5C848D1244a618Bd95Ff92d4f8C2356d3a42F</span>. That contract declares only one token, USDT. All three of its write functions move USDT; it holds no reference to MIC, no code capable of approving a spender, and it is not an upgradeable proxy. No call exists that can transfer, grant or burn the MIC sitting there.</p>
+  <p>Unlike the LiquidityPool v5 balance recorded above, this one cannot even be destroyed. There is no exit of any kind. The vesting schedule previously published for this allocation — a 24-month cliff, then 10% and 2.5% monthly — cannot execute, because no function exists to execute it.</p>
+  <p>This was a development error, found in August 2026 while building treasury tooling. The contract was written for USDT and later used to hold MIC as well, and no one verified that it could send what it was being given. It is published here rather than carried quietly, and can be verified by anyone from the contract's source on BSCScan.</p>
+
+  <h4 class="mini-title">How the community programme is funded instead</h4>
+  <p>The Churches &amp; Christian Community programme continues, funded from ongoing issuance rather than from the immobilised genesis allocation: <strong>10% of the DAO's mining allocation — that is, 1% of daily issuance — is routed to a dedicated Churches vault</strong> as each day's emission arrives.</p>
+  <p>The published emission split is unchanged at 59% miners · 25% staking · 10% DAO · 5% Community NFT · 1% MFP-NFT. The Churches share is an allocation <em>inside</em> the DAO's own 10%, not a sixth slice, so no other programme is reduced to fund it.</p>
+  <p>Each grant transfers MIC and creates the recipient's on-chain vesting schedule in the same transaction — a 24-month cliff, 10% at the cliff, then 2.5% monthly. There is no code path that releases a grant without its schedule. The design rule adopted after this incident, and now tested for explicitly: <strong>a contract that can hold a token must be able to send that token.</strong></p>
+
   <h3 class="sub-title">7.2 MICE — Time-Bound Network Participation Credential</h3>
   <p>MICE is not a token and not an investment instrument. It is a time-bound network participation credential within a fixed protocol allocation framework, valid for 360 days from activation.</p>
   <div class="grid2">
@@ -727,10 +758,10 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <p>When you activate a MICE credential, your participation is recognized within the Hindex allocation cycle. Protocol allocation depends on the approved participation model and prevailing protocol conditions during your active period. After 360 days, the credential expires automatically — see the technical appendix for the canonical formulas.</p>
       <div class="formula">
   <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-  <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span>
+  <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span>
   <div class="comment" style="margin-top:8px;font-size:0.8rem">
-    Early Staking Boost: MICE participants 50% → 60% linearly over first 90 days, then fixed 60%.<br/>
-    E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)
+    Early Staking Boost: MICE participants 49% → 59% linearly over first 90 days, then fixed 59%.<br/>
+    E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)
   </div>
 </div>
     </div>
@@ -739,7 +770,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <ul class="dot-list">
         <li>Maximum supply: 100,000 MICE credentials.</li>
         <li>Credential duration: 360 days from activation.</li>
-        <li>Payment structure: 50% USDT + 50% MIC using 7-day TWAP on activation day.</li>
+        <li>Payment structure: 50% USDT + 50% MIC. The MIC portion is priced at purchase using whichever is lower of the spot price and the 7-day TWAP. Until the liquidity pool is seeded, a fixed bootstrap price of $0.01 applies.</li>
         <li>Recycling policy: expired credentials are recycled by protocol; DAO governs reissuance terms.</li>
       </ul>
     </div>
@@ -748,11 +779,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Round</th><th>MICE Serial #</th><th>Price (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
@@ -803,7 +834,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Activity</th><th>MIC Flow</th><th>Value Distribution</th></tr></thead>
       <tbody>
         <tr><td>Mission Learn fees</td><td>MIC collected → partial burn</td><td>60% creators · 20% buy &amp; burn · 20% Treasury</td></tr>
-        <tr><td>MICE credential activations</td><td>50% USDT + 50% MIC → burn + approved allocation programs</td><td>12.5% Treasure DAO, 40% Liquidity Pool, 5% Reserved Staking</td></tr>
+        <tr><td>MICE credential activations</td><td>50% USDT + 50% MIC → burn + approved allocation programs</td><td>12.5% DAO Treasury, 40% Liquidity Pool, 5% Listing Reserve</td></tr>
         <tr><td>Mission Work job payments</td><td>100% MIC settled on-chain</td><td>Platform fee split between Treasury, burn, and Hub rewards; balance to creator</td></tr>
         <tr><td>Mission Arts licensing</td><td>MIC per license + optional royalty stream</td><td>80–85% creator · 10–15% protocol · 5% burn</td></tr>
         <tr><td>Community participation incentives</td><td>MIC from event allocation programs</td><td>Creator incentive + ecosystem flywheel reinforcement</td></tr>
@@ -823,7 +854,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>Base Chain (Phase I–III)</td><td>BNB Smart Chain (BSC)</td><td>High-speed, low-cost settlement accessible to emerging markets</td></tr>
         <tr><td>Token Contract</td><td>BEP-20 standard</td><td>MIC utility token with hard-capped supply and Hindex-governed emission</td></tr>
         <tr><td>Emission Control Layer</td><td>Hindex Algorithm</td><td>Adaptive, liquidity-responsive, time-decaying daily MIC protocol allocation</td></tr>
-        <tr><td>NFT Layer</td><td>ERC-721 (MFP-NFT) + ERC-1155 (MICE Credential, Community NFT)</td><td>MFP-NFT (ERC-721): permanent governance credential activated by staking and re-verification. MICE Credential + Community NFT (ERC-1155): multi-token contract for time-bound participation credentials and Builder/Maker/Luminary tier credentials with efficient batch operations.</td></tr>
+        <tr><td>NFT Layer</td><td>ERC-721 (MFP-NFT, Community NFT) + ERC-1155 (MICE Credential)</td><td>MFP-NFT (ERC-721): permanent governance credential activated by staking and re-verification. MICE Credential (ERC-1155) + Community NFT (ERC-721): multi-token contract for time-bound participation credentials and Builder/Maker/Luminary tier credentials with efficient batch operations.</td></tr>
         <tr><td>MICE Contracts</td><td>Time-bound participation credential contracts</td><td>360-day participation credentials with auto-expiry, recycling logic, and dynamic pricing</td></tr>
         <tr><td>Governance Layer</td><td>DAO contracts with timelocks and quorum</td><td>Enforces immutable parameters and executes framework votes within constitutional bounds</td></tr>
         <tr><td>AI Layer</td><td>Economic Oracle + Analytics Engine</td><td>Advisory monitoring, anomaly detection, and governance proposal support</td></tr>
@@ -833,17 +864,19 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
   <h3 class="sub-title">8.1 The Adaptive Emission Engine</h3>
   <div class="formula">
-    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × R(t) × W(t)</span><br/>
-    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ ≈ 22,907,500 MIC/day · T<sub>half</sub> = 180 days · D(t) = 0.5 + U(t) [0.5, 1.5] · R(t) = clamp(250%/ROI, 0.5, 2.0) · W(t) = min(1.0, t/30) [WarmUp factor, first 30 days]</span>
+    <span class="math">E(t) = E<sub>base</sub>(t) × D(t) × L(H) × W(t) × A(N)</span><br/>
+    <span class="comment">E<sub>base</sub>(t) = E₀ × e<sup>−λt</sup> · E₀ = 750,000 MIC/day · T<sub>half</sub> = 8 years · D(t) = 0.5 + U(t) [0.5, 1.5] · L(H) = clamp(H/110, 0.02, 2.0) · W(t) = min(1.0, t/30) · A(N) = min(1, √(N/10,000))</span>
   </div>
   <div class="wp-table-wrap" style="margin-top:18px">
     <table class="wp-table">
       <thead><tr><th>Component</th><th>Value / Formula</th><th>Function</th></tr></thead>
       <tbody>
-        <tr><td>E<sub>base</sub></td><td>22,907,500 MIC/day (E₀ initial rate)</td><td>Initial allocation rate that distributes exactly 5.95B MIC through the protocol schedule</td></tr>
+        <tr><td>E<sub>base</sub></td><td>750,000 MIC/day (E₀ initial rate)</td><td>Ceiling rate at t=0, decaying with an 8-year half-life. The mining allocation of 5.95B MIC is a maximum, not a target: what is actually issued depends on the regulators below</td></tr>
         <tr><td>W(t)</td><td>min(1.0, t/30)</td><td>Warm-up factor for the first 30 days, smoothing early-stage emission without changing total supply</td></tr>
         <tr><td>D(t)</td><td>0.5 + U(t)</td><td>Demand factor — U(t) = MICE utilization rate. Range [0.5, 1.5]</td></tr>
-        <tr><td>R(t)</td><td>clamp(250%/ROI, 0.5, 2.0)</td><td>Emission balancing factor based on an internal allocation-pressure index (technical, see Appendix D for full specification — kept clamped to maintain protocol stability)</td></tr>
+        <tr><td>L(H)</td><td>clamp(H/110, 0.02, 2.0)</td><td>Liquidity-coverage regulator. H = protocol liquidity ÷ daily issuance value, expressed in days. Issuance is reduced whenever coverage falls below the 110-day target. Limited to ±10% change per day</td></tr>
+        <tr><td>A(N)</td><td>min(1, √(N/10,000))</td><td>Adoption ramp. Scales issuance to the number of active mining credentials so that early-stage issuance is proportionate to participation</td></tr>
+        <tr><td>G</td><td>clamp(TWAP<sub>7d</sub> / TWAP<sub>30d</sub>, 0.25, 1.0)</td><td>Trend damper applied on top of L(H). Capped at 1.0, so it can only reduce issuance, never increase it</td></tr>
       </tbody>
     </table>
   </div>
@@ -931,31 +964,31 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <div class="timeline" style="margin-top:28px">
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <div class="tl-phase">Phase I · Q1–Q2 2026</div>
+      <div class="tl-phase">Phase I</div>
       <div class="tl-title">Overall Strategy &amp; Foundation</div>
-      <div class="tl-body"><ul class="dot-list"><li>Complete White Paper &amp; Appendices documentation.</li><li>Complete core Smart Contracts V1 scope, DAO framework milestone, and initial internal audit round.</li><li>SEED Sale → Presale → SWAP Activation (End Q2).</li><li>Mission World Demo launch.</li></ul></div>
+      <div class="tl-body"><ul class="dot-list"><li>Complete White Paper &amp; Appendices documentation.</li><li>Complete core Smart Contracts V1 scope, DAO framework milestone, and initial internal audit round.</li><li>SEED Sale → Presale → SWAP Activation.</li><li>Mission World Demo launch.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--blue2)"><div style="width:8px;height:8px;background:var(--blue2);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--blue2)">Phase II · Q3–Q4 2026</div>
+      <div class="tl-phase" style="color:var(--blue2)">Phase II</div>
       <div class="tl-title">MICE Distribution &amp; Mining Launch</div>
       <div class="tl-body"><ul class="dot-list"><li>MICE Distribution begins across all pricing rounds.</li><li>MIC Mining launched with full Hindex emission engine active.</li><li>Mission World officially launched as the first community platform built on the three-pillar architecture.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--gold)"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--gold)">Phase III · Q1–Q2 2027</div>
+      <div class="tl-phase" style="color:var(--gold)">Phase III</div>
       <div class="tl-title">DEX Listing &amp; Ecosystem Expansion</div>
       <div class="tl-body"><ul class="dot-list"><li>DEX Listing on major exchanges.</li><li>Mission Learn, Mission Social, and Mission Chain (L2) Testnet launched.</li><li>Expanded creator economy infrastructure.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:var(--green)"><div style="width:8px;height:8px;background:var(--green);border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:var(--green)">Phase IV · Q3–Q4 2027</div>
+      <div class="tl-phase" style="color:var(--green)">Phase IV</div>
       <div class="tl-title">CEX Listing &amp; Cross-Chain Bridge</div>
       <div class="tl-body"><ul class="dot-list"><li>CEX Listing on major cryptocurrency exchanges.</li><li>Mission Work marketplace at scale.</li><li>Cross-Chain Bridge integration for multi-chain support.</li></ul></div>
     </div>
     <div class="tl-item">
       <div class="tl-dot" style="border-color:#8B6F47"><div style="width:8px;height:8px;background:#8B6F47;border-radius:50%"></div></div>
-      <div class="tl-phase" style="color:#8B6F47">Phase V · Q1 2028+</div>
+      <div class="tl-phase" style="color:#8B6F47">Phase V</div>
       <div class="tl-title">Ecosystem Expansion &amp; L2 Mainnet</div>
       <div class="tl-body"><ul class="dot-list"><li>Full ecosystem expansion across all Mission products.</li><li>Mission Chain (L2) Mainnet launch.</li><li>Global adoption milestones and sustained growth.</li></ul></div>
     </div>
@@ -1003,27 +1036,6 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       </tbody>
     </table>
   </div>
-</div>
-
-<div id="s12" class="section">
-  <div class="section-num">12</div>
-  <h2 class="section-title">Founding &amp; Executive <span class="g-full">Team</span></h2>
-  <p class="lead">Mission Chain is initiated by a multidisciplinary founding team whose mandate is clear: build the foundation, establish the infrastructure, and then hand governance to the community systematically and transparently.</p>
-  <div class="wp-table-wrap">
-    <table class="wp-table">
-      <thead><tr><th>Name</th><th>Role</th><th>Focus &amp; Contribution</th></tr></thead>
-      <tbody>
-        <tr><td>David Truong Chinh</td><td>Visionary Founder &amp; Primary Early Contributor</td><td>Faith leadership, creative vision, human-centered philosophy, and foundational ecosystem architecture</td></tr>
-        <tr><td>James Lee Harstad</td><td>Founding Member &amp; CEO</td><td>Strategic coherence, global coordination, integrity-first leadership, and governance framework stewardship</td></tr>
-        <tr><td>John Clement</td><td>Head of Training &amp; Regional CEO — Africa</td><td>Mission Learn curriculum, leadership development, banking and technology experience, and Africa Hub strategy</td></tr>
-        <tr><td>Nirmal Mukherjee</td><td>Chief Technology Officer (CTO)</td><td>Core application architecture, engineering excellence, smart contract security, and Hindex implementation</td></tr>
-        <tr><td>Aniekan Inemesit Essien</td><td>Social Media Director (Global)</td><td>Storytelling-to-adoption campaigns, ecosystem community growth, and Creator Story content strategy</td></tr>
-        <tr><td>Melanie Pham</td><td>Head of International Relations &amp; BD</td><td>Global partnerships, cross-border collaboration, and strategic investor relationships</td></tr>
-        <tr><td>Clement Otu</td><td>CMO — Africa</td><td>Regional marketing, community engagement, and Hub Leader recruitment across Sub-Saharan Africa</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout green"><p><strong>Stewardship Commitment:</strong> Every founding team member receives MFP-NFTs through founding contribution and is subject to the same constitutional rules, staking requirements, lock periods, and sale restrictions as every other MFP-NFT holder.</p></div>
 </div>
 
 <div id="s13" class="section">
@@ -1167,25 +1179,21 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>The 6-month cliff ensures all SEED investors remain committed through the critical early activation phase. The 2.5% monthly linear release thereafter creates predictable, gradual supply expansion aligned with ecosystem growth milestones.</p>
 
   <h3 class="sub-title">A.4 Use of SEED Funds</h3>
-  <p><strong>Net SEED Raise target:</strong> ~USD 425,000 after estimated fundraising costs. All figures remain approximate.</p>
+  <p><strong>Gross SEED public-sale proceeds:</strong> ~USD 381,250 (152,500,000 MFP &times; $0.0025). Every SEED contribution flows on-chain through SeedBudget, which splits it into four governed slots. All figures remain approximate.</p>
   <div class="wp-table-wrap">
     <table class="wp-table">
-      <thead><tr><th>Category</th><th>Purpose</th><th>% of Net Raise</th></tr></thead>
+      <thead><tr><th>Slot</th><th>Purpose</th><th>% / Amount</th></tr></thead>
       <tbody>
-        <tr><td>Core Protocol Engineering</td><td>Token contracts, Hindex mining engine, NFT systems (MFP-NFT + Community NFT), MICE contracts, and BSC mainnet deployment</td><td>35% (~$149,000)</td></tr>
-        <tr><td>Security Audits &amp; Legal</td><td>Third-party smart contract audits for all core contracts, legal structuring, and jurisdiction review</td><td>5% (~$21,250)</td></tr>
-        <tr><td>Initial Liquidity Provision</td><td>DEX listing LP seeding to establish the <span class="math">L<sub>ref</sub></span> baseline at meaningful depth</td><td>30% (~$127,500)</td></tr>
-        <tr><td>Operations &amp; Infrastructure</td><td>Team operational costs, tooling, cloud infrastructure, and development environment</td><td>10% (~$42,500)</td></tr>
-        <tr><td>SEED Sales &amp; Fundraising</td><td>Travel, investor meetings, advisory services, events, onboarding documentation, and due diligence support</td><td>15% (~$63,750)</td></tr>
-        <tr><td><strong>TOTAL</strong></td><td><strong>100% of Net SEED Cash</strong></td><td><strong>~USD 425,000</strong></td></tr>
+        <tr><td><strong>Distribution</strong></td><td>Community &amp; referral distribution to SEED participants and the growth network</td><td>20% (~$76,250)</td></tr>
+        <tr><td><strong>Operational</strong></td><td>Core protocol engineering, security audits, infrastructure, tooling, and team operational salaries</td><td>20% (~$76,250)</td></tr>
+        <tr><td><strong>Management Bonus</strong></td><td>Management &amp; leadership incentives — released by Steward Council 3-of-5 vote</td><td>10% (~$38,125)</td></tr>
+        <tr><td><strong>Reserved Expenses (DAO-governed)</strong></td><td>Strategic reserve for future audits, expansion, and ecosystem needs — released by Steward Council 3-of-5 vote (Phase 1) &rarr; DAOGovernor (Phase &beta;)</td><td>50% (~$190,625)</td></tr>
+        <tr><td><strong>TOTAL</strong></td><td><strong>100% of gross SEED public-sale proceeds</strong></td><td><strong>~USD 381,250</strong></td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout green">
-    <p><strong>Liquidity Provision Note:</strong> The 30% DEX liquidity allocation is a critical launch design element — not a discretionary marketing expense. Deep initial liquidity supports price discovery, lowers slippage, and creates a healthier market during the first 30-day warm-up period. The Adaptive Emission Engine is governed by <span class="math">E<sub>base</sub>(t)</span>, <span class="math">D(t)</span>, <span class="math">R(t)</span>, and <span class="math">W(t)</span>; there is no separate liquidity multiplier in the emission formula.</p>
-  </div>
-  <div class="formula">
-    <span class="math">Target: $127,500 initial DEX pool → supports orderly price discovery, lower slippage, and stronger market readiness during Warm-Up Phase W(t).</span>
+    <p><strong>Liquidity Note:</strong> Initial DEX liquidity is <strong>not</strong> funded from SEED. It is provided from the Pre-Sale and MICE rounds together with the dedicated LiquidityPool allocation (105,000,000 MIC, permanently locked). This keeps SEED proceeds fully directed to protocol build-out, operations, incentives, and the DAO-governed reserve. A 5% protocol fee applies to each on-chain slot release.</p>
   </div>
 </div>
 
@@ -1281,7 +1289,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <tr><td>Funding Source</td><td>PRE-SALE proceeds only — not from treasury, mining, or any other pool</td></tr>
     <tr><td>Ambassador Eligibility</td><td>The referrer must be an active MICE operator or a Community NFT holder before receiving Direct Referral.</td></tr>
     <tr><td>Program Depth</td><td>Maximum 2 steps only — no deeper chain rewarded</td></tr>
-    <tr><td>Total Program Cap</td><td>≤ 15% of total PRE-SALE proceeds (~$225,000 at $1.5M raise)</td></tr>
+    <tr><td>Total Program Cap</td><td>Exactly 10% of PRE-SALE proceeds (Direct 7% + Indirect 3%) — fixed on-chain in RevenueRouter and not adjustable. ≈ $157,500 at the $1,575,000 hard cap</td></tr>
     <tr><td>Program Termination</td><td>Permanently disabled upon PRE-SALE phase closure — no exceptions</td></tr>
   </tbody></table></div>
   <h4 class="mini-title">B.4.3 Integrity Safeguards</h4>
@@ -1383,16 +1391,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Round</th><th>MICE Serial #</th><th>Price (USD)</th><th>Band</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1 – 20,000</td><td class="hl">$100</td><td>Early Stage</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001 – 40,000</td><td class="hl">$200</td><td>Growth</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001 – 60,000</td><td class="hl">$300</td><td>Expansion</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001 – 80,000</td><td class="hl">$400</td><td>Mature</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001 – 100,000</td><td class="hl">$500</td><td>Premium</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout gold">
-    <p><strong>Payment Structure:</strong> Each MICE purchase is settled as <strong>50% USDT + 50% MIC (Burned)</strong>. The USDT portion flows to the Revenue Router; the MIC portion is burned on-chain, reducing total circulating supply. The MIC amount is calculated at activation time using the 7-day TWAP to ensure the 50/50 USD-value split. This dual-payment mechanism creates natural buy-burn pressure on MIC while the protocol receives stable liquidity in USDT.</p>
+    <p><strong>Payment Structure:</strong> Each MICE purchase is settled as <strong>50% USDT + 50% MIC (Burned)</strong>. The USDT portion flows to the Revenue Router; the MIC portion is burned on-chain, reducing total circulating supply. The MIC amount is calculated at the moment of purchase, using whichever is lower of the spot price and the 7-day TWAP, to ensure the 50/50 USD-value split. Taking the lower of the two prevents a short-lived price spike from reducing the MIC burned. Until the liquidity pool is seeded, a fixed bootstrap price of $0.01 is used instead. This dual-payment mechanism creates natural buy-burn pressure on MIC while the protocol receives stable liquidity in USDT.</p>
   </div>
 
   <h3 class="sub-title">C.4 Protocol Participation Rules</h3>
@@ -1409,15 +1417,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
 
   <h3 class="sub-title">C.5 MIC Protocol Allocation Distribution (85% of Total Supply)</h3>
-  <p>The full 85% protocol emission allocation (5,950,000,000 MIC) is distributed daily via the Adaptive Emission Engine across four pools. The split below governs how each day's total emission <span class="math">E(t)</span> is allocated.</p>
+  <p>The full 85% protocol emission allocation (5,950,000,000 MIC) is distributed daily via the Adaptive Emission Engine across five pools. The split below governs how each day's total emission <span class="math">E(t)</span> is allocated.</p>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>Allocation Target</th><th>Share of Daily Emission E(t)</th></tr></thead>
       <tbody>
-        <tr><td>MICE Participants</td><td class="hl">60%</td></tr>
+        <tr><td>MICE Participants</td><td class="hl">59%</td></tr>
         <tr><td>Staking</td><td class="hl">25%</td></tr>
         <tr><td>DAO Treasury</td><td class="hl">10%</td></tr>
         <tr><td>Community NFT Allocation</td><td class="hl">5%</td></tr>
+        <tr><td>MFP-NFT Reward</td><td class="hl">1%</td></tr>
         <tr><td>Total</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
@@ -1426,7 +1435,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">C.6 MICE Participation Allocation Formula</h3>
   <div class="formula">
     <span class="math">R<sub>MICE,i</sub>(t) = (M<sub>i</sub> / N<sub>t</sub>) × MinerPct(t) × E(t)</span><br/>
-    <span class="math">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 50%→60% over first 90 days)</span><br/>
+    <span class="math">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</span> <span class="comment">(Early Staking Boost: 49%→59% over first 90 days)</span><br/>
     <span class="comment">Total protocol emission remains fixed · Per-credential allocation reflects relative participation · No inflation amplification</span>
   </div>
   <div class="wp-table-wrap">
@@ -1437,12 +1446,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td>N<sub>t</sub></td><td>Total active MICE credentials on day t across all participants</td></tr>
         <tr><td>M<sub>i</sub></td><td>Active MICE credentials held by participant i on day t</td></tr>
         <tr><td>R<sub>MICE,i</sub>(t)</td><td>Daily MIC allocation for participant i on day t</td></tr>
-        <tr><td>MinerPct(t)</td><td>MICE participants' share of daily emission — ramps 50%→60% linearly over first 90 days (Early Staking Boost), then fixed at 60%</td></tr>
+        <tr><td>MinerPct(t)</td><td>MICE participants' share of daily emission — ramps 49%→59% linearly over first 90 days (Early Staking Boost), then fixed at 59%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout">
-    <p><strong>Formula Interpretation:</strong> Each participant's daily allocation is proportional to their share of total active MICE credentials on that day. A participant holding 10 MICE when 1,000 are active is allocated 1% of the 60% MICE participant pool. Because <span class="math">E(t)</span> varies by day under the Hindex Algorithm, daily allocations are not fixed and reflect both the participant's relative share and the protocol's current emission rate. No daily allocation amount is guaranteed.</p>
+    <p><strong>Formula Interpretation:</strong> Each participant's daily allocation is proportional to their share of total active MICE credentials on that day. A participant holding 10 MICE when 1,000 are active is allocated 1% of the 59% MICE participant pool. Because <span class="math">E(t)</span> varies by day under the Hindex Algorithm, daily allocations are not fixed and reflect both the participant's relative share and the protocol's current emission rate. No daily allocation amount is guaranteed.</p>
   </div>
 
   <h3 class="sub-title">C.7 Mission Ambassador Program (MICE Sale)</h3>
@@ -1480,17 +1489,18 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Allocation Category</th><th>USDT Share</th></tr></thead>
       <tbody>
-        <tr><td>Marketing &amp; Sales</td><td class="hl">35%</td></tr>
+        <tr><td>Referral (Direct 7% + Indirect 3%)</td><td class="hl">10%</td></tr>
+        <tr><td>Marketing &amp; Sales</td><td class="hl">25%</td></tr>
         <tr><td>Management &amp; Operational</td><td class="hl">7.5%</td></tr>
-        <tr><td>Treasure DAO</td><td class="hl">12.5%</td></tr>
-        <tr><td>Reserved Staking</td><td class="hl">5%</td></tr>
+        <tr><td>DAO Treasury</td><td class="hl">12.5%</td></tr>
+        <tr><td>Listing Reserve</td><td class="hl">5%</td></tr>
         <tr><td>Liquidity Pool + Buffer</td><td class="hl">40%</td></tr>
         <tr><td>Total</td><td class="hl">100%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout green">
-    <p><strong>MICE Revenue Allocation:</strong> 50% of MICE price is paid in MIC (burned), 50% in USDT. The USDT portion follows the same allocation as Pre-Sale: 35% Marketing &amp; Sales, 7.5% Management, 57.5% Net Capital.</p>
+    <p><strong>MICE Revenue Allocation:</strong> 50% of MICE price is paid in MIC (burned), 50% in USDT. The USDT portion follows the same allocation as Pre-Sale: 10% Referral, 25% Marketing &amp; Sales, 7.5% Management, 57.5% Net Capital.</p>
   </div>
 
   <h3 class="sub-title">C.9 Guardrails &amp; Compliance</h3>
@@ -1541,10 +1551,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Pool</th><th>% of Mining</th><th>MIC Allocation</th><th>Purpose</th></tr></thead>
       <tbody>
-        <tr><td><strong>MICE Participants</strong></td><td class="hl">60%</td><td class="mono">3,570,000,000</td><td>MICE participation allocation</td></tr>
+        <tr><td><strong>MICE Participants</strong></td><td class="hl">59%</td><td class="mono">3,510,500,000</td><td>MICE participation allocation</td></tr>
         <tr><td><strong>Staking</strong></td><td class="hl">25%</td><td class="mono">1,487,500,000</td><td>MIC staking allocation (all holders)</td></tr>
         <tr><td><strong>DAO Treasury</strong></td><td class="hl">10%</td><td class="mono">595,000,000</td><td>Ecosystem dev, partnerships, reserves</td></tr>
         <tr><td><strong>Community NFT Allocation</strong></td><td class="hl">5%</td><td class="mono">297,500,000</td><td>Community NFT incentive allocation</td></tr>
+        <tr><td><strong>MFP-NFT Reward</strong></td><td class="hl">1%</td><td class="mono">59,500,000</td><td>MFP-NFT holder allocation</td></tr>
       </tbody>
     </table>
   </div>
@@ -1553,19 +1564,21 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>The core adaptive emission engine uses four independent modulation factors:</p>
 
   <div class="formula-label">TOTAL EMISSION RATE</div>
-  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × R(t) × W(t)</div>
+  <div class="formula">E(t) = E₀ × e^(−λt) × D(t) × L(H) × W(t) × A(N)</div>
 
   <p>Where:</p>
   <ul>
-    <li><strong>E₀ ≈ 22,907,500 MIC/day</strong> — Initial emission rate (proportional to 85% of 7B ÷ ~365 days first year)</li>
-    <li><strong>λ ≈ 0.00385 day⁻¹</strong> — Exponential decay constant (T_half = 180 days ≈ 3 years to 99% emitted)</li>
+    <li><strong>E₀ = 750,000 MIC/day</strong> — Ceiling issuance rate at t = 0</li>
+    <li><strong>λ ≈ 0.000237 day⁻¹</strong> — Exponential decay constant (T_half = 8 years)</li>
     <li><strong>D(t) = 0.5 + U(t)</strong> — Demand factor: range [0.5, 1.5] based on ecosystem activity score</li>
-    <li><strong>R(t) = clamp(250% / ROI(t), 0.5, 2.0)</strong> — Emission balancing factor derived from an internal allocation-pressure index (technical protocol parameter; not a public yield target or guaranteed return)</li>
+    <li><strong>L(H) = clamp(H / 110, 0.02, 2.0)</strong> — Liquidity-coverage regulator, where H is protocol liquidity divided by the value of one day of issuance, expressed in days. Rate of change limited to ±10% per day</li>
+    <li><strong>A(N) = min(1, √(N / 10,000))</strong> — Adoption ramp tied to the number of active mining credentials N</li>
+    <li><strong>G = clamp(TWAP<sub>7d</sub> / TWAP<sub>30d</sub>, 0.25, 1.0)</strong> — Trend damper, capped at 1.0 so it can only reduce issuance</li>
     <li><strong>W(t) = min(1.0, t / 30 days)</strong> — WarmUp factor: linear ramp from 0% to 100% over first 30 days</li>
   </ul>
 
   <div class="callout green">
-    <p><strong>W(t) Explanation:</strong> The warmup factor ensures that full emission rates are not reached until day 30, giving the liquidity pool time to stabilize and preventing initial price volatility. On Day 1, E(1) = E_base(1) × D(1) × R(1) × (1/30) ≈ 3.3% of full rate.</p>
+    <p><strong>W(t) Explanation:</strong> The warmup factor ensures that full emission rates are not reached until day 30, giving the liquidity pool time to stabilize and preventing initial price volatility. On Day 1, E(1) = E_base(1) × D(1) × L(1) × (1/30) × A(1) — a small fraction of the ceiling rate.</p>
   </div>
 
   <h4 class="mini-title">Demand Factor D(t)</h4>
@@ -1579,12 +1592,13 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </ul>
   <p>When U(t) = 0 (no activity), D(t) = 0.5 (50% of base). When U(t) = 1.0 (peak activity), D(t) = 1.5 (150% of base).</p>
 
-  <h4 class="mini-title">Emission Balancing Factor R(t)</h4>
-  <p>The protocol uses an emission balancing factor to maintain stable allocation conditions. R(t) adjusts daily emission to dampen extreme participation and allocation imbalances. The formula is preserved here for transparency and protocol-auditor reference; it is not a forward-looking forecast and does not represent any guaranteed return target. In this context, ROI(t) is an internal allocation-pressure index used by the protocol, not a public return metric. Formula: R(t) = clamp(250% / ROI(t), 0.5, 2.0) bounds the adjustment between 0.5× and 2.0× to prevent runaway dynamics. Detailed mechanics, parameter values, and rebalancing thresholds are documented in the Mission Chain Technical Protocol Specification.
-  </p>
+  <h4 class="mini-title">Liquidity-Coverage Regulator L(H)</h4>
+  <p>Issuance is governed by a single on-chain measure of liquidity coverage. H is defined as the protocol pool's liquidity divided by the value of one day of issuance, and is therefore expressed in days: it answers how many days of newly issued MIC the pool could absorb. The target is 110 days.</p>
+  <p>L(H) = clamp(H / 110, 0.02, 2.0). When coverage sits below target, issuance is reduced; when it sits above, issuance is permitted to rise. The regulator may move by at most 10% per day, so it adjusts gradually rather than in steps. A second factor, the trend damper G, is applied on top of L(H) and is described under Price Stabilization. All inputs are read from on-chain state; no operator sets them.</p>
+  <p>This replaces the earlier allocation-pressure formulation. It is a technical protocol parameter, not a forward-looking forecast, and it does not represent any guaranteed outcome.</p>
 
   <h4 class="mini-title">Pool Split Guardrails</h4>
-  <p>While the baseline split is Miners 60% / Staking 25% / DAO Treasury 10% / Community NFT Allocation 5%, the system enforces dynamic guardrails to prevent extreme scenarios:</p>
+  <p>While the baseline split is Miners 59% / Staking 25% / DAO Treasury 10% / Community NFT Allocation 5%, the system enforces dynamic guardrails to prevent extreme scenarios:</p>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>Pool</th><th>Min %</th><th>Max %</th><th>Trigger</th></tr></thead>
@@ -1601,13 +1615,13 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>To encourage staking participation during launch, the system temporarily reallocates 10% from miners to staking over the first 90 days:</p>
 
   <div class="formula-label">MINER ALLOCATION DURING RAMP</div>
-  <div class="formula">MinerPct(t) = 60% − max(0, (90−t)/90) × 10%</div>
+  <div class="formula">MinerPct(t) = 59% − max(0, (90−t)/90) × 10%</div>
 
   <p>This means:</p>
   <ul>
     <li><strong>Day 1:</strong> Miners 50% / Staking 30% (boost +10%)</li>
     <li><strong>Day 45:</strong> Miners 55% / Staking 25% (+5% boost remaining)</li>
-    <li><strong>Day 90+:</strong> Miners 60% / Staking 25% (permanent ratio)</li>
+    <li><strong>Day 90+:</strong> Miners 59% / Staking 25% (permanent ratio)</li>
   </ul>
 
   <h3 class="sub-title">D.3 Deflationary Mechanisms</h3>
@@ -1652,9 +1666,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Lock Duration</th><th>Multiplier</th><th>Allocation Weight</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td><strong>30 days</strong></td><td class="hl">×1.0</td><td>Baseline weight</td><td>Baseline</td></tr>
-        <tr><td><strong>90 days</strong></td><td class="hl">×1.25</td><td>+25% over baseline</td><td>Enhanced lock</td></tr>
-        <tr><td><strong>180 days</strong></td><td class="hl">×1.5</td><td>+50% over baseline</td><td>Extended lock</td></tr>
-        <tr><td><strong>360 days</strong></td><td class="hl">×2.0</td><td>2× baseline weight</td><td>Full-year lock — highest allocation weight</td></tr>
+        <tr><td><strong>90 days</strong></td><td class="hl">×1.6</td><td>+60% over baseline</td><td>Enhanced lock</td></tr>
+        <tr><td><strong>180 days</strong></td><td class="hl">×2.6</td><td>+160% over baseline</td><td>Extended lock</td></tr>
+        <tr><td><strong>360 days</strong></td><td class="hl">×5.0</td><td>5× baseline weight</td><td>Full-year lock — highest allocation weight</td></tr>
       </tbody>
     </table>
   </div>
@@ -1662,24 +1676,20 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Locked MIC Participation</h4>
   <p>Vesting-locked MIC tokens (from SEED Round, Pre-Sale, or other allocations with time-based unlocking schedules) are fully eligible to participate in staking. Staking operates purely at the MIC level with no NFT involvement:</p>
   <ul>
-    <li><strong>Full Time-Lock Multiplier:</strong> Locked MIC receives the complete time-lock multiplier (×2.0 for 360d lock) with no reduction</li>
+    <li><strong>Full Time-Lock Multiplier:</strong> Locked MIC receives the complete time-lock multiplier (×5.0 for 360d lock) with no reduction</li>
     <li><strong>Unlocked Allocations:</strong> Staking allocations earned from locked MIC are immediately unlocked and freely transferable, not subject to vesting</li>
     <li><strong>Minimum Staking Lock:</strong> Minimum 360 days (12 months) lock period for staking participation</li>
     <li><strong>Unrestricted Amount:</strong> Staking is allowed without per-address or per-NFT caps (NFTs are used for designated USDT incentive distributions only, not staking)</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>Example:</strong> A user staking 100,000 MIC for 360 days receives: 100K × ×2.0 = 200K effective weight. If total staking pool weight is 100M, this staker is allocated 0.2% of all staking emissions that epoch. This calculation applies equally whether the MIC is locked or unlocked. NFT ownership does not affect staking allocation.</p>
+    <p><strong>Example:</strong> A user staking 100,000 MIC for 360 days receives: 100K × ×5.0 = 500K effective weight. If total staking pool weight is 100M, this staker is allocated 0.2% of all staking emissions that epoch. This calculation applies equally whether the MIC is locked or unlocked. NFT ownership does not affect staking allocation.</p>
   </div>
 
-  <h4 class="mini-title">Staking Sustainability Fund</h4>
-  <p>To maintain a non-zero staking allocation pool even after the primary mining emission phase tapers, MissionChain allocates 5% of MICE USDT revenue ($750K from $15M total) to a "Reserved Staking Fund":</p>
+  <h4 class="mini-title">Long-Term Staking Support</h4>
+  <p>Staking allocation is funded by 25% of daily issuance. Because issuance decays with an 8-year half-life rather than a 6-month one, that source remains material for decades, and no separate reserve is needed to keep it alive.</p>
 
-  <p><strong>Phase 1 (Active Mining):</strong> The fund auto-buys MIC from the DEX on a weekly schedule when price dips below 30-day MA, accumulating MIC reserves.</p>
-
-  <p><strong>Phase 2 (Post-Mining):</strong> Once the primary emission phase depletes, the accumulated MIC is dripped into the staking allocation pool at a declining rate, supporting non-zero staking allocation for 5+ years post-emission.</p>
-
-  <p><strong>DAO Supplementation:</strong> Every quarter, the DAO can allocate 10–20% of its treasury MIC holdings to further supplement the staking allocation pool, maintaining long-term sustainability.</p>
+  <p>Should the DAO ever judge additional support necessary, it may allocate a governed portion of its own treasury MIC on a quarterly basis, subject to a treasury vote. That is a governance decision taken at the time, not a standing automated program.</p>
 
   <h3 class="sub-title">D.5 Revenue Projections & MICE Economics</h3>
 <h4 class="mini-title">MICE 5-Round Structure</h4>
@@ -1689,11 +1699,11 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Round</th><th>Licenses (1–20,000)</th><th>Price/MICE</th><th>MIC Value (50% Burned)</th><th>USDT (50%)</th><th>Round Revenue</th></tr></thead>
       <tbody>
-        <tr><td><strong>Round 1</strong></td><td class="mono">1–20,000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
-        <tr><td><strong>Round 2</strong></td><td class="mono">20,001–40,000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
-        <tr><td><strong>Round 3</strong></td><td class="mono">40,001–60,000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
-        <tr><td><strong>Round 4</strong></td><td class="mono">60,001–80,000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
-        <tr><td><strong>Round 5</strong></td><td class="mono">80,001–100,000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
+        <tr><td><strong>Round&nbsp;1</strong></td><td class="mono">1–20,000</td><td class="hl">$100</td><td class="mono">$50</td><td class="mono">$50</td><td class="hl">$2M</td></tr>
+        <tr><td><strong>Round&nbsp;2</strong></td><td class="mono">20,001–40,000</td><td class="hl">$200</td><td class="mono">$100</td><td class="mono">$100</td><td class="hl">$4M</td></tr>
+        <tr><td><strong>Round&nbsp;3</strong></td><td class="mono">40,001–60,000</td><td class="hl">$300</td><td class="mono">$150</td><td class="mono">$150</td><td class="hl">$6M</td></tr>
+        <tr><td><strong>Round&nbsp;4</strong></td><td class="mono">60,001–80,000</td><td class="hl">$400</td><td class="mono">$200</td><td class="mono">$200</td><td class="hl">$8M</td></tr>
+        <tr><td><strong>Round&nbsp;5</strong></td><td class="mono">80,001–100,000</td><td class="hl">$500</td><td class="mono">$250</td><td class="mono">$250</td><td class="hl">$10M</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="4"><strong>TOTAL MICE REVENUE</strong></td><td colspan="2" style="text-align:right"><strong class="td-gold">$30M gross ($15M USDT)</strong></td></tr>
       </tbody>
     </table>
@@ -1706,11 +1716,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <table class="wp-table">
       <thead><tr><th>Category</th><th>% of Revenue</th><th>Amount (USD)</th><th>Functions</th></tr></thead>
       <tbody>
-        <tr><td><strong>Marketing & Sales</strong></td><td class="hl">35%</td><td class="mono">$5,250,000</td><td>Referral 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, Incentives 1.5%</td></tr>
+        <tr><td><strong>Referral</strong></td><td class="hl">10%</td><td class="mono">$1,500,000</td><td>Direct Referral 7%, Indirect Referral 3% &mdash; paid per purchase; any unspent share flows to Milestones &amp; Incentives</td></tr>
+        <tr><td><strong>Marketing & Sales</strong></td><td class="hl">25%</td><td class="mono">$3,750,000</td><td>Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td></tr>
         <tr><td><strong>Management & Operations</strong></td><td class="hl">7.5%</td><td class="mono">$1,125,000</td><td>Founder 1.5%, Architect 1%, CTO 0.5%, Social Media 0.5%, Global Training 0.5%, Tech Team 1%, Bonus 2.5%</td></tr>
         <tr style="background:rgba(201,168,76,.1)"><td colspan="2"><strong>NET CAPITAL (57.5%)</strong></td><td style="text-align:right"><strong class="td-gold">$8,625,000</strong></td><td></td></tr>
-        <tr><td style="padding-left:40px"><em>Treasure DAO</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>World Dev 2.5%, App Add-Ons 5%, Reserved 5%</td></tr>
-        <tr><td style="padding-left:40px"><em>Reserved Staking</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>Auto-buy MIC when price dips, locked for post-mining staking</td></tr>
+        <tr><td style="padding-left:40px"><em>DAO Treasury</em></td><td class="hl">12.5%</td><td class="mono">$1,875,000</td><td>World Dev 2.5%, App Add-Ons 5%, Reserved 5%</td></tr>
+        <tr><td style="padding-left:40px"><em>Listing Reserve</em></td><td class="hl">5%</td><td class="mono">$750,000</td><td>Held to seed an external market when the protocol lists; DAO-governed, 24-hour timelock</td></tr>
         <tr><td style="padding-left:40px"><em>Liquidity Pool + Buffer</em></td><td class="hl">40%</td><td class="mono">$6,000,000</td><td>Auto transferred to Liquidity Contract</td></tr>
       </tbody>
     </table>
@@ -1764,48 +1775,50 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>Distribution Program (Agent KPI)</strong></td><td class="hl">20%</td><td class="mono">$76,250</td></tr>
         <tr><td><strong>Operational Activities</strong></td><td class="hl">20%</td><td class="mono">$76,250</td></tr>
         <tr><td style="padding-left:40px">Founder/Chairman 7%, Architect/PM 5%, CTO 3%, Social Media 3%, Tech Manager 2%</td><td></td><td></td></tr>
-        <tr><td><strong>Management Bonus (Reserved)</strong></td><td class="hl">10%</td><td class="mono">$38,125</td></tr>
-        <tr><td style="padding-left:40px">Council vote — 75% threshold required</td><td></td><td></td></tr>
-        <tr><td><strong>Initial Liquidity Pool</strong></td><td class="hl">40%</td><td class="mono">$152,500</td></tr>
-        <tr><td><strong>Reserved Expenses (DAO)</strong></td><td class="hl">10%</td><td class="mono">$38,125</td></tr>
+        <tr><td><strong>Management Bonus</strong></td><td class="hl">10%</td><td class="mono">$38,125</td></tr>
+        <tr><td style="padding-left:40px">Steward Council vote — 3 of 5 required</td><td></td><td></td></tr>
+        <tr><td><strong>Reserved Expenses (DAO-governed)</strong></td><td class="hl">50%</td><td class="mono">$190,625</td></tr>
+        <tr><td style="padding-left:40px">DAO-decided expenses — Steward Council 3-of-5 vote (Phase 1) &rarr; DAOGovernor (Phase &beta;). Initial liquidity is funded from Pre-Sale &amp; MICE rounds, not from SEED.</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
-  <h4 class="mini-title">Pre-Sale Round Budget ($1.5M target)</h4>
+  <h4 class="mini-title">Pre-Sale Round Budget (illustrative $1.5M raise; hard cap $1,575,000)</h4>
   <div class="wp-table-wrap">
     <table class="wp-table">
       <thead><tr><th>Category</th><th>%</th><th>Amount</th></tr></thead>
       <tbody>
-        <tr><td><strong>Marketing & Sales</strong></td><td class="hl">35%</td><td class="mono">$525K</td></tr>
-        <tr><td style="padding-left:40px">Referral 10%, Weekly Growth Reward 5.5%, Lucky Draw 1%, Monthly Community Reward 8%, GV Bonus 9%, Incentives 1.5%</td><td></td><td></td></tr>
+        <tr><td><strong>Referral</strong></td><td class="hl">10%</td><td class="mono">$150K</td></tr>
+        <tr><td style="padding-left:40px">Direct Referral 7% + Indirect Referral 3% &mdash; paid per purchase; unspent share flows to Milestones &amp; Incentives</td><td></td><td></td></tr>
+        <tr><td><strong>Marketing & Sales</strong></td><td class="hl">25%</td><td class="mono">$375K</td></tr>
+        <tr><td style="padding-left:40px">Community Growth Award 9%, Monthly Community Reward 8%, Weekly Growth Reward 5.5%, Milestones &amp; Incentives 1.5%, Lucky Draw 1%</td><td></td><td></td></tr>
         <tr><td><strong>Management & Operations</strong></td><td class="hl">7.5%</td><td class="mono">$112.5K</td></tr>
         <tr><td style="padding-left:40px">Founder 1.5%, Architect 1%, CTO 0.5%, Social Media 0.5%, Global Training 0.5%, Tech Team 1%, Bonus 2.5%</td><td></td><td></td></tr>
         <tr><td><strong>Net Capital</strong></td><td class="hl">57.5%</td><td class="mono">$862.5K</td></tr>
-        <tr><td style="padding-left:40px">Treasure DAO 12.5% ($187.5K: World Dev 2.5% + App 5% + Reserved 5%) + Reserved Staking 5% ($75K) + Liquidity Pool 40% ($600K)</td><td></td><td></td></tr>
+        <tr><td style="padding-left:40px">DAO Treasury 12.5% ($187.5K: World Dev 2.5% + App 5% + Reserved 5%) + Listing Reserve 5% ($75K) + Liquidity Pool 40% ($600K)</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
 
   <h4 class="mini-title">MICE Credential Revenue Allocation ($15M USDT)</h4>
-  <p>See Revenue Projections (section D.5) for detailed breakdown: Marketing 35%, Management 7.5%, Net Capital 57.5%.</p>
+  <p>See Revenue Projections (section D.5) for detailed breakdown: Referral 10%, Marketing 25%, Management 7.5%, Net Capital 57.5%.</p>
 
   <h3 class="sub-title">D.8 Circuit Breakers & Emergency Controls</h3>
 <p>To prevent extreme market conditions and protect the ecosystem, MissionChain implements automated and governance-controlled circuit breakers:</p>
 
   <h4 class="mini-title">Cumulative Emission Cap</h4>
-  <p>The total emitted from the protocol allocation pool cannot exceed 5,950,000,000 MIC (hard cap). Once reached, the primary protocol allocation phase stops permanently and only Reserved Staking and DAO Treasury allocations continue (if voting approved).</p>
+  <p>The total emitted from the protocol allocation pool cannot exceed 5,950,000,000 MIC (hard cap). Once reached, the primary protocol allocation phase stops permanently and only DAO Treasury allocations continue (if voting approved).</p>
 
   <h4 class="mini-title">Daily Emission Cap</h4>
-  <p>No single day can emit more than 2× the calculated E_base(t). This prevents sudden spikes from D(t) or R(t) anomalies. If demand factor temporarily soars, excess is deferred to next cycle.</p>
+  <p>No single day can emit more than 2× the calculated E_base(t). This prevents sudden spikes from D(t) or L(H) anomalies. If demand factor temporarily soars, excess is deferred to next cycle.</p>
 
   <h4 class="mini-title">Price Floor</h4>
-  <p>If MIC price drops below $0.001 on major DEX (30-day TWAP), the system automatically:</p>
+  <p>The protocol applies two independent brakes on issuance, both computed on-chain from the protocol pool's own time-weighted average price. Neither requires an operator to act, and neither can be switched on or off manually.</p>
   <ul>
-    <li>Reduces R(t) to minimum 0.5 (cut emission to half)</li>
-    <li>Triggers Reserved Staking Fund buyback (accelerated weekly purchases)</li>
-    <li>DAO can vote to deploy treasury MIC as market support</li>
+    <li><strong>Trend damper G:</strong> G = clamp(TWAP<sub>7d</sub> / TWAP<sub>30d</sub>, 0.25, 1.0), applied as a multiplier on the issuance regulator L(H). When the 7-day average sits below the 30-day average, issuance is reduced in proportion. G is capped at 1.0, so it can only slow issuance, never accelerate it.</li>
+    <li><strong>Emergency brake:</strong> if the 7-day average falls below 50% of the pool's opening reference price, L(H) is held at its floor of 0.02 until the average recovers. The brake engages and releases automatically.</li>
   </ul>
+  <p>These brakes exist because the liquidity-coverage index H measures the pool's capacity to absorb issuance, not the health of the price. The two diverge: when price falls, each day of issuance is worth less, so coverage rises. H alone would therefore respond in the wrong direction, which is why G and the emergency brake are part of the protocol from launch rather than a later addition.</p>
 
   <h4 class="mini-title">Unstake Rate Limit</h4>
   <p>No more than 10% of staked MIC pool can be unstaked in a single day. This prevents panic withdrawals and liquidity crises. Longer lockup periods are given priority in unstake queue.</p>
@@ -1901,9 +1914,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Lock Duration</th><th>Multiplier</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td><strong>30 days</strong></td><td class="hl">×1.0</td><td>Baseline</td></tr>
-        <tr><td><strong>90 days</strong></td><td class="hl">×1.25</td><td>Enhanced lock</td></tr>
-        <tr><td><strong>180 days</strong></td><td class="hl">×1.5</td><td>Extended lock</td></tr>
-        <tr><td><strong>360 days</strong></td><td class="hl">×2.0</td><td>Full-year lock — 2× baseline allocation weight</td></tr>
+        <tr><td><strong>90 days</strong></td><td class="hl">×1.6</td><td>Enhanced lock</td></tr>
+        <tr><td><strong>180 days</strong></td><td class="hl">×2.6</td><td>Extended lock</td></tr>
+        <tr><td><strong>360 days</strong></td><td class="hl">×5.0</td><td>Full-year lock — 5× baseline allocation weight</td></tr>
       </tbody>
     </table>
   </div>
@@ -1911,7 +1924,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h4 class="mini-title">Locked MIC Staking Eligibility</h4>
   <p>Vesting-locked MIC tokens participate in staking with full allocation benefits:</p>
   <ul>
-    <li><strong>Full Time-Lock Multiplier:</strong> Locked MIC receives the complete time-lock multiplier (×2.0 for 360d lock) with no penalties</li>
+    <li><strong>Full Time-Lock Multiplier:</strong> Locked MIC receives the complete time-lock multiplier (×5.0 for 360d lock) with no penalties</li>
     <li><strong>Unlocked Allocations:</strong> All staking allocations generated from locked MIC are immediately unlocked and freely transferable, independent of the underlying MIC's vesting schedule</li>
     <li><strong>Minimum Staking Lock:</strong> Staked MIC requires a minimum lock period of 360 days (12 months)</li>
     <li><strong>Unrestricted Amount:</strong> Staking is allowed without per-address or per-NFT caps</li>
@@ -2020,16 +2033,16 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <h3 class="sub-title">F.1 Liquidity Architecture</h3>
 <ul>
     <li><strong>DEX/CEX Listing allocation:</strong> 1.50% = 105,000,000 MIC at deploy</li>
-    <li><strong>Deployment:</strong> 105M MIC sent DIRECTLY to LiquidityPool.sol at deploy — locked, cannot be withdrawn</li>
+    <li><strong>Deployment:</strong> the 105M was split 31.5M into LiquidityPool v5 and 73.5M into the Listing Reserve Vault. The 31.5M was <strong>burned on 5 August 2026</strong>; of the remainder, 50M seeds the protocol liquidity pool and 23.5M is held to open an external market.</li>
     <li><strong>Additional liquidity:</strong> Funded from 40% of MICE USDT revenue + 40% of PreSale Net Capital</li>
     <li><strong>Phase 1:</strong> Buffer only (receive USDT, hold locked MIC)</li>
-    <li><strong>Phase 2:</strong> SWAP + AI Stabilizer added</li>
+    <li><strong>Phase 2:</strong> SWAP two-way trading opens; coverage regulator and automatic brake active</li>
   </ul>
 
   <h3 class="sub-title">F.2 LiquidityPool.sol Contract</h3>
 <h4 class="mini-title">Core State Variables</h4>
   <ul>
-    <li><strong>lockedMIC:</strong> 105,000,000 MIC (set at deploy, immutable)</li>
+    <li><strong>Protocol pool MIC:</strong> 50,000,000 MIC seeded at launch. It leaves only when someone buys it, and the USDT paid stays in the pool.</li>
     <li><strong>Purpose:</strong> Permanent liquidity backing for MIC/USDT trading pair</li>
   </ul>
   <h4 class="mini-title">Phase 1 Functions</h4>
@@ -2041,7 +2054,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <ul>
     <li><strong>addToSWAP():</strong> Requires DAOGovernor structural vote (7-day timelock) to move MIC from buffer to active liquidity provision</li>
     <li><strong>withdrawMICForCEX():</strong> Requires DAOGovernor structural vote (7-day timelock) for centralized exchange withdrawals</li>
-    <li><strong>depositMIC():</strong> Reserve deposit function for Reserved Staking Fund auto-buy mechanism</li>
+    <li><strong>depositMIC():</strong> Reserve deposit function used when MIC is placed into protocol-held reserves</li>
   </ul>
 
   <h3 class="sub-title">F.3 USDT Liquidity Sources</h3>
@@ -2056,37 +2069,72 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       </tbody>
     </table>
   </div>
-  <p>These funds accumulate during Phase 1 (no active trading) and are deployed into PancakeSwap V3 during Phase 2 to establish deep liquidity for MIC/USDT trading pair.</p>
+  <p>These funds accumulate while the protocol pool is the only venue, and are deployed to establish liquidity for a MIC/USDT pair on an external exchange once the protocol reaches its listing phase.</p>
 
-  <h3 class="sub-title">F.4 Staking Sustainability Fund</h3>
-<h4 class="mini-title">Fund Purpose & Mechanics</h4>
+  <h3 class="sub-title">F.4 Listing Reserve</h3>
+<h4 class="mini-title">Purpose</h4>
   <ul>
     <li><strong>Allocation:</strong> 5% of MICE USDT revenue = $750,000</li>
-    <li><strong>Goal:</strong> Maintain a non-zero staking allocation pool after primary mining emissions decline</li>
-    <li><strong>Mechanism:</strong> Auto-buy MIC from DEX when price dips, lock in contract for future distribution</li>
+    <li><strong>Goal:</strong> Fund the opening of an external market for MIC</li>
+    <li><strong>Governance:</strong> DAO-controlled, with a 24-hour timelock on any withdrawal</li>
   </ul>
-  <h4 class="mini-title">Two-Phase Strategy</h4>
+  <p>The protocol liquidity pool is closed-loop: USDT that enters it can never leave. Seeding an external exchange pair therefore requires funding from a separate source, and this reserve is that source. It accumulates and is deployed once, as a single DAO-approved act of opening a market.</p>
+
+  <h4 class="mini-title">What this reserve does not do</h4>
   <div class="callout gold">
-    <p><strong>Phase 1 (Mining Active — Days 0–180):</strong> Weekly market buys of MIC using reserved USDT. Accumulate MIC in contract reserves during peak mining period when emissions are high.</p>
+    <p>This fund does <strong>not</strong> purchase MIC to support the price. There is no price trigger, no moving-average condition, and no automated market operation of any kind. The protocol controls issuance, not price; opening a market is not the same as intervening in one.</p>
   </div>
-  <div class="callout gold">
-    <p><strong>Phase 2 (Primary Emission Depleted — Days 180+):</strong> Drip accumulated MIC into the Staking Allocation Pool to maintain non-zero staking allocation and provide sustainable support when natural emission declines.</p>
-  </div>
-  <h4 class="mini-title">DAO Supplement</h4>
-  <p>Staking Sustainability Fund is supplemented by DAO Treasury quarterly allocation of 10-20% of DAO MIC holdings, ensuring long-term viability of the staking allocation ecosystem.</p>
+  <p>An earlier version of this document described a mechanism that bought MIC whenever the price fell below a 30-day average. That design was removed in August 2026, before any code implementing it existed.</p>
+
+  <h4 class="mini-title">Long-term staking support</h4>
+  <p>Staking allocation is funded by 25% of daily issuance, which under an 8-year half-life remains material for decades. If the DAO ever judges additional support necessary, it may allocate a governed portion of its own treasury MIC by quarterly vote.</p>
 
   <h3 class="sub-title">F.5 Price Stabilization Strategy</h3>
-<h4 class="mini-title">Oracle Infrastructure</h4>
+<h4 class="mini-title">Protocol Liquidity Pool</h4>
+  <p>The protocol operates its own on-chain liquidity pool for MIC/USDT. Price is the whole pool over the whole float — the effective USDT reserve divided by the MIC reserve — and it is read from the reserves as they stand before a trade, so it is fixed for the duration of that trade. A purchase of $1 and a purchase of $50 receive the same unit price. There is no administrator-set price anywhere in the system.</p>
+  <div class="formula"><span class="math">price = effectiveUSDT / reserveMIC &nbsp;·&nbsp; MIC<sub>out</sub> = USDT<sub>in</sub> × (1 − 0.3%) × reserveMIC / effectiveUSDT</span></div>
+  <p>The price moves between trades, not inside them: each purchase takes MIC out of the pool, so the next buyer pays fractionally more. The movement is proportional to the size of the trade and contains no step.</p>
+  <p>The pool opens holding MIC and no USDT. To make a two-sided price definable from the first block, the pool is initialised with a fixed <strong>virtual reserve</strong> — an accounting constant, not a balance, which no party can withdraw. Every real USDT that arrives retires <strong>exactly one</strong> virtual USDT, so the backing holds steady at its initial size while its composition turns from an accounting entry into real capital. The virtual reserve reaches zero once real reserves equal that initial size; from that point the pool is backed entirely by real assets and deepens with every dollar that arrives. Because the substitution is one-for-one, a deposit changes what the backing is made of and never how much of it there is — the opening price is the same whether the pool receives nothing before it is funded with MIC or the whole of its virtual reserve. Retirement is measured against the highest real reserve ever reached, so it runs one way only: a sale cannot un-retire virtual depth at the moment the pool is weakening.</p>
+  <p><strong>Solvency invariant:</strong> the pool can never pay out more USDT than it actually holds. This is enforced in the contract as a hard requirement on every outbound transfer, independent of what the pricing curve would otherwise quote.</p>
+
+  <h4 class="mini-title">Pool Phases</h4>
   <ul>
-    <li><strong>Primary Oracle:</strong> PancakeSwap V3 TWAP (Time-Weighted Average Price) with 30-minute window</li>
-    <li><strong>Fallback Oracle:</strong> Chainlink price feed for redundancy and security</li>
-    <li><strong>Update Frequency:</strong> Real-time on-chain calculation for TWAP; Chainlink updates every 24 hours</li>
+    <li><strong>Phase 1 — Bootstrap:</strong> purchases only. Buying opens the moment the pool holds MIC, because a purchase is paid out in MIC. The sell direction stays closed: a sale is paid out in real money, and until the reserve is real the depth on offer would be an accounting entry rather than something the pool could honour.</li>
+    <li><strong>Phase 2 — Two-way:</strong> opens once the pool has actually taken in a published amount of real USDT — a quantity, not a date. A calendar cannot know whether the money arrived. Sales are then permitted subject to the daily cap and fee schedule below.</li>
+    <li><strong>Phase 3 — External listing:</strong> reached when real reserves pass the listing threshold. The pool then operates alongside external venues.</li>
   </ul>
-  <h4 class="mini-title">AI Stabilizer (Phase 2)</h4>
-  <p>When activated, AI Stabilizer monitors MIC price vs. target range and dynamically adjusts liquidity provision. If price dips below support, the system triggers reserved USDT inflows. If price exceeds cap, unused buffer USDT is deployed to deepen liquidity.</p>
+  <p>Phase transitions are permissionless functions that verify their own on-chain conditions. There is no operator switch.</p>
+
+  <h4 class="mini-title">Transaction Fees</h4>
+  <p>Fees are set by published formula and cannot be altered by any administrator. The purchase fee is fixed at 0.3%. The sale fee varies with <strong>backing</strong> — the share of the quoted depth that the pool actually holds in real USDT:</p>
+  <div class="formula"><span class="math">backing = reserveUSDT / effectiveUSDT &nbsp;·&nbsp; fee<sub>sell</sub> = 15% × (1 − backing)</span></div>
+  <ul>
+    <li>While the pool is still mostly virtual the sale fee approaches its <strong>hard maximum of 15%</strong>, fixed as a constant in the contract and not raisable by governance or by any key holder.</li>
+    <li>As real capital replaces the virtual reserve the fee falls in proportion, reaching <strong>0%</strong> once every dollar the pool can quote is a dollar it holds.</li>
+    <li>Backing is read from the pool's own reserves and needs no external report, so the figure cannot go stale. The fee is high exactly when a sale would be a claim on money the pool does not have, and nil once the pool is fully funded.</li>
+    <li>All fees remain in the pool, which raises backing and therefore lowers the fee again. The mechanism is self-correcting.</li>
+  </ul>
+
+  <h4 class="mini-title">Daily Limits</h4>
+  <ul>
+    <li>Outbound USDT is limited to 5% of real reserves in any rolling 24-hour period.</li>
+    <li>A single transaction may not exceed 1% of the MIC reserve.</li>
+    <li>A single address may not buy and sell within the same block.</li>
+  </ul>
+  <p>These limits are fixed constants, published in advance, and are not adjustable.</p>
+
+  <h4 class="mini-title">Oracle Infrastructure</h4>
+  <ul>
+    <li><strong>Phase 1–2 — internal:</strong> the protocol liquidity pool maintains its own cumulative-price accumulator and publishes a 7-day and a 30-day time-weighted average price. No external oracle is used, and none is required: during these phases the pool is the only venue where MIC trades.</li>
+    <li><strong>Window during the first week:</strong> the averaging window is min(7 days, pool age), so the reference is well defined from the first day and lengthens as history accumulates.</li>
+    <li><strong>Phase 3 — external listing:</strong> once MIC is listed on an external exchange, the protocol adds that venue's time-weighted average as a secondary reference. External feeds are introduced only at that point.</li>
+  </ul>
+  <h4 class="mini-title">On the removed "AI Stabilizer"</h4>
+  <p>An earlier version of this document described an "AI Stabilizer" that would monitor MIC price against a target range and deploy reserved USDT when price fell below support. That design was removed in August 2026, before any code implementing it existed. It is incompatible with the protocol's governing principle: the protocol controls issuance, not price, and it does not operate in its own market.</p>
+  <p>What replaced it is described above and below — a coverage-driven issuance regulator, a trend damper capped so it can only slow issuance, and an automatic brake. All of them act on how much MIC is created. None of them buys or sells MIC.</p>
   <h4 class="mini-title">Circuit Breaker</h4>
   <ul>
-    <li><strong>Price Floor:</strong> $0.001 MIC (hard minimum, enforced by liquidity constraints)</li>
+    <li><strong>Issuance brake:</strong> engages automatically when the 7-day average price falls below 50% of the pool's opening reference price; issuance is held at its floor until the average recovers</li>
     <li><strong>Emergency Pause:</strong> DAOGovernor can pause all liquidity operations if price falls below floor</li>
   </ul>
 
@@ -2096,11 +2144,41 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 <div id="appG" class="section">
   <div class="app-header">
     <div class="app-header-num">APPENDIX G</div>
-    <h2>DAO Management</h2>
+    
+<h3>F.6 SWAP — AMM Platform Protocol (live)</h3>
+<p><strong>LiquidityPoolV6</strong> is Mission Chain's own constant-product market, not a listing on a third-party DEX. It was seeded with <strong>50,000,000 MIC</strong> and its opening price is anchored by a <strong>virtual reserve of 500,000 USDT</strong> — an accounting constant, never a balance.</p>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>Why</th></tr>
+<tr><td>Virtual reserve retirement</td><td class="mono">1 : 1</td><td>Every 1 USDT of real reserve retires exactly 1 USDT of virtual depth, so the backing holds its size while its composition turns real. It reaches zero once real reserves equal the virtual reserve the pool opened with. Measured against the highest real reserve ever reached, so retirement runs one way only.</td></tr>
+<tr><td>Buy fee</td><td class="mono">0.30%</td><td>Fixed.</td></tr>
+<tr><td>Sell fee</td><td class="mono">0.00% – 15.00%</td><td>Computed from how much of the quoted depth is backed by real USDT: 15% × (1 − backing). Highest while the pool is mostly virtual, nil once it is fully funded. The 15% ceiling is a hard constant: no key holder and no governance vote can raise it.</td></tr>
+<tr><td>Selling opens</td><td class="mono">A published amount of real USDT</td><td>Buying is open from the moment the pool is seeded, because a purchase is paid out in MIC. Selling waits on real money in the pool — a quantity, not a date. A calendar cannot know whether the money arrived.</td></tr>
+<tr><td>Maximum single trade</td><td class="mono">1% of reserves</td><td>No single transaction can move the price arbitrarily.</td></tr>
+<tr><td>Daily outflow cap</td><td class="mono">5%</td><td>Bounds what can leave the pool in one day.</td></tr>
+<tr><td>Ongoing funding</td><td class="mono">40% of gross</td><td>RevenueRouter forwards the Liquidity share of every Pre-Sale and MICE purchase into the pool inside the same transaction. No administrator moves it.</td></tr>
+</table>
+<p><strong>The pool has no withdrawal function.</strong> There is no admin withdrawal, no rescue path and no timelock that eventually opens one. Assets leave only when a member trades. Tokens transferred directly to the pool address are not credited to its reserves and cannot be recovered — funding from outside must go through the liquidity contract, never to the pool itself.</p>
+
+
+<p><strong>How the two limits differ.</strong> They are often read as one rule stated twice. They are not.</p>
+<p>The <strong>1% cap applies to a single transaction</strong>, in both directions, measured against the MIC held by the pool. With roughly 50,000,000 MIC in reserve, no one trade may move more than about 500,000 MIC; a larger position must be split. In a constant-product market the price moves further the larger a trade is relative to the pool, so this forces any significant repricing to happen in steps rather than in one stroke. A wallet may also make only one trade per block, so the cap cannot be sidestepped by firing many small trades at once.</p>
+<p>The <strong>5% cap applies to a rolling 24 hours</strong>, is measured against the pool's <em>real</em> USDT reserve — the virtual reserve is excluded — and is shared by everyone. Only selling consumes it, because only selling takes USDT out; buying does not touch it. Once the day's allowance is used, further sells revert until the window rolls forward. The pool exposes <code>remainingDailyOut()</code> so the figure can be read before trading.</p>
+<p>Together they bound two different risks: the first limits a single shock, the second limits a steady drain. Neither prevents anyone from selling — they set the pace, so that the 40% revenue share has time to arrive. Both are <code>constant</code> values compiled into the contract. There is no setter and no governance path to change them; only deploying a new pool would, and the current pool's MIC could not be moved to it.</p>
+
+<h3>F.7 Peer-to-Peer market fees</h3>
+<p>P2P trading settles both sides of a trade in one transaction through an escrow contract, so neither party has to go first. Fees are read from the contracts and are paid by the seller out of the sale.</p>
+<table>
+<tr><th>Market</th><th>Fee</th><th>Additional</th></tr>
+<tr><td>MIC &#8646; USDT</td><td class="mono">2.5%</td><td>—</td></tr>
+<tr><td>MFP-NFT</td><td class="mono">1.5%</td><td>Plus a 5% ERC-2981 royalty on every resale.</td></tr>
+<tr><td>Community NFT</td><td class="mono">1.5%</td><td>No royalty — the credential does not implement ERC-2981.</td></tr>
+</table>
+
+<h2>DAO Management</h2>
   </div>
 
   <h3 class="sub-title">G.1 DAOGovernor Overview</h3>
-<p>DAOGovernor.sol (Contract #24) is the governance engine of MissionChain, replacing Gnosis Safe entirely. This appendix describes the approved target governance model; implementation details may still be aligned in later phases.</p>
+<p>DAOGovernor.sol is the governance engine of MissionChain. It operates alongside the Admin Multisig defined in the Governance Specification: a single Founder EOA during Phase 1 Minimal, migrating to a Gnosis Safe multisig (recommended 2-of-3) for Phase 1 Full and Phase 2. This appendix describes the approved target governance model; implementation details may still be aligned in later phases.</p>
   <div class="grid3">
     <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">STANDING COMMITTEE</div></div>
     <div class="stat-box"><div class="stat-val">3/5</div><div class="stat-lbl">MIN SIGNERS</div></div>
@@ -2108,9 +2186,9 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   </div>
   <h4 class="mini-title">Core Governance Pattern</h4>
   <ul>
-    <li><strong>Governor Pattern:</strong> Target governor-based governance contract aligned to the approved MFP participation rule</li>
+    <li><strong>Council Contract:</strong> DAOGovernor, a five-member council contract. Approval is counted by head — there is no token-weighted or stake-weighted voting anywhere in it.</li>
     <li><strong>Standing Committee:</strong> 5 designated multi-sig wallets</li>
-    <li><strong>Dual Approval:</strong> Standing Committee 3/5 plus the approved MFP governance eligibility and voting process</li>
+    <li><strong>Approval:</strong> 3 of 5 Council members. The proposer's own approval counts as the first, so two further signatures carry a proposal.</li>
     <li><strong>All Parameter Changes:</strong> Governance only — no direct admin access, no centralized owner</li>
     <li><strong>Timelock Enforcement:</strong> All proposals subject to configurable delay before execution (see G.4)</li>
   </ul>
@@ -2128,12 +2206,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li>Members are replaced via Structural vote (7-day timelock)</li>
     <li>No individual member can override or pause votes</li>
   </ul>
-  <h4 class="mini-title">Voting Weight Calculation</h4>
-  <p>Each proposal's approval depends on:</p>
+  <h4 class="mini-title">How an approval is counted</h4>
+  <p>Approval is counted by head. There is no token-weighted or stake-weighted voting anywhere in the contract:</p>
   <ol>
-    <li><strong>MFP-NFT Weight:</strong> Proportional share of eligible governance stake held by active MFP-NFT participants within the governance set</li>
-    <li><strong>Committee Confirmation:</strong> 3/5 of Standing Committee must sign</li>
-    <li><strong>Threshold:</strong> Proposal passes if BOTH conditions are met</li>
+    <li><strong>One member, one vote:</strong> each of the five Council members counts the same</li>
+    <li><strong>Threshold:</strong> 3 of 5 approvals mark a proposal approved. The proposer's own approval is the first of the three.</li>
+    <li><strong>Timelock:</strong> once its category's delay has passed, anyone can execute it on-chain</li>
   </ol>
 
   <h3 class="sub-title">G.3 Participation Requirements</h3>
@@ -2205,7 +2283,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Contract</th><th>MIC Allocation</th><th>Purpose & Lock Status</th></tr></thead>
       <tbody>
         <tr><td><strong>Sale Contracts</strong></td><td class="mono">945,000,000 MIC</td><td>Seed, Pre-Sale, and other buyer allocations — distributed directly to buyer wallets at purchase, locked via LockManager</td></tr>
-        <tr><td><strong>LiquidityPool</strong></td><td class="mono">105,000,000 MIC</td><td>Initial liquidity provision — locked forever, cannot be withdrawn</td></tr>
+        <tr><td><strong>Liquidity allocation</strong></td><td class="mono">105,000,000 MIC</td><td>31,500,000 burned 5 Aug 2026; 73,500,000 in the Listing Reserve Vault (DAO-governed, 7-day withdrawal cooldown)</td></tr>
         <tr><td><strong>DAOGovernor (Treasury)</strong></td><td class="mono">0 MIC</td><td>DAO Treasury does NOT hold MIC directly; mining emission allocates to DAO pool</td></tr>
         <tr><td><strong>LockManager</strong></td><td class="mono">0 MIC</td><td>Tracks vesting schedules on-chain — does NOT hold MIC tokens</td></tr>
       </tbody>
@@ -2244,12 +2322,12 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
         <tr><td><strong>World Development</strong></td><td class="mono">DAO-approved treasury program</td><td>Budget vote (24h)</td></tr>
         <tr><td><strong>App Add-Ons & Features</strong></td><td class="mono">DAO-approved treasury program</td><td>Budget vote (24h)</td></tr>
         <tr><td><strong>Reserved (Strategic)</strong></td><td class="mono">DAO-approved strategic allocation</td><td>Structural vote (7d)</td></tr>
-        <tr><td><strong>Staking Sustainability Fund</strong></td><td class="mono">Quarterly: 10–20% of DAO holdings</td><td>Budget vote (24h)</td></tr>
+        <tr><td><strong>Staking support (discretionary)</strong></td><td class="mono">Quarterly: 10–20% of DAO holdings</td><td>Budget vote (24h)</td></tr>
       </tbody>
     </table>
   </div>
-  <h4 class="mini-title">Quarterly Staking Sustainability Allocation</h4>
-  <p>To maintain staking allocation beyond primary emission depletion, the DAO may allocate a governed portion of accumulated MIC holdings to the Staking Sustainability Fund, subject to treasury votes, market conditions, and sustainability targets.</p>
+  <h4 class="mini-title">Quarterly Discretionary Staking Allocation</h4>
+  <p>If the DAO judges it necessary, it may allocate a governed portion of accumulated MIC holdings to the staking allocation pool, subject to treasury votes. This is discretionary and decided at the time; no standing automated program exists.</p>
   <div class="callout gold">
     <p><strong>DAO Governance Principle:</strong> All treasury actions, regardless of size, require explicit community vote. No emergency spending, no founder discretion. This builds long-term trust with investors and community members.</p>
   </div>
@@ -2271,7 +2349,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <li>OpenZeppelin Contracts v5.x: Audited, battle-tested implementations of ERC-20, ERC-1155, AccessControl, Upgradeable Proxy, and DAO Governor patterns</li>
     <li>Role-Based Access Control (RBAC): All privileged operations gated by specific roles, eliminating single-point-of-failure owner patterns</li>
     <li>Upgradeable Proxy Pattern: Core contracts deployed via UUPS (Universal Upgradeable Proxy Standard) to support security patches without data migration</li>
-    <li>Oracle Architecture: PancakeSwap V3 TWAP (Time-Weighted Average Price) as primary source, Chainlink Aggregator as fallback for critical price feeds</li>
+    <li>Price Reference: the protocol liquidity pool maintains its own cumulative-price accumulator on-chain and publishes 7-day and 30-day time-weighted averages. No external oracle is used in Phase 1–2; an external venue is added as a secondary reference only after listing</li>
   </ul>
 
   <div class="callout gold">
@@ -2332,7 +2410,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
   <p>All role grants/revokes and contract upgrades require a successful DAOGovernor vote:</p>
   <ul class="appendix-flat-list">
     <li>Standing Committee: 3/5 core team signers must approve emergency actions (no timelock)</li>
-    <li>DAO Participation Rule: Governance follows the approved MFP eligibility rule in the master docs; public documents should not treat old percentage quorums as canonical unless explicitly re-approved</li>
+    <li>Timelock by category: parameter changes 24 hours, budget 24 hours, structural 7 days. Emergency actions carry none. The timelock is measured from when the proposal was created, not from when it reached quorum.</li>
   </ul>
 
   <div class="callout">
@@ -2348,7 +2426,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <tbody>
         <tr><td class="hl"><strong>CB-1</strong></td><td><strong>Cumulative Cap</strong></td><td>totalEmitted > 5,950,000,000 MIC</td><td>Halt all emission; switch to burn-only mode</td></tr>
         <tr><td class="hl"><strong>CB-2</strong></td><td><strong>Daily Cap</strong></td><td>dailyEmission > 2× E_base(t)</td><td>Cap emission to 2× base rate; queue excess for next day</td></tr>
-        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>Price Floor</strong></td><td>MIC price < $0.001 USD</td><td>Reduce emission rate, activate circuit breaker protections</td></tr>
+        <tr><td class="hl"><strong>CB-3</strong></td><td><strong>Issuance Brake</strong></td><td>TWAP<sub>7d</sub> < 50% of pool opening reference</td><td>Hold L(H) at its floor until the average recovers; engages and releases automatically</td></tr>
         <tr><td class="hl"><strong>CB-4</strong></td><td><strong>Unstake Limit</strong></td><td>unstakeRequest > 10% of pool/day</td><td>Queue excess requests for next 24-hour window to prevent cascade</td></tr>
         <tr><td class="hl"><strong>CB-5</strong></td><td><strong>Emergency Pause</strong></td><td>DAOGovernor vote (Standing Committee 3/5)</td><td>Pause all contracts (mining, staking, transfers) with no timelock</td></tr>
       </tbody>
@@ -2368,42 +2446,32 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <p><strong>Emergency Pause:</strong> If CB-5 is triggered, system enters safe mode. Primary protocol allocation stops, staking allocation halts, and transfers are frozen. DAOGovernor can vote to resume or perform maintenance.</p>
   </div>
 
-  <h3 class="sub-title">H.5 KYC/AML Integration</h3>
-<p>MissionChain implements comprehensive Know-Your-Customer (KYC) and Anti-Money-Laundering (AML) controls to comply with regulatory requirements and prevent illicit activity:</p>
+  <h3 class="sub-title">H.5 Identity Verification &amp; Jurisdiction Policy</h3>
+<p>This section describes the verification Mission Chain actually operates today. Anything not listed here is not enforced by the platform.</p>
 
-  <p class="appendix-flat-head">Off-Chain KYC</p>
+  <p class="appendix-flat-head">Verification implemented today</p>
   <ul class="appendix-flat-list">
-    <li>Provider: Sumsub (third-party compliance verification service)</li>
-    <li>Scope: Identity verification, document authentication, liveness check</li>
-    <li>SLA: Verification completed within 48 hours</li>
+    <li>Method: email one-time code, followed by phone (SMS) one-time code</li>
+    <li>Levels: none → email verified → fully verified</li>
+    <li>Storage: held off-chain in the Mission Chain platform database. No identity documents are collected, and no verification status is written on-chain</li>
+    <li>Where it applies: the P2P marketplace requires <em>fully verified</em>. SEED, Pre-Sale and MICE credential purchases are open to any wallet and are <strong>not</strong> gated by verification</li>
   </ul>
 
-  <p class="appendix-flat-head">On-Chain KYC Registry</p>
+  <p class="appendix-flat-head">Jurisdiction policy — self-certified</p>
   <ul class="appendix-flat-list">
-    <li>Contract: KYCAllowlist.sol (ERC-165 compatible)</li>
-    <li>Function: Maintains whitelist of verified wallet addresses</li>
-    <li>Update Mechanism: OPERATOR_ROLE calls setKYCStatus(address, bool) to add/remove addresses</li>
+    <li>The restricted jurisdictions listed in F.3.3 are a participation policy, not an automated control</li>
+    <li>Mission Chain does not collect jurisdiction data, does not perform sanctions or OFAC screening, and does not geo-block. Participation is not automatically rejected on the basis of location</li>
+    <li>Each participant is responsible for reading these terms and confirming that participation is lawful where they reside, including any tax obligations. Participating from a restricted jurisdiction is a breach of these terms by that participant</li>
   </ul>
 
-  <p class="appendix-flat-head">KYC Requirements by Activity</p>
+  <p class="appendix-flat-head">Data handling</p>
   <ul class="appendix-flat-list">
-    <li>SEED Round Participation: KYC required before purchase</li>
-    <li>Pre-Sale Participation: KYC required before purchase</li>
-    <li>MICE Credential Purchase: KYC required before minting credential</li>
-    <li>DAO Governance: KYC verification checked on-chain before vote power grants</li>
-    <li>Restricted Jurisdictions: Automatic KYC rejection for US, Iran, North Korea, and OFAC-listed territories</li>
-  </ul>
-
-  <p class="appendix-flat-head">Regulatory Compliance</p>
-  <p>All KYC/AML procedures follow:</p>
-  <ul class="appendix-flat-list">
-    <li>FATF Travel Rule: Beneficial ownership and transaction traceability for large transfers</li>
-    <li>Applicable AML/CFT Laws: Jurisdiction-specific anti-money laundering and counter-terrorism financing regulations</li>
-    <li>Data Privacy: Personal identification data encrypted, stored securely, and compliant with GDPR/PDPA</li>
+    <li>Personal data collected is limited to an email address and a phone number, used for account security and notifications</li>
+    <li>On-chain data such as wallet addresses and transactions is public by design and cannot be deleted</li>
   </ul>
 
   <div class="callout gold">
-    <p><strong>Transparency:</strong> KYC verification status is on-chain and immutable. Once verified, a wallet address can participate in all protocol activities without repeated verification (except jurisdiction changes).</p>
+    <p><strong>Not yet implemented:</strong> document-based identity verification, sanctions screening and jurisdiction enforcement are not part of the platform today. If they are introduced, this document and the platform terms will be updated before they take effect.</p>
   </div>
 
   <h3 class="sub-title">H.6 Incident Response</h3>
@@ -2453,7 +2521,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
   <p class="appendix-flat-head">Off-Chain Data</p>
   <ul class="appendix-flat-list">
-    <li>KYC Documents: Encrypted at rest, stored in Sumsub-certified cold storage, accessible only to compliance team</li>
+    <li>Contact Details: Email address and phone number, encrypted at rest. No identity documents are collected</li>
     <li>AI Conversation Logs (NIRA): Session-based, not permanently archived; deleted after user logout</li>
     <li>Backend Logs: IP addresses, API keys, and authentication tokens are excluded from any data retention</li>
   </ul>
@@ -2528,7 +2596,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
       <thead><tr><th>Feature</th><th>Purpose</th><th>Phase</th></tr></thead>
       <tbody>
         <tr><td>Automated Emission Anomaly Detection</td><td>Flag abnormal protocol allocation activity, Sybil clusters, and allocation-pressure index manipulation</td><td>Phase II</td></tr>
-        <tr><td>KYC Anomaly Detection</td><td>Assist Sumsub review flow with pattern-based risk scoring</td><td>Phase II</td></tr>
+        <tr><td>KYC Anomaly Detection</td><td>Assist any future identity-verification review with pattern-based risk scoring</td><td>Phase II</td></tr>
         <tr><td>Governance Proposal Quality Scoring</td><td>Rank proposals on clarity, scope, and alignment with protocol principles</td><td>Phase III</td></tr>
         <tr><td>Mission Learn Personalization</td><td>Customized learning paths across Web3, faith, and mission topics</td><td>Phase III</td></tr>
       </tbody>
@@ -3010,24 +3078,24 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
 
     <div class="wp-table-wrap">
     <table class="wp-table">
-      <thead><tr><th>Phase</th><th>Theme</th><th>Deliverables</th><th>Timeline</th></tr></thead>
+      <thead><tr><th>Phase</th><th>Theme</th><th>Deliverables</th></tr></thead>
       <tbody>
-        <tr><td><strong>PHASE 1 — FOUNDATION</strong></td><td>Core Platform Launch</td><td>Community registration with wallet-based auth. Basic content hub (devotionals, testimonies). Daily faith challenges with MIC incentives. SOPHIA daily devotional guide. 5-language support (EN, ES, VI, KO, PT).</td><td>Q3 2026</td></tr>
-        <tr><td><strong>PHASE 2 — GROWTH</strong></td><td>Community Expansion</td><td>Partnership management portal. Learning Academy with certificate NFTs. SOPHIA music and worship features. Mentorship matching system. Community groups with governance tools. Regional challenge campaigns.</td><td>Q4 2026 – Q1 2027</td></tr>
-        <tr><td><strong>PHASE 3 — SCALE</strong></td><td>Global Reach</td><td>Phase 2 languages (SW, PCM, TL). Global Missions funding module. Real-time multilingual translation via SOPHIA. White-label portals for Strategic Partners. Mobile-native experience (PWA + app store).</td><td>Q2 – Q4 2027</td></tr>
-        <tr><td><strong>PHASE 4 — MATURITY</strong></td><td>Ecosystem Synergy</td><td>Mature DAO-supervised content moderation. Cross-platform achievement system. Advanced analytics and impact dashboards for partners. Greater SOPHIA autonomy subject to governance safeguards. Decentralized identity (DID) integration.</td><td>2028+</td></tr>
+        <tr><td><strong>PHASE 1 — FOUNDATION</strong></td><td>Core Platform Launch</td><td>Community registration with wallet-based auth. Basic content hub (devotionals, testimonies). Daily faith challenges with MIC incentives. SOPHIA daily devotional guide. 5-language support (EN, ES, VI, KO, PT).</td></tr>
+        <tr><td><strong>PHASE 2 — GROWTH</strong></td><td>Community Expansion</td><td>Partnership management portal. Learning Academy with certificate NFTs. SOPHIA music and worship features. Mentorship matching system. Community groups with governance tools. Regional challenge campaigns.</td></tr>
+        <tr><td><strong>PHASE 3 — SCALE</strong></td><td>Global Reach</td><td>Phase 2 languages (SW, PCM, TL). Global Missions funding module. Real-time multilingual translation via SOPHIA. White-label portals for Strategic Partners. Mobile-native experience (PWA + app store).</td></tr>
+        <tr><td><strong>PHASE 4 — MATURITY</strong></td><td>Ecosystem Synergy</td><td>Mature DAO-supervised content moderation. Cross-platform achievement system. Advanced analytics and impact dashboards for partners. Greater SOPHIA autonomy subject to governance safeguards. Decentralized identity (DID) integration.</td></tr>
       </tbody>
     </table>
   </div><h4 class="mini-title">Key Milestones</h4>
     <div class="wp-table-wrap">
       <table class="wp-table">
-        <thead><tr><th>MILESTONE</th><th>TARGET</th><th>SUCCESS METRIC</th></tr></thead>
+        <thead><tr><th>MILESTONE</th><th>SUCCESS METRIC</th></tr></thead>
         <tbody>
-          <tr><td><strong>Platform Beta</strong></td><td class="mono">Q3 2026</td><td>1,000 active users, 10 partner churches</td></tr>
-          <tr><td><strong>Public Launch</strong></td><td class="mono">Q4 2026</td><td>10,000 active users, 50 partners, 5 languages live</td></tr>
-          <tr><td><strong>Growth Threshold</strong></td><td class="mono">Q2 2027</td><td>50,000 active users, 200 partners, Learning Academy live</td></tr>
-          <tr><td><strong>Global Scale</strong></td><td class="mono">Q4 2027</td><td>200,000 active users, 8 languages, Global Missions live</td></tr>
-          <tr><td><strong>Maturity</strong></td><td class="mono">2028</td><td>500,000+ active users, full DAO governance, DID integration</td></tr>
+          <tr><td><strong>Platform Beta</strong></td><td>1,000 active users, 10 partner churches</td></tr>
+          <tr><td><strong>Public Launch</strong></td><td>10,000 active users, 50 partners, 5 languages live</td></tr>
+          <tr><td><strong>Growth Threshold</strong></td><td>50,000 active users, 200 partners, Learning Academy live</td></tr>
+          <tr><td><strong>Global Scale</strong></td><td>200,000 active users, 8 languages, Global Missions live</td></tr>
+          <tr><td><strong>Maturity</strong></td><td>500,000+ active users, full DAO governance, DID integration</td></tr>
         </tbody>
       </table>
     </div>
@@ -3078,7 +3146,7 @@ body.theme-light .formula{border-color:rgba(123,45,139,.16)}
     <div class="foot-logo">
       <img src="mission-chain-logo-clear.png" alt="Mission Chain" style="height:60px;width:60px;border-radius:14px;object-fit:contain;background:transparent"/>
       <div class="foot-logo-name">Mission Chain Network</div>
-      <div class="foot-tagline" data-t="foot-tagline">Inspired by Faith. Built for People.</div>
+      <div class="foot-tagline" data-t="foot-tagline">Born of Faith. Built for People.</div>
     </div>
     <div>
       <p data-t="foot-p">© 2026 Mission Chain Network. All rights reserved. · Token: MIC · Network: BSC (BEP-20) · Max Supply: 7,000,000,000</p>
@@ -3151,7 +3219,7 @@ function toggleSidebar() {
 }
 
 // ── ACTIVE NAV ON SCROLL ──
-const sections = ['hero','toc','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s12','appA','appB','appC','appD','appE','appF','appG','appH','appI','appJ','appK','appL','appM','appN'];
+const sections = ['hero','toc','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','appA','appB','appC','appD','appE','appF','appG','appH','appI','appJ','appK','appL','appM','appN'];
 const navBtns = document.querySelectorAll('.nav-link');
 window.addEventListener('scroll', () => {
   let current = '';
