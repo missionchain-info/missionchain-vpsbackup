@@ -48,6 +48,55 @@ html
     --shadow-soft: rgba(67,46,18,0.12);
   }
 
+  body.theme-royal {
+    --burgundy: #3E6E90;
+    --deep-purple: #16304C;
+    --gold: #C9A84C;
+    --gold-light: #E8C96B;
+    --cream: #EAF1FB;
+    --white: #FFFFFF;
+    --text-dim: rgba(234,241,251,0.72);
+    --card-bg: rgba(37,78,128,0.10);
+    --border: rgba(201,168,76,0.28);
+    --body-bg: #0E2445;
+    --nav-bg: rgba(11,24,44,0.88);
+    --dropdown-bg: rgba(12,28,52,0.98);
+    --shadow-soft: rgba(0,0,0,0.5);
+  }
+  /* Royal — hardcoded section overrides */
+  body.theme-royal .hero-bg { background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46, 92, 150,0.35) 0%, rgba(22, 48, 86,0.4) 40%, #0a1d38 100%); }
+  body.theme-royal .hero-orb-1 { background: radial-gradient(circle, rgba(46, 92, 150,0.2) 0%, transparent 70%); }
+  body.theme-royal .btn-primary:hover { box-shadow: 0 10px 40px rgba(46, 92, 150,0.5); }
+  body.theme-royal .about-visual img { box-shadow: 0 0 80px rgba(46, 92, 150,0.4); }
+  body.theme-royal .eco-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.3) 50%, #0a1d38 100%); }
+  body.theme-royal .tokenomics-section { background: #081226; }
+  body.theme-royal .rounds-section { background: linear-gradient(180deg, #081226 0%, #0a1d38 100%); }
+  body.theme-royal .mice-box { background: linear-gradient(135deg, rgba(46, 92, 150,0.2), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .roadmap-section { background: #0a1d38; }
+  body.theme-royal .gtm-principles { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.08), transparent 34%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.34), rgba(10, 29, 56,0.92)); }
+  body.theme-royal .gtm-principle-num { background: linear-gradient(135deg, rgba(201,168,76,0.22), rgba(46, 92, 150,0.36)); }
+  body.theme-royal .gov-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .team-section { background: #081226; }
+  body.theme-royal .team-avatar-photo { box-shadow: 0 0 20px rgba(46, 92, 150,0.3); }
+  body.theme-royal .social-section { background: linear-gradient(135deg, rgba(46, 92, 150,0.15) 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .docs-section { background: #081226; }
+  body.theme-royal .market-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(46, 92, 150,0.12) 50%, #0a1d38 100%); }
+  body.theme-royal .market-total { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .seed-pkg.featured { background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .seed-vesting-box { background: rgba(22, 48, 86,0.3); }
+  body.theme-royal .mice-price-panel { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 35%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.55), rgba(10, 29, 56,0.9)); }
+  body.theme-royal .mice-proceeds-wrapper { background: linear-gradient(135deg, rgba(10, 29, 56,0.9) 0%, rgba(22, 48, 86,0.4) 100%); }
+  body.theme-royal .finance-section { background: #081226; }
+  body.theme-royal .finance-total-row { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .risk-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .legal-section { background: #081226; }
+
+
+
   .lang-vi,
   .lang-vi body,
   .lang-vi body *,
@@ -1502,7 +1551,8 @@ html
 <a href="#ecosystem">Hệ sinh thái</a>
 <a href="#tokenomics">Tokenomics</a>
 <a href="#roadmap">Roadmap</a>
-<a href="#team">Đội</a>
+<a href="#feeds">Feeds</a>
+<!-- <a href="#team">Đội</a> -->
 <a href="#documents">Tài liệu</a>
 <a href="https://missionchain.world" target="_blank">Mission World</a>
 </div>
@@ -1510,6 +1560,7 @@ html
 <div aria-label="Trình chuyển đổi chủ đề" class="theme-switcher">
 <button class="theme-btn active" id="themeDaylight" onclick="setTheme('daylight')" title="Chế độ ban ngày" type="button">☀</button>
 <button class="theme-btn" id="themeNight" onclick="setTheme('night')" title="Chế độ ban đêm" type="button">☾</button>
+<button class="theme-btn" id="themeRoyal" onclick="setTheme('royal')" title="Royal" type="button">✦</button>
 </div>
 <div class="lang-switcher" id="langSwitcher">
 <div class="lang-selected" id="langSelected" onclick="toggleLang()">🇬🇧 EN</div>
@@ -1695,6 +1746,29 @@ html
 </div>
 </section>
 <div class="gold-divider"></div>
+
+<!-- TOKEN BURN -->
+<section id="burn" class="tokenomics-section">
+  <div class="section-inner">
+    <span class="section-label">Nguồn Cung Kiểm Chứng Được</span>
+    <h2 class="section-title">Đã Đốt 31.500.000 MIC</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">Ngày 5/8/2026 giao thức đã huỷ vĩnh viễn 31.500.000 MIC — 3% nguồn cung phát hành trước. Số token này nằm trong một hợp đồng thanh khoản đã ngừng dùng, không có bất kỳ hàm rút nào, nên chưa bao giờ có thể bị bán hay chuyển đi. Thay vì yêu cầu ai đó tin vào một lời cam kết khoá, chúng đã bị đốt.</p>
+    <div class="token-stats" style="margin-top:28px">
+      <div class="token-stat"><span class="token-stat-val">31.500.000</span><span class="token-stat-key">Đã đốt</span></div>
+      <div class="token-stat"><span class="token-stat-val">1.050.000.000</span><span class="token-stat-key">Nguồn cung phát hành trước</span></div>
+      <div class="token-stat"><span class="token-stat-val">7.000.000.000</span><span class="token-stat-key">Nguồn cung tối đa (không đổi)</span></div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-dim);line-height:1.8;margin-top:22px;max-width:820px">Việc đốt không thể đảo ngược. Đường tạo MIC duy nhất còn lại bị chặn bởi một bộ đếm cộng dồn mà thao tác đốt không reset — không người giữ khoá nào, kể cả đội sáng lập, có thể phát hành lại số token này.</p>
+    <p style="margin-top:14px">
+      <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener" style="color:var(--gold);font-size:0.82rem;letter-spacing:.04em;text-decoration:none;border-bottom:1px solid rgba(201,168,76,.4);padding-bottom:2px">Xem giao dịch đốt trên BSCScan &rarr;</a>
+    </p>
+    <p style="font-family:monospace;font-size:0.7rem;color:var(--text-dim);margin-top:12px;word-break:break-all">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</p>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
 <!-- SALE ROUNDS -->
 <section class="rounds-section" id="rounds">
 <div class="section-inner">
@@ -1824,9 +1898,7 @@ html
 </div>
 </div>
 </div>
-</div>
 </section>
-<div class="gold-divider"></div>
 <!-- PRODUCT SPECIFICATIONS -->
 <section id="products" style="background: linear-gradient(180deg, #080510 0%, rgba(44,26,62,0.2) 50%, #080510 100%); padding: 100px 40px;">
 <div class="section-inner">
@@ -1874,11 +1946,12 @@ html
 <div class="gold-line"></div>
 <p class="section-desc">Mission Chain ưu tiên tiến bộ đã được xác minh hơn là mở rộng nhanh chóng. Việc hình thành vốn hỗ trợ việc thực hiện — chứ không phải ngược lại.</p>
 <div class="roadmap-timeline">
-<div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Giai đoạn I</div><div class="rm-period">Quý 1–Quý 2, năm 2026</div><div class="rm-title-main">Nền tảng &amp; Hình thành vốn</div><div class="rm-items">Triển khai MIC trên BSC và động cơ Hindex<br/>Triển khai các hợp đồng MICE, Community NFT và MFP-NFT<br/>Phát hành Mission Learn, MVP và Mission Work phiên bản alpha<br/>Mở các giai đoạn SEED và PRE-SALE với thanh khoản ban đầu<br/>Kích hoạt 3 Mission Hub và khởi chạy podcast</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-<div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Giai đoạn II</div><div class="rm-period">Quý 3–Quý 4, năm 2026</div><div class="rm-title-main">Kích hoạt hệ sinh thái</div><div class="rm-items">Mở rộng Mission Learn và kích hoạt hoàn toàn Builder, Maker và Luminary NFTs<br/>Mở rộng Mission Work hướng tới 500 nhà sáng tạo đã được xác minh và 2.000+ công việc/tháng<br/>Phát hành phiên bản beta Mission Social và mở rộng lên 8 Hubs<br/>Thực hiện cuộc bỏ phiếu đầu tiên cho cấp độ Sản phẩm (Product-tier) và cấp độ Khung (Framework-tier) của DAO</div></div></div>
-<div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Giai đoạn III</div><div class="rm-period">Quý 1–Quý 2, năm 2027</div><div class="rm-title-main">Tăng trưởng &amp; Lãnh đạo thị trường</div><div class="rm-items">Phát hành Mission Social trên toàn cầu<br/>Tổ chức các lễ hội sáng tạo toàn cầu và củng cố các mối quan hệ đối tác chiến lược<br/>Chuẩn bị các mốc quan trọng của mạng thử nghiệm Layer 2<br/>Đạt được 15 trung tâm, 100.000 người dùng và tăng trưởng doanh thu sản phẩm bền vững</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-<div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Giai đoạn IV</div><div class="rm-period">Năm 2+</div><div class="rm-title-main">Sự trưởng thành &amp; Lãnh đạo toàn cầu</div><div class="rm-items">Phát hành Mission Network Layer 2 với MIC làm đồng tiền gốc<br/>Đưa quyền sáng tạo và tích hợp RWA lên chuỗi khối<br/>Mở rộng khả năng tương tác liên chuỗi<br/>Hoàn tất quá trình chuyển đổi sang mô hình quản lý cộng đồng cho Mission DAO</div></div></div>
-</div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Giai đoạn I</div><div class="rm-title-main">Chiến Lược Tổng Thể &amp; Nền Tảng</div><div class="rm-items">Hoàn thành tài liệu White Paper &amp; Phụ Lục<br>Triển khai tất cả Smart Contracts V1, Cơ Chế DAO và hoàn thành kiểm toán nội bộ<br>SEED Sale → Presale → Kích Hoạt SWAP<br>Ra mắt Demo Mission World</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Giai đoạn II</div><div class="rm-title-main">Phân Phối MICE &amp; Khởi Chạy Đào</div><div class="rm-items">Phân phối MICE bắt đầu trên tất cả các vòng định giá<br>Đào MIC được khởi chạy với động cơ phát hành Hindex đầy đủ hoạt động<br>Mission World chính thức ra mắt như nền tảng đối tác chiến lược</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Giai đoạn III</div><div class="rm-title-main">Niêm Yết DEX &amp; Mở Rộng Hệ Sinh Thái</div><div class="rm-items">Niêm yết DEX trên các sàn giao dịch lớn<br>Mission Learn, Mission Social và Mission Chain (L2) Testnet được khởi chạy<br>Cơ sở hạ tầng nền kinh tế nhà sáng tạo mở rộng</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Giai đoạn IV</div><div class="rm-title-main">Niêm Yết CEX &amp; Cầu Nối Đa Chuỗi</div><div class="rm-items">Niêm yết CEX trên các sàn giao dịch tiền điện tử lớn<br>Thị trường Mission Work ở quy mô lớn<br>Tích hợp Cross-Chain Bridge cho hỗ trợ đa chuỗi</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Giai đoạn V</div><div class="rm-title-main">Mở rộng Hệ sinh thái &amp; Mainnet L2</div><div class="rm-items">Mở rộng hệ sinh thái toàn diện trên tất cả các sản phẩm Mission<br>Ra mắt Mainnet Mission Chain (L2)<br>Các cột mốc chấp nhận toàn cầu và tăng trưởng bền vững</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+    </div>
 <div class="gtm-principles">
 <div class="gtm-principles-head">
 <div>
@@ -1959,7 +2032,7 @@ html
 </section>
 <div class="gold-divider"></div>
 <!-- TEAM -->
-<section class="team-section" id="team">
+<section class="team-section" id="team" style="display:none">
 <div class="section-inner">
 <span class="section-label">Nhân dân</span>
 <h2 class="section-title">Đội ngũ sáng lập và lãnh đạo</h2>
@@ -2156,6 +2229,19 @@ html
 </div>
 </div>
 </section>
+
+<!-- LATEST FEEDS (widget, additive) -->
+<section id="feeds" class="feeds-section" style="padding:90px 24px;">
+  <div class="section-inner">
+    <span class="section-label">Dòng nội dung</span>
+    <h2 class="section-title">Cập nhật mới nhất</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">AI, công nghệ, thị trường — xen kẽ những suy niệm từ Kinh Thánh. Minh bạch, đều đặn.</p>
+    <div id="mic-feed" data-lang="vi" data-viewall="Xem tất cả"></div>
+  </div>
+</section>
+<script src="/feeds-widget.js?v=20260719" defer></script>
+
 <!-- FOOTER -->
 <footer>
 <div class="footer-logo">
@@ -2258,20 +2344,24 @@ function getLocalizedHref(lang, fallbackFile) {
   syncLandingLanguageMenu();
 
   function setTheme(theme) {
-    var isLight = theme === 'night';
-    document.body.classList.toggle('theme-light', isLight);
+    if (theme === 'daylight') theme = 'dark';
+    else if (theme === 'night') theme = 'light';
+    if (theme !== 'dark' && theme !== 'light' && theme !== 'royal') theme = 'dark';
+    document.body.classList.remove('theme-light', 'theme-royal');
+    if (theme === 'light') document.body.classList.add('theme-light');
+    else if (theme === 'royal') document.body.classList.add('theme-royal');
     var dayBtn = document.getElementById('themeDaylight');
     var nightBtn = document.getElementById('themeNight');
-    if (dayBtn && nightBtn) {
-      dayBtn.classList.toggle('active', !isLight);
-      nightBtn.classList.toggle('active', isLight);
-    }
+    var royalBtn = document.getElementById('themeRoyal');
+    if (dayBtn) dayBtn.classList.toggle('active', theme === 'dark');
+    if (nightBtn) nightBtn.classList.toggle('active', theme === 'light');
+    if (royalBtn) royalBtn.classList.toggle('active', theme === 'royal');
     try { localStorage.setItem('missionchain-theme', theme); } catch (e) {}
   }
 
   (function restoreTheme() {
-    var savedTheme = 'daylight';
-    try { savedTheme = localStorage.getItem('missionchain-theme') || 'daylight'; } catch (e) {}
+    var savedTheme = 'dark';
+    try { savedTheme = localStorage.getItem('missionchain-theme') || 'dark'; } catch (e) {}
     setTheme(savedTheme);
   })();
 
@@ -2281,5 +2371,7 @@ function getLocalizedHref(lang, fallbackFile) {
   });
 
 </script>
+<!-- Chatwoot NIRA widget -->
+<script>(function(d,t){var BASE_URL="https://chat.missionchain.io";var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src=BASE_URL+"/packs/js/sdk.js";g.defer=true;g.async=true;s.parentNode.insertBefore(g,s);g.onload=function(){window.chatwootSDK.run({websiteToken:"tL4SgYfVMeFSjPqdpGKw1mA7",baseUrl:BASE_URL})}})(document,"script");</script>
 </body>
 </html>

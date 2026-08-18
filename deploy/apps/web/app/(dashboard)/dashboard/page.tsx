@@ -6,15 +6,25 @@ import { useAccount, useBalance } from 'wagmi'
 import { BrowserProvider, Contract, formatUnits, formatEther } from 'ethers'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { CONTRACTS, ERC20_ABI, MIC_ABI, LOCK_MANAGER_ABI, MFPNFT_ABI, COMMUNITY_NFT_ABI } from '@/lib/contracts'
-import { getActiveChain } from '@missionchain/sdk'
+import { getActiveChain, USDT_DECIMALS } from '@missionchain/sdk'
 
 const ACTIVE_CHAIN = getActiveChain()
 
 interface DashboardData {
   data?: {
     micPrice?: string
+    /** `swap` = the live AMM. `admin` / `admin-fallback` = a configured figure. */
+    micPriceSource?: string
+    /** Design cap once all mining has happened. Kept under its old name so nothing that
+     *  already reads it shifts meaning; `maxSupply` is the same number, named honestly. */
     totalSupply?: number
+    maxSupply?: number
+    /** What exists on chain right now. */
+    currentSupply?: string
+    /** Issued at genesis — a historical fact, unchanged by later burns. */
     preIssued?: number
+    /** How much of that genesis issuance still exists, after the 2026-08-05 burn. */
+    preIssuedNow?: string
     miningPool?: number
     circulatingSupply?: string
     totalEmitted?: string
@@ -123,9 +133,16 @@ export default function DashboardPage() {
           usdt.balanceOf(address) as Promise<bigint>,
           lockMgr.lockedOf(address).catch(() => 0n) as Promise<bigint>,
           mfpNft.balanceOf(address).catch(() => 0n) as Promise<bigint>,
-          communityNft.balanceOf(address, 1).catch(() => 0n) as Promise<bigint>,  // Builder = tier 1
-          communityNft.balanceOf(address, 2).catch(() => 0n) as Promise<bigint>,  // Maker = tier 2
-          communityNft.balanceOf(address, 3).catch(() => 0n) as Promise<bigint>,  // Luminary = tier 3
+          // `balanceOf(address, tier)` is the ERC-1155 signature, and CommunityNFTv2 is
+          // ERC-721 — so these three calls could only ever fail. The `.catch` hid that,
+          // but the page still waited for three round trips to return an error before it
+          // could render, on every load.
+          //
+          // `activeCountOf` is what v2 exposes, and it counts only unexpired tokens —
+          // which is the number that belongs on a dashboard anyway.
+          communityNft.activeCountOf(address, 1).catch(() => 0n) as Promise<bigint>,
+          communityNft.activeCountOf(address, 2).catch(() => 0n) as Promise<bigint>,
+          communityNft.activeCountOf(address, 3).catch(() => 0n) as Promise<bigint>,
         ])
 
         const micTotal = Number(formatUnits(micBalance, 18))
@@ -138,7 +155,7 @@ export default function DashboardPage() {
           micAvailable: available.toString(),
           micVesting: locked.toString(),
           micStaked: '0', // TODO: read from MICStaking contract when deployed
-          usdtBalance: formatUnits(usdtBalance, 6),
+          usdtBalance: formatUnits(usdtBalance, USDT_DECIMALS),
           bnbBalance: bnbBal.toFixed(4),
           mfpNfts: Number(mfpCount),
           builders: Number(builderCount),
@@ -218,9 +235,18 @@ export default function DashboardPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg>
           </div>
           <div className="scroll-stat-info">
-            <div className="scroll-stat-label">Pre-Issued</div>
-            <div className="scroll-stat-value">{fmt(d.preIssued, '-')}</div>
-            <div className="scroll-stat-sub">of {fmt(d.totalSupply, '-')} total</div>
+            {/*
+              Headline is the genesis pre-issue, 1.05B. It once read "1.05B of 7.00B
+              total" — two numbers each true of a different thing, sitting side by side as
+              if they were one ratio, so the 7.00B design cap was dropped.
+
+              The sub-line carries what survives the pre-issue: 31.5M was burned on
+              2026-08-05 and cannot come back, so the figure that exists now is stated
+              beside the one that was issued, each labelled as what it is.
+            */}
+            <div className="scroll-stat-label">Pre-Issued Supply</div>
+            <div className="scroll-stat-value">{fmt(d.preIssued ?? 1_050_000_000, '-')}</div>
+            <div className="scroll-stat-sub">{fmt(d.currentSupply ?? d.preIssuedNow, '-')} now &mdash; {fmt(d.totalBurned, '-')} burned</div>
           </div>
         </div>
         <div className="scroll-stat cyan">

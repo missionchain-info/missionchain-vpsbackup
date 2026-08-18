@@ -3,7 +3,7 @@ html
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Mission Chain - 신앙에서 영감을 얻다. 사람을 위해 구축되었습니다.</title>
+<title>Mission Chain - 신앙에서 태어나다. 사람을 위해 구축되었습니다.</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&amp;family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&amp;family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
@@ -47,6 +47,55 @@ html
     --dropdown-bg: rgba(255,251,246,0.98);
     --shadow-soft: rgba(67,46,18,0.12);
   }
+
+  body.theme-royal {
+    --burgundy: #3E6E90;
+    --deep-purple: #16304C;
+    --gold: #C9A84C;
+    --gold-light: #E8C96B;
+    --cream: #EAF1FB;
+    --white: #FFFFFF;
+    --text-dim: rgba(234,241,251,0.72);
+    --card-bg: rgba(37,78,128,0.10);
+    --border: rgba(201,168,76,0.28);
+    --body-bg: #0E2445;
+    --nav-bg: rgba(11,24,44,0.88);
+    --dropdown-bg: rgba(12,28,52,0.98);
+    --shadow-soft: rgba(0,0,0,0.5);
+  }
+  /* Royal — hardcoded section overrides */
+  body.theme-royal .hero-bg { background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46, 92, 150,0.35) 0%, rgba(22, 48, 86,0.4) 40%, #0a1d38 100%); }
+  body.theme-royal .hero-orb-1 { background: radial-gradient(circle, rgba(46, 92, 150,0.2) 0%, transparent 70%); }
+  body.theme-royal .btn-primary:hover { box-shadow: 0 10px 40px rgba(46, 92, 150,0.5); }
+  body.theme-royal .about-visual img { box-shadow: 0 0 80px rgba(46, 92, 150,0.4); }
+  body.theme-royal .eco-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.3) 50%, #0a1d38 100%); }
+  body.theme-royal .tokenomics-section { background: #081226; }
+  body.theme-royal .rounds-section { background: linear-gradient(180deg, #081226 0%, #0a1d38 100%); }
+  body.theme-royal .mice-box { background: linear-gradient(135deg, rgba(46, 92, 150,0.2), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .roadmap-section { background: #0a1d38; }
+  body.theme-royal .gtm-principles { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.08), transparent 34%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.34), rgba(10, 29, 56,0.92)); }
+  body.theme-royal .gtm-principle-num { background: linear-gradient(135deg, rgba(201,168,76,0.22), rgba(46, 92, 150,0.36)); }
+  body.theme-royal .gov-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .team-section { background: #081226; }
+  body.theme-royal .team-avatar-photo { box-shadow: 0 0 20px rgba(46, 92, 150,0.3); }
+  body.theme-royal .social-section { background: linear-gradient(135deg, rgba(46, 92, 150,0.15) 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .docs-section { background: #081226; }
+  body.theme-royal .market-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(46, 92, 150,0.12) 50%, #0a1d38 100%); }
+  body.theme-royal .market-total { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .seed-pkg.featured { background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .seed-vesting-box { background: rgba(22, 48, 86,0.3); }
+  body.theme-royal .mice-price-panel { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 35%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.55), rgba(10, 29, 56,0.9)); }
+  body.theme-royal .mice-proceeds-wrapper { background: linear-gradient(135deg, rgba(10, 29, 56,0.9) 0%, rgba(22, 48, 86,0.4) 100%); }
+  body.theme-royal .finance-section { background: #081226; }
+  body.theme-royal .finance-total-row { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .risk-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .legal-section { background: #081226; }
+
+
 
   /* Korean language font override */
   .lang-ko body,
@@ -1463,7 +1512,8 @@ html
 <a href="#ecosystem">에코시스템</a>
 <a href="#tokenomics">Tokenomics</a>
 <a href="#roadmap">Roadmap</a>
-<a href="#team">팀</a>
+<a href="#feeds">Feeds</a>
+<!-- <a href="#team">팀</a> -->
 <a href="#documents">문서</a>
 <a href="https://missionchain.world" target="_blank">Mission World</a>
 </div>
@@ -1471,6 +1521,7 @@ html
 <div aria-label="테마 전환기" class="theme-switcher">
 <button class="theme-btn active" id="themeDaylight" onclick="setTheme('daylight')" title="일광 모드" type="button">☀</button>
 <button class="theme-btn" id="themeNight" onclick="setTheme('night')" title="야간 모드" type="button">☾</button>
+<button class="theme-btn" id="themeRoyal" onclick="setTheme('royal')" title="Royal" type="button">✦</button>
 </div>
 <div class="lang-switcher" id="langSwitcher">
 <div class="lang-selected" id="langSelected" onclick="toggleLang()">🇬🇧 EN</div>
@@ -1492,7 +1543,7 @@ html
 <span class="hero-eyebrow fade-up">Web3 · Creator Economy</span>
 <img alt="Mission Chain" class="hero-logo fade-up delay-1" src="../../mission-chain-logo-clear.png"/>
 <h1 class="fade-up delay-2">MISSION CHAIN</h1>
-<p class="hero-tagline fade-up delay-3">"믿음에서 영감을 얻었습니다. 사람을 위해 구축되었습니다."</p>
+<p class="hero-tagline fade-up delay-3">"믿음에서 태어났습니다. 사람을 위해 구축되었습니다."</p>
 <p class="hero-quote fade-up delay-3">당신은 세상의 빛입니다. 언덕 위의 도시는 숨길 수 없다. - 마태복음 5:14 ✦</p>
 <div class="hero-stats fade-up delay-4">
 <div class="hero-stat"><span class="hero-stat-num">7B</span><span class="hero-stat-label">최대 MIC 공급</span></div>
@@ -1609,7 +1660,7 @@ html
 <div class="token-stat"><span class="token-stat-val">15%</span><span class="token-stat-key">사전 발급 할당</span></div>
 <div class="token-stat"><span class="token-stat-val">85%</span><span class="token-stat-key">채굴 할당</span></div>
 <div class="token-stat"><span class="token-stat-val">100,000</span><span class="token-stat-key">MICE 라이선스 한도</span></div>
-<div class="token-stat"><span class="token-stat-val">25,000</span><span class="token-stat-key">MFP-NFT 하드 캡</span></div>
+<div class="token-stat"><span class="token-stat-val">2,500</span><span class="token-stat-key">MFP-NFT 하드 캡</span></div>
 </div>
 <div style="margin-top: 32px;">
 <h3 style="font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; margin-bottom: 16px; letter-spacing: 0.1em;">PRE-ISSUED ALLOCATION (15% = 1,050,000,000 MIC)</h3>
@@ -1656,6 +1707,29 @@ html
 </div>
 </section>
 <div class="gold-divider"></div>
+
+<!-- TOKEN BURN -->
+<section id="burn" class="tokenomics-section">
+  <div class="section-inner">
+    <span class="section-label">검증 가능한 공급량</span>
+    <h2 class="section-title">31,500,000 MIC 소각</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">2026년 8월 5일 프로토콜은 사전 발행 물량의 3%인 31,500,000 MIC를 영구히 파기했습니다. 이 토큰은 인출 함수가 전혀 없는 폐기된 유동성 컨트랙트에 있었기에 애초에 매도되거나 이전될 수 없었습니다. 락업을 믿어달라고 요구하는 대신, 소각했습니다.</p>
+    <div class="token-stats" style="margin-top:28px">
+      <div class="token-stat"><span class="token-stat-val">31,500,000</span><span class="token-stat-key">소각</span></div>
+      <div class="token-stat"><span class="token-stat-val">1,050,000,000</span><span class="token-stat-key">사전 발행 물량</span></div>
+      <div class="token-stat"><span class="token-stat-val">7,000,000,000</span><span class="token-stat-key">최대 공급량 (변동 없음)</span></div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-dim);line-height:1.8;margin-top:22px;max-width:820px">이 소각은 되돌릴 수 없습니다. MIC를 생성할 수 있는 유일한 경로는 소각으로 초기화되지 않는 누적 카운터로 제한됩니다. 창립 팀을 포함한 어떤 키 보유자도 이 토큰을 재발행할 수 없습니다.</p>
+    <p style="margin-top:14px">
+      <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener" style="color:var(--gold);font-size:0.82rem;letter-spacing:.04em;text-decoration:none;border-bottom:1px solid rgba(201,168,76,.4);padding-bottom:2px">BSCScan에서 소각 트랜잭션 보기 &rarr;</a>
+    </p>
+    <p style="font-family:monospace;font-size:0.7rem;color:var(--text-dim);margin-top:12px;word-break:break-all">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</p>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
 <!-- SALE ROUNDS -->
 <section class="rounds-section" id="rounds">
 <div class="section-inner">
@@ -1785,9 +1859,7 @@ html
 </div>
 </div>
 </div>
-</div>
 </section>
-<div class="gold-divider"></div>
 <!-- PRODUCT SPECIFICATIONS -->
 <section id="products" style="background: linear-gradient(180deg, #080510 0%, rgba(44,26,62,0.2) 50%, #080510 100%); padding: 100px 40px;">
 <div class="section-inner">
@@ -1835,11 +1907,12 @@ html
 <div class="gold-line"></div>
 <p class="section-desc">Mission Chain은 빠른 확장보다 검증된 진행 상황을 우선시합니다. 자본 형성은 실행을 지원하는 것이지 그 반대가 아닙니다.</p>
 <div class="roadmap-timeline">
-<div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">1단계</div><div class="rm-period">2026년 1분기~2분기</div><div class="rm-title-main">재단 및 자본 형성</div><div class="rm-items">BSC 및 Hindex 엔진에 MIC 배포<br/>MICE, Community NFT 및 MFP-NFT 컨트랙트 배포<br/>Mission Learn MVP 및 Mission Work 알파 출시<br/>초기 유동성이 있는 SEED 및 PRE-SALE 단계 열기<br/>Mission Hub 3개를 활성화하고 팟캐스트 시작하기</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-<div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">단계 II</div><div class="rm-period">2026년 3분기-4분기</div><div class="rm-title-main">에코시스템 활성화</div><div class="rm-items">Mission Learn을 확장하고 Builder, Maker 및 Luminary NFT을 완전히 활성화합니다<br/>검증된 크리에이터 500명, 월 2,000개 이상의 일자리를 목표로 Mission Work을 확장합니다<br/>Mission Social 베타 출시 및 8개 허브로 확장<br/>첫 번째 전체 제품 티어 및 프레임워크 티어 DAO 투표 실행</div></div></div>
-<div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">단계 III</div><div class="rm-period">2027년 1분기~2분기</div><div class="rm-title-main">성장 및 시장 리더십</div><div class="rm-items">Mission Social 글로벌 출시<br/>글로벌 크리에이터 페스티벌 개최 및 전략적 파트너십 강화<br/>Layer 2 테스트넷 마일스톤 준비하기<br/>15개 허브, 10만 명의 사용자, 지속 가능한 제품 매출 성장 달성</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-<div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">단계 IV</div><div class="rm-period">2학년 이상</div><div class="rm-title-main">성숙도 및 글로벌 리더십</div><div class="rm-items">Mission Network Layer 2을 네이티브 코인으로 MIC 출시<br/>온체인에서 크리에이티브 권한 및 RWA 통합 제공<br/>체인 간 상호 운용성 확장<br/>커뮤니티가 관리하는 Mission DAO으로의 완전한 전환</div></div></div>
-</div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">단계 I</div><div class="rm-title-main">전체 전략 &amp; 기반</div><div class="rm-items">White Paper &amp; 부록 문서 완성<br>핵심 Smart Contracts V1 범위, DAO 프레임워크 마일스톤, 초기 내부 감사 라운드 완료<br>SEED Sale → Presale → SWAP 활성화 (Q2 말)<br>Mission World 데모 출시</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">단계 II</div><div class="rm-title-main">MICE 분배 &amp; 채굴 출시</div><div class="rm-items">모든 가격 라운드에 걸쳐 MICE 분배 시작<br>완전한 Hindex 발행 엔진이 활성화된 MIC 채굴 출시<br>Mission World가 세 기둥 아키텍처 위에 구축된 최초의 커뮤니티 플랫폼으로 공식 출시</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">단계 III</div><div class="rm-title-main">DEX 상장 &amp; 생태계 확장</div><div class="rm-items">주요 거래소 DEX 상장<br>Mission Learn, Mission Social, Mission Chain (L2) 테스트넷 출시<br>확장된 크리에이터 이코노미 인프라</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">단계 IV</div><div class="rm-title-main">CEX 상장 &amp; 크로스체인 브리지</div><div class="rm-items">주요 암호화폐 거래소 CEX 상장<br>대규모 Mission Work 마켓플레이스<br>멀티체인 지원을 위한 크로스체인 브리지 통합</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">단계 V</div><div class="rm-title-main">생태계 확장 &amp; L2 메인넷</div><div class="rm-items">모든 Mission 제품에 걸친 완전한 생태계 확장<br>Mission Chain (L2) 메인넷 출시<br>글로벌 채택 마일스톤과 지속적 성장</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+    </div>
 <div class="gtm-principles">
 <div class="gtm-principles-head">
 <div>
@@ -1920,7 +1993,7 @@ html
 </section>
 <div class="gold-divider"></div>
 <!-- TEAM -->
-<section class="team-section" id="team">
+<section class="team-section" id="team" style="display:none">
 <div class="section-inner">
 <span class="section-label">사람</span>
 <h2 class="section-title">창립 및 리더십 팀</h2>
@@ -2117,6 +2190,19 @@ html
 </div>
 </div>
 </section>
+
+<!-- LATEST FEEDS (widget, additive) -->
+<section id="feeds" class="feeds-section" style="padding:90px 24px;">
+  <div class="section-inner">
+    <span class="section-label">커뮤니티 피드</span>
+    <h2 class="section-title">최신 소식</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">AI, 기술, 시장 소식과 성경 묵상을 함께. 투명하고 꾸준하게.</p>
+    <div id="mic-feed" data-lang="ko" data-viewall="전체 보기"></div>
+  </div>
+</section>
+<script src="/feeds-widget.js?v=20260719" defer></script>
+
 <!-- FOOTER -->
 <footer>
 <div class="footer-logo">
@@ -2128,7 +2214,7 @@ html
     MIC은 생태계 내 유틸리티 및 조정 자산으로 설계되었으며 지분, 소유권 또는 보장된 수익을 나타내지 않습니다. 모든 RWA 연동 분배는 가변적이고 보장되지 않으며 투명한 프로토콜 규칙에 따라 관리됩니다. 이 페이지는 정보 제공만을 목적으로 하며 재무 자문이나 증권 제안을 구성하지 않습니다.
   </p>
 <div class="footer-bottom">
-    © 2026 Mission Chain 글로벌 네트워크 - 판권 소유 - 신앙에서 영감을 얻었습니다. 사람을 위해 구축되었습니다.<br/>
+    © 2026 Mission Chain 글로벌 네트워크 - 판권 소유 - 신앙에서 태어났습니다. 사람을 위해 구축되었습니다.<br/>
     미네소타주 록포드, USA - 캘리포니아주 웨스트민스터, USA
   </div>
 </footer>
@@ -2217,20 +2303,24 @@ function getLocalizedHref(lang, fallbackFile) {
   syncLandingLanguageMenu();
 
   function setTheme(theme) {
-    var isLight = theme === 'night';
-    document.body.classList.toggle('theme-light', isLight);
+    if (theme === 'daylight') theme = 'dark';
+    else if (theme === 'night') theme = 'light';
+    if (theme !== 'dark' && theme !== 'light' && theme !== 'royal') theme = 'dark';
+    document.body.classList.remove('theme-light', 'theme-royal');
+    if (theme === 'light') document.body.classList.add('theme-light');
+    else if (theme === 'royal') document.body.classList.add('theme-royal');
     var dayBtn = document.getElementById('themeDaylight');
     var nightBtn = document.getElementById('themeNight');
-    if (dayBtn && nightBtn) {
-      dayBtn.classList.toggle('active', !isLight);
-      nightBtn.classList.toggle('active', isLight);
-    }
+    var royalBtn = document.getElementById('themeRoyal');
+    if (dayBtn) dayBtn.classList.toggle('active', theme === 'dark');
+    if (nightBtn) nightBtn.classList.toggle('active', theme === 'light');
+    if (royalBtn) royalBtn.classList.toggle('active', theme === 'royal');
     try { localStorage.setItem('missionchain-theme', theme); } catch (e) {}
   }
 
   (function restoreTheme() {
-    var savedTheme = 'daylight';
-    try { savedTheme = localStorage.getItem('missionchain-theme') || 'daylight'; } catch (e) {}
+    var savedTheme = 'dark';
+    try { savedTheme = localStorage.getItem('missionchain-theme') || 'dark'; } catch (e) {}
     setTheme(savedTheme);
   })();
 
@@ -2240,5 +2330,7 @@ function getLocalizedHref(lang, fallbackFile) {
   });
 
 </script>
+<!-- Chatwoot NIRA widget -->
+<script>(function(d,t){var BASE_URL="https://chat.missionchain.io";var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src=BASE_URL+"/packs/js/sdk.js";g.defer=true;g.async=true;s.parentNode.insertBefore(g,s);g.onload=function(){window.chatwootSDK.run({websiteToken:"tL4SgYfVMeFSjPqdpGKw1mA7",baseUrl:BASE_URL})}})(document,"script");</script>
 </body>
 </html>

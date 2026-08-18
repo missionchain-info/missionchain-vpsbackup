@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Chain — Inspired by Faith. Built for People.</title>
+<title>Mission Chain — Born of Faith. Built for People.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -47,6 +47,55 @@
     --dropdown-bg: rgba(255,251,246,0.98);
     --shadow-soft: rgba(67,46,18,0.12);
   }
+
+  body.theme-royal {
+    --burgundy: #3E6E90;
+    --deep-purple: #16304C;
+    --gold: #C9A84C;
+    --gold-light: #E8C96B;
+    --cream: #EAF1FB;
+    --white: #FFFFFF;
+    --text-dim: rgba(234,241,251,0.72);
+    --card-bg: rgba(37,78,128,0.10);
+    --border: rgba(201,168,76,0.28);
+    --body-bg: #0E2445;
+    --nav-bg: rgba(11,24,44,0.88);
+    --dropdown-bg: rgba(12,28,52,0.98);
+    --shadow-soft: rgba(0,0,0,0.5);
+  }
+  /* Royal — hardcoded section overrides */
+  body.theme-royal .hero-bg { background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46, 92, 150,0.35) 0%, rgba(22, 48, 86,0.4) 40%, #0a1d38 100%); }
+  body.theme-royal .hero-orb-1 { background: radial-gradient(circle, rgba(46, 92, 150,0.2) 0%, transparent 70%); }
+  body.theme-royal .btn-primary:hover { box-shadow: 0 10px 40px rgba(46, 92, 150,0.5); }
+  body.theme-royal .about-visual img { box-shadow: 0 0 80px rgba(46, 92, 150,0.4); }
+  body.theme-royal .eco-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.3) 50%, #0a1d38 100%); }
+  body.theme-royal .tokenomics-section { background: #081226; }
+  body.theme-royal .rounds-section { background: linear-gradient(180deg, #081226 0%, #0a1d38 100%); }
+  body.theme-royal .mice-box { background: linear-gradient(135deg, rgba(46, 92, 150,0.2), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .roadmap-section { background: #0a1d38; }
+  body.theme-royal .gtm-principles { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.08), transparent 34%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.34), rgba(10, 29, 56,0.92)); }
+  body.theme-royal .gtm-principle-num { background: linear-gradient(135deg, rgba(201,168,76,0.22), rgba(46, 92, 150,0.36)); }
+  body.theme-royal .gov-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .team-section { background: #081226; }
+  body.theme-royal .team-avatar-photo { box-shadow: 0 0 20px rgba(46, 92, 150,0.3); }
+  body.theme-royal .social-section { background: linear-gradient(135deg, rgba(46, 92, 150,0.15) 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .docs-section { background: #081226; }
+  body.theme-royal .market-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(46, 92, 150,0.12) 50%, #0a1d38 100%); }
+  body.theme-royal .market-total { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .seed-pkg.featured { background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(22, 48, 86,0.3)); }
+  body.theme-royal .seed-vesting-box { background: rgba(22, 48, 86,0.3); }
+  body.theme-royal .mice-price-panel { background:
+      radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 35%),
+      linear-gradient(135deg, rgba(22, 48, 86,0.55), rgba(10, 29, 56,0.9)); }
+  body.theme-royal .mice-proceeds-wrapper { background: linear-gradient(135deg, rgba(10, 29, 56,0.9) 0%, rgba(22, 48, 86,0.4) 100%); }
+  body.theme-royal .finance-section { background: #081226; }
+  body.theme-royal .finance-total-row { background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(46, 92, 150,0.08)); }
+  body.theme-royal .risk-section { background: linear-gradient(180deg, #0a1d38 0%, rgba(22, 48, 86,0.2) 100%); }
+  body.theme-royal .legal-section { background: #081226; }
+
+
 
   /* Korean language font override */
   .lang-ko body,
@@ -224,6 +273,15 @@
   body.theme-light .theme-toggle {
     background: rgba(201,168,76,0.15);
   }
+
+  .theme-toggle.royal .theme-toggle-knob {
+    transform: translateX(13px);
+    background: #3E6E90;
+  }
+  body.theme-royal .theme-toggle {
+    background: rgba(37,78,128,0.20);
+  }
+
 
   /* DROPDOWN */
   .nav-dropdown { position: relative; }
@@ -1475,7 +1533,8 @@
     <a href="#ecosystem">Ecosystem</a>
     <a href="#tokenomics">Tokenomics</a>
     <a href="#roadmap">Roadmap</a>
-    <a href="#team">Team</a>
+    <a href="#feeds">Feeds</a>
+    <!-- <a href="#team">Team</a> -->
     <a href="#documents">Documents</a>
     <a href="https://missionchain.world" target="_blank">Mission World</a>
   </div>
@@ -1504,7 +1563,7 @@
     <span class="hero-eyebrow fade-up">Web3 · Creator Economy</span>
     <img src="/images/mission-chain-logo-clear.png" alt="Mission Chain" class="hero-logo fade-up delay-1">
     <h1 class="fade-up delay-2">MISSION CHAIN</h1>
-    <p class="hero-tagline fade-up delay-3">"Inspired by Faith. Built for People."</p>
+    <p class="hero-tagline fade-up delay-3">"Born of Faith. Built for People."</p>
     <p class="hero-quote fade-up delay-3">✦ &nbsp; You are the light of the world. A city on a hill cannot be hidden. — Matthew 5:14 &nbsp; ✦</p>
     <div class="hero-stats fade-up delay-4">
       <div class="hero-stat"><span class="hero-stat-num">7B</span><span class="hero-stat-label">Max MIC Supply</span></div>
@@ -1683,6 +1742,29 @@
 </section>
 
 <div class="gold-divider"></div>
+
+<!-- TOKEN BURN -->
+<section id="burn" class="tokenomics-section">
+  <div class="section-inner">
+    <span class="section-label">Verifiable Supply</span>
+    <h2 class="section-title">31,500,000 MIC Burned</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">On 5 August 2026 the protocol permanently destroyed 31,500,000 MIC — 3% of the pre-issued supply. These tokens sat in a retired liquidity contract that had no withdrawal function of any kind, so they could never have been sold or moved. Rather than ask anyone to take a lock-up on trust, they were burned.</p>
+    <div class="token-stats" style="margin-top:28px">
+      <div class="token-stat"><span class="token-stat-val">31,500,000</span><span class="token-stat-key">Burned</span></div>
+      <div class="token-stat"><span class="token-stat-val">1,050,000,000</span><span class="token-stat-key">Pre-Issued Supply</span></div>
+      <div class="token-stat"><span class="token-stat-val">7,000,000,000</span><span class="token-stat-key">Maximum Supply (unchanged)</span></div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-dim);line-height:1.8;margin-top:22px;max-width:820px">The burn cannot be reversed. The only remaining way MIC can be created is bounded by a cumulative counter that a burn does not reset — no key holder, including the founding team, can re-issue these tokens.</p>
+    <p style="margin-top:14px">
+      <a href="https://bscscan.com/tx/0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b" target="_blank" rel="noopener" style="color:var(--gold);font-size:0.82rem;letter-spacing:.04em;text-decoration:none;border-bottom:1px solid rgba(201,168,76,.4);padding-bottom:2px">View the burn transaction on BSCScan &rarr;</a>
+    </p>
+    <p style="font-family:monospace;font-size:0.7rem;color:var(--text-dim);margin-top:12px;word-break:break-all">0xb2f0d013f0f66f27ba4c6bcf28196ec4788eebb0bc326fd42963ecb2ada4924b</p>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
 <!-- SALE ROUNDS -->
 <section id="rounds" class="rounds-section">
   <div class="section-inner">
@@ -1778,8 +1860,10 @@
           <div class="mice-stat"><span class="mice-num">360</span><span class="mice-lbl">Days per Credential</span></div>
           <div class="mice-stat"><span class="mice-num">60%</span><span class="mice-lbl">Daily Allocation to MICE Participants</span></div>
         </div>
+      </div>
+  </div>
+</section>
 
-<div class="gold-divider"></div>
 <!-- PRODUCT SPECIFICATIONS -->
 <section id="products" style="background: linear-gradient(180deg, #080510 0%, rgba(44,26,62,0.2) 50%, #080510 100%); padding: 100px 40px;">
   <div class="section-inner">
@@ -1832,10 +1916,11 @@
     <p class="section-desc">Mission Chain prioritizes validated progress over accelerated expansion. Capital formation supports execution — not the reverse.</p>
 
     <div class="roadmap-timeline">
-      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Phase I</div><div class="rm-period">Q1–Q2, 2026</div><div class="rm-title-main">Foundation &amp; Capital Formation</div><div class="rm-items">Deploy MIC on BSC and the Hindex engine<br>Deploy MICE, Community NFT, and MFP contracts<br>Launch Mission Learn MVP and Mission Work alpha<br>Open SEED and PRE-SALE phases with initial liquidity<br>Activate 3 Mission Hubs and launch the Podcast</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Phase II</div><div class="rm-period">Q3–Q4, 2026</div><div class="rm-title-main">Ecosystem Activation</div><div class="rm-items">Expand Mission Learn and mature Community NFT credentialing (Builder, Maker, Luminary)<br>Scale Mission Work toward 500 verified creators and 2,000+ jobs/month<br>Launch Mission Social beta and expand to 8 Hubs<br>Activate the first Mission DAO votes under the approved MFP-qualified governance rule</div></div></div>
-      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Phase III</div><div class="rm-period">Q1–Q2, 2027</div><div class="rm-title-main">Growth &amp; Market Leadership</div><div class="rm-items">Launch Mission Social globally<br>Stage global creator festivals and deepen strategic partnerships<br>Prepare Layer 2 testnet milestones<br>Reach 15 Hubs, 100,000 users, and sustainable product revenue growth</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
-      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Phase IV</div><div class="rm-period">Year 2+</div><div class="rm-title-main">Maturity &amp; Global Leadership</div><div class="rm-items">Launch Mission Network Layer 2 with MIC as native coin<br>Bring creative rights and RWA integrations on-chain<br>Expand cross-chain interoperability<br>Mature Mission DAO under constitutional stewardship and broader ecosystem participation processes</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Phase I</div><div class="rm-title-main">Overall Strategy &amp; Foundation</div><div class="rm-items">Complete White Paper &amp; Appendices documentation<br>Complete core Smart Contracts V1 scope, DAO framework milestone, and initial internal audit round<br>SEED Sale → Presale → SWAP Activation<br>Mission World Demo launch</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Phase II</div><div class="rm-title-main">MICE Distribution &amp; Mining Launch</div><div class="rm-items">MICE Distribution begins across all pricing rounds<br>MIC Mining launched with full Hindex emission engine active<br>Mission World officially launched as the first community platform built on the three-pillar architecture</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Phase III</div><div class="rm-title-main">DEX Listing &amp; Ecosystem Expansion</div><div class="rm-items">DEX Listing on major exchanges<br>Mission Learn, Mission Social, and Mission Chain (L2) Testnet launched<br>Expanded creator economy infrastructure</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
+      <div class="roadmap-item"><div class="rm-spacer"></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-card rm-right"><div class="rm-phase">Phase IV</div><div class="rm-title-main">CEX Listing &amp; Cross-Chain Bridge</div><div class="rm-items">CEX Listing on major cryptocurrency exchanges<br>Mission Work marketplace at scale<br>Cross-Chain Bridge integration for multi-chain support</div></div></div>
+      <div class="roadmap-item"><div class="rm-card rm-left"><div class="rm-phase">Phase V</div><div class="rm-title-main">Ecosystem Expansion &amp; L2 Mainnet</div><div class="rm-items">Full ecosystem expansion across all Mission products<br>Mission Chain (L2) Mainnet launch<br>Global adoption milestones and sustained growth</div></div><div class="rm-dot"><div class="rm-dot-inner"></div></div><div class="rm-spacer"></div></div>
     </div>
 
     <div class="gtm-principles">
@@ -1922,7 +2007,7 @@
 
 <div class="gold-divider"></div>
 <!-- TEAM -->
-<section id="team" class="team-section">
+<section id="team" class="team-section" style="display:none">
   <div class="section-inner">
     <span class="section-label">The People</span>
     <h2 class="section-title">Founding & Leadership Team</h2>
@@ -2115,6 +2200,19 @@
   </div>
 </section>
 
+
+<!-- LATEST FEEDS (widget, additive) -->
+<section id="feeds" class="feeds-section" style="padding:90px 24px;">
+  <div class="section-inner">
+    <span class="section-label">Community Feed</span>
+    <h2 class="section-title">Latest Updates</h2>
+    <div class="gold-line"></div>
+    <p class="section-desc">News across AI, technology, and markets — interwoven with reflections from Scripture. Transparent and regular.</p>
+    <div id="mic-feed" data-lang="en" data-viewall="View all"></div>
+  </div>
+</section>
+<script src="/feeds-widget.js?v=20260719" defer></script>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
@@ -2126,7 +2224,7 @@
     MIC is designed as a utility and coordination asset within the ecosystem and does not represent equity, ownership, or guaranteed return. All RWA-linked distributions are variable, non-guaranteed, and governed by transparent protocol rules. This page is for informational purposes only and does not constitute financial advice or a securities offering.
   </p>
   <div class="footer-bottom">
-    © 2026 Mission Chain Global Network · All Rights Reserved · Inspired by Faith. Built for People.<br>
+    © 2026 Mission Chain Global Network · All Rights Reserved · Born of Faith. Built for People.<br>
     Rockford, Minnesota, USA · Westminster, California, USA
   </div>
 </footer>
@@ -2216,40 +2314,32 @@ function getLocalizedHref(lang, fallbackFile) {
   syncLandingLanguageMenu();
 
   function toggleTheme() {
-    var toggle = document.getElementById('themeToggle');
-    var knob = toggle.querySelector('.theme-toggle-knob');
-    var isCurrentlyLight = toggle.classList.contains('light');
-    if (isCurrentlyLight) {
-      toggle.classList.remove('light');
-      toggle.classList.add('dark');
-      knob.textContent = '☾';
-      document.body.classList.remove('theme-light');
-      try { localStorage.setItem('missionchain-theme', 'daylight'); } catch(e) {}
-    } else {
-      toggle.classList.remove('dark');
-      toggle.classList.add('light');
-      knob.textContent = '☀';
-      document.body.classList.add('theme-light');
-      try { localStorage.setItem('missionchain-theme', 'night'); } catch(e) {}
-    }
+    var order = ['dark','light','royal'];
+    var cur = document.body.classList.contains('theme-royal') ? 'royal'
+            : document.body.classList.contains('theme-light') ? 'light' : 'dark';
+    setTheme(order[(order.indexOf(cur) + 1) % order.length]);
   }
 
   function setTheme(theme) {
+    if (theme === 'daylight') theme = 'dark';
+    else if (theme === 'night') theme = 'light';
+    if (theme !== 'dark' && theme !== 'light' && theme !== 'royal') theme = 'dark';
     var toggle = document.getElementById('themeToggle');
     var knob = toggle ? toggle.querySelector('.theme-toggle-knob') : null;
-    var isLight = theme === 'night';
-    document.body.classList.toggle('theme-light', isLight);
-    if (toggle && knob) {
-      toggle.classList.toggle('light', isLight);
-      toggle.classList.toggle('dark', !isLight);
-      knob.textContent = isLight ? '☀' : '☾';
+    document.body.classList.remove('theme-light', 'theme-royal');
+    if (theme === 'light') document.body.classList.add('theme-light');
+    else if (theme === 'royal') document.body.classList.add('theme-royal');
+    if (toggle) {
+      toggle.classList.remove('light', 'dark', 'royal');
+      toggle.classList.add(theme);
     }
+    if (knob) knob.textContent = theme === 'light' ? '☀' : theme === 'royal' ? '✦' : '☾';
     try { localStorage.setItem('missionchain-theme', theme); } catch (e) {}
   }
 
   (function restoreTheme() {
-    var savedTheme = 'daylight';
-    try { savedTheme = localStorage.getItem('missionchain-theme') || 'daylight'; } catch (e) {}
+    var savedTheme = 'dark';
+    try { savedTheme = localStorage.getItem('missionchain-theme') || 'dark'; } catch (e) {}
     setTheme(savedTheme);
   })();
 
@@ -2259,5 +2349,7 @@ function getLocalizedHref(lang, fallbackFile) {
   });
 
 </script>
+<!-- Chatwoot NIRA widget -->
+<script>(function(d,t){var BASE_URL="https://chat.missionchain.io";var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src=BASE_URL+"/packs/js/sdk.js";g.defer=true;g.async=true;s.parentNode.insertBefore(g,s);g.onload=function(){window.chatwootSDK.run({websiteToken:"tL4SgYfVMeFSjPqdpGKw1mA7",baseUrl:BASE_URL})}})(document,"script");</script>
 </body>
 </html>
