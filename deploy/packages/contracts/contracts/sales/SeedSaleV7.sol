@@ -27,6 +27,19 @@ interface ISeedBudget {
     function receiveAndDistribute(uint256 amount) external;
 }
 
+/// ⛔ DO NOT DEPLOY. DO NOT REACTIVATE. Superseded by `SeedSaleV8`.
+///
+/// The package prices below are written in **6 decimals** against BSC-USD, which is
+/// **18**. On mainnet that meant package 3 handed over 4,000,000 MIC and 20 MFP for
+/// `10_000e6` wei — 0.00000001 USDT. Roughly 38 calls would have taken the entire
+/// 152,500,000 MIC allocation for well under a cent, and `buyPackage` never consulted
+/// the `whitelisted` mapping it declares, so anyone could have made them.
+///
+/// The live instance `0xe4C1B4fBE009245eBB6B3a4F76DcAAE445F60905` was halted 2026-08-08
+/// (tx 0xc931ff2544ed3696132bfcd6582d77703f8d1f18fe1be438fe104f677172613a) with
+/// `totalSold` still 0, so nothing was taken. It is kept here only so the deployed
+/// bytecode has matching source. Use `SeedSaleV8`.
+///
 /// @title SeedSaleV7 — wired to SeedBudgetV5c (centralized vault)
 /// @notice V7 redeploy points to SeedBudgetV5c. Same SEED logic as V6 (vesting + Old Investors flow).
 /// @notice Identical sale logic to V5 but adds:

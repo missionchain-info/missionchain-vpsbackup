@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from '@/lib/wagmi'
 import { useEffect, useState } from 'react'
 import { initTheme } from '@/lib/theme'
+import { initTextSize } from '@/lib/textscale'
+import ChainGuard from '@/components/wallet/ChainGuard'
 import '@/styles/globals.css'
 
 const queryClient = new QueryClient()
@@ -14,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     initTheme()
+    initTextSize()
     setMounted(true)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {})
@@ -32,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="description" content="Mission Chain — Faith-powered Web3 ecosystem on BSC" />
         {/* PWA — installable on Android & iOS */}
         <link rel="manifest" href="/manifest.webmanifest" />
-        <meta name="theme-color" content="#140A1C" />
+        <meta name="theme-color" content="#0E2148" />
         <link rel="icon" href="/icons/icon-32.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-180.png" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -47,9 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="light">
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
+            <ChainGuard />
             {mounted ? children : null}
           </QueryClientProvider>
         </WagmiProvider>

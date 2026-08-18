@@ -48,7 +48,7 @@ export default function NiraPage() {
 
       <div className="card" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #7B2D8B, #C9A84C)', overflow: 'hidden', flexShrink: 0 }}>
+          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #2D4C8B, #C9A34C)', overflow: 'hidden', flexShrink: 0 }}>
             <img
               src={avatar || '/images/nira-avatar.png'}
               alt="NIRA"

@@ -1,0 +1,157 @@
+{
+  "name": "MIC Brand-kit",
+  "version": "2026.08.17",
+  "source": "MIC Brand-kit/README.txt",
+  "note": "Nguon duy nhat cho mau va chu. Sua o day roi chay sync.py — dung sua thang trong globals.css cua tung app.",
+  "kit": {
+    "navy": {
+      "hex": "#0E2148",
+      "name": "Mission Navy",
+      "role": "nen toi chinh"
+    },
+    "crimson": {
+      "hex": "#6E1220",
+      "name": "Covenant Crimson",
+      "role": "mang sau, duong phan"
+    },
+    "red": {
+      "hex": "#8C1524",
+      "name": "Action Red",
+      "role": "hanh dong chinh, nhan, chip $MIC"
+    },
+    "gold": {
+      "hex": "#D4A63C",
+      "name": "Seal Gold",
+      "role": "duong ke, nut, nhan nho — KHONG bao gio lam nen"
+    },
+    "blue": {
+      "hex": "#1B5FA8",
+      "name": "Globe Blue",
+      "role": "phu; bieu do, lien ket, du lieu"
+    },
+    "goldLight": {
+      "hex": "#E8C874",
+      "name": "Light Gold",
+      "role": "chu vang tren nen navy"
+    },
+    "ivory": {
+      "hex": "#F3F2F2",
+      "name": "Ivory",
+      "role": "nen sang"
+    },
+    "white": {
+      "hex": "#FFFFFF",
+      "name": "White",
+      "role": "chu tren nen toi"
+    }
+  },
+  "surfaceRatio": {
+    "navy": 58,
+    "ground": 22,
+    "crimson": 8,
+    "red": 6,
+    "gold": 6
+  },
+  "secondary": {
+    "purple": {
+      "hex": "#8B6EF0",
+      "note": "NGOAI kit — Owner chot 17/08/2026 giu lam mau phu"
+    },
+    "purple2": {
+      "hex": "#B9A3FA",
+      "note": "NGOAI kit — sac nhat cua tim"
+    }
+  },
+  "ramp": {
+    "comment": "Thang do sau dan tu Mission Navy. bg = dung mau kit, de navy chiem ~58% be mat.",
+    "bg0": "#091530",
+    "bg": "#0E2148",
+    "bg2": "#142A57",
+    "bg3": "#16305C",
+    "bg4": "#1E3A6E"
+  },
+  "text": {
+    "white": "#FFFFFF",
+    "ivory": "#F3F2F2",
+    "gray": "#C4D0E4",
+    "gray2": "#98A8C4",
+    "contrast": "Da do WCAG: moi cap chu/nen >= 4,63 (chuan AA 4,5). Nen navy sang hon nen tim cu nen chu phai sang len tuong ung — dung ha do sang cua chu."
+  },
+  "semantic": {
+    "comment": "Kit khong dinh nghia mau trang thai — anh xa vao bang mau kit thay vi bia mau moi.",
+    "success": "#2E9E6B",
+    "warning": "#D4A63C",
+    "error": "#8C1524",
+    "info": "#1B5FA8"
+  },
+  "type": {
+    "primary": "Archivo",
+    "primaryStack": "'Archivo', system-ui, sans-serif",
+    "mono": "'JetBrains Mono', monospace",
+    "greek": "'Noto Serif', Georgia, serif",
+    "vietnamese": {
+      "comment": "Owner chot 17/08/2026: chu tieng Viet GIU font hien tai. Trong DApp/Admin font hien tai la Sora (tieu de) va Space Grotesk (than bai) — KHONG phai Montserrat (do la landing).",
+      "display": "'Sora', 'Noto Sans KR', system-ui, sans-serif",
+      "body": "'Space Grotesk', 'Noto Sans KR', system-ui, sans-serif"
+    },
+    "scale": {
+      "headline": {
+        "weight": 700,
+        "lineHeight": "0.98–1.05",
+        "tracking": "-0.02em"
+      },
+      "subhead": {
+        "weight": 600
+      },
+      "body": {
+        "weight": 400,
+        "minPx": 16,
+        "minPt": 12
+      },
+      "label": {
+        "weight": 700,
+        "tracking": "0.22em"
+      }
+    }
+  },
+  "rules": [
+    "Con dau dung dung nhu da ve — khong ve lai, doi mau, lam phang, xoay, keo gian.",
+    "Khong dat gi vao trong vong, len dia cau, hay len dai bang.",
+    "Nen toi thi cat tron con dau (scale 1.06), khong dan o vuong.",
+    "Dau day du toi thieu 200px; app icon 120px; duoi 120px dung monogram MIC.",
+    "Khoang trong quanh dau = 1/4 duong kinh.",
+    "Slogan doc tron cau, khong ngat giua chung.",
+    "Chu Hy Lap giu nguyen, khong dich, khong chu nguon.",
+    "Seal Gold khong bao gio lam nen.",
+    "Can trai moi noi; lockup doc la cho duy nhat can giua."
+  ],
+  "assetLimits": {
+    "sealVector": false,
+    "sealMaxPx": 1254,
+    "comment": "Con dau CHI co ban raster (seal-source.png 1254px). O 300dpi tuong duong ~10,6cm — du cho danh thiep, KHONG du cho A4 tran vien hay standee. lockup-horizontal.svg ben trong cung la anh nhung. Cac file vector that: monogram, wordmark, chip $MIC, duong Hy Lap."
+  },
+  "migration": {
+    "comment": "Anh xa tu bo mau DApp/Admin cu (indigo-plum) sang bo moi.",
+    "map": {
+      "#14102A": "#0E2148",
+      "#1C1740": "#142A57",
+      "#2A2358": "#1B3668",
+      "#392F70": "#24457E",
+      "#F3C664": "#D4A63C",
+      "#FADFA0": "#E8C874",
+      "#C24E72": "#8C1524",
+      "#E183A2": "#C05A66",
+      "#F7F5FF": "#FFFFFF",
+      "#BBB0DC": "#C4D0E4",
+      "#9689C2": "#98A8C4",
+      "#8B6EF0": "#8B6EF0",
+      "#B9A3FA": "#B9A3FA",
+      "#45D9A0": "#2E9E6B",
+      "#F0B54A": "#D4A63C",
+      "#F26D8B": "#8C1524",
+      "#6BB6E8": "#1B5FA8",
+      "#4FD0C8": "#1B5FA8",
+      "#E0B98A": "#E8C874"
+    }
+  }
+}

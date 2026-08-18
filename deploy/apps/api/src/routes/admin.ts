@@ -1,6 +1,9 @@
 import { FastifyPluginAsync } from 'fastify'
+import { formatUnits } from 'ethers'
+import { connect as tlsConnect } from 'node:tls'
 import { requireAdmin, requireLevel, ADMIN_LEVELS, auditLog, auditCtx, isOwnerWallet, type AdminLevel } from '../plugins/rbac.js'
 import { buildXlsx, fileTimestamp } from '../services/xlsxBuilder.js'
+import { buildArchiveProvider, archiveEndpoints } from '../services/blockchain.js'
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // Apply admin auth to all routes in this plugin (any admin level + authorized admin)
@@ -954,16 +957,19 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         presaleUsdt: presaleUsdt.toFixed(2),
         miceUsdt: miceUsdt.toFixed(2),
         allocationBreakdown: {
-          marketing: (totalUsdt * 0.35).toFixed(2),
+          // Revised 2026-07: all % of GROSS. Referral 10% is a separate top-level bucket.
+          referral: (totalUsdt * 0.10).toFixed(2),
+          marketing: (totalUsdt * 0.25).toFixed(2),
           management: (totalUsdt * 0.075).toFixed(2),
           daoTreasury: (totalUsdt * 0.125).toFixed(2),
           reservedStaking: (totalUsdt * 0.05).toFixed(2),
           liquidityPool: (totalUsdt * 0.40).toFixed(2),
           splits: {
-            'Marketing & Sales': '35%',
+            'Referral (F1+F2)': '10%',
+            'Marketing & Sales': '25%',
             'Management & Operational': '7.5%',
             'DAO Treasury': '12.5%',
-            'Reserved Staking': '5%',
+            'Reserved Listing': '5%',
             'Liquidity Pool & Buffer': '40%',
           },
         },
@@ -1119,7 +1125,8 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         },
         revenue: {
           totalUsdt: revenueUsdt.toFixed(2),
-          marketing: (revenueUsdt * 0.35).toFixed(2),
+          referral: (revenueUsdt * 0.10).toFixed(2),   // separate top-level (revised 2026-07)
+          marketing: (revenueUsdt * 0.25).toFixed(2),  // was 0.35 (referral now separate)
           management: (revenueUsdt * 0.075).toFixed(2),
           daoTreasury: (revenueUsdt * 0.125).toFixed(2),
           reservedStaking: (revenueUsdt * 0.05).toFixed(2),
@@ -1549,4 +1556,299 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       })),
     }
   })
+  // ─── System Lookup — monitoring & expiry alerts ─────────────────
+  // Two kinds of thing go stale silently and take the platform down with them:
+  // a gas wallet that empties, and a paid service that lapses. Both are cheap to
+  // watch and expensive to miss, so they live on one screen.
+  //
+  // Wallet balances are read live from chain. Renewal dates cannot be — no registrar
+  // or host exposes them to us — so they are entered once and tracked from there.
+  // Stored in SystemConfig key `system_lookup`.
+
+  type LookupWallet = { label: string; address: string; minBnb: number; note?: string }
+  type LookupService = { label: string; kind: string; expiresAt: string; url?: string; renewUrl?: string; note?: string }
+
+  const LOOKUP_DEFAULTS: { warnDays: number; criticalDays: number; wallets: LookupWallet[]; services: LookupService[] } = {
+    warnDays: 30,
+    criticalDays: 7,
+    wallets: [
+      { label: 'Owner / Deployer', address: '0xD32e666381b56f979D60C57831838f05F33AD6c2', minBnb: 0.1,
+        note: 'Signs every deploy and treasury operation' },
+      { label: 'CREDITOR', address: '0x2CE92C65650d7890fFBE0e1E853d6d3f53274753', minBnb: 0.05,
+        note: 'Credits GV / Weekly / Monthly / Lucky rewards on-chain. Replaced 2026-08-08' },
+      // Runs the automated side: daily emission, licence expiry, weekly and monthly
+      // credits, the lucky draw. It holds no assets — only enough BNB to pay for calls —
+      // but running it dry is a silent failure: a day's emission that nobody pays for is
+      // not deferred, it is destroyed.
+      { label: 'KEEPER', address: '0x2D5bd60Eefb96a8Fc4c67C4321502b3c347e8054', minBnb: 0.02,
+        note: 'Automated keeper — emission, expiry, weekly/monthly credits, lucky draw. Added 2026-08-10' },
+    ],
+    // Seeded with what the platform actually runs on. Dates for anything we cannot
+    // probe (registrar, VPS billing, RPC plan) are entered by the operator once.
+    services: [
+      { label: 'missionchain.io', kind: 'domain', expiresAt: '2027-11-12',
+        url: 'https://missionchain.io', renewUrl: 'https://dcc.godaddy.com/control/portfolio',
+        note: 'Registrar: GoDaddy. Registry expiry read from WHOIS 2026-08-06' },
+      { label: 'missionchain.io — SSL', kind: 'ssl', expiresAt: '2026-09-07',
+        url: 'https://missionchain.io', note: 'Auto-probed each load; certbot should renew on its own' },
+      { label: 'VPS 187.77.149.158', kind: 'vps', expiresAt: '',
+        renewUrl: '', note: 'Main box — landing, DApp, admin, API, Postgres' },
+      { label: 'Alchemy RPC plan', kind: 'rpc', expiresAt: '',
+        renewUrl: 'https://dashboard.alchemy.com/settings/billing', note: 'Used by the SEED/P2P indexer' },
+    ],
+  }
+
+  const readLookup = async () => {
+    const row = await app.prisma.systemConfig.findUnique({ where: { key: 'system_lookup' } })
+    let cfg: any = { ...LOOKUP_DEFAULTS }
+    if (row?.value) { try { cfg = { ...cfg, ...JSON.parse(row.value) } } catch { /* keep defaults */ } }
+    return { cfg, row }
+  }
+
+  /// Days until `iso`, rounded down. Negative once the date has passed.
+  const daysUntil = (iso: string): number | null => {
+    const t = Date.parse(iso)
+    if (Number.isNaN(t)) return null
+    return Math.floor((t - Date.now()) / 86_400_000)
+  }
+
+  /// TLS handshake just far enough to read the peer certificate's notAfter.
+  /// Returns null on any failure — the caller keeps the stored date instead.
+  const probeCertExpiry = (rawUrl: string): Promise<string | null> =>
+    new Promise((resolve) => {
+      let host: string
+      try { host = new URL(rawUrl).hostname } catch { return resolve(null) }
+      let done = false
+      const finish = (v: string | null) => { if (!done) { done = true; resolve(v) } }
+      try {
+        const socket = tlsConnect({ host, port: 443, servername: host, timeout: 3000 }, () => {
+          const cert = socket.getPeerCertificate()
+          const t = cert?.valid_to ? Date.parse(cert.valid_to) : NaN
+          socket.destroy()
+          finish(Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 10))
+        })
+        socket.on('error', () => { socket.destroy(); finish(null) })
+        socket.on('timeout', () => { socket.destroy(); finish(null) })
+      } catch { finish(null) }
+      setTimeout(() => finish(null), 3500)
+    })
+
+  const gradeDays = (d: number | null, warn: number, crit: number) =>
+    d === null ? 'unset' : d < 0 ? 'expired' : d <= crit ? 'critical' : d <= warn ? 'warning' : 'ok'
+
+  app.get('/system/lookup', { preHandler: requireLevel('ANALYST') }, async () => {
+    const { cfg, row } = await readLookup()
+    const bc = app.blockchain
+
+    // One RPC call per wallet. A failed read reports as unknown rather than 0 — a
+    // wrong "0.0" here would raise a false alarm and train the operator to ignore it.
+    const wallets = await Promise.all(
+      (cfg.wallets as LookupWallet[]).map(async (w) => {
+        let bnb: number | null = null
+        try {
+          bnb = parseFloat(formatUnits(await bc.provider.getBalance(w.address), 18))
+        } catch { bnb = null }
+        const status =
+          bnb === null ? 'unknown'
+          : bnb < w.minBnb / 2 ? 'critical'
+          : bnb < w.minBnb ? 'warning'
+          : 'ok'
+        return { ...w, bnb, status }
+      })
+    )
+
+    // Certificates rotate every ~60 days, so a hand-typed date goes stale faster than
+    // anyone will remember to edit it. Probe those live and fall back to the stored
+    // date if the handshake fails — a failed probe must not read as "expired".
+    const services = await Promise.all(
+      (cfg.services as LookupService[]).map(async (s) => {
+        let expiresAt = s.expiresAt
+        let probed = false
+        if (s.kind === 'ssl' && s.url) {
+          const live = await probeCertExpiry(s.url)
+          if (live) { expiresAt = live; probed = true }
+        }
+        const d = daysUntil(expiresAt)
+        return { ...s, expiresAt, probed, daysLeft: d, status: gradeDays(d, cfg.warnDays, cfg.criticalDays) }
+      })
+    )
+
+    const rank: Record<string, number> = { expired: 5, critical: 4, warning: 3, unset: 2, unknown: 1, ok: 0 }
+    const worst = [...wallets, ...services].reduce(
+      (acc, x: any) => (rank[x.status] > rank[acc] ? x.status : acc), 'ok' as string
+    )
+
+    return {
+      data: {
+        warnDays: cfg.warnDays,
+        criticalDays: cfg.criticalDays,
+        wallets,
+        services,
+        overall: worst,
+        alerts: [...wallets, ...services].filter((x: any) => x.status !== 'ok').length,
+        updatedBy: row?.updatedBy || null,
+        updatedAt: row?.updatedAt || null,
+        checkedAt: new Date().toISOString(),
+      },
+    }
+  })
+
+  // PUT — replace the tracked lists. GOVERNOR only: these thresholds decide whether
+  // anyone gets warned before the platform stops signing transactions.
+  app.put('/system/lookup', { preHandler: requireLevel('GOVERNOR') }, async (req, reply) => {
+    const { wallet } = req.user as { wallet: string }
+    const body = req.body as Partial<typeof LOOKUP_DEFAULTS>
+    const { cfg } = await readLookup()
+
+    const cleanWallets = (body.wallets ?? cfg.wallets).map((w: LookupWallet) => ({
+      label: String(w.label || '').trim(),
+      address: String(w.address || '').trim(),
+      minBnb: Number(w.minBnb) || 0,
+      note: w.note ? String(w.note).trim() : undefined,
+    })).filter((w: LookupWallet) => /^0x[a-fA-F0-9]{40}$/.test(w.address))
+
+    const cleanServices = (body.services ?? cfg.services).map((s: LookupService) => ({
+      label: String(s.label || '').trim(),
+      kind: String(s.kind || 'other').trim(),
+      expiresAt: String(s.expiresAt || '').trim(),
+      url: s.url ? String(s.url).trim() : undefined,
+      // Where the operator actually goes to pay — registrar, host or plan console.
+      renewUrl: s.renewUrl ? String(s.renewUrl).trim() : undefined,
+      note: s.note ? String(s.note).trim() : undefined,
+    // A blank date means "tracked, not dated yet" — keep the row. Dropping it would
+    // silently delete every item the operator had not got round to dating.
+    })).filter((s: LookupService) => Boolean(s.label) && (s.expiresAt === '' || !Number.isNaN(Date.parse(s.expiresAt))))
+
+    const warnDays = Math.max(1, Number(body.warnDays ?? cfg.warnDays) || 30)
+    const criticalDays = Math.max(1, Number(body.criticalDays ?? cfg.criticalDays) || 7)
+    if (criticalDays > warnDays) {
+      return reply.status(400).send({
+        error: 'BAD_THRESHOLDS',
+        message: 'Critical threshold must be at or below the warning threshold',
+      })
+    }
+
+    const next = { warnDays, criticalDays, wallets: cleanWallets, services: cleanServices }
+    await app.prisma.systemConfig.upsert({
+      where: { key: 'system_lookup' },
+      update: { value: JSON.stringify(next), updatedBy: wallet },
+      create: { key: 'system_lookup', value: JSON.stringify(next), updatedBy: wallet },
+    })
+    return { data: next }
+  })
+
+  // ─── GET /admin/seed/whitelist — who may buy the SEED round ──────────────
+  //
+  // The contract keeps a `mapping(address => bool)`, which cannot be enumerated, so the
+  // list has to be rebuilt from `WhitelistUpdated` events: an address is on the list if
+  // its most recent event said `true`. `SeedPurchase` events give what each wallet has
+  // actually bought.
+  //
+  // This lives server-side because the public BSC endpoints refuse `eth_getLogs`
+  // outright — only the archive-capable INDEXER_RPC_URL can answer it, and that key must
+  // not reach the browser.
+  app.get('/seed/whitelist', async (req, reply) => {
+    const q = req.query as { page?: string; pageSize?: string; search?: string }
+    const page = Math.max(1, parseInt(q.page || '1', 10) || 1)
+    const pageSize = Math.min(100, Math.max(1, parseInt(q.pageSize || '10', 10) || 10))
+    const search = (q.search || '').trim().toLowerCase()
+
+    const { ethers } = await import('ethers')
+    const { getActiveAddresses } = await import('@missionchain/sdk')
+    const addresses = getActiveAddresses() as Record<string, string>
+    const seed = addresses.SeedSaleV9
+    const ZERO = '0x0000000000000000000000000000000000000000'
+
+    if (!seed || seed === ZERO) {
+      return reply.status(503).send({ error: 'SALE_NOT_DEPLOYED', message: 'No SEED contract is configured' })
+    }
+
+    // eth_getLogs below, so this needs an archive-capable endpoint. The public dataseeds
+    // that buildProvider() prefers refuse log queries outright.
+    if (archiveEndpoints().length === 0) {
+      return reply.status(503).send({ error: 'NO_RPC', message: 'No archive-capable RPC configured' })
+    }
+
+    try {
+      const provider = buildArchiveProvider()
+      const head = await provider.getBlockNumber()
+
+      // The contract was deployed 2026-08-09; 200k blocks is a bit under a week on BSC
+      // and comfortably covers its whole life. Widen it if the round runs longer.
+      const LOOKBACK = 200_000
+      const fromBlock = Math.max(0, head - LOOKBACK)
+
+      const wlTopic = ethers.id('WhitelistUpdated(address,bool)')
+      const buyTopic = ethers.id('SeedPurchase(address,uint256,uint256,uint256,uint256)')
+
+      const [wlLogs, buyLogs] = await Promise.all([
+        provider.getLogs({ address: seed, topics: [wlTopic], fromBlock, toBlock: head }),
+        provider.getLogs({ address: seed, topics: [buyTopic], fromBlock, toBlock: head }),
+      ])
+
+      // Last event per address wins — an add followed by a remove leaves them off.
+      type Entry = { address: string; addedAt: number; listed: boolean }
+      const state = new Map<string, Entry>()
+      for (const log of wlLogs) {
+        const address = ethers.getAddress('0x' + log.topics[1].slice(26))
+        const listed = BigInt(log.data) === 1n
+        state.set(address, { address, addedAt: log.blockNumber, listed })
+      }
+
+      const buyIface = new ethers.Interface([
+        'event SeedPurchase(address indexed buyer, uint256 indexed packageIndex, uint256 priceUsdt, uint256 micAmount, uint256 nftCount)',
+      ])
+      const bought = new Map<string, { mic: bigint; usdt: bigint; orders: number }>()
+      for (const log of buyLogs) {
+        const parsed = buyIface.parseLog({ topics: [...log.topics], data: log.data })
+        if (!parsed) continue
+        const buyer = ethers.getAddress(parsed.args.buyer as string)
+        const prev = bought.get(buyer) || { mic: 0n, usdt: 0n, orders: 0 }
+        bought.set(buyer, {
+          mic: prev.mic + (parsed.args.micAmount as bigint),
+          usdt: prev.usdt + (parsed.args.priceUsdt as bigint),
+          orders: prev.orders + 1,
+        })
+      }
+
+      let rows = [...state.values()]
+        .filter((e) => e.listed)
+        .map((e) => {
+          const b = bought.get(e.address)
+          return {
+            address: e.address,
+            addedAtBlock: e.addedAt,
+            micPurchased: b ? Number(ethers.formatUnits(b.mic, 18)) : 0,
+            usdtPaid: b ? Number(ethers.formatUnits(b.usdt, 18)) : 0,
+            orders: b?.orders ?? 0,
+          }
+        })
+        .sort((a, b) => b.addedAtBlock - a.addedAtBlock)
+
+      if (search) rows = rows.filter((r) => r.address.toLowerCase().includes(search))
+
+      const total = rows.length
+      const start = (page - 1) * pageSize
+
+      return {
+        data: {
+          rows: rows.slice(start, start + pageSize),
+          page,
+          pageSize,
+          total,
+          totalPages: Math.max(1, Math.ceil(total / pageSize)),
+          totalMicPurchased: rows.reduce((s, r) => s + r.micPurchased, 0),
+          contract: seed,
+          scannedFromBlock: fromBlock,
+        },
+      }
+    } catch (e: any) {
+      app.log.warn({ err: e?.message }, 'seed/whitelist read failed')
+      return reply.status(502).send({
+        error: 'CHAIN_ERROR',
+        message: 'Could not read the whitelist from chain',
+      })
+    }
+  })
+
 }

@@ -748,3 +748,74 @@ model AdminAuditLog {
   @@index([action])
   @@index([createdAt])
 }
+
+// ─── MIC Feeds (public feed: AI/tech/finance + Bible + admin) ───────
+model FeedItem {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  type              String    @default("card")       // card | image | carousel | motion
+  pillar            String                            // ai | tech | finance | faith | announcement
+  title             String
+  body              String                            // markdown/rich
+  media             Json?                             // array of media URLs
+  lang              String    @default("en")          // en | vi | es | pt | ko
+  sourceUrl         String?
+  sourceAttribution String?
+  verseRef          String?
+  verseText         String?
+  status            String    @default("published")   // draft|pending_review|approved|published|rejected
+  createdBy         String    @default("admin")
+  pinned            Boolean   @default(false)
+  publishedAt       DateTime?
+
+  @@index([status, pillar])
+  @@index([publishedAt])
+}
+
+
+// ─── Management & Ops — Council proposals against ManagementPool ──────
+// The pool itself cannot hold a vote, so the proposal, the 3-of-5 threshold and the
+// 72-hour no-objection window are enforced here; the payout is a separate signature by
+// the Owner calling `distributeBonus`, recorded back onto the row.
+model MgmtOpsProposal {
+  id          String    @id @default(cuid())
+  // Which fund the proposal spends. The vote mechanics are identical across pools, so one
+  // table serves them all rather than a near-copy per contract.
+  // MGMT_OPS = ManagementPool (Pre-Sale + MICE 7.5%)
+  // LISTING  = ListingReserve (Pre-Sale + MICE 5%)
+  pool        String    @default("MGMT_OPS")
+  proposer    String    // Council member wallet
+  content     String    // What the money is for — English
+  amountUsdt  Decimal   @db.Decimal(65, 30)
+  recipient   String    // Payout wallet
+  // OPEN | APPROVED | REJECTED | EXECUTED | CANCELLED
+  status      String    @default("OPEN")
+  // End of the 72-hour window after which the Owner may decide alone.
+  decidesAt   DateTime
+  adminNote   String?
+  executedAt  DateTime?
+  executedTx  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  votes MgmtOpsVote[]
+
+  @@index([status])
+  @@index([pool])
+  @@index([createdAt])
+}
+
+model MgmtOpsVote {
+  id         String   @id @default(cuid())
+  proposalId String
+  wallet     String   // Council member wallet
+  support    Boolean
+  createdAt  DateTime @default(now())
+
+  proposal MgmtOpsProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  // One vote per member per proposal; changing a vote updates this row.
+  @@unique([proposalId, wallet])
+  @@index([wallet])
+}

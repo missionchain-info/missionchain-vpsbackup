@@ -655,8 +655,8 @@ export default function SwapPage() {
       {msg && (
         <div style={{
           padding: '6px 12px', marginBottom: 12, borderRadius: 8, fontSize: SZ, fontWeight: 600,
-          background: msg.includes('Error') ? 'rgba(255,80,80,.15)' : 'rgba(80,200,120,.15)',
-          color: msg.includes('Error') ? '#ff5050' : '#50c878',
+          background: msg.includes('Error') ? 'rgba(255,80,102,.15)' : 'rgba(80,200,120,.15)',
+          color: msg.includes('Error') ? '#FF5066' : '#50c878',
         }}>{msg}</div>
       )}
 
@@ -725,7 +725,7 @@ export default function SwapPage() {
             <span style={{
               fontSize: '0.52rem', letterSpacing: '0.08em', padding: '2px 8px', borderRadius: 4,
               background: v7?.live && v7?.seeded ? 'var(--green2)' : 'var(--gray2)',
-              color: '#06121f', fontWeight: 700,
+              color: '#091530', fontWeight: 700,
             }}>
               {!v7 ? 'LOADING' : !v7.live ? 'AWAITING DEPLOYMENT' : v7.seeded ? 'LIVE' : 'DORMANT'}
             </span>
@@ -828,7 +828,7 @@ export default function SwapPage() {
             </span>
             <span style={{
               fontSize: '0.52rem', letterSpacing: '0.08em', padding: '2px 8px', borderRadius: 4,
-              background: 'var(--crimson2)', color: '#06121f', fontWeight: 700,
+              background: 'var(--crimson2)', color: '#091530', fontWeight: 700,
             }}>
               NOT PUBLIC
             </span>

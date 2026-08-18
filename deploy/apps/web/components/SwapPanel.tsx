@@ -465,7 +465,7 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
             </span>
           </div>
           {parseFloat(slipInput) > MAX_SLIPPAGE_PCT && (
-            <div style={{ color: '#ffb400', fontSize: '0.72rem' }}>
+            <div style={{ color: '#FFB200', fontSize: '0.72rem' }}>
               Capped at {MAX_SLIPPAGE_PCT}% — a higher tolerance only accepts a worse fill.
             </div>
           )}

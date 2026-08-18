@@ -93,7 +93,7 @@ const GROUPS: Group[] = [
   {
     title: 'Mining & Staking',
     rows: [
-      { label: 'EmissionController', key: 'EmissionController', note: 'Price source frozen to V6 — setLiquidityPool is gated on openingPrice == 0 and cannot be repointed, so coverageH reads V6 and the emission regulator sits at L_MIN', warn: true },
+      { label: 'EmissionController', key: 'EmissionController', note: 'EmissionControllerV2 — every active MICE licence earns a fixed 83.3333 MIC/day, so issuance scales with the number of miners and each miner\'s share does not move when others join. Reads no price: the V1 regulator that was frozen to LiquidityPoolV6 is gone.' },
       { label: 'MiningPool', key: 'MiningPool' },
       { label: 'MIC Staking', key: 'NFTStaking', note: 'Filename is legacy — pure MIC staking' },
     ],

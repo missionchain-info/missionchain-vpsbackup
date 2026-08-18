@@ -18,7 +18,7 @@ export function setTheme(theme: Theme) {
   else if (theme === 'royal') document.body.classList.add('royal')
   // dark = no class (base :root)
   try {
-    window.localStorage.setItem('mc-theme', theme)
+    window.localStorage.setItem('mc-theme-v2', theme)
   } catch {}
 }
 
@@ -33,9 +33,9 @@ export function toggleTheme(): Theme {
 
 export function initTheme() {
   try {
-    const saved = window.localStorage.getItem('mc-theme') as Theme | null
-    if (saved && ORDER.includes(saved)) {
-      setTheme(saved)
-    }
+    const saved = window.localStorage.getItem('mc-theme-v2') as Theme | null
+    // Mac dinh la 'light' (Owner chot 18/08/2026). <body> da mang class 'light'
+    // san tu server nen khong bi chop mau khi tai trang.
+    setTheme(saved && ORDER.includes(saved) ? saved : 'light')
   } catch {}
 }

@@ -1,5 +1,8 @@
 import { FastifyPluginAsync } from 'fastify'
-import { formatUnits } from 'ethers'
+import { Contract, formatUnits } from 'ethers'
+import { MIC_DISPLAY_PRICE_USD } from '@missionchain/sdk'
+import { resolveMicPrice } from '../services/micPrice.js'
+import { buildProvider } from '../services/blockchain.js'
 
 // ─── Helper: load SystemConfig values (Admin-configurable) ──────────────
 async function getConfig(prisma: any, key: string, fallback: string): Promise<string> {
@@ -17,7 +20,25 @@ const DEPLOYER_WALLET = '0xD32e666381b56f979D60C57831838f05F33AD6c2'
 
 export const dashboardRoutes: FastifyPluginAsync = async (app) => {
   // ─── GET /dashboard/overview — Global stats (PUBLIC — no auth) ──
+  /**
+   * Platform-wide figures, cached for a minute.
+   *
+   * This makes fourteen on-chain reads, and one throttled RPC response stalls the whole
+   * `Promise.all` — measured at 90 to 115 seconds against a 120-second gateway timeout,
+   * which is why the dashboard sat on a spinner and every tile read "-".
+   *
+   * Nothing here is per-user or fast-moving: total supply, vault balances, emission
+   * totals. A minute of staleness is invisible, and it turns a burst of fourteen calls
+   * per visitor into fourteen per minute for everyone.
+   */
+  let overviewCache: { at: number; body: unknown } | null = null
+  const OVERVIEW_TTL_MS = 60_000
+
   app.get('/overview', async (req, reply) => {
+    if (overviewCache && Date.now() - overviewCache.at < OVERVIEW_TTL_MS) {
+      return overviewCache.body
+    }
+
     const bc = app.blockchain
 
     // ── On-chain reads (parallel) ────────────────────────────────────
@@ -43,6 +64,12 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       foundersVaultBalance,
       // Phase 0 mainnet additions
       liquidityPoolV5Balance,
+      /* The AMM pool actually in service. It was missing from this list, so the
+         49,999,900 MIC seeded into it on 2026-08-12 counted as circulating supply and
+         inflated the market cap by the same 50M. The two older pools stay in the list —
+         both read zero now, but a stray transfer to either must still not read as
+         circulating. */
+      liquidityPoolV6Balance,
       listingReserveBalance,
       deployerWalletBalance,
       // LockManager locked for deployer (any leftover admin holdings)
@@ -60,6 +87,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       safeBal(_addr.TreasuryManager),
       safeBal(_addr.FoundersVault),
       safeBal(_addr.LiquidityPoolV5),
+      safeBal(_addr.LiquidityPoolV6),
       safeBal(_addr.ListingReserveVault),
       safeBal(DEPLOYER_WALLET),
       bc.lockManager.lockedOf(DEPLOYER_WALLET).then((v: bigint) => v).catch(() => 0n),
@@ -104,6 +132,29 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       }),
     ])
 
+    /*
+     * The card is labelled "On-chain total (all tiers)", so it has to come from the chain.
+     * The DB count above only sees mints the indexer wrote, and the indexer cannot read
+     * logs without an archive endpoint — three tokens were minted and the card still read
+     * zero. `CommunityNFTv2` is ERC721Enumerable, so `totalSupply()` is the whole answer in
+     * one call. The DB count stays as the fallback for when the RPC is unreachable.
+     *
+     * `bc.communityNFT` is NOT usable here: it still points at the superseded ERC-1155
+     * contract, whose ABI has no `totalSupply()`.
+     */
+    let communityNftOnChain: number | null = null
+    try {
+      const { getActiveAddresses } = await import('@missionchain/sdk')
+      const communityAddr = (getActiveAddresses() as Record<string, string>).CommunityNFTv2
+      if (communityAddr) {
+        const c = new Contract(communityAddr, ['function totalSupply() view returns (uint256)'], buildProvider())
+        communityNftOnChain = Number(await c.totalSupply())
+      }
+    } catch {
+      // Fall through to the DB count — a stale number beats a blank card.
+    }
+    const communityNftTotal = communityNftOnChain ?? communityNftCount
+
     // ── Load admin-configurable constants ────────────────────────────
     const [
       TOTAL_SUPPLY,
@@ -111,7 +162,6 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       MINING_POOL,
       MFP_TOTAL,
       MICE_MAX_SUPPLY,
-      micPrice,
       emissionMinersPct,
       emissionStakingPct,
       emissionDaoPct,
@@ -123,13 +173,15 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       getConfigNum(app.prisma, 'mining_pool', 5_950_000_000),
       getConfigNum(app.prisma, 'mfp_total', 2_500),
       getConfigNum(app.prisma, 'mice_max_supply', 100_000),
-      getConfig(app.prisma, 'mic_price', '0.0025'),
       getConfigNum(app.prisma, 'emission_miners_pct', 60),
       getConfigNum(app.prisma, 'emission_staking_pct', 25),
       getConfigNum(app.prisma, 'emission_dao_pct', 10),
       getConfigNum(app.prisma, 'emission_community_nft_pct', 5),
       getConfigNum(app.prisma, 'daily_output', 22_907_500),
     ])
+
+    // Resolved through the shared helper, so this screen cannot drift from the others.
+    const micPriceInfo = await resolveMicPrice(app.prisma)
 
     const totalStaked = Number(stakingStats._sum.amount ?? 0)
 
@@ -150,7 +202,8 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
     // a vesting schedule is created in LockManager. Buyer's MIC = locked, NOT circulating.
     const inContracts = seedSaleBalance + preSaleBalance + liquidityPoolBalance + airdropBalance
                       + treasuryManagerBalance + foundersVaultBalance
-                      + liquidityPoolV5Balance + listingReserveBalance + deployerWalletBalance
+                      + liquidityPoolV5Balance + liquidityPoolV6Balance
+                      + listingReserveBalance + deployerWalletBalance
 
     // ── Sum LockManager.lockedOf() for all known wallets that may have schedules ──
     // After SEED/PreSale purchase, MIC moves from sale contract → buyer wallet, but
@@ -199,26 +252,68 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
     // Circulating = Pre-Issued + Emitted - Locked - Staked (simplified)
     const circulatingSupply = PRE_ISSUED + totalEmitted - totalLockedNum - totalStaked
 
-    // Burned MIC (from MICE purchases)
-    // For now read from DB; in future can read on-chain burn address balance
-    const burnedFromMice = await app.prisma.purchase.aggregate({
-      where: { type: 'MICE' },
-      _sum: { micAmount: true },
-    })
-    const totalBurned = Number(burnedFromMice._sum.micAmount ?? 0)
+    // ── Burned MIC — derived on-chain, not from the DB ────────────────
+    // Every MIC that ever existed was either pre-issued at deploy (a fixed
+    // 1,050,000,000 cap) or minted by EmissionController (totalMiningMinted).
+    // Anything missing from totalSupply was burned, wherever the burn happened:
+    //
+    //   burned = PRE_ISSUED_CAP + totalMiningMinted − totalSupply
+    //
+    // This is self-maintaining — the 31,500,000 MIC destroyed from
+    // LiquidityPoolV5 on 2026-08-05 (tx 0xb2f0d013…4924b) and every future MICE
+    // burn both land here with no code change. The old DB sum only ever counted
+    // MICE purchases and missed the LP5 burn entirely.
+    //
+    // PRE_ISSUED is admin-configurable, so the cap is pinned as a constant: it is
+    // an immutable property of the token, not a display setting.
+    const PRE_ISSUED_CAP = 1_050_000_000
+    const miningMinted = await bc.micToken
+      .totalMiningMinted()
+      .then((v: bigint) => parseFloat(formatUnits(v, 18)))
+      .catch(() => totalEmitted)
+    const totalBurned = Math.max(0, PRE_ISSUED_CAP + miningMinted - totalSupplyOnChain)
+
+    // Burned MIC never circulates again, so it comes off the pre-issued base.
+    const circulatingSupplyNet = circulatingSupply - totalBurned
 
     return {
       data: {
         // Admin-configurable tokenomics
+        /*
+         * Three different quantities that were all being called "supply".
+         *
+         * `totalSupply` kept its old meaning and its old value so nothing downstream
+         * shifts under it — the admin stats page already reads it as `hardCap`, which is
+         * what it always was. The two honest figures are added beside it rather than
+         * quietly redefining a field: renaming a number's meaning in place is precisely
+         * how the DApp came to print "1.05B of 7.00B total" months after 31.5M was burned.
+         */
+
+        /** Design cap: 15% pre-issued + 85% mined, once all mining has happened. */
         totalSupply: TOTAL_SUPPLY,
+        maxSupply: TOTAL_SUPPLY,
+
+        /** What exists on chain right now, read from MICToken. Falls back to the derived
+         *  figure only if the token could not be reached. */
+        currentSupply: Math.round(totalSupplyOnChain || (PRE_ISSUED + totalEmitted - totalBurned)).toString(),
+
+        /** Issued at genesis — a historical fact, unchanged by later burns. */
         preIssued: PRE_ISSUED,
+
+        /** How much of that genesis issuance still exists. 31,500,000 of it was burned on
+         *  2026-08-05 when LiquidityPool v5 turned out to have no withdrawal path. */
+        preIssuedNow: Math.round(PRE_ISSUED - totalBurned).toString(),
         miningPool: MINING_POOL,
 
-        // Admin-configurable price
-        micPrice,
+        // The live market price when there is a market, the configured figure when there
+        // is not — resolved by the one helper every route shares. This used to read the
+        // `mic_price` row directly and so kept showing $0.005 after the AMM opened at
+        // $0.01, disagreeing with /rounds/system-info on the same screen refresh.
+        micPrice: micPriceInfo.price,
+        micPriceSource: micPriceInfo.source,
 
         // ★ ON-CHAIN computed values
-        circulatingSupply: Math.max(0, Math.round(circulatingSupply)).toString(),
+        circulatingSupply: Math.max(0, Math.round(circulatingSupplyNet)).toString(),
         totalEmitted: Math.round(totalEmitted).toString(),
         totalStaked: totalStaked.toFixed(0),
         totalBurned: totalBurned.toFixed(0),
@@ -231,7 +326,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
         lockedBreakdown: {
           seedSaleContract: parseFloat(formatUnits(seedSaleBalance, 18)).toFixed(0),
           preSaleContract: parseFloat(formatUnits(preSaleBalance, 18)).toFixed(0),
-          liquidityPool: parseFloat(formatUnits(liquidityPoolBalance, 18)).toFixed(0),
+          liquidityPool: parseFloat(formatUnits(liquidityPoolBalance + liquidityPoolV6Balance, 18)).toFixed(0),
           airdropDistributor: parseFloat(formatUnits(airdropBalance, 18)).toFixed(0),
           vestingLockManager: parseFloat(formatUnits(deployerLocked, 18)).toFixed(0),
         },
@@ -250,7 +345,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
         // NFT stats
         mfpTotal: MFP_TOTAL,
         mfpMinted: mfpMinted,
-        communityNfts: communityNftCount,
+        communityNfts: communityNftTotal,
 
         // MICE
         activeMice: miceData.totalSold,
@@ -487,7 +582,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
     const makers = activeCommunity.filter(n => n.tier === 'Maker').length
     const luminaries = activeCommunity.filter(n => n.tier === 'Luminary').length
 
-    return {
+    const body = {
       data: {
         // ★ ON-CHAIN values (from LockManager + MICToken.balanceOf)
         micTotal: tokenBalance.balance,          // What MetaMask shows
@@ -510,5 +605,8 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
         },
       },
     }
+
+    overviewCache = { at: Date.now(), body }
+    return body
   })
 }

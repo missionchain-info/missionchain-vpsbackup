@@ -211,7 +211,7 @@ export default function StatsPage() {
           <div style={{
             padding: '14px 20px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             borderBottom: '1px solid var(--border)',
-            background: 'rgba(201,168,76,.04)',
+            background: 'rgba(201,163,76,.04)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: '1.2rem' }}>{'\u{1F331}'}</span>
@@ -235,7 +235,7 @@ export default function StatsPage() {
           <div style={{
             padding: '14px 20px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             borderBottom: '1px solid var(--border)',
-            background: 'rgba(123,45,139,.04)',
+            background: 'rgba(45,76,139,.04)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: '1.2rem' }}>{'\u{1F4B0}'}</span>
@@ -262,7 +262,7 @@ export default function StatsPage() {
         <div style={{
           padding: '14px 20px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           borderBottom: '1px solid var(--border)',
-          background: 'rgba(107,20,40,.04)',
+          background: 'rgba(107,20,31,.04)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: '1.2rem' }}>{'\u{1FAA5}'}</span>
@@ -302,7 +302,7 @@ export default function StatsPage() {
                     <div key={i} style={{
                       padding: '8px 12px',
                       borderRadius: 8,
-                      background: isActive ? 'rgba(107,20,40,.12)' : 'var(--bg4)',
+                      background: isActive ? 'rgba(107,20,31,.12)' : 'var(--bg4)',
                       border: isActive ? '1px solid var(--crimson)' : '1px solid var(--border)',
                       opacity: isPast ? 0.5 : 1,
                     }}>
@@ -348,16 +348,16 @@ export default function StatsPage() {
           <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
             <DonutChart
               segments={[
-                { value: Number(seed.usdtRaised || 0), color: '#C9A84C', label: 'SEED' },
-                { value: Number(presale.usdtRaised || 0), color: '#7B2D8B', label: 'Pre-Sale' },
-                { value: Number(mice.usdtRaised || 0), color: '#6B1428', label: 'MICE (USDT)' },
+                { value: Number(seed.usdtRaised || 0), color: '#C9A34C', label: 'SEED' },
+                { value: Number(presale.usdtRaised || 0), color: '#2D4C8B', label: 'Pre-Sale' },
+                { value: Number(mice.usdtRaised || 0), color: '#6B141F', label: 'MICE (USDT)' },
               ]}
               size={120}
             />
             <div style={{ flex: 1 }}>
-              <RevenueRow color="#C9A84C" label="SEED" value={fmtUsd(seed.usdtRaised || 0)} />
-              <RevenueRow color="#7B2D8B" label="Pre-Sale" value={fmtUsd(presale.usdtRaised || 0)} />
-              <RevenueRow color="#6B1428" label="MICE (USDT)" value={fmtUsd(mice.usdtRaised || 0)} />
+              <RevenueRow color="#C9A34C" label="SEED" value={fmtUsd(seed.usdtRaised || 0)} />
+              <RevenueRow color="#2D4C8B" label="Pre-Sale" value={fmtUsd(presale.usdtRaised || 0)} />
+              <RevenueRow color="#6B141F" label="MICE (USDT)" value={fmtUsd(mice.usdtRaised || 0)} />
               <div style={{ borderTop: '1px solid var(--border)', marginTop: 8, paddingTop: 8 }}>
                 <RevenueRow color="transparent" label="Total Revenue" value={fmtUsd(s.sales?.totalRaisedUsdt || 0)} bold />
               </div>

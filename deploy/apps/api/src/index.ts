@@ -26,10 +26,14 @@ import { adminRoutes } from './routes/admin'
 import { distributorRoutes } from './routes/distributor'
 import { oldInvestorsRoutes } from './routes/old-investors'
 import { foundersRoutes } from './routes/founders'
+import { nftRewardsRoutes } from './routes/nft-rewards.js'
+import { communityGrantsAdminRoutes, communityGrantsUserRoutes } from './routes/community-grants.js'
 import { stewardCouncilRoutes } from './routes/steward-council'
 import { operationalPoolRoutes } from './routes/operational-pool'
+import { mgmtOpsRoutes } from './routes/mgmt-ops'
 import { governanceRoutes } from './routes/governance'
 import { p2pRoutes } from './routes/p2p'
+import p2pMicRoutes from './routes/p2p-mic'
 import { roundsRoutes } from './routes/rounds'
 import { menuConfigRoutes } from './routes/menu-config'
 import { niraAvatarRoutes } from './routes/nira-avatar'
@@ -100,7 +104,7 @@ async function start() {
   const blockchain = new BlockchainService()
   app.decorate('blockchain', blockchain)
   app.log.info('BlockchainService initialized (RPC: %s)',
-    process.env.BSC_RPC_URL || 'testnet default')
+    process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || 'testnet default')
 
   // ── Routes ───────────────────────────────────────────────────────
 
@@ -112,6 +116,7 @@ async function start() {
   await app.register(miningRoutes, { prefix: '/mining' })
   await app.register(miningNetworkRoutes, { prefix: '/mining' })
   await app.register(nftRoutes, { prefix: '/nft' })
+  await app.register(communityGrantsUserRoutes, { prefix: '/nft' })
   await app.register(referralRoutes, { prefix: '/referral' })
   await app.register(vestingRoutes, { prefix: '/vesting' })
   await app.register(daoRoutes, { prefix: '/dao' })
@@ -119,10 +124,14 @@ async function start() {
   await app.register(distributorRoutes, { prefix: '/admin/distributors' })
   await app.register(oldInvestorsRoutes, { prefix: '/admin/seed/old-investors' })
   await app.register(foundersRoutes, { prefix: '/admin/founders' })
+  await app.register(nftRewardsRoutes, { prefix: '/admin/nft-rewards' })
+  await app.register(communityGrantsAdminRoutes, { prefix: '/admin/community-grants' })
   await app.register(stewardCouncilRoutes, { prefix: '/admin/steward-council' })
   await app.register(operationalPoolRoutes, { prefix: '/admin/seed-budget/operational' })
+  await app.register(mgmtOpsRoutes, { prefix: '/governance/mgmt-ops' })
   await app.register(governanceRoutes, { prefix: '/governance' })
   await app.register(p2pRoutes, { prefix: '/p2p' })
+  await app.register(p2pMicRoutes, { prefix: '/p2p-mic' })
   await app.register(roundsRoutes, { prefix: '/rounds' })
   await app.register(menuConfigRoutes, { prefix: '/menu-config' })
   await app.register(niraAvatarRoutes, { prefix: '/nira-avatar' })
@@ -175,6 +184,23 @@ async function start() {
     app.log.warn('OldInvestor + Founder cron NOT started (DEPLOYER_PK not configured)')
   }
 
+  // ── Mining keeper ────────────────────────────────────────────────
+  // Nothing in the mining layer runs on its own: a day's emission that nobody asks for
+  // is not deferred, it is destroyed. Uses KEEPER_PK, deliberately not DEPLOYER_PK —
+  // a wallet that signs every ten minutes must not also hold admin authority.
+  if (process.env.KEEPER_PK) {
+    const { startMiningKeeper } = await import('./services/miningKeeper.js')
+    startMiningKeeper(app, Number(process.env.MINING_KEEPER_MS) || 600_000)
+
+    // Turns pool balances into individual entitlements: notifies the two MIC pools after
+    // each daily emission, and credits the weekly and monthly USDT pools when a period
+    // closes. Without it the USDT accumulates while every holder's claimable stays zero.
+    const { startRewardKeeper } = await import('./services/rewardKeeper.js')
+    startRewardKeeper(app, Number(process.env.REWARD_KEEPER_MS) || 3_600_000)
+  } else {
+    app.log.warn('miningKeeper NOT started (KEEPER_PK not configured) — no daily emission will be minted')
+  }
+
   // ── Start Event Indexer (background) ─────────────────────────────
 
   if (process.env.DISABLE_INDEXER !== 'true') {
@@ -211,7 +237,8 @@ async function start() {
     const presaleSync = new PreSaleEventSync(
       app.prisma,
       presaleAddr,
-      process.env.BSC_RPC_URL || defaultRpc,
+      // getLogs is the first thing the public endpoints fail at.
+      process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || defaultRpc,
     )
     presaleSync.start()
   } else {
@@ -232,8 +259,10 @@ async function start() {
   }
 
   // ── Start P2P Event Sync (Task 12) ───────────────────────────────
-  // Polls P2PEscrowMFP events every 30s; upserts P2POrder DB rows.
-  const p2pAddr = addr.P2PEscrowMFP
+  // Polls the MFP-NFT escrow's events every 30s; upserts P2POrder DB rows.
+  // Repointed to P2PEscrowNFT_MFP on 2026-08-12; the old P2PEscrowMFP could never take an
+  // order, so there is no history on it to miss.
+  const p2pAddr = addr.P2PEscrowNFT_MFP
   const p2pCfg = await app.prisma.systemConfig.findUnique({ where: { key: 'p2p_enabled' } }).catch(() => null)
   const p2pEnabled = p2pCfg?.value === 'true'
   if (p2pAddr && p2pAddr !== '0x0000000000000000000000000000000000000000' && p2pEnabled) {
@@ -242,7 +271,7 @@ async function start() {
   } else if (!p2pEnabled) {
     app.log.info('P2P event sync NOT started (p2p_enabled=false - feature disabled)')
   } else {
-    app.log.warn('P2P event sync NOT started (P2PEscrowMFP not deployed on active network)')
+    app.log.warn('P2P event sync NOT started (P2PEscrowNFT_MFP not deployed on active network)')
   }
 }
 

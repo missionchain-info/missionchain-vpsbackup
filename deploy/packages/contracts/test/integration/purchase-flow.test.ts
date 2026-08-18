@@ -5,20 +5,21 @@ import {
   PreSale,
   MICToken,
   LockManager,
-  CommunityNFT,
+  CommunityNFTv2,
   ReferralRegistry,
   RevenueRouter,
   MockUSDT,
+  MockRewardReceiver,
 } from "../../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const USDT_6  = 1_000_000n;        // 1 USDT in 6-decimal
+const USDT_6  = 10n ** 18n;        // 1 USDT — BSC-USD is 18 decimals
 const MIC_18  = 10n ** 18n;        // 1 MIC in 18-decimal
 
 // Luminary package: $5,000 USDT → 1,000,000 MIC
-const PKG3_USDT = 5_000n * USDT_6;          // 5_000_000_000 (6 dec)
+const PKG3_USDT = 5_000n * USDT_6;          // $5,000
 const PKG3_MIC  = 1_000_000n * MIC_18;      // 1_000_000e18 (18 dec)
 
 const ALLOCATION = 315_000_000n * MIC_18;
@@ -28,13 +29,20 @@ const SIX_MONTHS   = 6 * 30 * 24 * 3600;    // 180 days in seconds
 const ONE_MONTH    =     30 * 24 * 3600;     //  30 days in seconds
 const FORTY_TWO_MO = 42 * ONE_MONTH;         // 42 months = full vest
 
-// Referral amounts for $5,000 purchase:
+// Revenue model V2 (2026-07) — every % is of GROSS; nothing is taken off the top.
+// The router splits the full $5,000 six ways, then the registry pays F1/F2 out of its
+// own 10% slice.
 // F1 = 7%  → $350 USDT = 350_000_000 (6 dec)
 // F2 = 3%  → $150 USDT = 150_000_000 (6 dec)
-// Net = 90% → $4,500 USDT = 4_500_000_000 (6 dec)
 const F1_REWARD  = (PKG3_USDT * 700n)  / 10_000n;   // 350_000_000
 const F2_REWARD  = (PKG3_USDT * 300n)  / 10_000n;   // 150_000_000
-const NET_USDT   = PKG3_USDT - F1_REWARD - F2_REWARD; // 4_500_000_000
+
+// Router gross BPS
+const BPS_REFERRAL   = 1000n; // 10%
+const BPS_MARKETING  = 2500n; // 25%
+const BPS_MANAGEMENT = 750n;  // 7.5%
+const BPS_TREASURY   = 1250n; // 12.5%
+const BPS_STAKING    = 500n;  // 5%
 
 // Vesting: 1M MIC, cliff 10% = 100K, monthly 2.5% = 25K
 const CLIFF_UNLOCK   = PKG3_MIC / 10n;                  // 100,000 MIC
@@ -49,7 +57,7 @@ interface Fixture {
   preSale:          PreSale;
   micToken:         MICToken;
   lockManager:      LockManager;
-  communityNFT:     CommunityNFT;
+  communityNFT:     CommunityNFTv2;
   referralRegistry: ReferralRegistry;
   revenueRouter:    RevenueRouter;
   usdt:             MockUSDT;
@@ -57,11 +65,13 @@ interface Fixture {
   buyer:            SignerWithAddress;   // user1
   referrer1:        SignerWithAddress;   // direct referrer (F1) for buyer
   referrer2:        SignerWithAddress;   // F1's referrer (F2 for buyer)
-  marketing:        SignerWithAddress;
-  management:       SignerWithAddress;
-  treasury:         SignerWithAddress;
-  reservedStaking:  SignerWithAddress;
-  liquidity:        SignerWithAddress;
+  // Router sinks — CONTRACTS: the router calls receiveAndDistribute()/receiveUSDT().
+  marketing:        MockRewardReceiver;
+  management:       MockRewardReceiver;
+  treasury:         MockRewardReceiver;
+  reservedStaking:  MockRewardReceiver;
+  liquidity:        MockRewardReceiver;
+  miPool:           MockRewardReceiver;  // Milestones & Incentives overflow sink
 }
 
 async function deployFixture(): Promise<Fixture> {
@@ -70,11 +80,6 @@ async function deployFixture(): Promise<Fixture> {
     buyer,
     referrer1,
     referrer2,
-    marketing,
-    management,
-    treasury,
-    reservedStaking,
-    liquidity,
   ] = await ethers.getSigners();
 
   // ── Deploy MockUSDT ───────────────────────────────────────────────────────
@@ -89,12 +94,9 @@ async function deployFixture(): Promise<Fixture> {
   const LMFactory = await ethers.getContractFactory("LockManager");
   const lockManager = await LMFactory.deploy() as unknown as LockManager;
 
-  // ── Deploy CommunityNFT ───────────────────────────────────────────────────
-  const CNFTFactory = await ethers.getContractFactory("CommunityNFT");
-  const communityNFT = await CNFTFactory.deploy(
-    "https://meta.missionchain.io/cnft/",
-    admin.address,
-  ) as unknown as CommunityNFT;
+  // ── Deploy CommunityNFTv2 (what Phase-1 actually ships) ───────────────────
+  const CNFTFactory = await ethers.getContractFactory("CommunityNFTv2");
+  const communityNFT = await CNFTFactory.deploy(admin.address) as unknown as CommunityNFTv2;
 
   // ── Deploy ReferralRegistry ───────────────────────────────────────────────
   const RegFactory = await ethers.getContractFactory("ReferralRegistry");
@@ -103,15 +105,27 @@ async function deployFixture(): Promise<Fixture> {
     admin.address,
   ) as unknown as ReferralRegistry;
 
-  // ── Deploy RevenueRouter (with real EOA recipients — just EOAs for tests) ─
+  // ── Deploy the router sinks (contracts — the router CALLS them) ───────────
+  const MRFactory = await ethers.getContractFactory("MockRewardReceiver");
+  const newSink = async () =>
+    await MRFactory.deploy(await usdt.getAddress()) as unknown as MockRewardReceiver;
+  const marketing       = await newSink();
+  const management      = await newSink();
+  const treasury        = await newSink();
+  const reservedStaking = await newSink();
+  const liquidity       = await newSink();
+  const miPool          = await newSink();
+
+  // ── Deploy RevenueRouter — 8 args, referral slice → ReferralRegistry ──────
   const RouterFactory = await ethers.getContractFactory("RevenueRouter");
   const revenueRouter = await RouterFactory.deploy(
     await usdt.getAddress(),
-    marketing.address,
-    management.address,
-    treasury.address,
-    reservedStaking.address,
-    liquidity.address,
+    await referralRegistry.getAddress(),
+    await marketing.getAddress(),
+    await management.getAddress(),
+    await treasury.getAddress(),
+    await reservedStaking.getAddress(),
+    await liquidity.getAddress(),
     admin.address,
   ) as unknown as RevenueRouter;
 
@@ -141,6 +155,7 @@ async function deployFixture(): Promise<Fixture> {
   const CALLER_ROLE = await referralRegistry.CALLER_ROLE();
   await referralRegistry.connect(admin).grantRole(CALLER_ROLE, await preSale.getAddress());
   await referralRegistry.connect(admin).grantRole(CALLER_ROLE, admin.address);
+  await referralRegistry.connect(admin).setIncentivePool(await miPool.getAddress());
 
   // RevenueRouter: DISTRIBUTOR_ROLE → preSale
   const DISTRIBUTOR_ROLE = await revenueRouter.DISTRIBUTOR_ROLE();
@@ -168,7 +183,7 @@ async function deployFixture(): Promise<Fixture> {
   return {
     preSale, micToken, lockManager, communityNFT, referralRegistry, revenueRouter,
     usdt, admin, buyer, referrer1, referrer2,
-    marketing, management, treasury, reservedStaking, liquidity,
+    marketing, management, treasury, reservedStaking, liquidity, miPool,
   };
 }
 
@@ -214,8 +229,8 @@ describe("Integration: Purchase Flow — PreSale $5K Luminary + Vesting", functi
     const f = await deployFixture();
     await f.preSale.connect(f.buyer).buy(PKG3_USDT, 3);
 
-    // ERC-1155 balanceOf(address, tokenId)
-    const nftBalance = await f.communityNFT.balanceOf(f.buyer.address, LUMINARY_TIER);
+    // ERC-721 with per-tier accounting
+    const nftBalance = await f.communityNFT.activeCountOf(f.buyer.address, LUMINARY_TIER);
     expect(nftBalance).to.equal(1n);
   });
 
@@ -241,33 +256,31 @@ describe("Integration: Purchase Flow — PreSale $5K Luminary + Vesting", functi
     expect(balAfter - balBefore).to.equal(F2_REWARD);
   });
 
-  // ─── 7. Net USDT (90%) reaches RevenueRouter pools ──────────────────────
+  // ─── 7. Full GROSS is split 6 ways by the RevenueRouter ─────────────────
 
-  it("RevenueRouter distributes net 90% ($4,500 USDT) across the 5 pools", async () => {
+  it("RevenueRouter splits the full GROSS $5,000 six ways (10/25/7.5/12.5/5/40)", async () => {
     const f = await deployFixture();
-
-    // Record pool balances before
-    const mkBefore  = await f.usdt.balanceOf(f.marketing.address);
-    const mgBefore  = await f.usdt.balanceOf(f.management.address);
-    const trBefore  = await f.usdt.balanceOf(f.treasury.address);
-    const stBefore  = await f.usdt.balanceOf(f.reservedStaking.address);
-    const liqBefore = await f.usdt.balanceOf(f.liquidity.address);
 
     await f.preSale.connect(f.buyer).buy(PKG3_USDT, 3);
 
-    // Calculate expected splits (BPS: 3500 / 750 / 1250 / 500 / 4000)
-    const toMarketing  = (NET_USDT * 3500n) / 10_000n;
-    const toManagement = (NET_USDT * 750n)  / 10_000n;
-    const toTreasury   = (NET_USDT * 1250n) / 10_000n;
-    const toStaking    = (NET_USDT * 500n)  / 10_000n;
-    const toLiquidity  = NET_USDT - toMarketing - toManagement - toTreasury - toStaking;
+    const toReferral   = (PKG3_USDT * BPS_REFERRAL)   / 10_000n;
+    const toMarketing  = (PKG3_USDT * BPS_MARKETING)  / 10_000n;
+    const toManagement = (PKG3_USDT * BPS_MANAGEMENT) / 10_000n;
+    const toTreasury   = (PKG3_USDT * BPS_TREASURY)   / 10_000n;
+    const toStaking    = (PKG3_USDT * BPS_STAKING)    / 10_000n;
+    // Liquidity gets the remainder, so it absorbs rounding dust.
+    const toLiquidity  = PKG3_USDT - toReferral - toMarketing - toManagement - toTreasury - toStaking;
 
-    // Verify each pool received the correct amount
-    expect(await f.usdt.balanceOf(f.marketing.address)      - mkBefore).to.equal(toMarketing);
-    expect(await f.usdt.balanceOf(f.management.address)     - mgBefore).to.equal(toManagement);
-    expect(await f.usdt.balanceOf(f.treasury.address)       - trBefore).to.equal(toTreasury);
-    expect(await f.usdt.balanceOf(f.reservedStaking.address) - stBefore).to.equal(toStaking);
-    expect(await f.usdt.balanceOf(f.liquidity.address)      - liqBefore).to.equal(toLiquidity);
+    expect(await f.marketing.received()).to.equal(toMarketing);
+    expect(await f.management.received()).to.equal(toManagement);
+    expect(await f.treasury.received()).to.equal(toTreasury);
+    expect(await f.reservedStaking.received()).to.equal(toStaking);
+    expect(await f.liquidity.received()).to.equal(toLiquidity);
+
+    // The referral 10% left the router entirely — F1+F2 consumed it, nothing overflowed.
+    expect(F1_REWARD + F2_REWARD).to.equal(toReferral);
+    expect(await f.miPool.received()).to.equal(0n);
+    expect(await f.usdt.balanceOf(await f.referralRegistry.getAddress())).to.equal(0n);
   });
 
   // ─── 8. Time warp 6 months → 10% unlocked ───────────────────────────────
@@ -367,7 +380,7 @@ describe("Integration: Purchase Flow — PreSale $5K Luminary + Vesting", functi
     ).to.be.reverted;
 
     // Luminary NFT received
-    expect(await f.communityNFT.balanceOf(f.buyer.address, LUMINARY_TIER)).to.equal(1n);
+    expect(await f.communityNFT.activeCountOf(f.buyer.address, LUMINARY_TIER)).to.equal(1n);
 
     // ── Step 2: Time warp to 6-month cliff ──────────────────────────────────
     await time.increase(SIX_MONTHS);

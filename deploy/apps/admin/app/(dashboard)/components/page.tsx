@@ -1,5 +1,10 @@
 'use client';
 
+import { getActiveAddresses } from '@missionchain/sdk'
+/** Read from the SDK: the literal here named a different contract entirely. */
+const MFP_ADDR = (getActiveAddresses() as Record<string, string>).MFPNFT ?? ''
+
+
 import { useState, useEffect } from 'react';
 import { JsonRpcProvider, Contract } from 'ethers';
 import { fetchDashboardOverview, fetchPoolStats, fetchPoolAdminEntries, fetchPoolActivity, fetchAdminAccess } from '@/lib/api';
@@ -63,7 +68,7 @@ const MFP_HARD_CAP = 2_500;
 export default function ComponentsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
-  const tabs = ['MICE Licenses', 'MFP-NFT', 'Community NFTs', 'Community Pool', 'MIC Founders, Management'];
+  const tabs = ['MICE Licenses', 'MFP-NFTs', 'Community NFTs', 'Community Pool', 'MIC Founders, Management'];
 
   /* ── API state ── */
   const [dashboard, setDashboard] = useState<any>(null);
@@ -229,7 +234,7 @@ export default function ComponentsPage() {
                     const isCurrent = currentRound === row.r;
                     const isPast = currentRound != null && row.r < currentRound;
                     return (
-                      <tr key={row.r} style={isCurrent ? { background: 'rgba(201,168,76,.08)' } : {}}>
+                      <tr key={row.r} style={isCurrent ? { background: 'rgba(201,163,76,.08)' } : {}}>
                         <td>Round {row.r} &mdash; {row.label}</td>
                         <td style={{ fontFamily: 'var(--font-m)', fontSize: 11 }}>{row.range}</td>
                         <td><strong>${row.price}</strong></td>
@@ -237,7 +242,7 @@ export default function ComponentsPage() {
                         <td>${row.usdt}</td>
                         <td>
                           {isCurrent ? (
-                            <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, background: 'rgba(201,168,76,.15)', color: 'var(--gold)' }}>ACTIVE</span>
+                            <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, background: 'rgba(201,163,76,.15)', color: 'var(--gold)' }}>ACTIVE</span>
                           ) : isPast ? (
                             <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, background: 'rgba(76,175,80,.12)', color: '#66BB6A' }}>SOLD OUT</span>
                           ) : (
@@ -271,8 +276,8 @@ export default function ComponentsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
               <div style={{
                 width: 64, height: 64, borderRadius: 16, flexShrink: 0,
-                background: 'linear-gradient(135deg,#1F1035,#130A1E)',
-                border: '1px solid rgba(212,160,23,0.25)',
+                background: 'linear-gradient(135deg,#16305C,#0E2148)',
+                border: '1px solid rgba(212,155,23,0.25)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32,
               }}>{'\u{1F48E}'}</div>
               <div style={{ flex: 1, minWidth: 220 }}>
@@ -366,65 +371,65 @@ export default function ComponentsPage() {
               <div
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                  background: 'linear-gradient(145deg, #1A1228, #16213E)',
-                  border: '1px solid rgba(201,168,76,0.40)',
+                  background: 'linear-gradient(145deg, #142A57, #142A57)',
+                  border: '1px solid rgba(201,163,76,0.40)',
                   borderRadius: 16, padding: '22px 24px',
                   maxWidth: 760, width: '100%', maxHeight: '85vh', overflowY: 'auto',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.10)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,163,76,0.10)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#F5D56E', fontFamily: 'var(--font-d)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#F5CC6E', fontFamily: 'var(--font-d)' }}>
                     MFP-NFT Token Details {mfpTokens.length > 0 && (
-                      <span style={{ color: '#D4C098', fontSize: 13, fontWeight: 500, marginLeft: 8 }}>
+                      <span style={{ color: '#D4C298', fontSize: 13, fontWeight: 500, marginLeft: 8 }}>
                         ({mfpTokens.length} tokens)
                       </span>
                     )}
                   </div>
                   <button
                     onClick={() => setShowMfpDetails(false)}
-                    style={{ background: 'none', border: 'none', color: '#D4C098', fontSize: 22, cursor: 'pointer', padding: 4 }}
+                    style={{ background: 'none', border: 'none', color: '#D4C298', fontSize: 22, cursor: 'pointer', padding: 4 }}
                   >&times;</button>
                 </div>
 
-                <div style={{ fontSize: 12, color: '#D4C098', marginBottom: 14, lineHeight: 1.5 }}>
-                  All minted MFP-NFTs read directly from contract <code style={{ background: 'rgba(245,213,110,0.10)', padding: '1px 6px', borderRadius: 3, color: '#F5D56E', fontSize: 11 }}>0x4d5147aC...4BD8c</code>. Click any Token ID to view on BSCScan.
+                <div style={{ fontSize: 12, color: '#D4C298', marginBottom: 14, lineHeight: 1.5 }}>
+                  All minted MFP-NFTs read directly from the MFPNFT contract <code style={{ background: 'rgba(245,204,110,0.10)', padding: '1px 6px', borderRadius: 3, color: '#F5CC6E', fontSize: 11 }}>{MFP_ADDR.slice(0, 10)}…{MFP_ADDR.slice(-6)}</code>. Click any Token ID to view on BSCScan.
                 </div>
 
                 {mfpTokensLoading ? (
-                  <div style={{ padding: '40px 0', textAlign: 'center', color: '#D4C098', fontStyle: 'italic' }}>
+                  <div style={{ padding: '40px 0', textAlign: 'center', color: '#D4C298', fontStyle: 'italic' }}>
                     Loading on-chain token list...
                   </div>
                 ) : mfpTokens.length === 0 ? (
-                  <div style={{ padding: '40px 0', textAlign: 'center', color: '#D4C098', fontStyle: 'italic' }}>
+                  <div style={{ padding: '40px 0', textAlign: 'center', color: '#D4C298', fontStyle: 'italic' }}>
                     No MFP-NFTs minted yet on this contract.
                   </div>
                 ) : (
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, color: '#F5E8CC' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, color: '#F5E9CC' }}>
                       <thead>
-                        <tr style={{ background: 'rgba(245,213,110,0.10)', borderBottom: '1px solid rgba(245,213,110,0.25)' }}>
-                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5D56E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>TOKEN ID</th>
-                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5D56E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>IMAGE #</th>
-                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5D56E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>VERSE #</th>
-                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5D56E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>CURRENT OWNER</th>
-                          <th style={{ textAlign: 'right', padding: '10px 8px', color: '#F5D56E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>BSCScan</th>
+                        <tr style={{ background: 'rgba(245,204,110,0.10)', borderBottom: '1px solid rgba(245,204,110,0.25)' }}>
+                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5CC6E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>TOKEN ID</th>
+                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5CC6E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>IMAGE #</th>
+                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5CC6E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>VERSE #</th>
+                          <th style={{ textAlign: 'left', padding: '10px 8px', color: '#F5CC6E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>CURRENT OWNER</th>
+                          <th style={{ textAlign: 'right', padding: '10px 8px', color: '#F5CC6E', fontWeight: 700, letterSpacing: '0.04em', fontSize: 11 }}>BSCScan</th>
                         </tr>
                       </thead>
                       <tbody>
                         {mfpTokens.map((t) => (
-                          <tr key={t.tokenId} style={{ borderBottom: '1px solid rgba(245,213,110,0.10)' }}>
-                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', fontWeight: 700, color: '#F5D56E' }}>
+                          <tr key={t.tokenId} style={{ borderBottom: '1px solid rgba(245,204,110,0.10)' }}>
+                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', fontWeight: 700, color: '#F5CC6E' }}>
                               #{t.tokenId}
                             </td>
-                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E8CC' }}>{t.imageId}</td>
-                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E8CC' }}>{t.verseId}</td>
-                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E8CC' }}>
+                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E9CC' }}>{t.imageId}</td>
+                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E9CC' }}>{t.verseId}</td>
+                            <td style={{ padding: '10px 8px', fontFamily: 'monospace', color: '#F5E9CC' }}>
                               <a
                                 href={`https://bscscan.com/address/${t.owner}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: '#F5E8CC', textDecoration: 'none', borderBottom: '1px dotted rgba(245,232,204,0.40)' }}
+                                style={{ color: '#F5E9CC', textDecoration: 'none', borderBottom: '1px dotted rgba(245,233,204,0.40)' }}
                               >
                                 {shortAddr(t.owner)}
                               </a>
@@ -434,7 +439,7 @@ export default function ComponentsPage() {
                                 href={`https://bscscan.com/token/${MFPNFT_ADDRESS}?a=${t.tokenId}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: '#F5D56E', textDecoration: 'none', fontWeight: 600, fontSize: 11 }}
+                                style={{ color: '#F5CC6E', textDecoration: 'none', fontWeight: 600, fontSize: 11 }}
                               >
                                 View {'↗'}
                               </a>
@@ -448,17 +453,17 @@ export default function ComponentsPage() {
 
                 <div style={{
                   marginTop: 14, padding: '10px 12px',
-                  background: 'rgba(245,213,110,0.10)',
-                  border: '1px solid rgba(245,213,110,0.25)',
+                  background: 'rgba(245,204,110,0.10)',
+                  border: '1px solid rgba(245,204,110,0.25)',
                   borderRadius: 8,
-                  fontSize: 11, color: '#F5E8CC', lineHeight: 1.5,
+                  fontSize: 11, color: '#F5E9CC', lineHeight: 1.5,
                 }}>
-                  <strong style={{ color: '#F5D56E' }}>Full transfer history:</strong> view all events for the MFPNFT contract at{' '}
+                  <strong style={{ color: '#F5CC6E' }}>Full transfer history:</strong> view all events for the MFPNFT contract at{' '}
                   <a
                     href={`https://bscscan.com/address/${MFPNFT_ADDRESS}#events`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#F5D56E', fontWeight: 600 }}
+                    style={{ color: '#F5CC6E', fontWeight: 600 }}
                   >
                     bscscan.com {'↗'}
                   </a>
@@ -472,9 +477,9 @@ export default function ComponentsPage() {
             <div
               style={{
                 position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 10000,
-                background: 'rgba(0,0,0,0.85)', color: '#F5D56E',
+                background: 'rgba(0,0,0,0.85)', color: '#F5CC6E',
                 padding: '10px 18px', borderRadius: 8, fontSize: 13,
-                border: '1px solid rgba(201,168,76,0.30)',
+                border: '1px solid rgba(201,163,76,0.30)',
               }}
             >
               {toast}
@@ -511,7 +516,7 @@ export default function ComponentsPage() {
           <div className="g4" style={{ marginBottom: 20 }}>
             {/* Builder */}
             <div className="nft-card">
-              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#1A0E28,#0C0812)' }}>{'\u{1F3D7}\uFE0F'}</div>
+              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#142A57,#0E2148)' }}>{'\u{1F3D7}\uFE0F'}</div>
               <div className="nft-body">
                 <div className="nft-name">Builder NFT</div>
                 <div className="nft-stats">
@@ -528,22 +533,18 @@ export default function ComponentsPage() {
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
-                </div>
               </div>
             </div>
 
             {/* Maker */}
             <div className="nft-card">
-              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#1F1035,#1A0E28)' }}>{'\u{1F528}'}</div>
+              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#16305C,#142A57)' }}>{'\u{1F528}'}</div>
               <div className="nft-body">
                 <div className="nft-name">Maker NFT</div>
                 <div className="nft-stats">
                   <div className="nft-stat">
                     <div className="nft-stat-l">MULTIPLIER</div>
-                    <div className="nft-stat-v" style={{ color: '#AB47BC' }}>&times;2.5</div>
+                    <div className="nft-stat-v" style={{ color: '#476DBC' }}>&times;2.5</div>
                   </div>
                   <div className="nft-stat">
                     <div className="nft-stat-l">DURATION</div>
@@ -554,22 +555,18 @@ export default function ComponentsPage() {
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
-                </div>
               </div>
             </div>
 
             {/* Luminary */}
             <div className="nft-card">
-              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#2a1600,#1F1035)' }}>{'\u2B50'}</div>
+              <div className="nft-img" style={{ background: 'linear-gradient(135deg,#2A1D00,#16305C)' }}>{'\u2B50'}</div>
               <div className="nft-body">
                 <div className="nft-name">Luminary NFT</div>
                 <div className="nft-stats">
                   <div className="nft-stat">
                     <div className="nft-stat-l">MULTIPLIER</div>
-                    <div className="nft-stat-v" style={{ color: '#C084D4' }}>&times;5.0</div>
+                    <div className="nft-stat-v" style={{ color: '#849ED4' }}>&times;5.0</div>
                   </div>
                   <div className="nft-stat">
                     <div className="nft-stat-l">DURATION</div>
@@ -579,10 +576,6 @@ export default function ComponentsPage() {
                     <div className="nft-stat-l">STATUS</div>
                     <div className="nft-stat-v" style={{ fontSize: 11 }}>Performance-based</div>
                   </div>
-                </div>
-                <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                  <button className="btn btn-outline btn-sm">Manage</button>
-                  <button className="btn btn-outline btn-sm">Config</button>
                 </div>
               </div>
             </div>
@@ -596,42 +589,51 @@ export default function ComponentsPage() {
         </>
       )}
 
-      {/* ── NFT Configuration (shared for Tab 1 & Tab 2) ── */}
-      {(activeTab === 1 || activeTab === 2) && (
+      {/*
+        This card used to hold four controls that did nothing: two `<select>` elements
+        with no `value` and no `onChange`, a drop-zone with no upload handler, and a
+        "Save Configuration" button with no `onClick`. Nothing was stored, nothing was
+        read, and one of the fields — "Community NFT re-verification period" — described
+        a mechanism that exists nowhere in the contracts.
+        Replaced with a statement of how minting actually works.
+      */}
+      {activeTab === 1 && (
         <div className="card card-g">
-          <div className="card-title">NFT Configuration Parameters</div>
-          <div className="g2">
-            <div>
-              <div className="input-wrap">
-                <div className="input-label">Series Number Generation</div>
-                <select><option>Auto-generate unique hash on minting</option><option>Sequential numbering</option></select>
-              </div>
-              {activeTab === 2 && (
-                <div className="input-wrap">
-                  <div className="input-label">Design Upload Pool (minting picks random)</div>
-                  <div style={{ border: '1px dashed var(--border2)', borderRadius: 10, padding: 20, textAlign: 'center', color: 'var(--gray2)', fontSize: 12, cursor: 'pointer' }}>
-                    {'\u{1F4C1}'} Drop images here or click to upload<br />
-                    <span style={{ fontSize: 10, fontFamily: 'var(--font-m)' }}>PNG &middot; SVG &middot; WebP &mdash; random selection at mint</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="input-wrap">
-                <div className="input-label">Staking Required to Vote?</div>
-                <ToggleRow defaultOn label={'Yes \u2014 zero stake means zero governance rights'} />
-              </div>
-              <div className="input-wrap">
-                <div className="input-label">Community NFT Re-verification Period</div>
-                <select><option>Annual re-verification required</option><option>Never (permanent)</option><option>Custom...</option></select>
-              </div>
-            </div>
-          </div>
-          <button className="btn btn-primary">Save Configuration</button>
+          <div className="card-title">How MFP-NFTs are issued</div>
+          <p style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--gray2)', margin: 0 }}>
+            MFP-NFTs are minted from an allowance, not sold directly. A SEED purchase or an
+            Owner grant credits an allowance to a wallet, and the holder mints it themselves
+            from the DApp when they choose. Each pass is permanent — it has no expiry and
+            needs no renewal.
+            <br /><br />
+            Artwork is drawn from the uploaded pool and paired at random with a scripture
+            line at the moment of minting, so no two passes are assembled the same way.
+          </p>
         </div>
       )}
 
-      {/* ── Tab 3: Community Pool (unchanged — already uses API) ── */}
+      {activeTab === 2 && (
+        <div className="card card-g">
+          <div className="card-title">How Community NFTs are issued</div>
+          <p style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--gray2)', margin: 0 }}>
+            Community NFTs are minted automatically the moment a condition is met — a
+            Pre-Sale package purchase, a referral milestone, or a Community Growth Award
+            rank. They arrive directly in the member&rsquo;s wallet and start their term
+            from that second.
+            <br /><br />
+            <strong style={{ color: 'var(--text1)' }}>There is no artwork to upload.</strong>{' '}
+            CommunityNFTv2 is ERC-721 and draws its own image on-chain from the tier and the
+            serial number — the contract has no <code>baseURI</code>, so nothing external is
+            ever referenced. The image cannot go missing, and it cannot be changed after the
+            fact.
+            <br /><br />
+            Each tier expires on its own schedule — Builder 60 days, Maker 90, Luminary 180 —
+            enforced by the contract. Nothing has to be re-verified or renewed; an expired
+            credential simply stops counting.
+          </p>
+        </div>
+      )}
+
       {activeTab === 3 && <CommunityPoolTab />}
 
       {/* ── Tab 4: MIC Founders, Management — 280M MIC, 48h cooldown ── */}
@@ -699,7 +701,10 @@ function CommunityPoolTab() {
         </div>
         <div className="stat-box">
           <div className="stat-lbl">Total Entries</div>
-          <div className="stat-val">{total}</div>
+          {/* `total` here is the MFP-NFT supply from the tab above, which is why this box read
+              0 while six Community NFTs were active in the pool. The pool endpoint now reports
+              the collection's own minted count, read from the chain. */}
+          <div className="stat-val">{stats?.totalEntries ?? '-'}</div>
         </div>
       </div>
 
@@ -707,7 +712,7 @@ function CommunityPoolTab() {
         {['builder', 'maker', 'luminary'].map((t) => (
           <div className="stat-box" key={t}>
             <div className="stat-lbl">{t.charAt(0).toUpperCase() + t.slice(1)}</div>
-            <div className="stat-val" style={{ color: t === 'builder' ? '#29B6F6' : t === 'maker' ? '#AB47BC' : '#C084D4' }}>
+            <div className="stat-val" style={{ color: t === 'builder' ? '#29B6F6' : t === 'maker' ? '#476DBC' : '#849ED4' }}>
               {tierBreakdown[t]?.count || '-'} <span style={{ fontSize: 10, color: 'var(--gray2)' }}>({tierBreakdown[t]?.weight || '-'} wt)</span>
             </div>
           </div>
@@ -761,8 +766,8 @@ function CommunityPoolTab() {
                     <td>
                       <span style={{
                         padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const,
-                        background: e.status === 'ACTIVE' ? 'rgba(76,175,80,.15)' : e.status === 'BURNED' ? 'rgba(244,67,54,.12)' : 'rgba(255,152,0,.12)',
-                        color: e.status === 'ACTIVE' ? '#66BB6A' : e.status === 'BURNED' ? '#EF5350' : '#FFA726',
+                        background: e.status === 'ACTIVE' ? 'rgba(76,175,80,.15)' : e.status === 'BURNED' ? 'rgba(244,54,78,.12)' : 'rgba(255,178,0,.12)',
+                        color: e.status === 'ACTIVE' ? '#66BB6A' : e.status === 'BURNED' ? '#EF5064' : '#FFBD26',
                       }}>{e.status}</span>
                     </td>
                     <td style={{ fontFamily: 'var(--font-m)', fontSize: 11 }}>{Number(e.totalClaimed || 0) > 0 ? Number(e.totalClaimed).toFixed(2) : '-'}</td>
@@ -798,8 +803,8 @@ function CommunityPoolTab() {
                     <td>
                       <span style={{
                         padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700,
-                        background: a.action === 'Joined' ? 'rgba(76,175,80,.15)' : a.action === 'Claimed' ? 'rgba(201,168,76,.15)' : 'rgba(244,67,54,.12)',
-                        color: a.action === 'Joined' ? '#66BB6A' : a.action === 'Claimed' ? 'var(--gold)' : '#EF5350',
+                        background: a.action === 'Joined' ? 'rgba(76,175,80,.15)' : a.action === 'Claimed' ? 'rgba(201,163,76,.15)' : 'rgba(244,54,78,.12)',
+                        color: a.action === 'Joined' ? '#66BB6A' : a.action === 'Claimed' ? 'var(--gold)' : '#EF5064',
                       }}>{a.action}</span>
                     </td>
                     <td style={{ fontFamily: 'var(--font-m)', fontSize: 11 }}>{a.serial}</td>

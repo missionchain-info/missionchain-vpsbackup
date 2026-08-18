@@ -11,6 +11,9 @@ import {
 } from '@/lib/api';
 import { useAuth, isOwnerWallet } from '@/lib/auth';
 import OldInvestorsSection from '@/components/OldInvestorsSection';
+import PreSaleUnsoldSection from '@/components/PreSaleUnsoldSection';
+import SeedWhitelistSection from '@/components/SeedWhitelistSection';
+import { getActiveAddresses } from '@missionchain/sdk';
 import { useMcUi } from '@/components/ui/McUi';
 
 interface RoundConfig {
@@ -61,7 +64,7 @@ interface MfpArtwork {
 
 const SZ = '0.62rem';
 const STATUS_OPTIONS = ['UPCOMING', 'ACTIVE', 'CLOSED'];
-const STATUS_COLORS: Record<string, string> = { UPCOMING: '#f0ad4e', ACTIVE: '#5cb85c', CLOSED: '#999' };
+const STATUS_COLORS: Record<string, string> = { UPCOMING: '#F0BF4E', ACTIVE: '#5cb85c', CLOSED: '#999' };
 
 const MICE_ROUNDS = [
   { label: 'R1', range: '1 \u2013 20K', price: 100, cap: 20000 },
@@ -276,7 +279,7 @@ function RoundsInner() {
               textDecoration: 'none', borderRadius: '7px 7px 0 0', marginBottom: -1,
               color: view === t.key ? 'var(--white)' : 'var(--gray)',
               background: view === t.key ? 'var(--card-bg)' : 'transparent',
-              borderBottom: `2px solid ${view === t.key ? 'var(--p, #7c5cff)' : 'transparent'}`,
+              borderBottom: `2px solid ${view === t.key ? 'var(--p, #5C91FF)' : 'transparent'}`,
             }}>
             {t.label}
           </Link>
@@ -331,7 +334,7 @@ function RoundsInner() {
           </div>
           <div className="g2" style={{ marginBottom: 14 }}>
             <div className="stat-box"><div className="stat-lbl">Dist. Commission</div><div className="stat-val gold">{fmtUsd(Number(seedSummary.distributor.totalCommission))}</div></div>
-            <div className="stat-box"><div className="stat-lbl">Pending Claims</div><div className="stat-val" style={{ color: '#d9534f' }}>{fmtUsd(Number(seedSummary.distributor.pendingCommission))}</div></div>
+            <div className="stat-box"><div className="stat-lbl">Pending Claims</div><div className="stat-val" style={{ color: '#D94F60' }}>{fmtUsd(Number(seedSummary.distributor.pendingCommission))}</div></div>
           </div>
 
           {/* Progress bar */}
@@ -403,6 +406,11 @@ function RoundsInner() {
            SECTION 1B: OLD INVESTORS — 75M Strategic Partner Grant
          ═══════════════════════════════════════════════ */}
       <OldInvestorsSection isSuperAdmin={isSuperAdmin} showToast={showToast} />
+
+      {/* ═══════════════════════════════════════════════
+           SECTION 1C: SEED WHITELIST — who may buy at $0.0025
+         ═══════════════════════════════════════════════ */}
+      <SeedWhitelistSection />
       </>
       )}
 
@@ -492,6 +500,9 @@ function RoundsInner() {
         <div className="stat-box"><div className="stat-lbl">Marketing Cost</div><div className="stat-val gold">{fmtUsd2(Number(ps.mktCost || 0))}</div><div className="stat-delta">35% (Ref 10% + Mktg 25%)</div></div>
         <div className="stat-box"><div className="stat-lbl">Net Capital</div><div className="stat-val g">{fmtUsd2(Number(ps.fundRaised || 0))}</div><div className="stat-delta">57.5% of revenue</div></div>
       </div>
+      
+      <PreSaleUnsoldSection preSaleAddress={getActiveAddresses().PreSale} />
+
       </>
       )}
 
@@ -541,7 +552,7 @@ function RoundsInner() {
         </div>
         <div className="stat-box">
           <div className="stat-lbl">MIC Burned</div>
-          <div className="stat-val" style={{ color: '#d9534f' }}>{fmt(Number(mice.micBurned || 0))} MIC</div>
+          <div className="stat-val" style={{ color: '#D94F60' }}>{fmt(Number(mice.micBurned || 0))} MIC</div>
           <div className="stat-delta">50% burned</div>
         </div>
       </div>
@@ -558,32 +569,76 @@ function RoundsInner() {
       {/* 5-Round Pricing Chart */}
       <div className="card" style={{ padding: 16, marginBottom: 14 }}>
         <div className="card-title">5-Round Pricing (20,000 licenses per round)</div>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 120, marginTop: 12 }}>
+        {/*
+          These were bars whose height was the fill percentage. With nothing sold yet
+          every bar was empty, so five identical blank boxes were all an operator saw —
+          the chart could only say something once it had nothing left to say.
+          Cards instead: each round states its own terms, and progress is one line inside
+          it rather than the whole thing.
+        */}
+        <div style={{
+          display: 'grid', gap: 10, marginTop: 14,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        }}>
           {MICE_ROUNDS.map((r, i) => {
             const sold = mice.totalLicenses || 0;
             const curRound = currentMiceRound(sold);
             const roundStart = i * 20000;
-            const roundEnd = (i + 1) * 20000;
-            const fillPct = i < curRound ? 100 : i === curRound ? pct(Math.max(0, sold - roundStart), 20000) : 0;
+            const inRound = Math.max(0, Math.min(20000, sold - roundStart));
+            const fillPct = i < curRound ? 100 : i === curRound ? pct(inRound, 20000) : 0;
             const isActive = i === curRound;
+            const isPast = i < curRound;
+
+            const status = isPast ? 'SOLD OUT' : isActive ? 'ACTIVE' : 'UPCOMING';
+            const accent = isPast ? 'var(--green2)' : isActive ? 'var(--gold)' : 'var(--gray2)';
 
             return (
-              <div key={r.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: '0.58rem', fontFamily: 'var(--font-m)', color: 'var(--gray)' }}>${r.price}</span>
-                <div style={{
-                  width: '100%', height: 80, background: 'var(--bg3)', borderRadius: 6, position: 'relative', overflow: 'hidden',
-                  border: isActive ? '1px solid var(--gold)' : '1px solid var(--border)',
-                }}>
-                  <div style={{
-                    position: 'absolute', bottom: 0, width: '100%',
-                    height: `${fillPct}%`,
-                    background: i < curRound ? 'var(--green2)' : isActive ? 'var(--gold)' : 'var(--bg4)',
-                    borderRadius: '0 0 5px 5px',
-                    transition: 'height 0.3s ease',
+              <div key={r.label} style={{
+                padding: '13px 14px 12px', borderRadius: 10,
+                border: `1px solid ${isActive ? 'var(--gold)' : 'var(--border)'}`,
+                background: isActive ? 'rgba(240,190,74,0.06)' : 'var(--bg3)',
+                // Rounds open in sequence: only one is purchasable, and the rest are a
+                // schedule. Dimming them keeps the live one findable at a glance.
+                opacity: isActive || isPast ? 1 : 0.55,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.6rem', fontWeight: 700, color: accent, fontFamily: 'var(--font-m)' }}>
+                    {r.label}
+                  </span>
+                  <span style={{
+                    fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.06em',
+                    padding: '2px 6px', borderRadius: 4, color: accent,
+                    background: isPast ? 'rgba(69,217,160,0.12)'
+                      : isActive ? 'rgba(240,190,74,0.16)' : 'rgba(255,255,255,0.05)',
+                  }}>{status}</span>
+                </div>
+
+                <div style={{ fontSize: '1.4rem', fontWeight: 700, margin: '6px 0 2px', color: isActive ? 'var(--gold)' : 'var(--text1)' }}>
+                  ${r.price}
+                </div>
+                <div style={{ fontSize: '0.54rem', color: 'var(--gray2)', fontFamily: 'var(--font-m)' }}>
+                  licences {r.range}
+                </div>
+
+                <div className="prog-bar" style={{ marginTop: 9, height: 4 }}>
+                  <div className="prog-fill" style={{
+                    width: `${fillPct}%`,
+                    background: isPast ? 'var(--green2)' : 'var(--gold)',
                   }} />
                 </div>
-                <span style={{ fontSize: '0.58rem', fontWeight: 600, color: isActive ? 'var(--gold)' : 'var(--gray2)' }}>{r.label}</span>
-                <span style={{ fontSize: '0.52rem', color: 'var(--gray2)', fontFamily: 'var(--font-m)' }}>{r.range}</span>
+                <div style={{ fontSize: '0.52rem', color: 'var(--gray2)', marginTop: 4, fontFamily: 'var(--font-m)' }}>
+                  {isPast ? '20,000 / 20,000' : `${inRound.toLocaleString()} / 20,000`} sold
+                </div>
+
+                {/* The half that is burned is the part people ask about, so it is stated
+                    on every card rather than only in the footnote. */}
+                <div style={{
+                  marginTop: 9, paddingTop: 8, borderTop: '1px solid var(--border)',
+                  fontSize: '0.54rem', color: 'var(--gray2)', lineHeight: 1.6,
+                }}>
+                  <div>🔥 ${r.price / 2} burned in MIC</div>
+                  <div>💵 ${r.price / 2} to RevenueRouter</div>
+                </div>
               </div>
             );
           })}
@@ -601,7 +656,7 @@ function RoundsInner() {
           <div className="info-row"><span className="info-key">Marketing &amp; Sales</span><span className="info-val">25%</span></div>
           <div className="info-row"><span className="info-key">Management</span><span className="info-val">7.5%</span></div>
           <div className="info-row"><span className="info-key">DAO Treasury</span><span className="info-val">12.5%</span></div>
-          <div className="info-row"><span className="info-key">Reserved Staking</span><span className="info-val">5%</span></div>
+          <div className="info-row"><span className="info-key">Reserved Listing</span><span className="info-val">5%</span></div>
           <div className="info-row"><span className="info-key">Liquidity Pool</span><span className="info-val">40%</span></div>
         </div>
         <div className="card" style={{ padding: 16 }}>

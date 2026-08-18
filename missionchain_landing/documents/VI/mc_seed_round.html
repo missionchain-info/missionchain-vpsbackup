@@ -3,6 +3,12 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"/>
+  <link rel="icon" href="/favicon.ico?v=brand20260818c" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=brand20260818c">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=brand20260818c">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=brand20260818c">
+  <meta name="theme-color" content="#0E2148">
+  
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Seed Round — Mission Chain</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -11,52 +17,52 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --gold:#C9A84C;--gold-l:#E8C96B;--gold-d:#8A6520;
-  --ink:#0C0810;--ink2:#120D1C;
-  --cream:#F4ECD7;--dim:rgba(244,236,215,.62);--faint:rgba(244,236,215,.32);
-  --border:rgba(201,168,76,.18);--brd:rgba(201,168,76,.42);
-  --red:#B84040;--teal:#2A7A6A;--amber:#8A5A20;
+  --gold:#D4A63C;--gold-l:#E8C26B;--gold-d:#8A6A20;
+  --ink:#080B10;--ink2:#0D121C;
+  --cream:#F4EBD7;--dim:rgba(244, 235, 215,.62);--faint:rgba(244, 235, 215,.32);
+  --border:rgba(201, 163, 76,.18);--brd:rgba(201, 163, 76,.42);
+  --red:#B8404F;--teal:#1B5FA8;--amber:#8A6A20;
 }
 html{scroll-behavior:smooth}
 body{font-family:"EB Garamond",Georgia,serif;background:var(--ink);color:var(--cream);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
 body.theme-light{
   --ink:#F7F2E8;
-  --ink2:#F0E7D8;
-  --cream:#231B15;
-  --dim:rgba(35,27,21,.72);
-  --faint:rgba(35,27,21,.42);
-  --border:rgba(184,141,46,.18);
-  --border-med:rgba(184,141,46,.38);
-  --brd:rgba(184,141,46,.36);
+  --ink2:#F0E9D8;
+  --cream:#0E2148;
+  --dim:rgba(35, 31, 21,.72);
+  --faint:rgba(35, 31, 21,.42);
+  --border:rgba(212,166,60,.22);
+  --border-med:rgba(184, 142, 46,.38);
+  --brd:rgba(184, 142, 46,.36);
 }
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(107,26,42,.45),transparent 58%),
-             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(44,26,62,.50),transparent 55%),
-             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(201,168,76,.05),transparent 50%)}
+  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(107, 26, 36,.45),transparent 58%),
+             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(26, 38, 62,.50),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(201, 163, 76,.05),transparent 50%)}
 body.theme-light::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(201,168,76,.18),transparent 58%),
-             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(123,45,139,.08),transparent 55%),
-             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(184,141,46,.06),transparent 50%)}
+  background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(201, 163, 76,.18),transparent 58%),
+             radial-gradient(ellipse 60% 50% at 96% 92%,rgba(45, 76, 139,.08),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 4% 60%,rgba(184, 142, 46,.06),transparent 50%)}
 
 
 /* NAV */
 nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-    height:64px;padding:0 44px;background:rgba(12,8,16,.94);
+    height:64px;padding:0 44px;background:rgba(8, 11, 16,.94);
     backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--border)}
 .nlogo{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
-.nlogo img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 7px rgba(201,168,76,.5))}
+.nlogo img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 7px rgba(201, 163, 76,.5))}
 .nbrand{font-family:"Cinzel",serif;font-size:.82rem;font-weight:600;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
 .nav-tools{display:flex;align-items:center;gap:10px}
 .theme-toggle-group{display:flex;align-items:center;gap:6px;padding-right:10px;margin-right:2px;border-right:1px solid var(--border)}
 .theme-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;font-family:"Cinzel",serif;font-size:.82rem;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all .2s}
 .theme-btn:hover{border-color:var(--gold);color:var(--gold)}
 .theme-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--ink);border-color:transparent}
-body.theme-light nav{background:rgba(250,244,236,.94)}
-body.theme-light .lsdrop{background:rgba(250,244,236,.98)}
+body.theme-light nav{background:rgba(250, 246, 236,.94)}
+body.theme-light .lsdrop{background:rgba(250, 246, 236,.98)}
 body.theme-light .lsbtn,body.theme-light .theme-btn{backdrop-filter:blur(10px)}
-body.theme-light .wallet-qr{background:#fffdf8}
-body.theme-light select option{background:#F0E7D8;color:#231B15}
+body.theme-light .wallet-qr{background:#FFFDF8}
+body.theme-light select option{background:#F0E9D8;color:#0E2148}
 .ls{position:relative}
 .lsbtn{display:flex;align-items:center;gap:6px;font-family:"Cinzel",serif;font-size:.68rem;
        letter-spacing:.1em;color:var(--dim);background:transparent;border:1px solid var(--border);
@@ -64,13 +70,13 @@ body.theme-light select option{background:#F0E7D8;color:#231B15}
 .lsbtn::after{content:"▾";font-size:.58rem;opacity:.5;margin-left:2px}
 .lsbtn:hover{border-color:var(--gold);color:var(--gold)}
 .lsdrop{display:none;position:absolute;right:0;top:calc(100% + 6px);min-width:110px;
-        background:rgba(15,10,24,.98);border:1px solid var(--border);border-radius:3px;
+        background:rgba(10, 15, 24,.98);border:1px solid var(--border);border-radius:3px;
         box-shadow:0 16px 48px rgba(0,0,0,.6)}
 .ls.open .lsdrop{display:block}
 .lopt{display:block;width:100%;padding:9px 14px;text-align:left;font-family:"Cinzel",serif;
       font-size:.68rem;letter-spacing:.08em;color:var(--dim);background:none;border:none;
       cursor:pointer;transition:background .15s,color .15s}
-.lopt:hover,.lopt.on{background:rgba(201,168,76,.1);color:var(--gold)}
+.lopt:hover,.lopt.on{background:rgba(201, 163, 76,.1);color:var(--gold)}
 
 /* PAGE */
 .page{position:relative;z-index:1;max-width:840px;margin:0 auto;padding:60px 36px 96px}
@@ -79,7 +85,7 @@ body.theme-light select option{background:#F0E7D8;color:#231B15}
 .eyebrow{font-family:"Cinzel",serif;font-size:.68rem;letter-spacing:.22em;color:var(--gold-d);
          text-transform:uppercase;margin-bottom:12px}
 .badge-pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--brd);
-            background:rgba(201,168,76,.07);padding:5px 17px 5px 12px;border-radius:100px;
+            background:rgba(201, 163, 76,.07);padding:5px 17px 5px 12px;border-radius:100px;
             margin-bottom:22px;font-family:"Cinzel",serif;font-size:.67rem;
             letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
 .bdot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;
@@ -104,7 +110,7 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
            font-weight:600;letter-spacing:.06em;color:var(--cream);margin-bottom:8px}
 .sec-sub{font-size:.88rem;color:var(--dim);margin-bottom:28px;line-height:1.7}
 .copy{font-size:1.02rem;line-height:1.9;color:var(--dim)}
-.copy em{font-style:italic;color:rgba(244,236,215,.82)}
+.copy em{font-style:italic;color:rgba(244, 235, 215,.82)}
 .copy strong{color:var(--cream);font-weight:600}
 
 /* PACKAGES — 2×2 grid */
@@ -112,7 +118,7 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
 .pkg-card{background:var(--ink2);border:1px solid var(--border);border-radius:4px;
           padding:26px 22px;position:relative;transition:border-color .25s,transform .25s;cursor:pointer}
 .pkg-card:hover{border-color:var(--brd);transform:translateY(-3px)}
-.pkg-card.selected{border-color:var(--gold);background:rgba(201,168,76,.06);box-shadow:0 0 24px rgba(201,168,76,.12)}
+.pkg-card.selected{border-color:var(--gold);background:rgba(201, 163, 76,.06);box-shadow:0 0 24px rgba(201, 163, 76,.12)}
 .pkg-card.featured{border-color:var(--brd)}
 .pkg-popular{position:absolute;top:-11px;left:50%;transform:translateX(-50%);
              background:linear-gradient(135deg,var(--gold),var(--gold-l));
@@ -133,14 +139,14 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
 .roi-card{background:var(--ink2);border:1px solid var(--border);border-radius:4px;padding:22px 18px}
 .roi-c{border-top:2px solid var(--teal)}
 .roi-m{border-top:2px solid var(--gold-d)}
-.roi-o{border-top:2px solid #8A3A2A}
+.roi-o{border-top:2px solid #8A2A36}
 .roi-label{font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.14em;
            text-transform:uppercase;color:var(--cream);margin-bottom:8px;font-weight:600}
 .roi-target{font-family:"Cinzel",serif;font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px}
 .roi-timeframe{font-size:.78rem;color:var(--faint);font-style:italic;margin-bottom:16px}
 .roi-rows{display:flex;flex-direction:column;gap:7px}
 .roi-row{display:flex;justify-content:space-between;align-items:center;
-         font-size:.78rem;color:var(--dim);border-bottom:1px solid rgba(201,168,76,.06);padding-bottom:5px}
+         font-size:.78rem;color:var(--dim);border-bottom:1px solid rgba(201, 163, 76,.06);padding-bottom:5px}
 .roi-row:last-child{border-bottom:none;padding-bottom:0}
 .rv{color:var(--cream);font-weight:600;font-family:"Cinzel",serif;font-size:.82rem}
 
@@ -148,7 +154,7 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
 .steps{display:flex;flex-direction:column;gap:14px;margin-top:8px}
 .step{display:flex;align-items:flex-start;gap:16px}
 .step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;
-          background:rgba(201,168,76,.1);border:1px solid var(--border);
+          background:rgba(201, 163, 76,.1);border:1px solid var(--border);
           display:flex;align-items:center;justify-content:center;
           font-family:"Cinzel",serif;font-size:.68rem;color:var(--gold);font-weight:700}
 .step-text{font-size:.95rem;color:var(--dim);line-height:1.6;padding-top:4px}
@@ -167,13 +173,13 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
              letter-spacing:.04em}
 .copy-btn{display:inline-flex;align-items:center;gap:7px;font-family:"Cinzel",serif;
           font-size:.68rem;letter-spacing:.12em;color:var(--gold);
-          background:rgba(201,168,76,.08);border:1px solid var(--border);border-radius:2px;
+          background:rgba(201, 163, 76,.08);border:1px solid var(--border);border-radius:2px;
           padding:7px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase}
-.copy-btn:hover{background:rgba(201,168,76,.16);border-color:var(--brd)}
+.copy-btn:hover{background:rgba(201, 163, 76,.16);border-color:var(--brd)}
 .copy-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-.net-warn{display:flex;align-items:flex-start;gap:10px;background:rgba(184,64,64,.12);
-          border:1px solid rgba(184,64,64,.3);border-radius:3px;padding:12px 16px;
-          font-size:.84rem;color:rgba(240,160,160,.9);line-height:1.6;
+.net-warn{display:flex;align-items:flex-start;gap:10px;background:rgba(184, 64, 79,.12);
+          border:1px solid rgba(184, 64, 79,.3);border-radius:3px;padding:12px 16px;
+          font-size:.84rem;color:rgba(240, 160, 170,.9);line-height:1.6;
           font-family:"Cinzel",serif;letter-spacing:.04em}
 
 /* FORM */
@@ -186,17 +192,17 @@ h1{font-family:"Cinzel",serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:700;
         text-transform:uppercase;display:flex;align-items:baseline;gap:7px}
 .flabel-note{font-family:"EB Garamond",serif;text-transform:none;font-style:italic;
              font-size:.82rem;letter-spacing:.02em;color:var(--faint)}
-.freq{color:rgba(201,168,76,.5);font-size:.62rem}
+.freq{color:#E8C874;font-size:.62rem}
 input,select{background:rgba(255,255,255,.03);color:var(--cream);border:1px solid var(--border);
              border-radius:2px;padding:11px 14px;font-family:"EB Garamond",serif;font-size:1rem;
              outline:none;width:100%;transition:border-color .22s,background .22s;line-height:1.4}
-input::placeholder{color:rgba(244,236,215,.18);font-size:.88rem}
-input:focus,select:focus{border-color:var(--brd);background:rgba(201,168,76,.035)}
+input::placeholder{color:rgba(244, 235, 215,.18);font-size:.88rem}
+input:focus,select:focus{border-color:var(--brd);background:rgba(201, 163, 76,.035)}
 select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:36px;
-       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4A63C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
        background-repeat:no-repeat;background-position:right 13px center}
-select option{background:#130E1C;color:var(--cream)}
-select option:disabled{color:rgba(244,236,215,.3)}
+select option{background:#0E131C;color:var(--cream)}
+select option:disabled{color:rgba(244, 235, 215,.3)}
 .check-row{display:flex;align-items:flex-start;gap:12px}
 .check-row input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
 .check-label{font-size:.9rem;color:var(--dim);line-height:1.65;cursor:pointer}
@@ -207,8 +213,8 @@ select option:disabled{color:rgba(244,236,215,.3)}
           color:var(--ink);font-family:"Cinzel",serif;font-size:.82rem;font-weight:700;
           letter-spacing:.2em;text-transform:uppercase;padding:16px 56px;
           border:none;border-radius:2px;cursor:pointer;
-          transition:transform .22s,box-shadow .22s;box-shadow:0 6px 30px rgba(201,168,76,.25)}
-.btn-main:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.42)}
+          transition:transform .22s,box-shadow .22s;box-shadow:0 6px 30px rgba(201, 163, 76,.25)}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(201, 163, 76,.42)}
 .btn-orn{opacity:.5;font-size:.65rem}
 
 .msgsuccess{display:none;margin-top:20px;background:rgba(58,138,74,.08);
@@ -216,12 +222,12 @@ select option:disabled{color:rgba(244,236,215,.3)}
             text-align:center;font-size:.95rem;color:rgba(160,230,170,.9);line-height:1.7}
 .msgsuccess strong{color:#a8eaa8}
 
-.risk-box{margin-top:20px;padding:20px 24px;background:rgba(92,20,20,.16);
-          border:1px solid rgba(201,168,76,.12);border-left:3px solid var(--red);
+.risk-box{margin-top:20px;padding:20px 24px;background:rgba(92, 20, 29,.16);
+          border:1px solid rgba(201, 163, 76,.12);border-left:3px solid var(--red);
           border-radius:0 4px 4px 0;font-size:.88rem;color:var(--faint);line-height:1.82}
 .risk-ttl{font-family:"Cinzel",serif;font-size:.67rem;letter-spacing:.18em;
-          color:#cc7070;text-transform:uppercase;margin-bottom:9px}
-.risk-box strong{color:#cc7070}
+          color:#CC707C;text-transform:uppercase;margin-bottom:9px}
+.risk-box strong{color:#CC707C}
 
 .closing{margin-top:52px;text-align:center}
 .cl1{display:block;font-family:"Cinzel",serif;font-size:1.05rem;color:var(--gold);
@@ -263,6 +269,19 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22
   .wallet-row{flex-direction:column;align-items:flex-start}
   .wallet-qr{width:140px;height:140px}
 }
+
+  /* ── Nut chat Chatwoot: dung anh NIRA (them 18/08/2026) ──────────────
+     Nut do Chatwoot chen vao DOM cua trang minh, nen CSS ben minh doi duoc.
+     Chi doi o trang thai DONG; khi mo, giu nguyen dau X cua Chatwoot. */
+  .woot-widget-bubble:not(.woot--close) {
+    background-image: url('/images/nira-chat.png?v=brand20260818c') !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-color: #0E2148 !important;
+    box-shadow: 0 4px 18px rgba(14,33,72,.38), 0 0 0 2px rgba(201, 163, 76,.12) !important;
+  }
+  .woot-widget-bubble:not(.woot--close) svg,
+  .woot-widget-bubble:not(.woot--close) img { opacity: 0 !important; }
 </style>
 </head>
 <body>
@@ -464,7 +483,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22
 </main>
 <footer>© 2026 Mission Chain · Đăng Ký Seed Round · Bảo Lưu Mọi Quyền · Không Phải Tư Vấn Tài Chính</footer>
 <script>
-const THEME_KEY = 'missionchain-theme';
+const THEME_KEY = 'missionchain-theme-v2';
 function setTheme(theme){
   const isLight = theme === 'night';
   document.body.classList.toggle('theme-light', isLight);

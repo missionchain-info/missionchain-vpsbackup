@@ -36,9 +36,9 @@ const DEFAULT_GV_TIERS: GvTier[] = [
   { rank: 'Believer', icon: '\uD83C\uDF31', minGv: 0, maxGv: 4999, rate: 0, nftBonus: '\u2014', color: 'var(--gray)' },
   { rank: 'Builder', icon: '\uD83D\uDD28', minGv: 5000, maxGv: 19999, rate: 3, nftBonus: '3\u00D7 Builder', color: '#4CAF50' },
   { rank: 'Connector', icon: '\u26A1', minGv: 20000, maxGv: 49999, rate: 5, nftBonus: '3\u00D7 Maker', color: '#29B6F6' },
-  { rank: 'Champion', icon: '\uD83D\uDC8E', minGv: 50000, maxGv: 149999, rate: 7, nftBonus: '3\u00D7 Luminary', color: '#AB47BC' },
+  { rank: 'Champion', icon: '\uD83D\uDC8E', minGv: 50000, maxGv: 149999, rate: 7, nftBonus: '3\u00D7 Luminary', color: '#476DBC' },
   { rank: 'Ambassador', icon: '\uD83D\uDC51', minGv: 150000, maxGv: 499999, rate: 8, nftBonus: '5\u00D7 Luminary', color: 'var(--gold)' },
-  { rank: 'Legend', icon: '\uD83C\uDFC6', minGv: 500000, maxGv: 999999999, rate: 9, nftBonus: '10\u00D7 Luminary', color: '#FFD700' },
+  { rank: 'Legend', icon: '\uD83C\uDFC6', minGv: 500000, maxGv: 999999999, rate: 9, nftBonus: '10\u00D7 Luminary', color: '#FFB200' },
 ];
 
 /* ── Weekly Growth Reward Milestones ── */
@@ -206,8 +206,8 @@ export default function CommunityBuildingPage() {
             padding: '10px 16px',
             marginBottom: 16,
             borderRadius: 8,
-            background: 'rgba(212,160,23,0.08)',
-            border: '1px solid rgba(212,160,23,0.3)',
+            background: 'rgba(212,155,23,0.08)',
+            border: '1px solid rgba(212,155,23,0.3)',
             fontSize: SZ,
             color: 'var(--gold)',
             fontWeight: 600,
@@ -223,8 +223,8 @@ export default function CommunityBuildingPage() {
       {msg && (
         <div style={{
           padding: '8px 14px', marginBottom: 12, borderRadius: 8, fontSize: SZ, fontWeight: 600,
-          background: msg.includes('Error') ? 'rgba(255,80,80,.15)' : 'rgba(80,200,120,.15)',
-          color: msg.includes('Error') ? '#ff5050' : '#50c878',
+          background: msg.includes('Error') ? 'rgba(255,80,102,.15)' : 'rgba(80,200,120,.15)',
+          color: msg.includes('Error') ? '#FF5066' : '#50c878',
         }}>{msg}</div>
       )}
 
@@ -259,7 +259,7 @@ export default function CommunityBuildingPage() {
               ))}
               <tr style={{ background: 'var(--bg4)' }}>
                 <td style={{ ...tdStyle, fontWeight: 700 }}>Marketing &amp; Sales Total</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-d)', fontWeight: 800, color: totalMarketingPct === 25 ? '#50c878' : '#ff5050' }}>
+                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-d)', fontWeight: 800, color: totalMarketingPct === 25 ? '#50c878' : '#FF5066' }}>
                   {totalMarketingPct.toFixed(1)}%
                 </td>
               </tr>
@@ -267,7 +267,7 @@ export default function CommunityBuildingPage() {
           </table>
         </div>
         {totalMarketingPct !== 25 && (
-          <div style={{ padding: '8px 14px', background: 'rgba(255,80,80,.08)', fontSize: SZ, color: '#ff5050' }}>
+          <div style={{ padding: '8px 14px', background: 'rgba(255,80,102,.08)', fontSize: SZ, color: '#FF5066' }}>
             Marketing &amp; Sales total should be 25%. Please adjust the rates.
           </div>
         )}
@@ -384,7 +384,7 @@ export default function CommunityBuildingPage() {
                     <input type="number" value={m.minPurchase} onChange={e => updateMilestone(i, 'minPurchase', e.target.value)} style={{ padding: '5px 10px', borderRadius: 6, background: 'var(--card-bg)', color: 'var(--white)', border: '1px solid var(--border)', fontSize: SZ, fontFamily: 'var(--font-m)', width: 60, textAlign: 'center' }} readOnly={readOnly} />
                   </div>
                 </div>
-                <span style={{ fontSize: SZ, fontWeight: 700, fontFamily: 'var(--font-d)', color: m.reward.includes('Luminary') ? '#CE93D8' : m.reward.includes('Maker') ? 'var(--gold)' : '#90A4AE' }}>
+                <span style={{ fontSize: SZ, fontWeight: 700, fontFamily: 'var(--font-d)', color: m.reward.includes('Luminary') ? '#93AAD8' : m.reward.includes('Maker') ? 'var(--gold)' : '#90A4AE' }}>
                   {'\u2192'} {m.reward}
                 </span>
               </div>
@@ -422,8 +422,8 @@ export default function CommunityBuildingPage() {
           {[
             { label: 'Builder', icon: '\uD83D\uDEE0\uFE0F', val: nftMultBuilder, set: setNftMultBuilder, color: '#90A4AE' },
             { label: 'Maker', icon: '\u2B50', val: nftMultMaker, set: setNftMultMaker, color: 'var(--gold)' },
-            { label: 'Luminary', icon: '\uD83D\uDC8E', val: nftMultLuminary, set: setNftMultLuminary, color: '#CE93D8' },
-            { label: 'MFP-NFT', icon: '\uD83D\uDC51', val: nftMultMFP, set: setNftMultMFP, color: '#E040FB' },
+            { label: 'Luminary', icon: '\uD83D\uDC8E', val: nftMultLuminary, set: setNftMultLuminary, color: '#93AAD8' },
+            { label: 'MFP-NFT', icon: '\uD83D\uDC51', val: nftMultMFP, set: setNftMultMFP, color: '#407DFB' },
           ].map(n => (
             <div key={n.label} style={{ background: 'var(--bg3)', borderRadius: 10, padding: 14, textAlign: 'center' }}>
               <div style={{ fontSize: '1.3rem', marginBottom: 4 }}>{n.icon}</div>
@@ -487,7 +487,7 @@ export default function CommunityBuildingPage() {
         <div style={{ fontSize: '0.58rem', fontWeight: 700, color: 'var(--gray2)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8 }}>Prize Distribution (% of pool)</div>
         <div className="g4">
           {[
-            { label: 'Prize #1 (1 winner)', val: luckyDrawPrize1, set: setLuckyDrawPrize1, color: '#FFD700', ex: '$1,500' },
+            { label: 'Prize #1 (1 winner)', val: luckyDrawPrize1, set: setLuckyDrawPrize1, color: '#FFB200', ex: '$1,500' },
             { label: 'Prize #2 (2 winners)', val: luckyDrawPrize2, set: setLuckyDrawPrize2, color: 'var(--gold)', ex: '$500 each' },
             { label: 'Prize #3 (5 winners)', val: luckyDrawPrize3, set: setLuckyDrawPrize3, color: '#90A4AE', ex: '$250 each' },
             { label: 'Consolation (10 winners)', val: luckyDrawConsolation, set: setLuckyDrawConsolation, color: 'var(--gray)', ex: '$125 each' },

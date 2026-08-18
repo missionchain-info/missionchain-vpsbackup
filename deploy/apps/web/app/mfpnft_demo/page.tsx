@@ -73,14 +73,14 @@ export default function PreviewMfpPage() {
   const isLight = mode === 'light'
   const theme = {
     bg: isLight
-      ? 'radial-gradient(ellipse at top, #FAF6EA 0%, #EFE4CC 70%), #EFE4CC'
-      : 'radial-gradient(ellipse at top, #1a0b2e 0%, #050210 70%), #050210',
-    tagline: isLight ? '#8A6B17' : '#F5D56E',
-    subtitle: isLight ? '#7A5A14' : '#D4A017',
-    btnBg: isLight ? 'rgba(212,160,23,0.08)' : 'rgba(212,160,23,0.0)',
-    btnBgActive: isLight ? 'rgba(212,160,23,0.25)' : 'rgba(212,160,23,0.2)',
-    btnBorder: isLight ? '#A87F12' : '#D4A017',
-    btnText: isLight ? '#7A5A14' : '#F5D56E',
+      ? 'radial-gradient(ellipse at top, #FAF5EA 0%, #EFE4CC 70%), #EFE4CC'
+      : 'radial-gradient(ellipse at top, #142A57 0%, #091530 70%), #091530',
+    tagline: isLight ? '#8A6717' : '#F5CC6E',
+    subtitle: isLight ? '#7A5B14' : '#D49B17',
+    btnBg: isLight ? 'rgba(212,155,23,0.08)' : 'rgba(212,155,23,0.0)',
+    btnBgActive: isLight ? 'rgba(212,155,23,0.25)' : 'rgba(212,155,23,0.2)',
+    btnBorder: isLight ? '#A87B12' : '#D49B17',
+    btnText: isLight ? '#7A5B14' : '#F5CC6E',
   }
 
   return (
@@ -92,7 +92,7 @@ export default function PreviewMfpPage() {
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',
         background: theme.bg,
-        color: isLight ? '#3A2A14' : '#E8D8B8',
+        color: isLight ? '#3A2F14' : '#E8D9B8',
         transition: 'background 0.4s ease, color 0.4s ease',
       }}
     >
@@ -112,7 +112,7 @@ export default function PreviewMfpPage() {
               margin: 0,
               lineHeight: 1.05,
               background:
-                'linear-gradient(90deg, #7B1FA2 0%, #9B1F6A 30%, #B71C5C 50%, #C9526B 70%, #D4A017 100%)',
+                'linear-gradient(90deg, #1F4AA2 0%, #1F489B 30%, #B71C30 50%, #C95261 70%, #D49B17 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -132,7 +132,7 @@ export default function PreviewMfpPage() {
               transition: 'color 0.4s ease',
             }}
           >
-            &ldquo;Inspired by Faith. Built for People.&rdquo;
+            &ldquo;Born of Faith. Built for People.&rdquo;
           </p>
           <p
             style={{

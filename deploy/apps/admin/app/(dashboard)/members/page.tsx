@@ -23,16 +23,16 @@ interface Member {
 
 const KYC_COLORS: Record<string, string> = {
   none: '#666',
-  pending: '#f0ad4e',
+  pending: '#F0BF4E',
   approved: '#5cb85c',
-  rejected: '#d9534f',
+  rejected: '#D94F60',
 };
 
 const ROLE_COLORS: Record<string, string> = {
   USER: '#888',
   BELIEVER: '#888',
   AGENT: '#5bc0de',
-  ADMIN: '#C9A84C',
+  ADMIN: '#C9A34C',
 };
 
 const SZ = '0.62rem';
@@ -120,7 +120,7 @@ export default function MembersPage() {
           <div className="page-sub">User management, KYC approval, role assignment</div>
           <div style={{
             display: 'inline-block', marginTop: 8, padding: '6px 16px',
-            background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)',
+            background: 'rgba(201,163,76,0.08)', border: '1px solid rgba(201,163,76,0.2)',
             borderRadius: 8, fontSize: SZ, fontFamily: 'var(--font-m)',
           }}>
             <span style={{ color: 'var(--gray)' }}>Total Members: </span>
@@ -257,8 +257,8 @@ export default function MembersPage() {
                           style={{
                             padding: '3px 10px', border: 'none', cursor: isActive ? 'pointer' : 'default',
                             fontSize: SZ, fontWeight: 700, fontFamily: 'var(--font-m)',
-                            background: !isActive ? 'rgba(217,83,79,0.25)' : 'transparent',
-                            color: !isActive ? '#d9534f' : 'var(--muted)',
+                            background: !isActive ? 'rgba(217,79,96,0.25)' : 'transparent',
+                            color: !isActive ? '#D94F60' : 'var(--muted)',
                             borderLeft: '1px solid var(--border)',
                           }}
                         >

@@ -47,10 +47,11 @@ export default function MiningStakingPage() {
           <div className="g2" style={{ marginBottom: 16 }}>
             <div className="card" style={{ padding: 20 }}>
               <div className="card-title">Emission Split</div>
-              <div className="info-row"><span className="info-key">Miners (MICE)</span><span className="info-val">60%</span></div>
+              <div className="info-row"><span className="info-key">Miners (MICE)</span><span className="info-val">59%</span></div>
               <div className="info-row"><span className="info-key">Staking</span><span className="info-val">25%</span></div>
               <div className="info-row"><span className="info-key">DAO Treasury</span><span className="info-val">10%</span></div>
               <div className="info-row"><span className="info-key">Community NFT Reward</span><span className="info-val">5%</span></div>
+              <div className="info-row"><span className="info-key">MFP-NFT Reward</span><span className="info-val">1%</span></div>
             </div>
             <div className="card" style={{ padding: 20 }}>
               <div className="card-title">Circuit Breakers</div>
@@ -64,7 +65,7 @@ export default function MiningStakingPage() {
           <div className="sep-lbl">Mining Pool Distribution</div>
           <div className="card" style={{ padding: 20, marginBottom: 16 }}>
             <div className="callout">
-              <p>Mining pool distribution is automatic via <strong>EmissionController.sol</strong>. Daily emission is distributed to active MICE holders weighted by Hindex. Controls will be available after smart contract deployment.</p>
+              <p>Mining rewards are distributed automatically by <strong>EmissionControllerV2</strong>. Every active MICE licence earns the same fixed rate — <strong>83.3333 MIC per day</strong> — so total issuance rises with the number of miners while each miner&rsquo;s share stays put. A licence earns for its full 360-day term. No price feed and no adoption curve are involved.</p>
             </div>
           </div>
         </>

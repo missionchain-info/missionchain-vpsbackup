@@ -47,9 +47,9 @@ const RANK_META: Record<string, { icon: string; color: string }> = {
   Believer: { icon: '🌱', color: 'var(--muted)' },
   Builder: { icon: '🔨', color: '#4CAF50' },
   Connector: { icon: '⚡', color: '#29B6F6' },
-  Champion: { icon: '💎', color: '#AB47BC' },
+  Champion: { icon: '💎', color: '#476DBC' },
   Ambassador: { icon: '👑', color: 'var(--gold)' },
-  Legend: { icon: '🏆', color: '#FFD700' },
+  Legend: { icon: '🏆', color: '#FFB200' },
 }
 
 // Recursive tree node — lazy loads its own children on expand
@@ -182,21 +182,26 @@ interface NetworkData {
     gv?: string
     total?: string
   }
-  // Team Bonus rate (admin-configurable, defaults to 9% if API not yet exposing it)
+  // This wallet's own rate, and the ceiling of the programme. 9% is the top rank's rate,
+  // not everyone's — showing it to a Believer earning 0% read as a promise.
+  // what actually renders. Left as-is on purpose: the header may mean the programme's top
+  // rate rather than this wallet's rate, and guessing would put a wrong number on screen.
   teamBonusRate?: number
-  // My Earnings — all reward streams unified into Total / Claimed / Unclaimed
+  teamBonusMaxRate?: number
+  // My Earnings — from the RewardClaim ledger (USDT). Optional only because `data` is null
+  // while loading or after an error; once the response arrives every field is present.
   earnings?: {
-    total?: string | number
-    claimed?: string | number
-    unclaimed?: string | number
-    referralClaimed?: string | number
-    referralUnclaimed?: string | number
-    teamBonusClaimed?: string | number
-    teamBonusUnclaimed?: string | number
-    monthlyClaimed?: string | number
-    monthlyUnclaimed?: string | number
-    luckyClaimed?: string | number
-    luckyUnclaimed?: string | number
+    total: string
+    claimed: string
+    unclaimed: string
+    referralClaimed: string
+    referralUnclaimed: string
+    teamBonusClaimed: string
+    teamBonusUnclaimed: string
+    monthlyClaimed: string
+    monthlyUnclaimed: string
+    luckyClaimed: string
+    luckyUnclaimed: string
   }
 }
 
@@ -204,9 +209,9 @@ const GV_TIERS = [
   { rank: 'Believer', threshold: '$0 - $4,999', rate: '0%', icon: '🌱', color: 'var(--muted)' },
   { rank: 'Builder', threshold: '$5K - $20K', rate: '3%', icon: '🔨', color: '#4CAF50' },
   { rank: 'Connector', threshold: '$20K - $50K', rate: '5%', icon: '⚡', color: '#29B6F6' },
-  { rank: 'Champion', threshold: '$50K - $150K', rate: '7%', icon: '💎', color: '#AB47BC' },
+  { rank: 'Champion', threshold: '$50K - $150K', rate: '7%', icon: '💎', color: '#476DBC' },
   { rank: 'Ambassador', threshold: '$150K - $500K', rate: '8%', icon: '👑', color: 'var(--gold)' },
-  { rank: 'Legend', threshold: '$500K+', rate: '9%', icon: '🏆', color: '#FFD700' },
+  { rank: 'Legend', threshold: '$500K+', rate: '9%', icon: '🏆', color: '#FFB200' },
 ]
 
 export default function NetworkPage() {
@@ -429,7 +434,12 @@ export default function NetworkPage() {
       <div className="net-section-card">
         <div className="net-section-header">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <span className="net-section-title">Team Bonus — {d.teamBonusRate || 9}%</span>
+          <span className="net-section-title">
+            Team Bonus — {(d.teamBonusRate ?? 0)}%{' '}
+            <span style={{ opacity: 0.6, fontWeight: 400 }}>
+              (your rate · up to {d.teamBonusMaxRate ?? 9}%)
+            </span>
+          </span>
         </div>
         <div className="net-info-note">{d.teamBonusRate || 9}% of revenue. Calculated on entire team volume (all generations). Override: earn only the difference between your rate and each direct downline&apos;s rate.</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
@@ -438,19 +448,21 @@ export default function NetworkPage() {
             const nftBonus = t.rank === 'Believer' ? null : t.rank === 'Builder' ? '3× Builder' : t.rank === 'Connector' ? '3× Maker' : t.rank === 'Champion' ? '3× Luminary' : t.rank === 'Ambassador' ? '5× Luminary' : '10× Luminary'
             return (
               <div key={t.rank} style={{
-                background: isActive ? 'rgba(201,168,76,.1)' : 'rgba(123,45,139,.06)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.35)' : 'rgba(123,45,139,.12)'}`,
-                borderRadius: 10, padding: '12px 10px', position: 'relative', overflow: 'hidden',
+                background: isActive ? 'rgba(201,163,76,.1)' : 'rgba(45,76,139,.06)',
+                border: `1px solid ${isActive ? 'rgba(201,163,76,.35)' : 'rgba(45,76,139,.12)'}`,
+                borderRadius: 10, padding: '14px 10px', position: 'relative', overflow: 'hidden',
+                textAlign: 'center',
               }}>
-                {isActive && <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--gold)', color: '#0C0812', fontSize: '0.5rem', fontWeight: 700, padding: '2px 8px', borderRadius: '0 0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>You</div>}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: '1.1rem' }}>{t.icon}</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: t.color }}>{t.rank}</span>
-                </div>
+                {isActive && <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--gold)', color: '#0E2148', fontSize: '0.5rem', fontWeight: 700, padding: '2px 8px', borderRadius: '0 0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>You</div>}
+                {/* Icon on its own line above the name, everything centred. Side by side, the
+                    six cards had six different left edges depending on how wide each emoji
+                    rendered, so nothing lined up across the grid. */}
+                <div style={{ fontSize: '1.4rem', lineHeight: 1.1, marginBottom: 4 }}>{t.icon}</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: t.color, marginBottom: 8 }}>{t.rank}</div>
                 <div style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-d)', color: t.color, marginBottom: 4 }}>{t.rate}</div>
-                <div style={{ fontSize: '0.6rem', color: 'var(--muted)', marginBottom: 6 }}>{t.threshold}</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--muted)', marginBottom: 8 }}>{t.threshold}</div>
                 {nftBonus ? (
-                  <div style={{ fontSize: '0.58rem', color: 'var(--cream)', background: 'rgba(201,168,76,.1)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 4, padding: '3px 6px', display: 'inline-block' }}>
+                  <div style={{ fontSize: '0.58rem', color: 'var(--cream)', background: 'rgba(201,163,76,.1)', border: '1px solid rgba(201,163,76,.15)', borderRadius: 4, padding: '3px 8px', display: 'inline-block' }}>
                     {nftBonus}
                   </div>
                 ) : (
@@ -462,19 +474,19 @@ export default function NetworkPage() {
         </div>
       </div>
 
-      {/* ── Milestones & Incentives — 1.5% base + overflow ── */}
+      {/* ── Incentives — 2.5% ── */}
       <div className="net-section-card">
         <div className="net-section-header">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span className="net-section-title">Milestones &amp; Incentives — 1.5%+</span>
+          <span className="net-section-title">Incentives Pool — 1.5%</span>
         </div>
-        <div className="net-info-note">1.5% base of Pre-Sale + MICE revenue — a fund for market developers paid in kind (travel, gifts) at the Board of Management&apos;s discretion. It also absorbs unspent referral (no referrer / no F2) and Group-Volume bonus below the 9% tier, so the effective rate is higher than 1.5%.</div>
+        <div className="net-info-note">1.5% of Pre-Sale + MICE USDT revenue. DAO-governed fund for community campaigns, special bonuses, and growth incentives.</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
-          <div style={{ background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ background: 'rgba(201,163,76,.08)', border: '1px solid rgba(201,163,76,.15)', borderRadius: 8, padding: '10px 12px' }}>
             <div style={{ fontSize: '0.6rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Total Distributed</div>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-d)', color: 'var(--gold)' }}>-</div>
           </div>
-          <div style={{ background: 'rgba(0,188,212,.06)', border: '1px solid rgba(0,188,212,.15)', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ background: 'rgba(114,171,232,.06)', border: '1px solid rgba(114,171,232,.15)', borderRadius: 8, padding: '10px 12px' }}>
             <div style={{ fontSize: '0.6rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Available Balance</div>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-d)', color: 'var(--cyan)' }}>-</div>
           </div>

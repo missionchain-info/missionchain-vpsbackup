@@ -4,8 +4,9 @@ import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const E0 = ethers.parseEther("22907500"); // 22,907,500 MIC/day
+const E0 = ethers.parseEther("750000"); // 22,907,500 MIC/day
 const ONE_DAY = 86_400;
+const HALF_LIFE_SECONDS = 2922 * ONE_DAY;   // 8 years
 const THIRTY_DAYS = 30 * ONE_DAY;
 const NINETY_DAYS = 90 * ONE_DAY;
 
@@ -37,12 +38,20 @@ describe("EmissionController", function () {
   let admin: any;
   let oracle: any;
   let miningPool: any;
+  let miningPoolAddr: string;
+  let unusedSigner: any;
   let stakingPool: any;
   let daoTreasury: any;
   let communityNFTAddr: any;
+  let mfpRewardAddr: any;
 
   beforeEach(async () => {
-    [admin, oracle, miningPool, stakingPool, daoTreasury, communityNFTAddr] = await ethers.getSigners();
+    [admin, oracle, unusedSigner, stakingPool, daoTreasury, communityNFTAddr, mfpRewardAddr] = await ethers.getSigners();
+
+    // The miner pool must be a contract now: EmissionController announces each
+    // distribution to it, and an EOA cannot answer that call.
+    miningPool = await (await ethers.getContractFactory("MockMiningPoolNotify")).deploy();
+    miningPoolAddr = await miningPool.getAddress();
 
     // Deploy MICToken
     const MICFactory = await ethers.getContractFactory("MICToken");
@@ -57,10 +66,11 @@ describe("EmissionController", function () {
     ec = await ECFactory.deploy(
       await mic.getAddress(),
       await miceLicense.getAddress(),
-      miningPool.address,
+      miningPoolAddr,
       stakingPool.address,
       daoTreasury.address,
       communityNFTAddr.address,
+      mfpRewardAddr.address,
       admin.address
     );
 
@@ -83,16 +93,13 @@ describe("EmissionController", function () {
       expect(deployTime).to.be.gt(0n);
     });
 
-    it("should set default split ratios: 6000/2500/1000/500", async () => {
-      expect(await ec.minersBps()).to.equal(6000n);
+    it("should set default split ratios: 5900/2500/1000/500/100", async () => {
+      expect(await ec.minersBps()).to.equal(5900n);
       expect(await ec.stakingBps()).to.equal(2500n);
       expect(await ec.daoBps()).to.equal(1000n);
       expect(await ec.communityNFTBps()).to.equal(500n);
     });
 
-    it("should set default ROI to 25000 bps (250%)", async () => {
-      expect(await ec.currentROI()).to.equal(25000n);
-    });
   });
 
   // ── eBase ──────────────────────────────────────────────────────────────────
@@ -105,15 +112,15 @@ describe("EmissionController", function () {
       expectApprox(base, E0, 1n, "eBase at t≈0");
     });
 
-    it("should return ~E0/2 at t=HALF_LIFE (180 days)", async () => {
-      await time.increase(180 * ONE_DAY);
+    it("should return ~E0/2 at t=HALF_LIFE (8 years)", async () => {
+      await time.increase(HALF_LIFE_SECONDS);
       const base = await ec.eBase();
       // At exactly 1 half-life: halvings=1, remainder=0 → base = E0 >> 1 = E0/2
       expectApprox(base, E0 / 2n, 10n, "eBase at 180d");
     });
 
     it("should return ~0 after 20 half-lives", async () => {
-      await time.increase(20 * 180 * ONE_DAY);
+      await time.increase(20 * HALF_LIFE_SECONDS);
       const base = await ec.eBase();
       expect(base).to.equal(0n);
     });
@@ -140,32 +147,6 @@ describe("EmissionController", function () {
     });
   });
 
-  // ── roiFactor ─────────────────────────────────────────────────────────────
-
-  describe("roiFactor()", () => {
-    it("should return 1.0e18 at default ROI=250% (25000 bps)", async () => {
-      const r = await ec.roiFactor();
-      expect(r).to.equal(10n ** 18n);
-    });
-
-    it("should return 2.0e18 (max) when ROI < 125%", async () => {
-      await ec.connect(oracle).setROI(10000); // 100% ROI → r = 250/100 = 2.5 → clamped to 2.0
-      const r = await ec.roiFactor();
-      expect(r).to.equal(2n * 10n ** 18n);
-    });
-
-    it("should return 0.5e18 (min) when ROI > 500%", async () => {
-      await ec.connect(oracle).setROI(60000); // 600% → r = 250/600 < 0.5 → clamped
-      const r = await ec.roiFactor();
-      expect(r).to.equal(5n * 10n ** 17n);
-    });
-
-    it("should return 2.0e18 when ROI=0 (no data)", async () => {
-      await ec.connect(oracle).setROI(0);
-      const r = await ec.roiFactor();
-      expect(r).to.equal(2n * 10n ** 18n);
-    });
-  });
 
   // ── warmUpFactor W(t) ─────────────────────────────────────────────────────
 
@@ -225,11 +206,14 @@ describe("EmissionController", function () {
       const emission = await ec.dailyEmission();
       const base = await ec.eBase();
       const d = await ec.demandFactor();     // 1.5e18
-      const r = await ec.roiFactor();        // 1.0e18
       const w = await ec.warmUpFactor();     // ~0.5e18
+      const l = await (ec as any).currentL();
+      const g = await (ec as any).trendFactor();
+      const a = await (ec as any).adoptionFactor();
 
-      // Expected = base × D × R × W / 1e54
-      const expected = ((base * d / BigInt(1e18)) * r / BigInt(1e18)) * w / BigInt(1e18);
+      // Expected = base × D × L × G × W × A
+      let expected = base;
+      for (const f of [d, l, g, w, a]) expected = expected * f / BigInt(1e18);
       // The result must match dailyEmission() exactly (same calculation)
       expect(emission).to.equal(expected);
 
@@ -249,16 +233,18 @@ describe("EmissionController", function () {
       // W must be 1.0 (fully ramped)
       expect(w).to.equal(10n ** 18n);
 
-      // Emission should match base × D × R × 1.0 (W=1)
+      // Emission should match base × D × L × G × W × A with W = 1
       const d = await ec.demandFactor();
-      const r = await ec.roiFactor();
-      const expected = ((base * d / BigInt(1e18)) * r / BigInt(1e18)) * w / BigInt(1e18);
+      const l = await (ec as any).currentL();
+      const g = await (ec as any).trendFactor();
+      const a = await (ec as any).adoptionFactor();
+      let expected = base;
+      for (const f of [d, l, g, w, a]) expected = expected * f / BigInt(1e18);
       expect(emission).to.equal(expected);
     });
 
     it("should apply daily cap: emission ≤ 2 × eBase", async () => {
-      await miceLicense.setActiveLicenses(100_000); // D = 1.5
-      await ec.connect(oracle).setROI(5000); // 50% ROI → R = 250/50 = 5.0 → clamped to 2.0
+      await miceLicense.setActiveLicenses(100_000); // D = 1.5, A = 1.0
       await time.increase(THIRTY_DAYS + ONE_DAY); // past warmup, W=1
 
       const emission = await ec.dailyEmission();
@@ -348,7 +334,7 @@ describe("EmissionController", function () {
       expect(stakingPct).to.be.gte(2800n).and.lte(3200n);
     });
 
-    it("Day 90+: miners 60%, staking 25% (permanent ratio)", async () => {
+    it("Day 90+: miners 59%, staking 25% (permanent ratio)", async () => {
       // beforeEach already at Day 1. Advance 89 more days → total ~90 days.
       await time.increase(89 * ONE_DAY);
 
@@ -358,27 +344,29 @@ describe("EmissionController", function () {
       const events = await ec.queryFilter(filter);
       const evt = events[0].args;
 
-      // At Day 90+: Early Boost = 0, permanent split 60/25/10/5
-      // Use integer BPS: miners = toMiners * 10000 / total, rounding may produce 5999/6000
+      // At Day 90+: Early Boost = 0, permanent split 59/25/10/5/1
+      // Use integer BPS: miners = toMiners * 10000 / total, rounding may produce 5899/5900
       const minersPct = (evt.toMiners * 10000n) / evt.totalMinted;
       const stakingPct = (evt.toStaking * 10000n) / evt.totalMinted;
 
       // Allow ±1 bps for integer division rounding
-      expect(minersPct).to.be.gte(5999n).and.lte(6001n);
+      expect(minersPct).to.be.gte(5899n).and.lte(5901n);
       expect(stakingPct).to.be.gte(2499n).and.lte(2501n);
 
       // DAO = 10%: use expectApprox (1 bps tolerance for rounding)
       expectApprox(evt.toDAO, (evt.totalMinted * 1000n) / 10000n, 1n, "DAO Day90+");
     });
 
-    it("miners + staking + dao + communityNFT should sum to totalMinted", async () => {
+    it("miners + staking + dao + communityNFT + mfpReward should sum to totalMinted", async () => {
       await ec.distributeDaily();
 
       const filter = ec.filters.DailyDistributed();
       const events = await ec.queryFilter(filter);
-      const { toMiners, toStaking, toDAO, toCommunityNFT, totalMinted } = events[0].args;
+      const { toMiners, toStaking, toDAO, toCommunityNFT, toMFPReward, totalMinted } = events[0].args;
 
-      expect(toMiners + toStaking + toDAO + toCommunityNFT).to.equal(totalMinted);
+      expect(toMiners + toStaking + toDAO + toCommunityNFT + toMFPReward).to.equal(totalMinted);
+      // MFP-NFT Reward = 1% of daily emission (Deck p.7)
+      expectApprox(toMFPReward, (totalMinted * 100n) / 10000n, 1n, "MFP 1%");
     });
   });
 
@@ -412,9 +400,9 @@ describe("EmissionController", function () {
     });
 
     it("should mint tokens to pool addresses", async () => {
-      const balBefore = await mic.balanceOf(miningPool.address);
+      const balBefore = await mic.balanceOf(miningPoolAddr);
       await ec.distributeDaily();
-      const balAfter = await mic.balanceOf(miningPool.address);
+      const balAfter = await mic.balanceOf(miningPoolAddr);
       expect(balAfter).to.be.gt(balBefore);
     });
 
@@ -444,26 +432,11 @@ describe("EmissionController", function () {
       await time.increase(NINETY_DAYS);
     });
 
-    it("should block distributeDaily when price floor is breached", async () => {
-      await ec.connect(oracle).setPriceFloorBreached(true);
-      await expect(ec.distributeDaily()).to.be.revertedWith("EC: price floor breached");
-    });
 
-    it("should resume after price floor is cleared", async () => {
-      await ec.connect(oracle).setPriceFloorBreached(true);
-      await ec.connect(oracle).setPriceFloorBreached(false);
-      await expect(ec.distributeDaily()).to.not.be.reverted;
-    });
 
-    it("should emit PriceFloorToggled event", async () => {
-      await expect(ec.connect(oracle).setPriceFloorBreached(true))
-        .to.emit(ec, "PriceFloorToggled")
-        .withArgs(true);
-    });
 
     it("daily cap: emission should never exceed 2 × eBase regardless of D and R", async () => {
-      await miceLicense.setActiveLicenses(100_000); // D = 1.5
-      await ec.connect(oracle).setROI(5000); // R → clamped to 2.0
+      await miceLicense.setActiveLicenses(100_000); // D = 1.5, A = 1.0
       // W = 1 (past 30 days)
       const emission = await ec.dailyEmission();
       const base = await ec.eBase();
@@ -483,13 +456,13 @@ describe("EmissionController", function () {
   describe("setSplitRatios()", () => {
     it("should update split ratios within ±10% of originals", async () => {
       // Valid: miners=6500, staking=2500, dao=500, communityNFT=500 (total=10000)
-      await ec.connect(admin).setSplitRatios(6500, 2500, 500, 500);
+      await ec.connect(admin).setSplitRatios(6500, 2500, 400, 500, 100);
       expect(await ec.minersBps()).to.equal(6500n);
     });
 
     it("should revert if ratios do not sum to 10000", async () => {
       await expect(
-        ec.connect(admin).setSplitRatios(6000, 2500, 1000, 600)
+        ec.connect(admin).setSplitRatios(5900, 2500, 1000, 600, 100)
       ).to.be.revertedWith("EC: must total 100%");
     });
 
@@ -497,19 +470,19 @@ describe("EmissionController", function () {
       // miners=7100 → exceeds ORIG_MINERS+1000=7000
       // Other values within range: staking=2400 in [1500,3500], dao=0 in [0,2000], communityNFT=500 in [0,1500]
       await expect(
-        ec.connect(admin).setSplitRatios(7100, 2400, 0, 500)
+        ec.connect(admin).setSplitRatios(7100, 2300, 0, 500, 100)
       ).to.be.revertedWith("EC: miners out of range");
     });
 
     it("should emit SplitRatiosUpdated event", async () => {
-      await expect(ec.connect(admin).setSplitRatios(6000, 2500, 1000, 500))
+      await expect(ec.connect(admin).setSplitRatios(5900, 2500, 1000, 500, 100))
         .to.emit(ec, "SplitRatiosUpdated")
-        .withArgs(6000n, 2500n, 1000n, 500n);
+        .withArgs(5900n, 2500n, 1000n, 500n, 100n);
     });
 
     it("Early Staking Boost should still apply on top of custom split ratios", async () => {
       // Set miners to 5500 (within range), staking to 2500, dao to 1500, communityNFT to 500
-      await ec.connect(admin).setSplitRatios(5500, 2500, 1500, 500);
+      await ec.connect(admin).setSplitRatios(5500, 2500, 1400, 500, 100);
 
       await miceLicense.setActiveLicenses(50_000);
       await time.increase(ONE_DAY); // Day 1 — Early Boost active
@@ -532,27 +505,102 @@ describe("EmissionController", function () {
     });
   });
 
-  // ── Oracle ─────────────────────────────────────────────────────────────────
+  // ── Liquidity regulator L(H), trend damper G, emergency brake ──────────────
 
-  describe("Oracle setROI()", () => {
-    it("should update currentROI and emit ROIUpdated", async () => {
-      await expect(ec.connect(oracle).setROI(30000))
-        .to.emit(ec, "ROIUpdated")
-        .withArgs(25000n, 30000n);
-      expect(await ec.currentROI()).to.equal(30000n);
+  describe("Liquidity regulator and price brakes", () => {
+    let pool: any;
+
+    beforeEach(async () => {
+      pool = await (await ethers.getContractFactory("MockLiquidityPoolV6")).deploy();
+      await pool.setPrices(10_000n, 10_000n, 10_000n);   // $0.01 flat
+      await ec.connect(admin).setLiquidityPool(await pool.getAddress(), 10_000n);
+      await miceLicense.setActiveLicenses(50_000);
     });
 
-    it("should revert if called by non-oracle", async () => {
-      await expect(ec.connect(miningPool).setROI(30000)).to.be.reverted;
+    it("wires the pool once and then refuses to move the brake anchor", async () => {
+      await expect(
+        ec.connect(admin).setLiquidityPool(await pool.getAddress(), 20_000n)
+      ).to.be.revertedWith("EC: already set");
+    });
+
+    it("coverage rises with pool reserves", async () => {
+      await pool.setReserveUsdt(1_000_000n * 10n ** 6n);
+      const low = await (ec as any).coverageH();
+      await pool.setReserveUsdt(10_000_000n * 10n ** 6n);
+      expect(await (ec as any).coverageH()).to.be.gt(low);
+    });
+
+    it("targetL is capped at both ends", async () => {
+      await pool.setReserveUsdt(0n);
+      expect(await (ec as any).targetL()).to.equal(await (ec as any).L_MIN());
+      await pool.setReserveUsdt(10n ** 15n);              // absurdly deep
+      expect(await (ec as any).targetL()).to.equal(await (ec as any).L_MAX());
+    });
+
+    it("the regulator moves at most 10% per day", async () => {
+      await pool.setReserveUsdt(10n ** 15n);              // target pinned at L_MAX
+      const before = await (ec as any).currentL();
+      await time.increase(ONE_DAY);
+      await (ec as any).pokeRegulator();
+      const after = await (ec as any).currentL();
+      expect(after).to.be.gt(before);
+      expect(after).to.be.lte(before + before / 10n + 1n);
+    });
+
+    it("G damps when the 7-day average sits below the 30-day, and never boosts", async () => {
+      await pool.setPrices(10_000n, 8_000n, 10_000n);     // 7d is 80% of 30d
+      expect(await (ec as any).trendFactor()).to.equal(8n * 10n ** 17n);
+
+      await pool.setPrices(10_000n, 20_000n, 10_000n);    // 7d double the 30d
+      expect(await (ec as any).trendFactor()).to.equal(10n ** 18n);   // capped at 1.0
+
+      await pool.setPrices(10_000n, 1n, 10_000n);         // collapse
+      expect(await (ec as any).trendFactor()).to.equal(25n * 10n ** 16n); // floor 0.25
+    });
+
+    it("the emergency brake engages below half the opening price and releases on its own", async () => {
+      expect(await (ec as any).brakeEngaged()).to.be.false;
+      await pool.setPrices(4_000n, 4_000n, 10_000n);      // 40% of opening
+      expect(await (ec as any).brakeEngaged()).to.be.true;
+      await pool.setPrices(9_000n, 9_000n, 10_000n);      // recovered
+      expect(await (ec as any).brakeEngaged()).to.be.false;
+    });
+
+    it("a falling price does NOT accelerate issuance — the whole point of G", async () => {
+      await pool.setReserveUsdt(5_000_000n * 10n ** 6n);
+      await time.increase(THIRTY_DAYS + ONE_DAY);
+      await (ec as any).pokeRegulator();
+      const healthy = await ec.dailyEmission();
+
+      // Price halves. Coverage RISES (each day of issuance is worth less), which alone
+      // would raise issuance. G and the brake must more than cancel that.
+      await pool.setPrices(4_000n, 4_000n, 10_000n);
+      expect(await ec.dailyEmission()).to.be.lt(healthy);
+    });
+
+    it("the adoption ramp scales issuance to how many licences are actually mining", async () => {
+      await miceLicense.setActiveLicenses(100);
+      const tiny = await (ec as any).adoptionFactor();
+      await miceLicense.setActiveLicenses(10_000);
+      expect(await (ec as any).adoptionFactor()).to.equal(10n ** 18n);
+      expect(tiny).to.equal(10n ** 17n);        // sqrt(100/10,000) = 0.1 exactly
+    });
+
+    it("reports its 7-day average to the pool after each distribution", async () => {
+      await pool.setReserveUsdt(5_000_000n * 10n ** 6n);
+      await time.increase(ONE_DAY);
+      await ec.distributeDaily();
+      expect(await pool.lastReportedEmission()).to.be.gt(0n);
+      expect(await pool.lastReportedEmission()).to.equal(await (ec as any).avgDailyEmission());
     });
   });
 
-  // ── Admin setters ──────────────────────────────────────────────────────────
+  // ── Admin ──────────────────────────────────────────────────────────────────
 
   describe("Admin pool address setters", () => {
     it("setMiningPool should update address", async () => {
-      await ec.connect(admin).setMiningPool(oracle.address);
-      expect(await ec.miningPool()).to.equal(oracle.address);
+      await ec.connect(admin).setMiningPool(stakingPool.address);
+      expect(await ec.miningPool()).to.equal(stakingPool.address);
     });
 
     it("setMiningPool should revert on zero address", async () => {
@@ -562,9 +610,13 @@ describe("EmissionController", function () {
     });
 
     it("should revert on non-admin caller", async () => {
-      await expect(
-        ec.connect(oracle).setMiningPool(oracle.address)
-      ).to.be.reverted;
+      // miningPool is a contract now and cannot sign; any non-admin signer proves the point.
+      await expect(ec.connect(unusedSigner).setMiningPool(stakingPool.address)).to.be.reverted;
+    });
+
+    it("setMfpRewardPool should update the MFP-NFT reward pool", async () => {
+      await ec.connect(admin).setMfpRewardPool(stakingPool.address);
+      expect(await ec.mfpRewardPool()).to.equal(stakingPool.address);
     });
   });
 });

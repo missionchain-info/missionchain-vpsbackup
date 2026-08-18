@@ -160,10 +160,42 @@ export const networkRoutes: FastifyPluginAsync = async (app) => {
       ? Math.min(100, ((gv - currentTier.min) / (nextTier.min - currentTier.min)) * 100)
       : 100
 
+    // ─── My Earnings ─────────────────────────────────────────────────────────
+    // The page reads d.earnings.*, which this route never returned, so every row of
+    // "My Earnings" rendered $0 whatever the ledger said. Source of truth is the
+    // RewardClaim table: CLAIMED = already paid out, PENDING/CLAIMABLE = still owed.
+    const usdtClaims = await app.prisma.rewardClaim.groupBy({
+      by: ["type", "status"],
+      where: { wallet: targetWallet, currency: "USDT" },
+      _sum: { amount: true },
+    })
+    const sumOf = (types: string[] | null, claimed: boolean) =>
+      usdtClaims
+        .filter(
+          (c) =>
+            (types === null || types.includes(c.type)) &&
+            (c.status === "CLAIMED") === claimed,
+        )
+        .reduce((acc, c) => acc + Number(c._sum.amount ?? 0), 0)
+    // REFERRAL_RESERVE is the legacy single-bucket type kept for older rows.
+    const REFERRAL_TYPES = ["REFERRAL_F1", "REFERRAL_F2", "REFERRAL_RESERVE"]
+    const earningsClaimed = sumOf(null, true)
+    const earningsUnclaimed = sumOf(null, false)
+
     // NOTE: Frontend's NetworkData interface expects fields at the top level
     // (no { data: ... } wrapper), so we return the payload directly.
     return {
       rank: me.gvRank || currentTier.rank,
+      /**
+       * This wallet's Team Bonus rate, and the programme's ceiling.
+       *
+       * The page showed a flat 9% because the rate was never sent and 9 was the
+       * fallback. 9% is the *highest* rate any rank earns — a Believer earns 0 — so a
+       * member at the bottom of the ladder was being shown the top of it as though it
+       * were theirs.
+       */
+      teamBonusRate: currentTier.rate,
+      teamBonusMaxRate: 9,
       gv,
       nextRank: nextTier?.rank,
       nextThreshold: nextTier?.min,
@@ -182,6 +214,19 @@ export const networkRoutes: FastifyPluginAsync = async (app) => {
         f2: byType["REFERRAL_F2"] ?? "0",
         gv: byType["GV_BONUS"] ?? "0",
         total: Object.values(byType).reduce((a, b) => a + Number(b), 0).toString(),
+      },
+      earnings: {
+        total: (earningsClaimed + earningsUnclaimed).toFixed(2),
+        claimed: earningsClaimed.toFixed(2),
+        unclaimed: earningsUnclaimed.toFixed(2),
+        referralClaimed: sumOf(REFERRAL_TYPES, true).toFixed(2),
+        referralUnclaimed: sumOf(REFERRAL_TYPES, false).toFixed(2),
+        teamBonusClaimed: sumOf(["GV_BONUS"], true).toFixed(2),
+        teamBonusUnclaimed: sumOf(["GV_BONUS"], false).toFixed(2),
+        monthlyClaimed: sumOf(["MONTHLY_NFT"], true).toFixed(2),
+        monthlyUnclaimed: sumOf(["MONTHLY_NFT"], false).toFixed(2),
+        luckyClaimed: sumOf(["LUCKY_DRAW"], true).toFixed(2),
+        luckyUnclaimed: sumOf(["LUCKY_DRAW"], false).toFixed(2),
       },
     }
   })

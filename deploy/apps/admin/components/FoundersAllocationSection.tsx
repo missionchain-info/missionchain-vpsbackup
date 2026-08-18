@@ -69,7 +69,7 @@ function CountdownBadge({ targetIso, executing }: { targetIso: string; executing
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '2px 8px', borderRadius: 10,
-          background: 'rgba(255,180,0,0.15)', color: 'var(--gold)',
+          background: 'rgba(255,178,0,0.15)', color: 'var(--gold)',
           fontSize: '0.55rem', fontWeight: 600,
         }}
       >
@@ -85,7 +85,7 @@ function CountdownBadge({ targetIso, executing }: { targetIso: string; executing
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,
         padding: '2px 8px', borderRadius: 10,
-        background: 'rgba(229,57,53,0.12)', color: '#E53935',
+        background: 'rgba(229,53,75,0.12)', color: '#E5354B',
         fontSize: '0.55rem', fontWeight: 600,
       }}
     >
@@ -248,7 +248,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
       message: (
         <>
           This bypasses the <b>48h cooldown</b> and executes the on-chain
-          {' '}<code style={{ color: '#F5D56E' }}>FoundersVault.distributeFounder()</code>
+          {' '}<code style={{ color: '#F5CC6E' }}>FoundersVault.distributeFounder()</code>
           {' '}call immediately via the relayer. The recipient receives their MIC plus
           a 24-month-cliff vesting schedule on confirmation. This action cannot be undone.
         </>
@@ -288,9 +288,9 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
         <span
           style={{
             fontSize: '0.58rem', padding: '4px 10px', borderRadius: 12,
-            background: isSuperAdmin ? 'rgba(212,160,23,0.12)' : 'rgba(120,180,220,0.12)',
+            background: isSuperAdmin ? 'rgba(212,155,23,0.12)' : 'rgba(120,168,220,0.12)',
             color: isSuperAdmin ? 'var(--gold)' : 'var(--cyan)',
-            border: `1px solid ${isSuperAdmin ? 'rgba(212,160,23,0.3)' : 'rgba(120,180,220,0.3)'}`,
+            border: `1px solid ${isSuperAdmin ? 'rgba(212,155,23,0.3)' : 'rgba(120,168,220,0.3)'}`,
           }}
         >
           {isSuperAdmin ? 'OWNER' : 'ADMIN'}
@@ -309,7 +309,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Stat label="Allocation" value={`${fmtMic(stats?.allocationMic ?? 280_000_000)} MIC`} color="var(--gold)" />
         <Stat label="Granted" value={`${fmtMic(stats?.grantedMic ?? 0)} MIC`} color="var(--copper)" />
-        <Stat label="Pending (reserved)" value={`${fmtMic(stats?.pendingMic ?? 0)} MIC`} color="#E53935" />
+        <Stat label="Pending (reserved)" value={`${fmtMic(stats?.pendingMic ?? 0)} MIC`} color="#E5354B" />
         <Stat label="Available" value={`${fmtMic(stats?.remainingMic ?? 280_000_000)} MIC`} color="var(--green)" />
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -336,7 +336,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
               placeholder="e.g. MC0001"
               style={inputSt}
             />
-            <div style={{ fontSize: '0.5rem', marginTop: 4, minHeight: '0.7rem', color: resolveError ? '#E53935' : 'var(--gray)' }}>
+            <div style={{ fontSize: '0.5rem', marginTop: 4, minHeight: '0.7rem', color: resolveError ? '#E5354B' : 'var(--gray)' }}>
               {resolving ? 'Looking up…' :
                resolvedWallet ? `→ Wallet: ${shortWallet(resolvedWallet)}` :
                resolveError ? `⚠ ${resolveError}` :
@@ -393,7 +393,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
           style={{
             marginTop: 14, padding: '10px 24px',
             background: resolvedWallet ? 'var(--gold)' : 'var(--input-bg)',
-            color: resolvedWallet ? '#1a1408' : 'var(--gray)',
+            color: resolvedWallet ? '#1A1508' : 'var(--gray)',
             fontWeight: 600, border: 'none', borderRadius: 6,
             cursor: submitting || !resolvedWallet ? 'not-allowed' : 'pointer',
             fontSize: '0.62rem', fontFamily: 'var(--font-d)', letterSpacing: '0.05em',
@@ -461,7 +461,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
                         onClick={() => handleCancel(r.id)}
                         disabled={actionLoading[r.id] === 'cancel'}
                         style={{
-                          padding: '4px 10px', background: '#E53935',
+                          padding: '4px 10px', background: '#E5354B',
                           color: '#fff', border: 'none', borderRadius: 4,
                           fontSize: '0.5rem', cursor: 'pointer', fontWeight: 600,
                           opacity: actionLoading[r.id] === 'cancel' ? 0.5 : 1,
@@ -529,7 +529,7 @@ export default function FoundersAllocationSection({ isSuperAdmin }: Props) {
       {/* Cancelled */}
       {cancelled.length > 0 && (
         <details>
-          <summary style={{ fontSize: '0.62rem', color: '#E53935', fontWeight: 600, cursor: 'pointer', marginBottom: 8, letterSpacing: '0.05em' }}>
+          <summary style={{ fontSize: '0.62rem', color: '#E5354B', fontWeight: 600, cursor: 'pointer', marginBottom: 8, letterSpacing: '0.05em' }}>
             CANCELLED ({cancelled.length})
           </summary>
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>

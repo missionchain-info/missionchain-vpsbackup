@@ -54,7 +54,7 @@ export default function Topbar() {
     <div className="topbar">
       {/* Mobile: logo + brand (visible <=768px) */}
       <div className="topbar-mobile-brand">
-        <img src="/images/mission-chain-logo-clear.png" alt="MC" className="topbar-mobile-logo" />
+        <img src="/images/mission-chain-logo-clear.png?v=brand20260818c" alt="MC" className="topbar-mobile-logo" />
         <span className="topbar-mobile-title">MISSION CHAIN</span>
       </div>
 

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { fetchSystemConfig, updateSystemConfig, fetchTwilioKyc, updateTwilioKyc, type TwilioKycView } from '@/lib/api';
+import SystemLookupSection from '@/components/SystemLookupSection';
+import PlatformContracts from '@/components/PlatformContracts';
 
 const SZ = '0.62rem';
 
@@ -105,7 +107,7 @@ function TwilioKycCard() {
             {saving ? 'Saving…' : 'Save Twilio Settings'}
           </button>
           {msg && (
-            <span style={{ marginLeft: 12, fontSize: SZ, color: msg.ok ? 'var(--success, #48c78e)' : 'var(--error, #f14668)' }}>
+            <span style={{ marginLeft: 12, fontSize: SZ, color: msg.ok ? 'var(--success, #48c78e)' : 'var(--error, #F1465C)' }}>
               {msg.text}
             </span>
           )}
@@ -143,15 +145,7 @@ export default function SystemPage() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <div className="card card-p">
-          <div className="card-title">Platform Information</div>
-          <div className="info-row"><span className="info-key">Version</span><span className="info-val">{config?.version || 'v1.0.0-alpha'}</span></div>
-          <div className="info-row"><span className="info-key">MIC Contract</span><span className="info-val mono">{config?.micContract || '0x9B7f...4E2A (BSC)'}</span></div>
-          <div className="info-row"><span className="info-key">MICE Contract</span><span className="info-val mono">{config?.miceContract || '0x3C1a...B72D (BSC)'}</span></div>
-          <div className="info-row"><span className="info-key">NFT Registry</span><span className="info-val mono">{config?.nftRegistry || '0x8F2b...C14E (BSC)'}</span></div>
-          <div className="info-row"><span className="info-key">DAO Governance</span><span className="info-val mono">{config?.daoGovernance || '0x4A9c...F83B (BSC)'}</span></div>
-          <div className="info-row"><span className="info-key">Network</span><span className="info-val"><span className="badge b-active">BSC Mainnet</span></span></div>
-        </div>
+        <PlatformContracts version={config?.version} />
         {/* NIRA-CHAT block moved → /nira (NIRA AI page) per Thomas request */}
       </div>
 
@@ -173,6 +167,8 @@ export default function SystemPage() {
         </div>
         <button className="btn btn-primary">Save All Settings</button>
       </div>
+
+      <SystemLookupSection />
 
       <TwilioKycCard />
     </>

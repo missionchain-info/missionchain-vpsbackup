@@ -35,6 +35,14 @@ Thumbs.db
 # Prisma
 packages/db/prisma/*.db
 
+# Any local SQLite file. The Prisma provider is postgresql, so a dev.db anywhere in this
+# tree is a broken leftover — but a 448K one sat in packages/db/prisma for four months
+# looking like real state. Ignore them all, not just the one directory.
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
 # Hardhat
 packages/contracts/cache/
 packages/contracts/artifacts/

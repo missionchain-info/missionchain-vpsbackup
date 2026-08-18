@@ -9,6 +9,7 @@
 import { JsonRpcProvider, Contract, Wallet, parseUnits } from 'ethers'
 import type { FastifyInstance } from 'fastify'
 import { getActiveAddresses } from '@missionchain/sdk'
+import { buildSignerProvider } from './blockchain.js'
 
 const BSC_MAINNET_RPC = 'https://bsc-dataseed.binance.org/'
 
@@ -23,7 +24,7 @@ const SEED_SALE_ABI = [
 ] as const
 
 function getRpcUrl(): string {
-  return process.env.BSC_RPC_URL || BSC_MAINNET_RPC
+  return process.env.INDEXER_RPC_URL || process.env.BSC_RPC_URL || BSC_MAINNET_RPC
 }
 
 /**
@@ -33,7 +34,7 @@ export function getRelayerSigner(): { wallet: Wallet; provider: JsonRpcProvider 
   const rawPk = process.env.DEPLOYER_PK?.trim()
   if (!rawPk) return null
   const pk = rawPk.startsWith('0x') ? rawPk : '0x' + rawPk
-  const provider = new JsonRpcProvider(getRpcUrl())
+  const provider = buildSignerProvider()
   const wallet = new Wallet(pk, provider)
   return { wallet, provider }
 }

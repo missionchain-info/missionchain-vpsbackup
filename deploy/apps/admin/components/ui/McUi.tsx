@@ -66,12 +66,12 @@ const SHARED_MODAL_BASE: React.CSSProperties = {
 
 const SHARED_CARD_BASE: React.CSSProperties = {
   width: 'min(480px, 100%)',
-  background: 'linear-gradient(135deg, #1a0b2e 0%, #050210 100%)',
-  border: '1px solid rgba(212,160,23,0.35)',
+  background: 'linear-gradient(135deg, #142A57 0%, #091530 100%)',
+  border: '1px solid rgba(212,155,23,0.35)',
   borderRadius: 16,
   padding: 28,
-  boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,160,23,0.1) inset',
-  color: '#E8D8B8',
+  boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,155,23,0.1) inset',
+  color: '#E8D9B8',
 };
 
 // ── Confirm Modal ────────────────────────────────────────────────────
@@ -86,20 +86,20 @@ function ConfirmModal({ state, close }: { state: ConfirmState; close: () => void
           <div style={{
             width: 40, height: 40, borderRadius: '50%',
             background: isDanger
-              ? 'linear-gradient(135deg, rgba(229,57,53,0.2), rgba(229,57,53,0.05))'
-              : 'linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.05))',
-            border: `1px solid ${isDanger ? 'rgba(229,57,53,0.3)' : 'rgba(212,160,23,0.3)'}`,
+              ? 'linear-gradient(135deg, rgba(229,53,75,0.2), rgba(229,53,75,0.05))'
+              : 'linear-gradient(135deg, rgba(212,155,23,0.2), rgba(212,155,23,0.05))',
+            border: `1px solid ${isDanger ? 'rgba(229,53,75,0.3)' : 'rgba(212,155,23,0.3)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 20,
           }}>{isDanger ? '⚠' : '✦'}</div>
           <h2 style={{
             margin: 0, fontSize: '1rem', fontWeight: 700,
-            color: isDanger ? '#FCB5B3' : 'var(--gold)',
+            color: isDanger ? '#FCB3BC' : 'var(--gold)',
             fontFamily: 'var(--font-d)', letterSpacing: '0.02em',
           }}>{state.title || 'Please confirm'}</h2>
         </div>
         {state.message != null && (
-          <div style={{ fontSize: '0.78rem', color: '#D4C098', lineHeight: 1.6, marginBottom: 22 }}>
+          <div style={{ fontSize: '0.78rem', color: '#D4C298', lineHeight: 1.6, marginBottom: 22 }}>
             {state.message}
           </div>
         )}
@@ -108,22 +108,22 @@ function ConfirmModal({ state, close }: { state: ConfirmState; close: () => void
             padding: '10px 22px',
             background: 'transparent',
             border: '1px solid rgba(255,255,255,0.15)',
-            color: '#D4C098',
+            color: '#D4C298',
             borderRadius: 8, fontWeight: 600, fontSize: '0.78rem',
             cursor: 'pointer', fontFamily: 'var(--font-d)',
           }}>{state.cancelLabel || 'Cancel'}</button>
           <button onClick={onOk} style={{
             padding: '10px 26px',
             background: isDanger
-              ? 'linear-gradient(135deg, #E53935, #b71c1c)'
-              : 'linear-gradient(135deg, var(--gold), #b8942f)',
+              ? 'linear-gradient(135deg, #E5354B, #B71C30)'
+              : 'linear-gradient(135deg, var(--gold), #B88F2F)',
             border: 'none',
             color: isDanger ? '#fff' : '#000',
             borderRadius: 8, fontWeight: 700, fontSize: '0.78rem',
             cursor: 'pointer', fontFamily: 'var(--font-d)', letterSpacing: '0.04em',
             boxShadow: isDanger
-              ? '0 4px 14px rgba(229,57,53,0.3)'
-              : '0 4px 14px rgba(212,160,23,0.3)',
+              ? '0 4px 14px rgba(229,53,75,0.3)'
+              : '0 4px 14px rgba(212,155,23,0.3)',
           }}>{state.confirmLabel || 'Confirm'}</button>
         </div>
       </div>
@@ -149,10 +149,10 @@ function PromptModal({ state, close }: { state: PromptState; close: () => void }
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
           <div style={{
             width: 40, height: 40, borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(91,45,158,0.2), rgba(91,45,158,0.05))',
-            border: '1px solid rgba(155,114,207,0.3)',
+            background: 'linear-gradient(135deg, rgba(45,82,158,0.2), rgba(45,82,158,0.05))',
+            border: '1px solid rgba(114,144,207,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20, color: '#C8B4E8',
+            fontSize: 20, color: '#B4C5E8',
           }}>✎</div>
           <h2 style={{
             margin: 0, fontSize: '1rem', fontWeight: 700,
@@ -160,7 +160,7 @@ function PromptModal({ state, close }: { state: PromptState; close: () => void }
           }}>{state.title || 'Input'}</h2>
         </div>
         {state.message != null && (
-          <div style={{ fontSize: '0.75rem', color: '#A89878', lineHeight: 1.5, marginBottom: 12 }}>
+          <div style={{ fontSize: '0.75rem', color: '#A89978', lineHeight: 1.5, marginBottom: 12 }}>
             {state.message}
           </div>
         )}
@@ -180,8 +180,8 @@ function PromptModal({ state, close }: { state: PromptState; close: () => void }
               width: '100%', padding: '10px 12px', fontSize: '0.78rem',
               fontFamily: 'var(--font-m)', resize: 'vertical',
               background: 'rgba(255,255,255,0.05)',
-              border: `1px solid ${error ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.12)'}`,
-              borderRadius: 8, color: '#E8D8B8', outline: 'none',
+              border: `1px solid ${error ? 'rgba(229,53,75,0.5)' : 'rgba(255,255,255,0.12)'}`,
+              borderRadius: 8, color: '#E8D9B8', outline: 'none',
             }}
             autoFocus
           />
@@ -196,14 +196,14 @@ function PromptModal({ state, close }: { state: PromptState; close: () => void }
               width: '100%', padding: '10px 12px', fontSize: '0.82rem',
               fontFamily: 'var(--font-m)',
               background: 'rgba(255,255,255,0.05)',
-              border: `1px solid ${error ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.12)'}`,
-              borderRadius: 8, color: '#E8D8B8', outline: 'none',
+              border: `1px solid ${error ? 'rgba(229,53,75,0.5)' : 'rgba(255,255,255,0.12)'}`,
+              borderRadius: 8, color: '#E8D9B8', outline: 'none',
             }}
             autoFocus
           />
         )}
         {error && (
-          <div style={{ marginTop: 6, fontSize: '0.7rem', color: '#FCB5B3' }}>
+          <div style={{ marginTop: 6, fontSize: '0.7rem', color: '#FCB3BC' }}>
             {error}
           </div>
         )}
@@ -212,17 +212,17 @@ function PromptModal({ state, close }: { state: PromptState; close: () => void }
             padding: '10px 22px',
             background: 'transparent',
             border: '1px solid rgba(255,255,255,0.15)',
-            color: '#D4C098',
+            color: '#D4C298',
             borderRadius: 8, fontWeight: 600, fontSize: '0.78rem',
             cursor: 'pointer', fontFamily: 'var(--font-d)',
           }}>{state.cancelLabel || 'Cancel'}</button>
           <button onClick={onSubmit} style={{
             padding: '10px 26px',
-            background: 'linear-gradient(135deg, var(--gold), #b8942f)',
+            background: 'linear-gradient(135deg, var(--gold), #B88F2F)',
             border: 'none', color: '#000',
             borderRadius: 8, fontWeight: 700, fontSize: '0.78rem',
             cursor: 'pointer', fontFamily: 'var(--font-d)', letterSpacing: '0.04em',
-            boxShadow: '0 4px 14px rgba(212,160,23,0.3)',
+            boxShadow: '0 4px 14px rgba(212,155,23,0.3)',
           }}>{state.confirmLabel || 'Submit'}</button>
         </div>
       </div>
@@ -242,8 +242,8 @@ function ToastStack({ items, dismiss }: { items: ToastState[]; dismiss: (id: num
         const colors = t.type === 'success'
           ? { bg: 'rgba(102,187,106,0.18)', bgEnd: 'rgba(102,187,106,0.06)', border: 'rgba(102,187,106,0.4)', fg: '#A8E6AB', icon: '✓' }
           : t.type === 'error'
-          ? { bg: 'rgba(229,57,53,0.18)', bgEnd: 'rgba(229,57,53,0.06)', border: 'rgba(229,57,53,0.4)', fg: '#FCB5B3', icon: '⚠' }
-          : { bg: 'rgba(212,160,23,0.18)', bgEnd: 'rgba(212,160,23,0.06)', border: 'rgba(212,160,23,0.4)', fg: '#F5D56E', icon: 'ℹ' };
+          ? { bg: 'rgba(229,53,75,0.18)', bgEnd: 'rgba(229,53,75,0.06)', border: 'rgba(229,53,75,0.4)', fg: '#FCB3BC', icon: '⚠' }
+          : { bg: 'rgba(212,155,23,0.18)', bgEnd: 'rgba(212,155,23,0.06)', border: 'rgba(212,155,23,0.4)', fg: '#F5CC6E', icon: 'ℹ' };
         return (
           <div key={t.id} style={{
             padding: '14px 18px',

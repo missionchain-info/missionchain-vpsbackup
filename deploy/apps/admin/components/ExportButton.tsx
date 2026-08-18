@@ -35,7 +35,7 @@ interface ExportButtonProps {
 const buttonStyle: React.CSSProperties = {
   padding: '6px 14px',
   borderRadius: 6,
-  background: 'var(--gold, #B8860B)',
+  background: 'var(--gold, #B8840B)',
   color: '#fff',
   border: 'none',
   fontSize: '0.65rem',

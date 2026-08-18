@@ -5,5 +5,9 @@
   "seedMicPlanned": "23500000000000000000000000",
   "deployedAt": "2026-08-17T07:52:18.368Z",
   "deployer": "0xD32e666381b56f979D60C57831838f05F33AD6c2",
-  "routerRepointedAt": "2026-08-17T07:59:16.924Z"
+  "routerRepointedAt": "2026-08-17T08:11:00.000Z",
+  "routerRepointTx": "0x10056a65819399ce87a92644945910b53ee35b53d40df777df9e3fd7ba337d4b",
+  "bscscanVerified": true,
+  "seedDueAt": "2026-08-24T06:57:45.000Z",
+  "seedSource": "ListingReserveVault 0x2EE1b6B7108851BB721cA1c9B8aCEf76e70C8f16 request #2"
 }

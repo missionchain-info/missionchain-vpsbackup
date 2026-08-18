@@ -1,0 +1,172 @@
+<svg viewBox="0 0 1300 1120" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,Arial,sans-serif">
+<rect x="0" y="0" width="1300" height="1120" fill="#0d1526"/>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9aa4b2"/></marker></defs>
+<style>
+.t{fill:#F5ECD8;font-weight:600}.s{fill:#B9C2D0}.pct{fill:#F0C45A;font-weight:800}
+.ln{stroke:#9aa4b2;stroke-width:1.4;fill:none}.hd{fill:#EBD9A6;font-weight:700;letter-spacing:1px}
+.badge{font-weight:800;font-size:9.5px}
+</style>
+
+<text x="650" y="34" text-anchor="middle" fill="#F0C45A" font-size="18" font-weight="800" letter-spacing="1">MISSION CHAIN — PreSale Money Flow (100% of GROSS · where it sits &amp; how it is used)</text>
+
+<!-- Buyer + Router -->
+<rect x="500" y="52" width="300" height="42" rx="9" fill="#20304f" stroke="#C9A84C"/>
+<text x="650" y="72" text-anchor="middle" class="t" font-size="13">Buyer pays USDT — 100% gross</text>
+<text x="650" y="87" text-anchor="middle" class="s" font-size="10">MIC → buyer wallet (vesting) · NFT if package</text>
+<path d="M650 94 L650 116" class="ln" marker-end="url(#a)"/>
+<rect x="480" y="118" width="340" height="40" rx="9" fill="#20304f" stroke="#F0C45A"/>
+<text x="650" y="143" text-anchor="middle" class="hd" font-size="12">RevenueRouter — 6-way split of gross</text>
+
+<!-- 6 top buckets -->
+<g>
+<!-- connectors -->
+<path d="M650 158 L110 208" class="ln" marker-end="url(#a)"/><path d="M650 158 L320 208" class="ln" marker-end="url(#a)"/>
+<path d="M650 158 L540 208" class="ln" marker-end="url(#a)"/><path d="M650 158 L760 208" class="ln" marker-end="url(#a)"/>
+<path d="M650 158 L980 208" class="ln" marker-end="url(#a)"/><path d="M650 158 L1190 208" class="ln" marker-end="url(#a)"/>
+</g>
+<!-- bucket template: x, fill, stroke -->
+<!-- Referral -->
+<rect x="20" y="210" width="196" height="86" rx="10" fill="#12303a" stroke="#4FB0A0"/>
+<text x="118" y="234" text-anchor="middle" class="pct" font-size="16">10%</text>
+<text x="118" y="252" text-anchor="middle" class="t" font-size="12">Referral (F1+F2)</text>
+<text x="118" y="268" text-anchor="middle" class="s" font-size="9.5">→ ReferralRegistry</text>
+<rect x="66" y="276" width="104" height="15" rx="7" fill="#2e7d55"/><text x="118" y="287" text-anchor="middle" fill="#dfffe9" class="badge">AUTO · INSTANT</text>
+<!-- Marketing -->
+<rect x="228" y="210" width="196" height="86" rx="10" fill="#2a2140" stroke="#F0C45A" stroke-width="2"/>
+<text x="326" y="234" text-anchor="middle" class="pct" font-size="16">25%</text>
+<text x="326" y="252" text-anchor="middle" class="t" font-size="12">Marketing &amp; Sales</text>
+<text x="326" y="268" text-anchor="middle" class="s" font-size="9.5">→ RewardDistributorV2</text>
+<rect x="276" y="276" width="100" height="15" rx="7" fill="#8a6d1f"/><text x="326" y="287" text-anchor="middle" fill="#fff3d6" class="badge">SPLITS ↓ 4 POOLS</text>
+<!-- Management -->
+<rect x="436" y="210" width="196" height="86" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="534" y="234" text-anchor="middle" class="pct" font-size="16">7.5%</text>
+<text x="534" y="252" text-anchor="middle" class="t" font-size="12">Management</text>
+<text x="534" y="268" text-anchor="middle" class="s" font-size="9.5">→ ManagementPool</text>
+<rect x="470" y="276" width="128" height="15" rx="7" fill="#5a3d7a"/><text x="534" y="287" text-anchor="middle" fill="#eaddff" class="badge">SELF-CLAIM + DAO BONUS</text>
+<!-- Treasury -->
+<rect x="644" y="210" width="196" height="86" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="742" y="234" text-anchor="middle" class="pct" font-size="16">12.5%</text>
+<text x="742" y="252" text-anchor="middle" class="t" font-size="12">DAO Treasury</text>
+<text x="742" y="268" text-anchor="middle" class="s" font-size="9.5">→ TreasuryManager ✓live</text>
+<rect x="690" y="276" width="104" height="15" rx="7" fill="#5a3d7a"/><text x="742" y="287" text-anchor="middle" fill="#eaddff" class="badge">DAO · RATE-LIMITED</text>
+<!-- Staking -->
+<rect x="852" y="210" width="196" height="86" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="950" y="234" text-anchor="middle" class="pct" font-size="16">5%</text>
+<text x="950" y="252" text-anchor="middle" class="t" font-size="12">Listing Reserve</text>
+<text x="950" y="268" text-anchor="middle" class="s" font-size="9.5">→ StakingReserve (new)</text>
+<rect x="898" y="276" width="104" height="15" rx="7" fill="#8a5a1f"/><text x="950" y="287" text-anchor="middle" fill="#ffe6c9" class="badge">TIMELOCK 24h</text>
+<!-- Liquidity -->
+<rect x="1060" y="210" width="220" height="86" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="1170" y="234" text-anchor="middle" class="pct" font-size="16">40%</text>
+<text x="1170" y="252" text-anchor="middle" class="t" font-size="12">Liquidity &amp; Buffer</text>
+<text x="1170" y="268" text-anchor="middle" class="s" font-size="9.5">→ LiquidityPool (+105M MIC)</text>
+<rect x="1108" y="276" width="124" height="15" rx="7" fill="#7a2530"/><text x="1170" y="287" text-anchor="middle" fill="#ffdada" class="badge">LOCKED · DAO ONLY</text>
+
+<!-- COMMUNITY 35% band -->
+<text x="30" y="342" class="hd" font-size="13" fill="#8FD3C4">COMMUNITY — 35% (Referral 10% + Marketing 25%)</text>
+<line x1="30" y1="350" x2="1270" y2="350" stroke="#4FB0A0" stroke-opacity="0.3"/>
+
+<!-- Referral detail -->
+<path d="M118 296 L118 372" class="ln" marker-end="url(#a)"/>
+<rect x="20" y="374" width="196" height="90" rx="10" fill="#12303a" stroke="#4FB0A0"/>
+<text x="118" y="396" text-anchor="middle" class="t" font-size="11">ReferralRegistry</text>
+<text x="118" y="414" text-anchor="middle" class="s" font-size="10">F1 7% + F2 3% → upline</text>
+<text x="118" y="429" text-anchor="middle" fill="#8FD3C4" font-size="10">paid instantly, same tx</text>
+<text x="118" y="448" text-anchor="middle" class="s" font-size="9.5">no ref / no F2 → overflow</text>
+<text x="118" y="459" text-anchor="middle" fill="#EBCB8A" font-size="9.5">→ M&amp;I pool</text>
+
+<!-- Marketing 4 pools -->
+<path d="M326 296 L326 330 L610 330 L610 372" class="ln" marker-end="url(#a)"/>
+<!-- ClaimRewardsV2 -->
+<rect x="240" y="374" width="215" height="90" rx="10" fill="#0e2445" stroke="#3aa0e0"/>
+<text x="347" y="394" text-anchor="middle" class="t" font-size="11">ClaimRewardsV2</text>
+<text x="347" y="411" text-anchor="middle" class="s" font-size="10">GV Growth Award <tspan class="pct">9%</tspan></text>
+<rect x="300" y="416" width="94" height="14" rx="7" fill="#1f5c8a"/><text x="347" y="426" text-anchor="middle" fill="#d7ecff" class="badge">CLAIM (pull)</text>
+<text x="347" y="443" text-anchor="middle" class="s" font-size="10">Milestones &amp; Inc. <tspan fill="#EBCB8A">1.5%+</tspan></text>
+<rect x="305" y="447" width="84" height="14" rx="7" fill="#5a3d7a"/><text x="347" y="457" text-anchor="middle" fill="#eaddff" class="badge">DAO-MANAGED</text>
+<!-- Weekly -->
+<rect x="470" y="374" width="132" height="90" rx="10" fill="#0e2445" stroke="#3aa0e0"/>
+<text x="536" y="394" text-anchor="middle" class="t" font-size="11">Weekly Growth</text>
+<text x="536" y="411" text-anchor="middle" class="pct" font-size="13">5.5%</text>
+<text x="536" y="426" text-anchor="middle" class="s" font-size="9">NFTRewardPool</text>
+<text x="536" y="437" text-anchor="middle" class="s" font-size="8.5">NFT 5% + MFP 0.5%</text>
+<rect x="494" y="443" width="84" height="14" rx="7" fill="#1f5c8a"/><text x="536" y="453" text-anchor="middle" fill="#d7ecff" class="badge">CLAIM (pull)</text>
+<!-- Monthly -->
+<rect x="616" y="374" width="132" height="90" rx="10" fill="#241338" stroke="#b57edb"/>
+<text x="682" y="394" text-anchor="middle" class="t" font-size="11">Monthly Comm.</text>
+<text x="682" y="411" text-anchor="middle" class="pct" font-size="13">8%</text>
+<text x="682" y="426" text-anchor="middle" class="s" font-size="9">NFTRewardPool</text>
+<text x="682" y="437" text-anchor="middle" class="s" font-size="8.5">NFT 7.5% + MFP 0.5%</text>
+<rect x="640" y="443" width="84" height="14" rx="7" fill="#1f5c8a"/><text x="682" y="453" text-anchor="middle" fill="#d7ecff" class="badge">CLAIM (pull)</text>
+<!-- Lucky -->
+<rect x="762" y="374" width="132" height="90" rx="10" fill="#0e2445" stroke="#3aa0e0"/>
+<text x="828" y="394" text-anchor="middle" class="t" font-size="11">Lucky Draw</text>
+<text x="828" y="411" text-anchor="middle" class="pct" font-size="13">1%</text>
+<text x="828" y="426" text-anchor="middle" class="s" font-size="9">18 prizes · $5k cap</text>
+<text x="828" y="437" text-anchor="middle" class="s" font-size="8.5">winners credited</text>
+<rect x="786" y="443" width="84" height="14" rx="7" fill="#1f5c8a"/><text x="828" y="453" text-anchor="middle" fill="#d7ecff" class="badge">CLAIM (pull)</text>
+
+<!-- how claim works -->
+<rect x="920" y="374" width="360" height="90" rx="10" fill="#161d33" stroke="#3aa0e0" stroke-dasharray="4 3"/>
+<text x="1100" y="394" text-anchor="middle" class="hd" font-size="11">CLAIM MODEL (GV · Weekly · Monthly · Lucky)</text>
+<text x="1100" y="414" text-anchor="middle" class="s" font-size="10">USDT sits IN each pool contract. System computes off-chain →</text>
+<text x="1100" y="429" text-anchor="middle" class="s" font-size="10">credit(user, amount) writes claimable on-chain (CREDITOR role) →</text>
+<text x="1100" y="444" text-anchor="middle" fill="#8FD3C4" font-size="10">user calls claim() → USDT leaves pool → user wallet.</text>
+<text x="1100" y="458" text-anchor="middle" class="s" font-size="9">Balances transparent: claimable(user) readable on-chain.</text>
+
+<!-- PROJECT 65% band -->
+<text x="30" y="512" class="hd" font-size="13" fill="#EBCB8A">PROJECT — 65% (Management 7.5 · Treasury 12.5 · Staking 5 · Liquidity 40)</text>
+<line x1="30" y1="520" x2="1270" y2="520" stroke="#C9A84C" stroke-opacity="0.3"/>
+
+<path d="M534 296 L534 544" class="ln" marker-end="url(#a)"/>
+<rect x="20" y="546" width="300" height="96" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="170" y="568" text-anchor="middle" class="t" font-size="12">ManagementPool <tspan class="pct">7.5%</tspan></text>
+<text x="170" y="586" text-anchor="middle" class="s" font-size="9.5">6 roles (Founder/Architect/CTO/Social/</text>
+<text x="170" y="599" text-anchor="middle" class="s" font-size="9.5">Training/Tech) auto-accrue → SELF-CLAIM</text>
+<text x="170" y="616" text-anchor="middle" class="s" font-size="9.5">Bonus 33% of pool → </text>
+<rect x="290" y="606" width="20" height="0" /><text x="255" y="616" fill="#eaddff" class="badge">DAO distributes</text>
+<text x="170" y="633" text-anchor="middle" fill="#9fb0c8" font-size="9">admin = Owner wallet (Phase 1)</text>
+
+<path d="M742 296 L742 544" class="ln" marker-end="url(#a)"/>
+<rect x="336" y="546" width="300" height="96" rx="10" fill="#1b2440" stroke="#7c88a0"/>
+<text x="486" y="568" text-anchor="middle" class="t" font-size="12">TreasuryManager <tspan class="pct">12.5%</tspan> ✓live</text>
+<text x="486" y="586" text-anchor="middle" class="s" font-size="9.5">3 sub-pools: World 2.5 · App 5 · Reserved 5</text>
+<text x="486" y="603" text-anchor="middle" fill="#eaddff" font-size="9.5">DAO transfers (admin = Owner now)</text>
+<text x="486" y="620" text-anchor="middle" class="s" font-size="9.5">Guardrail: max 5%/transfer, 2×/30d</text>
+<text x="486" y="635" text-anchor="middle" class="s" font-size="9">Emergency: DAO_ROLE bypass</text>
+
+<path d="M950 296 L950 544" class="ln" marker-end="url(#a)"/>
+<rect x="652" y="546" width="300" height="96" rx="10" fill="#1b2440" stroke="#8a5a1f"/>
+<text x="802" y="568" text-anchor="middle" class="t" font-size="12">StakingReserve <tspan class="pct">5%</tspan> (new)</text>
+<text x="802" y="586" text-anchor="middle" class="s" font-size="9.5">Holds USDT LOCKED. Withdraw =</text>
+<text x="802" y="601" text-anchor="middle" fill="#ffe6c9" font-size="9.5">request → wait 24h → execute</text>
+<text x="802" y="618" text-anchor="middle" class="s" font-size="9.5">Funds staking rewards (buy MIC)</text>
+<text x="802" y="633" text-anchor="middle" fill="#9fb0c8" font-size="9">admin = Owner (DAO later)</text>
+
+<path d="M1170 296 L1170 544" class="ln" marker-end="url(#a)"/>
+<rect x="968" y="546" width="312" height="96" rx="10" fill="#1b2440" stroke="#7a2530"/>
+<text x="1124" y="568" text-anchor="middle" class="t" font-size="12">LiquidityPool <tspan class="pct">40%</tspan></text>
+<text x="1124" y="586" text-anchor="middle" fill="#ffdada" font-size="9.5">LOCKED — cannot withdraw freely</text>
+<text x="1124" y="601" text-anchor="middle" class="s" font-size="9.5">USDT: DAO 24h timelock (withdrawUSDT)</text>
+<text x="1124" y="616" text-anchor="middle" class="s" font-size="9.5">105M MIC: DAO 7d structural vote → CEX</text>
+<text x="1124" y="633" text-anchor="middle" fill="#9fb0c8" font-size="9">admin = Owner (DAOGovernor in full DAO)</text>
+
+<!-- Legend -->
+<rect x="20" y="676" width="1260" height="70" rx="10" fill="#11182b" stroke="#2a3550"/>
+<text x="34" y="698" class="hd" font-size="11">LEGEND — how each source is used</text>
+<g font-size="10">
+<rect x="34" y="710" width="86" height="15" rx="7" fill="#2e7d55"/><text x="77" y="721" text-anchor="middle" fill="#dfffe9" class="badge">AUTO · INSTANT</text>
+<text x="128" y="721" class="s">on-chain immediately on purchase (Referral F1/F2)</text>
+<rect x="430" y="710" width="70" height="15" rx="7" fill="#1f5c8a"/><text x="465" y="721" text-anchor="middle" fill="#d7ecff" class="badge">CLAIM</text>
+<text x="508" y="721" class="s">system credits → user pulls (GV/Weekly/Monthly/Lucky)</text>
+<rect x="880" y="710" width="70" height="15" rx="7" fill="#5a3d7a"/><text x="915" y="721" text-anchor="middle" fill="#eaddff" class="badge">DAO</text>
+<text x="958" y="721" class="s">DAOGovernor / admin governs (Treasury, M&amp;I, Mgmt bonus)</text>
+<rect x="34" y="729" width="86" height="15" rx="7" fill="#8a5a1f"/><text x="77" y="740" text-anchor="middle" fill="#ffe6c9" class="badge">TIMELOCK</text>
+<text x="128" y="740" class="s">request → wait → execute (StakingReserve 24h)</text>
+<rect x="430" y="729" width="86" height="15" rx="7" fill="#7a2530"/><text x="473" y="740" text-anchor="middle" fill="#ffdada" class="badge">LOCKED</text>
+<text x="524" y="740" class="s">no free withdrawal — DAO vote + timelock only (Liquidity)</text>
+</g>
+
+<text x="650" y="778" text-anchor="middle" class="s" font-size="11">All 6 buckets are separate contracts (ring-fenced). Community rewards sit IN their pool until claimed. No central vault.</text>
+<text x="650" y="798" text-anchor="middle" fill="#8FD3C4" font-size="11" font-weight="700">STATUS: contracts coded &amp; tested (local) — NOT yet deployed. ManagementPool / LiquidityPool / StakingReserve to deploy in PreSale Phase 1.</text>
+</svg>

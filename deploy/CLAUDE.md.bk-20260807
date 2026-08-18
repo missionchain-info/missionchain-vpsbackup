@@ -1,0 +1,143 @@
+# MissionChain App — Web3 Monorepo
+
+Smart contracts + DApp + backend API for MissionChain, a faith-based ecosystem on BSC.
+
+## Tech Stack
+
+Solidity 0.8.24 / Hardhat · Next.js 14 · Fastify · Prisma + PostgreSQL · Turborepo · npm 10
+
+## Monorepo Layout
+
+```
+packages/contracts/   Solidity + Hardhat (tests, deploy scripts)
+packages/sdk/         Shared ABIs, addresses, chain helpers
+packages/db/          Prisma schema + migrations
+apps/web/             DApp          → app.missionchain.io
+apps/admin/           Admin console → admin.missionchain.io
+apps/api/             Fastify API   → api.missionchain.io
+```
+
+The public landing site is a **separate** container (`missionchain.io`) outside this repo — never serve DApp content from it. See the `critical_deployment_rules` memory.
+
+## Commands
+
+```bash
+npm run build
+```
+
+```bash
+cd packages/contracts && npx hardhat test
+```
+
+```bash
+cd packages/contracts && npx hardhat compile
+```
+
+Deploys use `--network bsc` / `bscTestnet`; hardhat reads the key from **`DEPLOYER_KEY`** (see `hardhat.config.ts`). Mainnet deploys run **from the VPS**, never locally, and only after a dry-run the Owner has approved.
+
+## Contract Set — which version is current
+
+Many contracts have V2/V5/V6/V7 successors living side by side in the tree. **Always check which one the deploy script uses before editing it or writing tests against it.**
+
+**Phase-1 PreSale deploy set** (`scripts/deploy-presale-phase1.ts`):
+`CommunityNFTv2` · `ReferralRegistry` · `ClaimRewardsV2` · `NFTRewardPool` ×2 (Weekly/Monthly) · `LuckyDraw` · `RewardDistributorV2` · `StakingReserve` · `ManagementPool` · `LiquidityPool` · `RevenueRouter` · `PreSale`
+
+**Live on mainnet, reused:** `MICToken` · `LockManager` · `TreasuryManager` · `MFPNFT` · `P2PEscrowMFP` · SEED stack (`SeedSaleV7` + `SeedBudgetV5c`)
+
+**Superseded — do NOT build on these:**
+
+| Superseded | Replaced by |
+|---|---|
+| `RewardDistributor` | `RewardDistributorV2` |
+| `ClaimRewards` | `ClaimRewardsV2` |
+| `PeriodicRewards`, `IncentivePool` | `ClaimRewardsV2` + `NFTRewardPool` |
+| `CommunityNFT` (ERC-1155) | `CommunityNFTv2` (ERC-721, unique serial, on-chain SVG) |
+| `SeedSale`/`V5`/`V6`, `SeedBudget`/`V5`/`V5b` | `SeedSaleV7`, `SeedBudgetV5c` |
+
+`mining/NFTStaking.sol` is a **misnomer**: since April 2026 it is pure MIC staking (the filename was kept for compatibility). No NFT tier multipliers, no per-tier caps — weight is `amount × time-lock multiplier` only. NFT multipliers now apply to USDT reward-pool distribution instead.
+
+**Lock multipliers were steepened 2026-08-05** to `30d ×1.0 · 90d ×1.6 · 180d ×2.6 · 360d ×5.0` (was 1/1.25/1.5/2). The flat old curve gave almost no reason to pick a long term, so stake would sit at 30 days and barely reduce sell pressure. Vesting-locked MIC can still be staked at the full multiplier, 360-day term only.
+
+## MICE · MINING · SWAP (Phase 1, design frozen 2026-08-05)
+
+Full spec: `docs/superpowers/specs/2026-08-05-mice-mining-swap-design.md`
+Operating policy (non-negotiable, lives outside the contracts): `…/2026-08-05-economic-guardrails-operating-policy.md`
+
+**This is a flow-management model, not a price-support model.** Control issuance, not price · shape participant behaviour, not market destiny · reward long-term alignment, not short-term extraction. Never build or document anything that reads as price targeting.
+
+Three layers, one contract each. The Liquidity layer sits in the middle; the other two read from it and never from each other.
+
+| Layer | Contract | Owns |
+|---|---|---|
+| Sales | `MICELicense` | sale · 72h activation · renewal/seat reuse · MIC burn |
+| Liquidity | `LiquidityPoolV6` **(new, not written yet)** | AMM · virtual-reserve unwind · 7-day TWAP · sell fee · daily caps |
+| Emission | `EmissionController` | `H` · `G` · price brake · 5-way split |
+
+**Frozen parameters:**
+
+```
+MICE     $100/200/300/400/500 × 20,000 · 360 days every round · activates after 72h
+         buyer pays 50% USDT + 50% MIC (their own, burned)
+         MIC priced at min(spot, TWAP7d) read from V6 — never admin-set
+SWAP     P₀ $0.01 · M₀ 50,000,000 MIC · virtual reserve $500,000, retires at U/2
+         sells open day 30 · 5%/day quota · 1% of reserve per trade
+         buy fee 0.3% · sell fee 0.3%–10% (MAX_FEE_BPS = 1000, hard constant)
+MINING   E₀ 750,000 MIC/day · half-life 8 years
+         E = E_base × D(t) × L(H) × W(t) × A(N)
+         H* = 110 days · L = clamp(H/110, 0.02, 2.0), ±10%/day
+         G = clamp(TWAP7d/TWAP30d, 0.25, 1.0) — price brake, damps only, never boosts
+         split 59 / 25 / 10 / 5 / 1 (miners / staking / DAO / Community NFT / MFP-NFT)
+```
+
+**`H` is a liquidity-coverage measure, not a price measure.** It is "how many days of new emission the pool's USDT could absorb". It moves the *wrong way* when price crashes (lower price → each day's emission is worth less → H rises), so `G` and the emergency brake at 50% of P₀ are mandatory from day one, not a later phase.
+
+**Five bugs in `MICELicense` must be fixed before anything else** — see spec §5. Two are model-breaking: `activeLicenses()` doesn't exist (so `EmissionController.dailyEmission()` reverts every call), and `totalMinted` never decreases (so renewals are blocked once 100,000 are minted, turning MICE into one-time revenue).
+
+**`LiquidityPoolV5` (`0x3709…050a`) is dead architecture.** No withdrawal path of any kind, swap functions are `pure` reverts, not a proxy. Its 31.5M MIC can only ever leave by being burned. Never route the router's liquidity slice to it, never grant `DEPOSITOR_ROLE`. Fund V6 from `ListingReserveVault` instead (7-day withdrawal cooldown — start it early).
+
+## Revenue Model V2 (2026-07) — all % of GROSS
+
+`PreSale.buy` sends the **full gross** USDT to `RevenueRouter`; `MICELicense` sends the **whole USDT half** (the other half is paid in MIC by the buyer and burned). Either way nothing is taken off the top — the router splits six ways and the sale contract then calls `ReferralRegistry.distributeReferral()` so F1/F2 are paid out of the router's referral slice. Both sales feed the **same** Group-Volume ledger, so MICE and Pre-Sale volume combine for rank and group rewards.
+
+```
+Referral 10%  → ReferralRegistry (F1 7% + F2 3%; unspent → Milestones & Incentives)
+Marketing 25% → RewardDistributorV2 → GV 9% · M&I 1.5% · Weekly 5.5% · Monthly 8% · Lucky 1%
+Management 7.5% · DAO Treasury 12.5% · Reserved Staking 5% · Liquidity 40% (absorbs dust)
+```
+
+Referral is **fixed** at 1000 BPS; the other five buckets are DAO-adjustable and must sum to 9000.
+
+**Payout model:** GV / Weekly / Monthly / Lucky are **credited on-chain, then pulled by the user** via `claim()` (credited by `CREDITOR_ROLE`). Milestones & Incentives is DAO-distributed. Referral F1/F2 pays instantly on purchase.
+
+## Vesting — Hybrid Token-Level Lock
+
+Tokens go **directly to the user's wallet** and are restricted by `LockManager`, not held in escrow. `MICToken._update()` enforces `amount <= balanceOf(from) - lockedOf(from) - stakedOf(from)`. Users see one balance in MetaMask; the DApp splits it into Available / Vesting / Staked. There is no claim step — unlock is purely time-based.
+
+Never reintroduce the old VestingManager pattern (tokens held in contract, user claims).
+
+## Critical Conventions
+
+- **Never** commit `.env` or anything containing keys. Mainnet private keys live only on the VPS.
+- **Never** grant `MINTER_ROLE` to anything but `EmissionController` — 85% of supply is minted progressively, never pre-minted.
+- **Never** add referral logic to SEED (Pre-Sale and MICE only).
+- **Never** change a tokenomics number in one place — the same figure appears across contracts, apps, docs and translations.
+- Use `AccessControl` (not `Ownable`), OpenZeppelin `SafeERC20`, and `ReentrancyGuard` on anything making external calls.
+- Handle USDT (6 dec) vs MIC (18 dec) conversions explicitly.
+- Emit an event for every state change — the indexer depends on them.
+
+## Gotchas
+
+- **Router sinks must be contracts.** `RevenueRouter` *calls* `receiveUSDT()` / `receiveAndDistribute()` on its targets, so EOAs revert. Tests use `mock/MockRewardReceiver.sol`. Only the referral slice is a plain token push.
+- **Locked MIC staking requires the 360-day lock period** — anything shorter reverts.
+- **`NFTStaking` unstaking is capped at 10% of the pool per day**, so a lone staker can never withdraw; tests need a second "whale" stake to make the position withdrawable.
+- **The test suite shares one chain clock.** Integration tests warp months or years forward, so never use an absolute calendar timestamp in a test — derive it from `await time.latest()`.
+- **Paths containing `(dashboard)`** break older macOS rsync — `scp` to `/tmp`, then `cp` on the VPS.
+- Local `missionchain/` has **diverged from the VPS** in places. Diff before pushing, and push individual files rather than bulk-syncing.
+
+## Where the details live
+
+- System architecture — `docs/SYSTEM-ARCHITECTURE-FULL.md`
+- Tokenomics numbers — the Whitepaper plus `docs/MissionChain_Tokenomics.xlsx` in the repo root (`Mission Chain Fullstack/`)
+- PreSale deploy plan — `missionchain/deploy/PRESALE_PHASE1_DEPLOY_PLAN.md`
+- Governance — `MissionChain_Governance_Spec_v1.2.html` in the repo root
+- Live addresses, infra state and pending work — the handoff docs in the repo root, and the project memory files

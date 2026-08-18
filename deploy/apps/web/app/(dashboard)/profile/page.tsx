@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { QRCodeSVG } from 'qrcode.react'
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from '@/lib/firebase'
 import type { ConfirmationResult } from 'firebase/auth'
+import { TEXT_SIZES, getTextSize, setTextSize, type TextSize } from '@/lib/textscale'
 
 interface ProfileData {
   data?: {
@@ -40,10 +41,10 @@ interface ProfileData {
 const RANK_MAP: Record<string, { icon: string; color: string }> = {
   Believer:         { icon: '\u{1F331}', color: 'var(--muted)' },
   Builder:          { icon: '\u{1F6E0}', color: '#29B6F6' },
-  Connector:        { icon: '\u{2B50}',  color: '#AB47BC' },
-  Champion:         { icon: '\u{1F48E}', color: '#C084D4' },
+  Connector:        { icon: '\u{2B50}',  color: '#476DBC' },
+  Champion:         { icon: '\u{1F48E}', color: '#849ED4' },
   Ambassador:       { icon: '\u{1F451}', color: 'var(--gold)' },
-  Legend:            { icon: '\u{1F3C6}', color: '#FFD700' },
+  Legend:            { icon: '\u{1F3C6}', color: '#FFB200' },
 }
 
 function shortenAddr(a: string) {
@@ -92,6 +93,7 @@ function isInAppBrowser(): boolean {
 
 export default function ProfilePage() {
   const { address } = useAccount()
+  const [textSize, setTextSizeState] = useState<TextSize>('sm')
   const { data: resp, loading, refetch } = useApi<ProfileData>('/user/profile', { enabled: !!address })
   const [copied, setCopied] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -123,6 +125,8 @@ export default function ProfilePage() {
   const inAppBrowser = useMemo(() => isInAppBrowser(), [])
   const [twilioAvail, setTwilioAvail] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
+  useEffect(() => { setTextSizeState(getTextSize()) }, [])
+
   useEffect(() => {
     api<{ data?: { enabled?: boolean } }>('/user/kyc/twilio-status')
       .then((r) => setTwilioAvail(!!r?.data?.enabled))
@@ -695,7 +699,7 @@ export default function ProfilePage() {
                 value={refUrl}
                 size={110}
                 bgColor="#FFFFFF"
-                fgColor="#1E1230"
+                fgColor="#142A57"
                 level="M"
                 includeMargin={false}
               />
@@ -703,6 +707,34 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+      </div>
+
+
+      {/* ── Display · co chu ── */}
+      <div className="prof-card prof-display-card">
+        <div className="prof-card-header">
+          <IconUser />
+          <span className="prof-card-title">Display</span>
+        </div>
+        <div className="prof-textsize-row">
+          <div className="prof-textsize-label">Text size</div>
+          <div className="prof-textsize-opts" role="group" aria-label="Text size">
+            {TEXT_SIZES.map(o => (
+              <button
+                key={o.id}
+                type="button"
+                aria-pressed={textSize === o.id}
+                className={`prof-textsize-btn${textSize === o.id ? ' active' : ''}`}
+                onClick={() => { setTextSize(o.id); setTextSizeState(o.id) }}
+              >
+                <span className={`prof-textsize-glyph size-${o.id}`}>A</span>
+                <span className="prof-textsize-name">{o.label}</span>
+                <span className="prof-textsize-hint">{o.hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="prof-textsize-note">Applies across the whole app and is remembered on this device.</p>
       </div>
 
       {/* ── 5. KYC Verification Card ── */}
@@ -802,7 +834,7 @@ export default function ProfilePage() {
                     positive); Twilio SMS path bypasses this entirely when enabled. */}
                 {inAppBrowser && !twilioAvail && (
                   <div style={{
-                    background: 'rgba(243,198,100,0.10)', border: '1px solid rgba(243,198,100,0.35)',
+                    background: 'rgba(243,200,100,0.10)', border: '1px solid rgba(243,200,100,0.35)',
                     borderRadius: 10, padding: '10px 12px', marginBottom: 10, fontSize: '0.66rem',
                     color: 'var(--white)', lineHeight: 1.55,
                   }}>

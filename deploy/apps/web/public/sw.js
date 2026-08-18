@@ -1,7 +1,7 @@
 /* Mission Chain DApp — minimal service worker (installability + app-shell cache).
    IMPORTANT: never caches API / RPC / WalletConnect (all cross-origin) — DApp needs live data.
    Bump CACHE version when the shell caching strategy changes. */
-var CACHE = 'mc-shell-v1';
+var CACHE = 'mc-shell-v3';
 var SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -39,7 +39,22 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Same-origin static assets (hashed _next chunks, icons, css): cache-first.
+  // Build output: straight to network, never cached here.
+  //
+  // These are already served with `Cache-Control: immutable, max-age=1y`, so the HTTP cache
+  // does this job correctly and drops an entry the moment its hashed name stops being
+  // referenced. The service worker's copy had no such expiry: a chunk cached under an old
+  // name survived every deploy, every hard reload, and every version bump of this file,
+  // because cache-first never asks the network whether anything changed.
+  //
+  // That is how a nav badge that had been removed from the source, removed from the
+  // running container, and confirmed absent from every file on the server kept appearing
+  // on screen. Caching a hashed asset twice bought nothing and cost that.
+  if (url.pathname.indexOf('/_next/') === 0) {
+    return; // fall through to the network
+  }
+
+  // Icons and the manifest: cache-first is fine, they are small and rarely change.
   e.respondWith(
     caches.match(req).then(function (cached) {
       return cached || fetch(req).then(function (res) {

@@ -30,6 +30,40 @@ import {
 } from '../services/onChainAdminWrites.js'
 import { getActiveAddresses } from '@missionchain/sdk'
 
+type PoolState = [
+  Awaited<ReturnType<typeof readSeedBudgetAllSlots>>,
+  Awaited<ReturnType<typeof readOperationalPoolAllMembers>>,
+  number,
+  Awaited<ReturnType<typeof readSeedBudgetFee>>,
+  any[],
+]
+
+const POOL_TTL_MS = 30_000
+let poolCache: { at: number; value: PoolState } | null = null
+let poolInFlight: Promise<PoolState> | null = null
+
+/** Fresh enough, shared between concurrent callers, and never stale for long. */
+async function readPoolState(app: any): Promise<PoolState> {
+  if (poolCache && Date.now() - poolCache.at < POOL_TTL_MS) return poolCache.value
+  if (poolInFlight) return poolInFlight
+
+  poolInFlight = Promise.all([
+    readSeedBudgetAllSlots(),
+    readOperationalPoolAllMembers(),
+    readCurrentWeekIdx(),
+    readSeedBudgetFee(),
+    app.prisma.stewardCouncilMember.findMany(),
+  ]).then((value) => {
+    poolCache = { at: Date.now(), value: value as PoolState }
+    return value as PoolState
+  }).finally(() => { poolInFlight = null })
+
+  return poolInFlight
+}
+
+/** Any write to the pool makes the cached copy wrong immediately. */
+function invalidatePoolState() { poolCache = null }
+
 export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
   app.addHook('preHandler', requireAdmin)
 
@@ -38,13 +72,17 @@ export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
   // Council DB metadata (memberId, role, active) merged in.
   app.get('/', async (_req, reply) => {
     try {
-      const [slots, onChainMembers, weekIdx, fee, councilMembers] = await Promise.all([
-        readSeedBudgetAllSlots(),
-        readOperationalPoolAllMembers(),
-        readCurrentWeekIdx(),
-        readSeedBudgetFee(),
-        app.prisma.stewardCouncilMember.findMany(),
-      ])
+      /*
+       * These four reads fan out across every council member and every budget slot, and
+       * the RPC endpoint refuses batched calls, so each one is its own HTTP round trip —
+       * measured at ~1.9s for the member list alone. The figures move once a week at most
+       * (allocations settle on the week index), so serving a 30-second-old copy costs
+       * nothing and takes the repeat load to nothing.
+       *
+       * An in-flight promise is shared rather than duplicated: two admins opening the page
+       * together used to trigger two full fan-outs.
+       */
+      const [slots, onChainMembers, weekIdx, fee, councilMembers] = await readPoolState(app)
 
       const councilByWallet = new Map(councilMembers.map((c) => [c.wallet.toLowerCase(), c]))
       const totalShareBps = onChainMembers.reduce((s, m) => s + m.sharePctBps, 0)
@@ -90,6 +128,7 @@ export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
   // After this, OWNER must also call OperationalSalaryPoolV3.enrollMember()
   // on-chain via wallet sign — this endpoint only persists the DB metadata.
   app.post('/members', async (req, reply) => {
+    invalidatePoolState()   // this call changes what the cached read returns
     const { wallet: callerWallet } = req.user as { wallet: string }
     if (!isOwnerWallet(callerWallet)) {
       return reply.status(403).send({ error: 'FORBIDDEN', message: 'Forbidden' })
@@ -171,6 +210,7 @@ export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── PUT /admin/seed-budget/operational/members/:wallet — Owner updates ──
   app.put<{ Params: { wallet: string } }>('/members/:wallet', async (req, reply) => {
+    invalidatePoolState()   // this call changes what the cached read returns
     const { wallet: callerWallet } = req.user as { wallet: string }
     if (!isOwnerWallet(callerWallet)) {
       return reply.status(403).send({ error: 'FORBIDDEN', message: 'Forbidden' })
@@ -242,6 +282,7 @@ export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── DELETE /admin/seed-budget/operational/members/:wallet ────────────
   app.delete<{ Params: { wallet: string } }>('/members/:wallet', async (req, reply) => {
+    invalidatePoolState()   // this call changes what the cached read returns
     const { wallet: callerWallet } = req.user as { wallet: string }
     if (!isOwnerWallet(callerWallet)) {
       return reply.status(403).send({ error: 'FORBIDDEN', message: 'Forbidden' })
@@ -281,6 +322,7 @@ export const operationalPoolRoutes: FastifyPluginAsync = async (app) => {
   // FE calls OperationalSalaryPoolV3.claim() directly via wallet sign,
   // then posts txHash to /governance/funds-distribution/seed/claim.
   app.post('/claim', async (_req, reply) => {
+    invalidatePoolState()   // this call changes what the cached read returns
     return reply.status(410).send({
       error: 'GONE',
       message: 'Off-chain claim removed in Phase 2c-pivot. FE calls OperationalSalaryPoolV3.claim() on-chain directly, then POST /governance/funds-distribution/seed/claim with the txHash.',

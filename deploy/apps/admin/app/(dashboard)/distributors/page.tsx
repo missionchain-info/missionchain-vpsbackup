@@ -404,7 +404,7 @@ export default function DistributorsPage() {
                 />
                 {memberLookupStatus === 'checking' && <span style={{ fontSize: '0.52rem', color: 'var(--gray2)' }}>...</span>}
                 {memberLookupStatus === 'found' && <span style={{ fontSize: '0.52rem', color: '#5cb85c' }}>&#10003;</span>}
-                {memberLookupStatus === 'not_found' && <span style={{ fontSize: '0.52rem', color: '#d9534f' }}>&#10007;</span>}
+                {memberLookupStatus === 'not_found' && <span style={{ fontSize: '0.52rem', color: '#D94F60' }}>&#10007;</span>}
               </div>
             </div>
             <div className="input-wrap">
@@ -507,7 +507,7 @@ export default function DistributorsPage() {
                       <button onClick={() => loadDetail(d.wallet)} style={btnSmall}>
                         {earningsWallet === d.wallet ? 'Hide' : 'Detail'}
                       </button>
-                      <button onClick={() => handleDelete(d.wallet)} style={{ ...btnSmall, color: '#d9534f' }}>
+                      <button onClick={() => handleDelete(d.wallet)} style={{ ...btnSmall, color: '#D94F60' }}>
                         Delete
                       </button>
                     </div>
@@ -552,7 +552,7 @@ export default function DistributorsPage() {
                                       'Pending';
                                     const statusColor =
                                       isPaid ? '#66BB6A' :
-                                      r.status === 'REJECTED' ? '#EF5350' :
+                                      r.status === 'REJECTED' ? '#EF5064' :
                                       'var(--gold)';
                                     void isPending;
                                     return (

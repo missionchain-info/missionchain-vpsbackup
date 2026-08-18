@@ -75,7 +75,7 @@ function CountdownBadge({ targetIso, executing }: { targetIso: string; executing
           gap: 4,
           padding: '2px 8px',
           borderRadius: 10,
-          background: 'rgba(255,180,0,0.15)',
+          background: 'rgba(255,178,0,0.15)',
           color: 'var(--gold)',
           fontSize: '0.55rem',
           fontWeight: 600,
@@ -96,8 +96,8 @@ function CountdownBadge({ targetIso, executing }: { targetIso: string; executing
         gap: 4,
         padding: '2px 8px',
         borderRadius: 10,
-        background: 'rgba(229,57,53,0.12)',
-        color: '#E53935',
+        background: 'rgba(229,53,75,0.12)',
+        color: '#E5354B',
         fontSize: '0.55rem',
         fontWeight: 600,
         fontFamily: 'var(--font-m)',
@@ -236,7 +236,7 @@ export default function OldInvestorsSection({ isSuperAdmin, showToast: _legacyTo
       message: (
         <>
           This bypasses the <b>24h cooldown</b> and executes the on-chain
-          {' '}<code style={{ color: '#F5D56E' }}>SeedSale.adminGrantOldInvestor()</code>
+          {' '}<code style={{ color: '#F5CC6E' }}>SeedSale.adminGrantOldInvestor()</code>
           {' '}call immediately via the on-chain relayer. The recipient will
           receive their MIC + vesting schedule on confirmation. This action cannot be undone.
         </>
@@ -275,9 +275,9 @@ export default function OldInvestorsSection({ isSuperAdmin, showToast: _legacyTo
             fontSize: '0.58rem',
             padding: '4px 10px',
             borderRadius: 12,
-            background: isSuperAdmin ? 'rgba(212,160,23,0.12)' : 'rgba(120,180,220,0.12)',
+            background: isSuperAdmin ? 'rgba(212,155,23,0.12)' : 'rgba(120,168,220,0.12)',
             color: isSuperAdmin ? 'var(--gold)' : 'var(--cyan)',
-            border: `1px solid ${isSuperAdmin ? 'rgba(212,160,23,0.3)' : 'rgba(120,180,220,0.3)'}`,
+            border: `1px solid ${isSuperAdmin ? 'rgba(212,155,23,0.3)' : 'rgba(120,168,220,0.3)'}`,
           }}
         >
           ADMIN
@@ -295,7 +295,7 @@ export default function OldInvestorsSection({ isSuperAdmin, showToast: _legacyTo
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Stat label="Allocation" value={`${fmtMic(stats?.allocationMic ?? 75_000_000)} MIC`} color="var(--gold)" />
         <Stat label="Granted" value={`${fmtMic(stats?.grantedMic ?? 0)} MIC`} color="var(--copper)" />
-        <Stat label="Pending (reserved)" value={`${fmtMic(stats?.pendingMic ?? 0)} MIC`} color="#E53935" />
+        <Stat label="Pending (reserved)" value={`${fmtMic(stats?.pendingMic ?? 0)} MIC`} color="#E5354B" />
         <Stat label="Available" value={`${fmtMic(stats?.remainingMic ?? 75_000_000)} MIC`} color="var(--green)" />
         <Stat label="Recipients" value={String(stats?.recipientsCount ?? 0)} color="var(--cyan)" />
         <Stat label="Done" value={String(stats?.grantsCount ?? 0)} color="var(--purple2)" />
@@ -305,8 +305,8 @@ export default function OldInvestorsSection({ isSuperAdmin, showToast: _legacyTo
       <div
         style={{
           padding: 16,
-          background: 'rgba(212,160,23,.04)',
-          border: '1px dashed rgba(212,160,23,.3)',
+          background: 'rgba(212,155,23,.04)',
+          border: '1px dashed rgba(212,155,23,.3)',
           borderRadius: 10,
           marginBottom: 20,
         }}
@@ -545,7 +545,7 @@ export default function OldInvestorsSection({ isSuperAdmin, showToast: _legacyTo
                           style={{
                             marginTop: 4,
                             fontSize: '0.5rem',
-                            color: '#E53935',
+                            color: '#E5354B',
                             fontStyle: 'italic',
                           }}
                           title={r.executeError}

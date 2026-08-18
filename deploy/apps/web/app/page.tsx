@@ -20,6 +20,8 @@ interface DashboardOverview {
     totalStaked?: string
     totalBurned?: string
     totalEmitted?: string
+    inContractReserves?: string
+    vestingLocked?: string
     mfpMinted?: number
     communityNfts?: number
     activeMice?: number
@@ -39,6 +41,8 @@ export default function LandingPage() {
   const { toggleTheme, theme } = useTheme()
   const { data: resp } = useApi<DashboardOverview>('/dashboard/overview')
   const stats = resp?.data
+  // Price comes from the API; SEED round price stands in until the swap pool is live.
+  const micPrice = Number(stats?.micPrice ?? 0.0025) || 0.0025
 
   const [connecting, setConnecting] = useState(false)
   const [showSheet, setShowSheet] = useState(false)
@@ -137,12 +141,12 @@ export default function LandingPage() {
           <div className="orbit-ring orbit-ring-1"><div className="orbit-dot" /></div>
           <div className="orbit-ring orbit-ring-2"><div className="orbit-dot" /><div className="orbit-dot orbit-dot-opposite" /></div>
           <div className="orbit-ring orbit-ring-3"><div className="orbit-dot" /></div>
-          <img src="/images/mission-chain-logo-clear.png" alt="Mission Chain" />
+          <img src="/images/mission-chain-logo-clear.png?v=brand20260818c" alt="Mission Chain" />
         </div>
 
         <h1 className="landing-title">MISSION CHAIN</h1>
         <p className="landing-subtitle">WEB3 &middot; CREATOR ECONOMY</p>
-        <p className="landing-tagline">&ldquo;Inspired by Faith. Built for People.&rdquo;</p>
+        <p className="landing-tagline">&ldquo;Born of Faith. Built for People.&rdquo;</p>
         <p className="landing-verse">&#10022; You are the light of the world. A city on a hill cannot be hidden. &mdash; Matthew 5:14 &#10022;</p>
 
         {/* ── White Paper link ── */}
@@ -166,56 +170,61 @@ export default function LandingPage() {
             <span className="land-card-badge">BEP-20 on BSC</span>
           </div>
 
-          {/* Row 1: Fixed tokenomics */}
-          <div className="land-row land-row-fixed">
-            <div className="land-cell">
-              <div className="land-cell-label">Total Supply</div>
-              <div className="land-cell-value">{fmtCompact(stats?.totalSupply)}</div>
-              <div className="land-cell-tag fixed">Fixed</div>
-            </div>
-            <div className="land-divider" />
+          {/* 9 tiles — same set, same order as the admin MIC Token block */}
+          <div className="land-grid9">
             <div className="land-cell">
               <div className="land-cell-label">Pre-Issued (15%)</div>
               <div className="land-cell-value">{fmtCompact(stats?.preIssued)}</div>
-              <div className="land-cell-tag fixed">Fixed</div>
             </div>
-            <div className="land-divider" />
             <div className="land-cell">
-              <div className="land-cell-label">Mining Cap (85%)</div>
-              <div className="land-cell-value">{fmtCompact(stats?.miningPool)}</div>
-              <div className="land-cell-tag fixed">Fixed</div>
+              <div className="land-cell-label">In-Contract Reserves</div>
+              <div className="land-cell-value cyan">{fmtCompact(stats?.inContractReserves)}</div>
+              <div className="land-cell-sub">Vault / Treasury / Sale</div>
             </div>
-          </div>
+            <div className="land-cell">
+              <div className="land-cell-label">Vesting (Locked)</div>
+              <div className="land-cell-value cyan">{fmtCompact(stats?.vestingLocked)}</div>
+              <div className="land-cell-sub">Cliff/monthly via LockManager</div>
+            </div>
 
-          {/* Row 2: Live data */}
-          <div className="land-row land-row-live">
             <div className="land-cell">
-              <div className="land-cell-label">
-                <span className="land-live-dot" />
-                MIC Price
-              </div>
-              <div className="land-cell-value gold">{fmtUsd(stats?.micPrice, 4)}</div>
-            </div>
-            <div className="land-cell">
-              <div className="land-cell-label">
-                <span className="land-live-dot" />
-                Circulating
-              </div>
-              <div className="land-cell-value gold">{fmtCompact(stats?.circulatingSupply)}</div>
+              <div className="land-cell-label">Total Mined (85%)</div>
+              <div className="land-cell-value">{fmtCompact(stats?.totalEmitted)}</div>
             </div>
             <div className="land-cell">
               <div className="land-cell-label">
                 <span className="land-live-dot" />
                 Total Burned
               </div>
-              <div className="land-cell-value gold">{fmtCompact(stats?.totalBurned)}</div>
+              <div className="land-cell-value red">{fmtCompact(stats?.totalBurned)}</div>
             </div>
             <div className="land-cell">
               <div className="land-cell-label">
                 <span className="land-live-dot" />
-                Total Staked
+                Total Staking
               </div>
-              <div className="land-cell-value gold">{fmtCompact(stats?.totalStaked)}</div>
+              <div className="land-cell-value">{fmtCompact(stats?.totalStaked)}</div>
+            </div>
+
+            <div className="land-cell">
+              <div className="land-cell-label">
+                <span className="land-live-dot" />
+                Circulating Supply
+              </div>
+              <div className="land-cell-value gold">{fmtCompact(stats?.circulatingSupply)}</div>
+            </div>
+            <div className="land-cell">
+              <div className="land-cell-label">
+                <span className="land-live-dot" />
+                MIC Price
+              </div>
+              <div className="land-cell-value gold">{fmtUsd(micPrice, 4)}</div>
+              <div className="land-cell-sub">SEED Round</div>
+            </div>
+            <div className="land-cell">
+              <div className="land-cell-label">Market Cap (est.)</div>
+              <div className="land-cell-value gold">{fmtUsd(Number(stats?.circulatingSupply ?? 0) * micPrice)}</div>
+              <div className="land-cell-sub">Circulating {'\u00D7'} ${micPrice}</div>
             </div>
           </div>
 
@@ -227,7 +236,7 @@ export default function LandingPage() {
               flexWrap: 'wrap',
               marginTop: 14,
               paddingTop: 14,
-              borderTop: '1px solid rgba(212,160,23,0.15)',
+              borderTop: '1px solid rgba(212,155,23,0.15)',
             }}
           >
             <a
@@ -240,9 +249,9 @@ export default function LandingPage() {
                 padding: '10px 14px',
                 fontSize: 12,
                 textAlign: 'center',
-                background: 'rgba(212,160,23,0.08)',
-                border: '1px solid rgba(212,160,23,0.4)',
-                color: '#F5D56E',
+                background: 'rgba(212,155,23,0.08)',
+                border: '1px solid rgba(212,155,23,0.4)',
+                color: '#F5CC6E',
                 borderRadius: 8,
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -280,9 +289,9 @@ export default function LandingPage() {
                 minWidth: 160,
                 padding: '10px 14px',
                 fontSize: 12,
-                background: 'rgba(155, 91, 201, 0.12)',
-                border: '1px solid rgba(155, 91, 201, 0.5)',
-                color: '#C9A4E6',
+                background: 'rgba(91,127,201, 0.12)',
+                border: '1px solid rgba(91,127,201, 0.5)',
+                color: '#A4BAE6',
                 borderRadius: 8,
                 cursor: 'pointer',
                 display: 'inline-flex',

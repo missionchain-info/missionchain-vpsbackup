@@ -15,16 +15,27 @@ contract MFPNFT is ERC721Enumerable, AccessControl, ReentrancyGuard {
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    /// @notice Initial max supply — 25,000
-    uint256 public constant INITIAL_CAP = 25_000;
+    // ─────────────────────────────────────────────────────────────────────────
+    // The two caps MUST match the contract already live on BSC mainnet
+    // (0xAE6F32A6fdf80F5e54ba85441386dBA6a381f565). The MFP hard cap is published
+    // as an immutable protocol invariant in the White Paper and on missionchain.io,
+    // and it is enforced on every mint, so a redeploy with a different value would
+    // silently break that promise. Verified against mainnet 2026-08-02.
+    // ─────────────────────────────────────────────────────────────────────────
 
-    /// @notice Maximum possible expansion (requires DAO vote) — additional 25,000
-    uint256 public constant EXPANSION_CAP = 25_000;
+    /// @notice Initial max supply — 2,500 (hard cap per White Paper §E.3)
+    uint256 public constant INITIAL_CAP = 2_500;
 
-    /// @notice Staking multiplier (basis points, 10000 = ×1)
-    uint256 public constant STAKING_MULTIPLIER = 100_000; // ×10
+    /// @notice Maximum possible expansion (requires DAO vote) — additional 2,500
+    uint256 public constant EXPANSION_CAP = 2_500;
 
-    /// @notice Current max supply (starts at 25,000, can be expanded by DAO)
+    // NOTE: this file no longer declares a reward-weight constant. NFT weighting is
+    // off-chain reward-distribution policy, not on-chain logic — nothing here or in
+    // MICStaking (mining/NFTStaking.sol) ever read it. The deployed mainnet instance
+    // still carries STAKING_MULTIPLIER = 250_000; it is inert, and MFPNFT must NOT be
+    // redeployed to remove it — that would reset the live token supply.
+
+    /// @notice Current max supply (starts at 2,500, can be expanded by DAO)
     uint256 public maxSupply;
 
     /// @notice Next token ID to mint

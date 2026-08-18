@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CONTRACTS } from '@/lib/contracts'
+import { USDT_DECIMALS } from '@missionchain/sdk';
 
 const BSC_TESTNET_HEX = '0x61'
 const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/'
@@ -100,7 +101,7 @@ export default function TestnetPage() {
       const usdt = new Contract(CONTRACTS.usdt, USDT_ABI_FAUCET as any, signer)
 
       // mint(to, amount) — amount with 6 decimals
-      const tx = await usdt.mint(buyerAddress, parseUnits(amount.toString(), 6))
+      const tx = await usdt.mint(buyerAddress, parseUnits(amount.toString(), USDT_DECIMALS))
       setClaimStatus({ type: 'pending', msg: `Tx submitted: ${tx.hash.slice(0, 10)}... waiting confirmation...` })
       const receipt = await tx.wait()
       if (!receipt || receipt.status !== 1) throw new Error('Transaction reverted')
@@ -283,7 +284,7 @@ export default function TestnetPage() {
           max-width: 900px;
           margin: 0 auto;
           padding: 32px 20px 80px;
-          color: var(--cream, #F5E8CC);
+          color: var(--cream, #F5E9CC);
           min-height: 100vh;
         }
         .testnet-hero {
@@ -297,22 +298,22 @@ export default function TestnetPage() {
           letter-spacing: 0.2em;
           padding: 6px 14px;
           border-radius: 100px;
-          background: rgba(212,160,23,0.15);
-          color: #F5D56E;
-          border: 1px solid rgba(212,160,23,0.4);
+          background: rgba(212,155,23,0.15);
+          color: #F5CC6E;
+          border: 1px solid rgba(212,155,23,0.4);
           margin-bottom: 16px;
         }
         .testnet-hero-title {
           font-size: clamp(1.5rem, 4vw, 2.4rem);
           font-weight: 700;
-          color: #F5D56E;
+          color: #F5CC6E;
           margin: 0 0 14px;
           line-height: 1.2;
         }
         .testnet-hero-sub {
           font-size: 0.95rem;
           line-height: 1.6;
-          color: var(--gray, #B8A894);
+          color: var(--gray, #B8AD94);
           max-width: 700px;
           margin: 0 auto;
         }
@@ -321,8 +322,8 @@ export default function TestnetPage() {
           display: flex;
           gap: 18px;
           padding: 24px;
-          background: linear-gradient(155deg, rgba(38,20,58,0.55), rgba(22,14,35,0.65));
-          border: 1px solid rgba(201,168,76,0.18);
+          background: linear-gradient(155deg, rgba(20,32,58,0.55), rgba(14,21,35,0.65));
+          border: 1px solid rgba(201,163,76,0.18);
           border-radius: 16px;
           margin-bottom: 20px;
         }
@@ -331,7 +332,7 @@ export default function TestnetPage() {
           width: 44px;
           height: 44px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #C9A84C, #7B2D8B);
+          background: linear-gradient(135deg, #C9A34C, #2D4C8B);
           color: #fff;
           display: flex;
           align-items: center;
@@ -344,13 +345,13 @@ export default function TestnetPage() {
         .testnet-step-title {
           font-size: 1.15rem;
           font-weight: 700;
-          color: #F5D56E;
+          color: #F5CC6E;
           margin: 0 0 8px;
         }
         .testnet-step-desc {
           font-size: 0.85rem;
           line-height: 1.6;
-          color: var(--gray, #B8A894);
+          color: var(--gray, #B8AD94);
           margin: 0 0 14px;
         }
 
@@ -359,8 +360,8 @@ export default function TestnetPage() {
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 8px;
           padding: 12px;
-          background: rgba(20,12,34,0.5);
-          border: 1px solid rgba(201,168,76,0.12);
+          background: rgba(12,19,34,0.5);
+          border: 1px solid rgba(201,163,76,0.12);
           border-radius: 10px;
           margin-bottom: 16px;
         }
@@ -379,7 +380,7 @@ export default function TestnetPage() {
         }
         .testnet-info-value {
           font-size: 0.82rem;
-          color: var(--cream, #F5E8CC);
+          color: var(--cream, #F5E9CC);
           font-weight: 600;
         }
         .mono-small {
@@ -395,7 +396,7 @@ export default function TestnetPage() {
         .testnet-list li {
           font-size: 0.85rem;
           line-height: 1.7;
-          color: var(--gray, #B8A894);
+          color: var(--gray, #B8AD94);
         }
 
         .testnet-btn {
@@ -412,21 +413,21 @@ export default function TestnetPage() {
           border: none;
         }
         .testnet-btn-primary {
-          background: linear-gradient(135deg, #C9A84C, #D4A017);
-          color: #1A1208;
-          box-shadow: 0 2px 8px rgba(201,168,76,0.25);
+          background: linear-gradient(135deg, #C9A34C, #D49B17);
+          color: #0E2148;
+          box-shadow: 0 2px 8px rgba(201,163,76,0.25);
         }
         .testnet-btn-primary:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(201,168,76,0.35);
+          box-shadow: 0 4px 14px rgba(201,163,76,0.35);
         }
         .testnet-btn-secondary {
           background: transparent;
-          color: #F5D56E;
-          border: 1px solid rgba(212,160,23,0.5);
+          color: #F5CC6E;
+          border: 1px solid rgba(212,155,23,0.5);
         }
         .testnet-btn-secondary:hover {
-          background: rgba(212,160,23,0.10);
+          background: rgba(212,155,23,0.10);
         }
 
         .testnet-claim-grid {
@@ -441,32 +442,32 @@ export default function TestnetPage() {
           align-items: center;
           gap: 4px;
           padding: 22px 14px;
-          background: rgba(40,26,58,0.5);
-          border: 1px solid rgba(201,168,76,0.25);
+          background: rgba(26,36,58,0.5);
+          border: 1px solid rgba(201,163,76,0.25);
           border-radius: 12px;
           cursor: pointer;
-          color: var(--cream, #F5E8CC);
+          color: var(--cream, #F5E9CC);
           transition: all 0.2s ease;
         }
         .testnet-claim-btn:hover:not(:disabled) {
-          background: rgba(201,168,76,0.10);
-          border-color: rgba(212,160,23,0.6);
+          background: rgba(201,163,76,0.10);
+          border-color: rgba(212,155,23,0.6);
           transform: translateY(-2px);
         }
         .testnet-claim-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .testnet-claim-btn-gold {
-          background: linear-gradient(155deg, rgba(201,168,76,0.18), rgba(123,45,139,0.10));
-          border-color: rgba(212,160,23,0.5);
+          background: linear-gradient(155deg, rgba(201,163,76,0.18), rgba(45,76,139,0.10));
+          border-color: rgba(212,155,23,0.5);
         }
         .testnet-claim-amount {
           font-size: 1.6rem;
           font-weight: 800;
           font-family: var(--font-d, monospace);
-          color: #F5D56E;
+          color: #F5CC6E;
         }
         .testnet-claim-unit {
           font-size: 0.7rem;
-          color: var(--gray, #B8A894);
+          color: var(--gray, #B8AD94);
           letter-spacing: 0.08em;
         }
         .testnet-claim-hint {
@@ -494,9 +495,9 @@ export default function TestnetPage() {
           border: 1px solid rgba(76,175,80,0.3);
         }
         .testnet-status-error {
-          background: rgba(229,57,53,0.12);
-          color: #FCA5A5;
-          border: 1px solid rgba(229,57,53,0.3);
+          background: rgba(229,53,75,0.12);
+          color: #FCA5B0;
+          border: 1px solid rgba(229,53,75,0.3);
         }
 
         .testnet-tip {
@@ -504,24 +505,24 @@ export default function TestnetPage() {
           padding: 10px 14px;
           font-size: 0.78rem;
           line-height: 1.6;
-          color: var(--gray, #B8A894);
-          background: rgba(201,168,76,0.05);
-          border-left: 3px solid rgba(201,168,76,0.4);
+          color: var(--gray, #B8AD94);
+          background: rgba(201,163,76,0.05);
+          border-left: 3px solid rgba(201,163,76,0.4);
           border-radius: 6px;
         }
-        .testnet-tip a { color: #F5D56E; text-decoration: underline; }
+        .testnet-tip a { color: #F5CC6E; text-decoration: underline; }
 
         .testnet-next {
           margin-top: 36px;
           padding: 24px;
-          background: linear-gradient(155deg, rgba(123,45,139,0.18), rgba(22,14,35,0.5));
-          border: 1px solid rgba(123,45,139,0.3);
+          background: linear-gradient(155deg, rgba(45,76,139,0.18), rgba(14,21,35,0.5));
+          border: 1px solid rgba(45,76,139,0.3);
           border-radius: 16px;
         }
         .testnet-next-title {
           font-size: 1.2rem;
           font-weight: 700;
-          color: #F5D56E;
+          color: #F5CC6E;
           margin: 0 0 16px;
           text-align: center;
         }
@@ -535,65 +536,65 @@ export default function TestnetPage() {
           flex-direction: column;
           gap: 6px;
           padding: 16px;
-          background: rgba(20,12,34,0.55);
-          border: 1px solid rgba(201,168,76,0.18);
+          background: rgba(12,19,34,0.55);
+          border: 1px solid rgba(201,163,76,0.18);
           border-radius: 12px;
           text-decoration: none;
-          color: var(--cream, #F5E8CC);
+          color: var(--cream, #F5E9CC);
           transition: all 0.2s ease;
         }
         .testnet-next-card:hover {
-          background: rgba(201,168,76,0.08);
-          border-color: rgba(212,160,23,0.4);
+          background: rgba(201,163,76,0.08);
+          border-color: rgba(212,155,23,0.4);
           transform: translateY(-2px);
         }
         .testnet-next-icon { font-size: 1.6rem; }
         .testnet-next-name {
           font-size: 0.95rem;
           font-weight: 700;
-          color: #F5D56E;
+          color: #F5CC6E;
         }
         .testnet-next-desc {
           font-size: 0.72rem;
           line-height: 1.5;
-          color: var(--gray, #B8A894);
+          color: var(--gray, #B8AD94);
         }
 
         /* Light mode */
         :global(body.light) .testnet-step {
-          background: linear-gradient(155deg, #ffffff, #fdfcf9);
-          border-color: rgba(154,123,46,0.18);
+          background: linear-gradient(155deg, #ffffff, #FDFCF9);
+          border-color: rgba(154,121,46,0.18);
           box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
         :global(body.light) .testnet-info-grid {
-          background: rgba(248,245,240,0.8);
-          border-color: rgba(154,123,46,0.15);
+          background: rgba(248,246,240,0.8);
+          border-color: rgba(154,121,46,0.15);
         }
-        :global(body.light) .testnet-step-title { color: #8A6B17; }
-        :global(body.light) .testnet-hero-title { color: #8A6B17; }
+        :global(body.light) .testnet-step-title { color: #8A6717; }
+        :global(body.light) .testnet-hero-title { color: #8A6717; }
         :global(body.light) .testnet-step-desc,
         :global(body.light) .testnet-info-value,
         :global(body.light) .testnet-list li,
         :global(body.light) .testnet-tip,
-        :global(body.light) .testnet-next-desc { color: #5A4E22; }
-        :global(body.light) .testnet-info-value { color: #1A1208; }
+        :global(body.light) .testnet-next-desc { color: #5A4922; }
+        :global(body.light) .testnet-info-value { color: #0E2148; }
         :global(body.light) .testnet-claim-btn {
           background: #ffffff;
-          border-color: rgba(154,123,46,0.20);
-          color: #1A1208;
+          border-color: rgba(154,121,46,0.20);
+          color: #0E2148;
         }
-        :global(body.light) .testnet-claim-amount { color: #8A6B17; }
+        :global(body.light) .testnet-claim-amount { color: #8A6717; }
         :global(body.light) .testnet-next {
-          background: linear-gradient(155deg, #ffffff, #fdfcf9);
-          border-color: rgba(154,123,46,0.18);
+          background: linear-gradient(155deg, #ffffff, #FDFCF9);
+          border-color: rgba(154,121,46,0.18);
         }
         :global(body.light) .testnet-next-card {
           background: #FAF6EE;
-          border-color: rgba(154,123,46,0.18);
-          color: #1A1208;
+          border-color: rgba(154,121,46,0.18);
+          color: #0E2148;
         }
         :global(body.light) .testnet-next-name,
-        :global(body.light) .testnet-next-title { color: #8A6B17; }
+        :global(body.light) .testnet-next-title { color: #8A6717; }
 
         @media (max-width: 640px) {
           .testnet-step { flex-direction: column; padding: 18px; }

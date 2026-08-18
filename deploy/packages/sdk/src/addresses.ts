@@ -93,7 +93,13 @@ export const ADDRESSES = {
     ReferralRegistry:   "0x2a8C0c5c7414fD4f879ba34883652f306403f0f9",
     PreSale:            "0xC4A6cd57DE0619daCDfD190E9A4D9682Ed78BE23",
     MICELicense:        "0x4d5147aC4aa44eFc1Ae6196FcE4c87567aA4BD8c",
-    EmissionController: "0x37f38f383b4065BA58C7A6Fc1a91d2dF4f9f86F0",
+    // EmissionControllerV2, 2026-08-18. Every active MICE licence earns a fixed
+    // 83.3333 MIC/day (= $100 / $0.01 / 120 days), so issuance scales with the number of
+    // miners and no one's share moves when others join. V1 (0x37f38f38...) is still on
+    // chain but has had MINTER_ROLE and EMISSION_ROLE revoked: it paid nothing, ever
+    // (totalEmitted was 0), because A x D x L x W multiplied out to roughly 1/24,000 and
+    // its liquidity regulator was frozen to LiquidityPoolV6 with no way to repoint.
+    EmissionController: "0x3CEaeB22B262a61B1f974D90E247B8E3e8e7Ddd1",
     MiningPool:         "0x9178292E960cb17380dd329866e725e33200e04f",
     NFTStaking:         "0x4eae6376501E975CbF207473E3277417495fd3fE",
     // The SWAP pool. MICELicense prices its MIC burn off this contract's min(spot, TWAP7d),

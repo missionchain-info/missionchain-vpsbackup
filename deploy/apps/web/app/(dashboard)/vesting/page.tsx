@@ -2,6 +2,7 @@
 
 import SubNav, { EARN_TABS } from '@/components/layout/SubNav'
 import { useApi } from '@/hooks/useApi'
+import { useAccount } from 'wagmi'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 interface VestingScheduleItem {
@@ -83,8 +84,15 @@ const STEPS = [
 ]
 
 export default function VestingPage() {
-  const { data: summaryData, loading: loadingSummary } = useApi<VestingSummary>('/vesting/summary')
-  const { data: schedulesData, loading: loadingSchedules } = useApi<VestingSchedules>('/vesting/schedules')
+  const { address } = useAccount()
+
+  // Both endpoints need a session, and `api()` clears the session on a 401 — so calling
+  // them before a wallet is connected, or after a token has expired, logs the user out
+  // of a page they only opened to look at. Ask only when there is someone to ask about.
+  const { data: summaryData, loading: loadingSummary } =
+    useApi<VestingSummary>('/vesting/summary', { enabled: !!address })
+  const { data: schedulesData, loading: loadingSchedules } =
+    useApi<VestingSchedules>('/vesting/schedules', { enabled: !!address })
 
   const loading = loadingSummary || loadingSchedules
   if (loading) return <LoadingSpinner />

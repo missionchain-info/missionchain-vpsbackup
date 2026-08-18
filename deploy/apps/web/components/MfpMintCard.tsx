@@ -272,18 +272,16 @@ export default function MfpMintCard() {
               MFP-NFT Mint
             </div>
           </div>
-          <div
-            style={{
-              fontSize: 11,
-              padding: '4px 10px',
-              borderRadius: 12,
-              background: 'rgba(212,160,23,0.12)',
-              color: 'var(--gold)',
-              border: '1px solid rgba(212,160,23,0.3)',
-            }}
-          >
-            DAO governance × 10 staking weight
-          </div>
+          {/*
+            Removed: "DAO governance × 10 staking weight".
+
+            Both halves were wrong. NFTStaking has carried no NFT tier multipliers since
+            April 2026 — weight there is amount × time-lock only — so an MFP contributes
+            nothing extra to staking. The ×10 is a REWARD-POOL weight, applied when the
+            USDT reward pools are split, which is a different mechanism entirely. And
+            governance votes by head on the Steward Council, with no token or NFT weight
+            anywhere in DAOGovernor.
+          */}
         </div>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
@@ -297,8 +295,8 @@ export default function MfpMintCard() {
             style={{
               padding: 16,
               borderRadius: 10,
-              background: 'rgba(212,160,23,0.05)',
-              border: '1px dashed rgba(212,160,23,0.4)',
+              background: 'rgba(212,155,23,0.05)',
+              border: '1px dashed rgba(212,155,23,0.4)',
               marginBottom: 16,
             }}
           >
@@ -339,8 +337,8 @@ export default function MfpMintCard() {
                 onClick={cancelMint}
                 style={{
                   width: '100%', marginTop: 8, padding: '8px',
-                  background: 'transparent', border: '1px solid rgba(229,57,53,0.4)',
-                  color: '#FCA5A5', borderRadius: 6, fontSize: 12, cursor: 'pointer',
+                  background: 'transparent', border: '1px solid rgba(229,53,75,0.4)',
+                  color: '#FCA5B0', borderRadius: 6, fontSize: 12, cursor: 'pointer',
                 }}
               >
                 Cancel
@@ -350,11 +348,11 @@ export default function MfpMintCard() {
               <div style={{
                 marginTop: 10,
                 padding: '10px 12px',
-                background: 'rgba(229,57,53,0.10)',
-                border: '1px solid rgba(229,57,53,0.35)',
+                background: 'rgba(229,53,75,0.10)',
+                border: '1px solid rgba(229,53,75,0.35)',
                 borderRadius: 8,
                 fontSize: 12,
-                color: '#FCA5A5',
+                color: '#FCA5B0',
                 lineHeight: 1.5,
               }}>
                 <strong>Mint error:</strong> {mintError}
@@ -363,8 +361,8 @@ export default function MfpMintCard() {
                     onClick={() => setMintError(null)}
                     style={{
                       background: 'transparent',
-                      border: '1px solid rgba(229,57,53,0.5)',
-                      color: '#FCA5A5',
+                      border: '1px solid rgba(229,53,75,0.5)',
+                      color: '#FCA5B0',
                       padding: '4px 12px',
                       borderRadius: 6,
                       fontSize: 11,
@@ -428,9 +426,9 @@ export default function MfpMintCard() {
                     letterSpacing: '0.04em',
                     padding: '6px 14px',
                     borderRadius: 100,
-                    background: 'rgba(212,160,23,0.12)',
-                    color: '#F5D56E',
-                    border: '1px solid rgba(212,160,23,0.35)',
+                    background: 'rgba(212,155,23,0.12)',
+                    color: '#F5CC6E',
+                    border: '1px solid rgba(212,155,23,0.35)',
                     textDecoration: 'none',
                     fontFamily: 'var(--font-d, Inter, sans-serif)',
                     display: 'inline-flex',
@@ -460,7 +458,7 @@ export default function MfpMintCard() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)'
-                      e.currentTarget.style.filter = 'drop-shadow(0 6px 16px rgba(245,213,110,0.20))'
+                      e.currentTarget.style.filter = 'drop-shadow(0 6px 16px rgba(245,204,110,0.20))'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = ''
@@ -511,7 +509,7 @@ export default function MfpMintCard() {
             <div
               style={{
                 fontSize: 14,
-                color: '#F5D56E',
+                color: '#F5CC6E',
                 textTransform: 'uppercase',
                 letterSpacing: '0.2em',
                 marginBottom: 24,
@@ -557,8 +555,8 @@ export default function MfpMintCard() {
                   letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   background: 'transparent',
-                  border: '1px solid #D4A017',
-                  color: '#F5D56E',
+                  border: '1px solid #D49B17',
+                  color: '#F5CC6E',
                   borderRadius: 6,
                   cursor: 'pointer',
                   fontFamily: 'Inter, sans-serif',
@@ -605,8 +603,8 @@ function Stat({
       style={{
         flex: 1,
         padding: 12,
-        background: highlight ? 'rgba(212,160,23,0.08)' : 'var(--bg4)',
-        border: highlight ? '1px solid rgba(212,160,23,0.4)' : '1px solid var(--border)',
+        background: highlight ? 'rgba(212,155,23,0.08)' : 'var(--bg4)',
+        border: highlight ? '1px solid rgba(212,155,23,0.4)' : '1px solid var(--border)',
         borderRadius: 8,
       }}
     >

@@ -19,8 +19,12 @@ interface NetworkStats {
   totalMiceMinted: number
   currentRound: number
   maxMice: number
-  factors: { eBase: number; demandFactor: number; roiFactor: number; warmUpFactor: number }
-  split: { miners: number; staking: number; dao: number; communityNft: number }
+  factors: {
+    eBase: number; demandFactor: number; warmUpFactor: number
+    coverageDays: number; coverageFactor: number; trendFactor: number
+    adoptionFactor: number; brakeEngaged: boolean
+  }
+  split: { miners: number; staking: number; dao: number; communityNft: number; mfpReward: number }
   currentEpoch: number
   lastDistribution: number
 }
@@ -30,6 +34,8 @@ interface MyMiceData {
   activeMice: number
   inMining: number
   idle: number
+  pendingMice?: number
+  activatableMice?: number
   expiredMice: number
   claimableMic: string
   totalMined: string
@@ -38,6 +44,10 @@ interface MyMiceData {
     id: number
     round: number
     mintTime: number
+    activatedAt?: number
+    /** NONE | PENDING | ACTIVE | EXPIRED | RECYCLED, straight from the contract. */
+    status?: string
+    activatable?: boolean
     expiryTime: number
     daysLeft: number
     active: boolean
@@ -126,7 +136,11 @@ export default function MiningPage() {
   )
 
   // Pending MICE = purchased but not yet activated. Prefer API field, fallback to derived
-  const pendingMice = (m.idle ?? Math.max(0, (m.totalMice || 0) - (m.inMining || 0) - (m.expiredMice || 0)))
+  // Bought but not yet activated. The API now reports this directly; the subtraction is
+  // only a fallback for an older API. It used to be the only path, and it read
+  // total − mining − expired — which is zero when the API has mislabelled a pending
+  // licence as expired, and a zero here is what greys out the Activate button.
+  const pendingMice = (m.pendingMice ?? m.idle ?? Math.max(0, (m.totalMice || 0) - (m.inMining || 0) - (m.expiredMice || 0)))
   const totalMinedNum = parseFloat(m.totalMined || '0')
   const unclaimedNum = parseFloat(m.claimableMic || '0')
   const claimedNum = Math.max(0, totalMinedNum - unclaimedNum)
@@ -146,14 +160,35 @@ export default function MiningPage() {
       const signer = await provider.getSigner()
       const miceContract = new ethers.Contract(CONTRACTS.mice, MICE_ABI, signer)
 
-      // Activate: contract method may be `activate()` or per-license. Backend handles which.
-      const tx = await miceContract.activate?.() ?? null
-      if (!tx) throw new Error('Activate not yet enabled on contract')
+      // `activate(uint256)` — one call per licence, or `activateBatch(uint256[])` for
+      // several. This used to call `activate()` with no arguments, guarded by
+      // `?? null` and a comment saying the method "may be activate() or per-license.
+      // Backend handles which." Nobody had checked: there is no zero-argument
+      // `activate()` on the contract, and the SDK ABI carries neither, so the call
+      // resolved to undefined and the button reported "Activate not yet enabled on
+      // contract" no matter what the buyer did. The ABI is written out here rather than
+      // taken from the SDK, which is a build behind the deployed contract.
+      const ACTIVATE_ABI = [
+        'function activate(uint256 licenseId)',
+        'function activateBatch(uint256[] licenseIds)',
+        'function isActivatable(uint256) view returns (bool)',
+      ]
+      const mice = new ethers.Contract(CONTRACTS.mice, ACTIVATE_ABI, signer)
+
+      const ready: bigint[] = []
+      for (const l of (m.licenses || [])) {
+        if (await mice.isActivatable(BigInt(l.id)).catch(() => false)) ready.push(BigInt(l.id))
+      }
+      if (ready.length === 0) throw new Error('No licence is ready to activate yet')
+
+      const tx = ready.length === 1
+        ? await mice.activate(ready[0])
+        : await mice.activateBatch(ready)
       const receipt = await tx.wait()
 
       await api('/mining/record-activate', {
         method: 'POST',
-        body: JSON.stringify({ txHash: receipt.hash }),
+        body: { txHash: receipt.hash },
       }).catch(() => {})
 
       setActionResult({ ok: true, msg: `Activated ${pendingMice} MICE — locked 360 days, daily rewards live. Tx: ${receipt.hash.slice(0, 10)}...` })
@@ -180,13 +215,21 @@ export default function MiningPage() {
       const signer = await provider.getSigner()
       const miningContract = new ethers.Contract(CONTRACTS.mining, MINING_ABI, signer)
 
-      const epoch = n.currentEpoch || 0
-      const tx = await miningContract.claimReward(epoch)
+      // Settle every licence that is currently mining, plus anything already banked from
+      // a licence that expired or was sold on. Passing the ids is what lets the contract
+      // move each licence's earnings into the caller's balance in one transaction.
+      const activeIds = (myMice?.licenses || [])
+        .filter((l) => l.inMining)
+        .map((l) => BigInt(l.id))
+
+      const tx = activeIds.length > 0
+        ? await miningContract.claim(activeIds)
+        : await miningContract.claimAccrued()
       const receipt = await tx.wait()
 
       await api('/mining/record-claim', {
         method: 'POST',
-        body: JSON.stringify({ txHash: receipt.hash, epoch }),
+        body: { txHash: receipt.hash, licenceIds: activeIds.map(String) },
       }).catch(() => {})
 
       setActionResult({ ok: true, msg: `Claimed ${unclaimedNum.toLocaleString()} MIC to your wallet. Tx: ${receipt.hash.slice(0, 10)}...` })
@@ -196,7 +239,7 @@ export default function MiningPage() {
     } finally {
       setClaiming(false)
     }
-  }, [n.currentEpoch, unclaimedNum, loadData])
+  }, [myMice, unclaimedNum, loadData])
 
   if (loading && !net) return <LoadingSpinner />
 
@@ -253,13 +296,14 @@ export default function MiningPage() {
             <span className="mine-section-title">Emission Split (85% Mining Pool = 5.95B MIC)</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24, justifyContent: 'center', padding: '12px 0' }}>
-            <EmissionRing split={n.split || { miners: 60, staking: 25, dao: 10, communityNft: 5 }} />
+            <EmissionRing split={n.split || { miners: 59, staking: 25, dao: 10, communityNft: 5, mfpReward: 1 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
-                { k: 'miners', c: '#C9A84C', l: 'Miners (MICE)' },
-                { k: 'staking', c: '#00BCD4', l: 'Staking Rewards' },
-                { k: 'dao', c: '#C084D4', l: 'DAO Treasury' },
-                { k: 'communityNft', c: '#CD7F32', l: 'Community NFT Pool' },
+                { k: 'miners', c: '#C9A34C', l: 'Miners (MICE)' },
+                { k: 'staking', c: '#72ABE8', l: 'Staking Rewards' },
+                { k: 'dao', c: '#849ED4', l: 'DAO Treasury' },
+                { k: 'communityNft', c: '#CD9E32', l: 'Community NFT Pool' },
+                { k: 'mfpReward', c: '#E8C168', l: 'MFP-NFT Pool' },
               ].map(s => (
                 <div key={s.k} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: s.c }} />
@@ -317,11 +361,11 @@ export default function MiningPage() {
             {actionResult && (
               <div style={{
                 margin: '4px 0 16px', padding: '12px 16px', borderRadius: 10,
-                background: actionResult.ok ? 'rgba(76,175,80,.12)' : 'rgba(244,67,54,.12)',
-                border: `1px solid ${actionResult.ok ? 'rgba(76,175,80,.3)' : 'rgba(244,67,54,.3)'}`,
+                background: actionResult.ok ? 'rgba(76,175,80,.12)' : 'rgba(244,54,78,.12)',
+                border: `1px solid ${actionResult.ok ? 'rgba(76,175,80,.3)' : 'rgba(244,54,78,.3)'}`,
                 display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.7rem',
               }}>
-                <span style={{ flex: 1, color: actionResult.ok ? '#66BB6A' : '#EF5350' }}>{actionResult.msg}</span>
+                <span style={{ flex: 1, color: actionResult.ok ? '#66BB6A' : '#EF5064' }}>{actionResult.msg}</span>
                 <button onClick={() => setActionResult(null)} style={{ background: 'none', border: 'none', color: 'var(--gray2)', cursor: 'pointer', fontSize: '1rem' }}>&times;</button>
               </div>
             )}
@@ -366,10 +410,16 @@ export default function MiningPage() {
                             <td>
                               <span style={{
                                 padding: '2px 8px', borderRadius: 6, fontSize: '0.55rem', fontWeight: 700,
-                                background: l.active ? 'rgba(76,175,80,.15)' : 'rgba(244,67,54,.12)',
-                                color: l.active ? '#66BB6A' : '#EF5350',
+                                background: l.status === 'PENDING' ? 'rgba(212,166,60,.15)'
+                                          : l.active ? 'rgba(76,175,80,.15)' : 'rgba(244,54,78,.12)',
+                                color: l.status === 'PENDING' ? '#D4A63C'
+                                     : l.active ? '#66BB6A' : '#EF5064',
                               }}>
-                                {l.active ? (l.inMining ? 'MINING' : 'ACTIVE') : 'EXPIRED'}
+                                {/* PENDING had no branch here, so a licence bought minutes
+                                    ago — not active, not expired — was labelled EXPIRED. */}
+                                {l.status === 'PENDING' ? 'PENDING'
+                                  : l.active ? (l.inMining ? 'MINING' : 'ACTIVE')
+                                  : 'EXPIRED'}
                               </span>
                             </td>
                           </tr>
@@ -401,7 +451,13 @@ export default function MiningPage() {
                   <span className="mine-f-op"> {'\u00D7'} </span>
                   <span className="mine-f-fn">D</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
                   <span className="mine-f-op"> {'\u00D7'} </span>
-                  <span className="mine-f-fn">R</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
+                  {/* R(t), the ROI regulator, was removed on 2026-08-05 and replaced by
+                      L(H) · G · A(N). The formula still showed R and omitted all three. */}
+                  <span className="mine-f-fn">L</span><span className="mine-f-paren">(</span><span className="mine-f-var">H</span><span className="mine-f-paren">)</span>
+                  <span className="mine-f-op"> {'\u00D7'} </span>
+                  <span className="mine-f-fn">G</span>
+                  <span className="mine-f-op"> {'\u00D7'} </span>
+                  <span className="mine-f-fn">A</span><span className="mine-f-paren">(</span><span className="mine-f-var">N</span><span className="mine-f-paren">)</span>
                   <span className="mine-f-op"> {'\u00D7'} </span>
                   <span className="mine-f-fn">W</span><span className="mine-f-paren">(</span><span className="mine-f-var">t</span><span className="mine-f-paren">)</span>
                 </div>
@@ -409,10 +465,12 @@ export default function MiningPage() {
 
               <div className="mine-params">
                 {[
-                  { sym: 'E_base(t)', color: 'var(--gold)', desc: `Base emission ~${fmtBig(n.factors?.eBase || 22907500)} MIC/day, exponential decay`, icon: '\u26A1' },
-                  { sym: 'D(t)', color: 'var(--cyan)', desc: `Demand factor = ${(n.factors?.demandFactor || 1).toFixed(2)} [0.5 — 1.5]`, icon: '\uD83D\uDCC8' },
-                  { sym: 'R(t)', color: 'var(--purple2)', desc: `ROI regulator = ${(n.factors?.roiFactor || 1).toFixed(2)} clamp(250%/ROI, 0.5, 2.0)`, icon: '\u2696\uFE0F' },
-                  { sym: 'W(t)', color: 'var(--gold2)', desc: `Warm-up factor = ${(n.factors?.warmUpFactor || 0).toFixed(2)} min(1.0, t/30)`, icon: '\uD83D\uDD25' },
+                  { sym: 'E_base(t)', color: 'var(--gold)', desc: `Base emission ~${fmtBig(n.factors?.eBase || 750000)} MIC/day, 8-year half-life`, icon: '\u26A1' },
+                  { sym: 'D(t)', color: 'var(--cyan)', desc: `Demand factor = ${(n.factors?.demandFactor ?? 1).toFixed(2)} [0.5 — 1.5]`, icon: '\uD83D\uDCC8' },
+                  { sym: 'L(H)', color: 'var(--purple2)', desc: `Coverage regulator = ${(n.factors?.coverageFactor ?? 1).toFixed(2)} · H = ${n.factors?.coverageDays ?? 0} days, target 110 · clamp(H/110, 0.02, 2.0)`, icon: '\u2696\uFE0F' },
+                  { sym: 'G', color: 'var(--purple2)', desc: `Trend damper = ${(n.factors?.trendFactor ?? 1).toFixed(2)} clamp(TWAP7/TWAP30, 0.25, 1.0) — slows issuance only, never raises it`, icon: '\uD83D\uDCC9' },
+                  { sym: 'A(N)', color: 'var(--cyan)', desc: `Adoption factor = ${(n.factors?.adoptionFactor ?? 1).toFixed(2)} min(1, \u221A(N/10,000))${(n.factors?.adoptionFactor ?? 1) === 0 ? ' — zero while no licence is active, which halts issuance entirely' : ''}`, icon: '\uD83D\uDC65' },
+                  { sym: 'W(t)', color: 'var(--gold2)', desc: `Warm-up factor = ${(n.factors?.warmUpFactor ?? 0).toFixed(4)} min(1.0, t/30)`, icon: '\uD83D\uDD25' },
                 ].map(p => (
                   <div className="mine-param-row" key={p.sym}>
                     <div className="mine-param-icon">{p.icon}</div>
@@ -427,7 +485,10 @@ export default function MiningPage() {
               <div className="mine-halflife">
                 <div className="mine-halflife-icon">{'\u23F3'}</div>
                 <div className="mine-halflife-text">
-                  <strong>Half-life:</strong> 180 days &mdash; ~3 years to 99% emitted
+                  {/* The contract's HALF_LIFE is 2,922 days. This card said 180 days
+                      while its own E_base line said "8-year half-life" — the two sat
+                      three rows apart. */}
+                  <strong>Half-life:</strong> 2,922 days (8 years) &mdash; issuance halves every 8 years
                 </div>
               </div>
             </>
@@ -488,12 +549,13 @@ function ActionStatCard({ icon, label, value, unit, color, sub, btnLabel, btnDis
   )
 }
 
-function EmissionRing({ split }: { split: { miners: number; staking: number; dao: number; communityNft: number } }) {
+function EmissionRing({ split }: { split: { miners: number; staking: number; dao: number; communityNft: number; mfpReward: number } }) {
   const segments = [
-    { pct: split.miners, color: '#C9A84C' },
-    { pct: split.staking, color: '#00BCD4' },
-    { pct: split.dao, color: '#C084D4' },
-    { pct: split.communityNft, color: '#CD7F32' },
+    { pct: split.miners, color: '#C9A34C' },
+    { pct: split.staking, color: '#72ABE8' },
+    { pct: split.dao, color: '#849ED4' },
+    { pct: split.communityNft, color: '#CD9E32' },
+    { pct: split.mfpReward, color: '#E8C168' },
   ]
   const r = 60, sw = 14, circ = 2 * Math.PI * r
   let offset = 0
@@ -511,8 +573,8 @@ function EmissionRing({ split }: { split: { miners: number; staking: number; dao
         offset += dash
         return el
       })}
-      <text x={75} y={70} textAnchor="middle" fill="#F0E6D3" fontSize="11" fontWeight="800" fontFamily="Montserrat,sans-serif">5.95B</text>
-      <text x={75} y={85} textAnchor="middle" fill="#B09090" fontSize="8" fontFamily="Inter,sans-serif">MIC Pool</text>
+      <text x={75} y={70} textAnchor="middle" fill="#F0E7D3" fontSize="11" fontWeight="800" fontFamily="Montserrat,sans-serif">5.95B</text>
+      <text x={75} y={85} textAnchor="middle" fill="#B09094" fontSize="8" fontFamily="Inter,sans-serif">MIC Pool</text>
     </svg>
   )
 }

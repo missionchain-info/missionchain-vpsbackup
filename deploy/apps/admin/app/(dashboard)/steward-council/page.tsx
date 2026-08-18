@@ -158,7 +158,7 @@ export default function StewardCouncilPage() {
             Master council member registry. {isOwner ? 'Owner can Add / Edit / Delete members.' : 'View-only.'}
           </div>
           <div style={{ fontSize: '0.55rem', color: 'var(--gray2)', marginTop: 6 }}>
-            Phase 1 voting: 1 member = 1 vote. MFP-NFT weighted voting deferred to DAO phase.
+            One member = one vote. Governance is by head — no token, stake or NFT weighting.
           </div>
         </div>
         {isOwner && (
@@ -215,7 +215,7 @@ export default function StewardCouncilPage() {
                       </span>
                       <span style={{
                         marginLeft: 8, fontSize: '0.55rem', padding: '1px 6px', borderRadius: 8,
-                        background: u.kycStatus === 'approved' ? 'rgba(76,175,80,0.15)' : 'rgba(120,120,120,0.15)',
+                        background: u.kycStatus === 'approved' ? 'rgba(76,175,80,0.15)' : 'rgba(114,118,126,0.15)',
                         color: u.kycStatus === 'approved' ? '#4CAF50' : 'var(--gray2)',
                       }}>
                         {u.kycStatus}
@@ -344,7 +344,7 @@ export default function StewardCouncilPage() {
                       ) : (
                         <>
                           <button className="btn btn-outline btn-sm" style={{ fontSize: SZ, marginRight: 4 }} onClick={() => startEdit(m)}>Edit</button>
-                          <button className="btn btn-outline btn-sm" style={{ fontSize: SZ, color: 'var(--crimson2)', borderColor: 'rgba(107,20,40,.3)' }} onClick={() => handleDelete(m.wallet, m.memberId)}>Remove</button>
+                          <button className="btn btn-outline btn-sm" style={{ fontSize: SZ, color: 'var(--crimson2)', borderColor: 'rgba(107,20,31,.3)' }} onClick={() => handleDelete(m.wallet, m.memberId)}>Remove</button>
                         </>
                       )}
                     </td>

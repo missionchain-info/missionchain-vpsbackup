@@ -183,29 +183,21 @@ export async function distributeIfDue(
   emission: Contract,
   pool?: Contract,
 ): Promise<boolean> {
-  // Nothing may be emitted before the SWAP pool holds MIC.
+  // The seeding gate that used to stand here has been removed, and the reason it existed
+  // is the reason it had to go.
   //
-  // Emission is priced against the pool: `brakeEngaged()` compares the 7-day average to
-  // half the opening price, and an unseeded pool reports zero — so the brake trips and
-  // halves issuance over a fall that never happened. Worse, a day emitted early is not
-  // recoverable: the contract mints one day's worth and moves its clock forward, so the
-  // reduced amount is what that day is worth for good.
+  // It guarded EmissionController V1, whose issuance was priced against the pool:
+  // `brakeEngaged()` compared the 7-day average to half the opening price, and an unseeded
+  // pool reports zero, so the brake tripped over a fall that never happened. Holding was
+  // the right call for a controller that read a price.
   //
-  // The deploy runbook says "do not start the keeper before seeding". This is that
-  // instruction written where it cannot be forgotten.
-  if (pool) {
-    try {
-      const seeded = await (pool as any).isSeeded()
-      if (!seeded) {
-        app.log.info('miningKeeper: pool not seeded — holding emission')
-        return false
-      }
-    } catch {
-      // A pool that cannot answer is not a pool we should emit against.
-      app.log.warn('miningKeeper: could not read pool seeding state — holding emission')
-      return false
-    }
-  }
+  // EmissionControllerV2 reads no price at all. Every active licence earns a fixed
+  // quantity of MIC per day, so there is nothing for an unseeded pool to distort. Holding
+  // now costs what it was meant to save: a licence's 360-day term starts at activation and
+  // runs whether or not anyone is emitting, so each held day is a day of term burned for
+  // nothing — 83.33 MIC per licence, unrecoverable.
+  //
+  // `pool` is still taken, and still used by the poke and phase steps in the tick above.
 
   const last = Number(await emission.lastDistribution())
   const now = Math.floor(Date.now() / 1000)

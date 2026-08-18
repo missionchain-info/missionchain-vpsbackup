@@ -49,3 +49,17 @@ MFP-ART/
 reports/
 crontab-backup.txt
 pm2-dump.json
+
+# Ảnh chụp chỉ-đọc và bản sao lưu biên tập. Chưa từng được theo dõi; một lần
+# `git add -A` ngày 18/08/2026 đã kéo 123 file _archive (kèm một git repo lồng
+# nhau, commit thành gitlink hỏng) và 52 file .bak vào index — 83 MB. Chặn ở đây
+# để lần sau không lặp lại.
+_archive/
+_archive_*/
+TEMP/
+_VPS_Backup_*/
+*.bak
+*.bak-*
+*.bak2-*
+*.bak.*
+_bk_*/

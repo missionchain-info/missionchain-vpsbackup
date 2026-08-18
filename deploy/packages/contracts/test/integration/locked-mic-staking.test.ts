@@ -24,6 +24,13 @@ describe("Integration: Locked MIC Staking", function () {
   const ONE_MONTH = 30 * 24 * 3600;
   const PURCHASE_AMOUNT = ethers.parseEther("1000000"); // 1M MIC
 
+  // LockPeriod enum indices
+  const LP_30D = 0;
+  const LP_360D = 3;
+  const THREE_SIXTY_DAYS = 360 * 24 * 3600;
+  // Locked (vesting) MIC may only be staked at the 360-day lock period — the contract
+  // enforces this so vesting tokens can't be cycled through short staking terms.
+
   // Vesting params: 10% cliff at 6 months, 2.5%/month after
   const CLIFF_UNLOCK_BPS = 1000; // 10%
   const MONTHLY_UNLOCK_BPS = 250; // 2.5%
@@ -59,6 +66,17 @@ describe("Integration: Locked MIC Staking", function () {
       buyer.address, PURCHASE_AMOUNT, SIX_MONTHS, CLIFF_UNLOCK_BPS, MONTHLY_UNLOCK_BPS
     );
   });
+
+  /**
+   * The contract's circuit breaker caps unstaking at 10% of the pool per day, so a lone
+   * staker can never withdraw their own position. Park 9× the buyer's amount in the pool
+   * (from treasury's unlocked MIC) so the buyer's unstake stays within the daily limit.
+   */
+  async function fillPoolForUnstake(buyerAmount: bigint) {
+    const whaleAmount = buyerAmount * 9n;
+    await micToken.connect(treasury).approve(await nftStaking.getAddress(), whaleAmount);
+    await nftStaking.connect(treasury).stake(whaleAmount, LP_30D, false);
+  }
 
   describe("Setup verification", function () {
     it("buyer has MIC in wallet but 100% locked", async function () {
@@ -98,8 +116,8 @@ describe("Integration: Locked MIC Staking", function () {
       // Approve NFTStaking to spend buyer's MIC
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
 
-      // Stake with useLockedMic = true, LockPeriod.Days30 = 0
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, true);
+      // Stake with useLockedMic = true — LockPeriod.Days360 is mandatory for locked MIC
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true);
 
       // Verify: MIC moved to staking contract
       expect(await micToken.balanceOf(buyer.address)).to.equal(PURCHASE_AMOUNT - stakeAmount);
@@ -120,9 +138,9 @@ describe("Integration: Locked MIC Staking", function () {
       const stakeAmount = ethers.parseEther("5000");
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
 
-      await expect(nftStaking.connect(buyer).stake(stakeAmount, 0, true))
+      await expect(nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true))
         .to.emit(nftStaking, "Staked")
-        .withArgs(buyer.address, 0, stakeAmount, 0, 0, true); // tier=NoNFT(0), lock=Days30(0), useLockedMic=true
+        .withArgs(buyer.address, 0, stakeAmount, 0, LP_360D, true); // tier=NoNFT(0), lock=Days360(3), useLockedMic=true
     });
 
     it("locked MIC can also be staked with useLockedMic = false (flag is just metadata)", async function () {
@@ -131,7 +149,7 @@ describe("Integration: Locked MIC Staking", function () {
 
       // The transfer succeeds because NFTStaking is an approvedStakingContract
       // regardless of the useLockedMic flag
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, false);
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_30D, false);
       expect(await nftStaking.totalStakedAmount()).to.equal(stakeAmount);
     });
   });
@@ -141,48 +159,46 @@ describe("Integration: Locked MIC Staking", function () {
 
     beforeEach(async function () {
       stakeAmount = ethers.parseEther("10000");
+      await fillPoolForUnstake(stakeAmount);
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, true); // 30-day lock
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true); // 360-day lock (mandatory for locked MIC)
     });
 
     it("cannot unstake before lock period", async function () {
       await expect(
-        nftStaking.connect(buyer).unstake(0)
+        nftStaking.connect(buyer).unstake(1)
       ).to.be.revertedWith("Staking: still locked");
     });
 
-    it("unstake after lock period returns MIC to wallet (still vesting-locked)", async function () {
-      // Fast forward 30 days (staking lock period)
-      await time.increase(30 * 86400);
+    it("cannot unstake at 6 months — the staking lock is 360 days", async function () {
+      await time.increase(SIX_MONTHS);
+      await expect(
+        nftStaking.connect(buyer).unstake(1)
+      ).to.be.revertedWith("Staking: still locked");
+    });
 
-      await nftStaking.connect(buyer).unstake(0);
+    it("unstake after the 360-day lock returns MIC to wallet (partially vested)", async function () {
+      // Fast forward 360 days (staking lock period)
+      await time.increase(THREE_SIXTY_DAYS);
+
+      await nftStaking.connect(buyer).unstake(1);
 
       // MIC returned to buyer wallet
       expect(await micToken.balanceOf(buyer.address)).to.equal(PURCHASE_AMOUNT);
 
-      // But still vesting-locked (cliff hasn't passed — only 30 days, cliff is 6 months)
-      expect(await micToken.lockedBalanceOf(buyer.address)).to.equal(PURCHASE_AMOUNT);
+      // Vesting has progressed: 360d = 180d cliff + 6 monthly steps
+      //   → 10% cliff + 6 × 2.5% = 25% unlocked, 75% still locked
+      const unlocked = (PURCHASE_AMOUNT * 2500n) / 10_000n; // 250,000 MIC
+      expect(await micToken.lockedBalanceOf(buyer.address)).to.equal(PURCHASE_AMOUNT - unlocked);
 
-      // Cannot transfer
-      await expect(
-        micToken.connect(buyer).transfer(other.address, ethers.parseEther("1"))
-      ).to.be.revertedWith("MIC: transfer exceeds unlocked balance");
-    });
-
-    it("after cliff + unstake, partially transferable", async function () {
-      // Fast forward to after cliff (6 months)
-      await time.increase(SIX_MONTHS);
-
-      await nftStaking.connect(buyer).unstake(0);
-
-      // 10% unlocked at cliff = 100,000 MIC
-      const unlocked = ethers.parseEther("100000");
-      const available = await micToken.availableBalanceOf(buyer.address);
-      expect(available).to.equal(unlocked);
-
-      // Can transfer up to unlocked amount
+      // Can transfer up to the unlocked amount…
       await micToken.connect(buyer).transfer(other.address, unlocked);
       expect(await micToken.balanceOf(other.address)).to.equal(unlocked);
+
+      // …but not one wei more
+      await expect(
+        micToken.connect(buyer).transfer(other.address, 1n)
+      ).to.be.revertedWith("MIC: transfer exceeds unlocked balance");
     });
   });
 
@@ -190,7 +206,7 @@ describe("Integration: Locked MIC Staking", function () {
     it("LockManager vesting continues while MIC is staked", async function () {
       const stakeAmount = ethers.parseEther("10000");
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, true);
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true);
 
       // Fast forward 6 months (past cliff)
       await time.increase(SIX_MONTHS);
@@ -208,8 +224,9 @@ describe("Integration: Locked MIC Staking", function () {
 
     it("full vesting while staked → tokens fully transferable after unstake", async function () {
       const stakeAmount = ethers.parseEther("10000");
+      await fillPoolForUnstake(stakeAmount);   // whale takes stakeId 0, buyer gets stakeId 1
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, true);
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true);
 
       // Fast forward past full vesting (6mo cliff + 36mo monthly = 42 months)
       await time.increase(SIX_MONTHS + 36 * ONE_MONTH);
@@ -218,7 +235,7 @@ describe("Integration: Locked MIC Staking", function () {
       expect(await lockManager.lockedOf(buyer.address)).to.equal(0);
 
       // Unstake
-      await nftStaking.connect(buyer).unstake(0);
+      await nftStaking.connect(buyer).unstake(1);
 
       // All MIC now freely transferable
       const balance = await micToken.balanceOf(buyer.address);
@@ -246,7 +263,7 @@ describe("Integration: Locked MIC Staking", function () {
       // Stake 200K from locked balance
       const stakeAmount = ethers.parseEther("200000");
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), stakeAmount);
-      await nftStaking.connect(buyer).stake(stakeAmount, 0, true);
+      await nftStaking.connect(buyer).stake(stakeAmount, LP_360D, true);
 
       // Wallet: 1.3M, LockManager still tracks 1.5M locked (schedule doesn't change)
       expect(await micToken.balanceOf(buyer.address)).to.equal(totalMIC - stakeAmount);
@@ -264,7 +281,7 @@ describe("Integration: Locked MIC Staking", function () {
     it("transfer to NFTStaking succeeds (approved staking contract)", async function () {
       const amount = ethers.parseEther("1000");
       await micToken.connect(buyer).approve(await nftStaking.getAddress(), amount);
-      await nftStaking.connect(buyer).stake(amount, 0, true);
+      await nftStaking.connect(buyer).stake(amount, LP_360D, true);
       expect(await nftStaking.totalStakedAmount()).to.equal(amount);
     });
   });

@@ -10,8 +10,10 @@
  *
  * Idempotent: Purchase.txHash is unique → safe to re-run.
  */
-import { Contract, JsonRpcProvider, formatUnits, formatEther, type EventLog, type Log } from 'ethers'
+import { Contract, JsonRpcProvider, formatUnits, formatEther, type EventLog, type Log, Provider } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
+import { USDT_DECIMALS } from '@missionchain/sdk';
+import { buildArchiveProvider } from './blockchain.js'
 
 const POLL_INTERVAL_MS = 300_000     // 5 minutes — rate-limit safe on BSC testnet
 const BATCH_BLOCKS = 10         // public RPCs throttle aggressively
@@ -57,12 +59,12 @@ export class SeedEventSync {
     }
   }
 
-  private async tryRpc<T>(fn: (provider: JsonRpcProvider) => Promise<T>): Promise<T> {
+  private async tryRpc<T>(fn: (provider: Provider) => Promise<T>): Promise<T> {
     const endpoints = [this.rpcUrl, ...RPC_ENDPOINTS.filter((u) => u !== this.rpcUrl)]
     let lastErr: any
     for (const url of endpoints) {
       try {
-        const provider = new JsonRpcProvider(url)
+        const provider = buildArchiveProvider()
         return await fn(provider)
       } catch (err: any) {
         lastErr = err
@@ -116,7 +118,7 @@ export class SeedEventSync {
         if (!log.args) continue
         const buyer = (log.args.buyer as string).toLowerCase()
         const pkgIndex = Number(log.args.packageIndex as bigint)
-        const usdtAmount = Number(formatUnits(log.args.priceUsdt as bigint, 6))
+        const usdtAmount = Number(formatUnits(log.args.priceUsdt as bigint, USDT_DECIMALS))
         const micAmount = Number(formatEther(log.args.micAmount as bigint))
         const nftCount = Number(log.args.nftCount as bigint)
         const packageName = PACKAGE_NAMES[pkgIndex] ?? `Package ${pkgIndex}`

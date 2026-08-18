@@ -20,8 +20,10 @@ import {
   readMgmtBonusEvents,
   SLOT,
 } from '../services/seedTreasury.js'
+import { formatUnits } from 'ethers'
 import { getActiveAddresses } from '@missionchain/sdk'
 import { isOwnerWallet } from '../plugins/rbac.js'
+import { buildProvider } from '../services/blockchain.js'
 
 export const governanceRoutes: FastifyPluginAsync = async (app) => {
   // ─── GET /governance/council/me — Check current wallet's council status ──
@@ -133,15 +135,81 @@ export const governanceRoutes: FastifyPluginAsync = async (app) => {
     }
   })
 
-  // ─── GET /governance/funds-distribution/presale ─ greyed (Phase 2c+)
-  app.get('/funds-distribution/presale', { preHandler: [app.authenticate] }, async (_req, reply) => {
-    return reply.send({ data: { round: 'PRE_SALE', active: false, message: 'Coming in Phase 2c' } })
-  })
+  /*
+   * Pre-Sale and MICE revenue — the ManagementPool side of Management & Ops.
+   *
+   * These two used to answer "Coming in Phase 2c", which was wrong twice over: the pool is
+   * deployed and has been taking receipts, and both sales are open. What is true is that
+   * this money follows a different rule from the SEED Operational slot. There is no
+   * per-member share and no weekly maxout here — the contract splits every receipt across
+   * six fixed roles whose percentages are compiled in (`uint256[6] private _roleBps`, no
+   * setter) and each role wallet claims its own balance.
+   *
+   * Pre-Sale and MICE share one pool, so the chain cannot say which sale a receipt came
+   * from; both routes therefore return the same pool and say so.
+   */
+  async function readManagementPool() {
+    const { Contract: C, Interface } = await import('ethers')
+    const { multicall } = await import('../services/multicall.js')
+    const { buildProvider } = await import('../services/blockchain.js')
+    const addr = (getActiveAddresses() as Record<string, string>).ManagementPool
 
-  // ─── GET /governance/funds-distribution/mice ─ greyed (Phase 2c+)
-  app.get('/funds-distribution/mice', { preHandler: [app.authenticate] }, async (_req, reply) => {
-    return reply.send({ data: { round: 'MICE', active: false, message: 'Coming in Phase 2c' } })
-  })
+    const ROLES = ['Founder', 'Architect', 'CTO', 'Social Media', 'Global Training', 'Tech Team']
+    const iface = new Interface([
+      'function getRoleAddress(uint256) view returns (address)',
+      'function getRoleBps(uint256) view returns (uint256)',
+      'function pendingAmount(uint256) view returns (uint256)',
+      'function totalReceived() view returns (uint256)',
+      'function bonusPending() view returns (uint256)',
+    ])
+    const provider = buildProvider()
+    const calls = [
+      { target: addr, iface, fn: 'totalReceived' },
+      { target: addr, iface, fn: 'bonusPending' },
+      ...ROLES.flatMap((_, i) => [
+        { target: addr, iface, fn: 'getRoleAddress', args: [i] },
+        { target: addr, iface, fn: 'getRoleBps', args: [i] },
+        { target: addr, iface, fn: 'pendingAmount', args: [i] },
+      ]),
+    ]
+    const r = await multicall(provider, calls)
+    const usdt = (v: any) => Number(formatUnits(v ?? 0n, 18))
+
+    return {
+      contract: addr,
+      totalReceived: usdt(r[0]?.[0]),
+      bonusPending: usdt(r[1]?.[0]),
+      roles: ROLES.map((name, i) => ({
+        index: i,
+        name,
+        wallet: r[2 + i * 3]?.[0] ? String(r[2 + i * 3]![0]) : null,
+        sharePctBps: r[3 + i * 3]?.[0] ? Number(r[3 + i * 3]![0]) : 0,
+        pendingUsdt: usdt(r[4 + i * 3]?.[0]),
+      })),
+    }
+  }
+
+  const managementPoolHandler = (round: string) =>
+    async (_req: any, reply: any) => {
+      try {
+        const pool = await readManagementPool()
+        return reply.send({
+          data: {
+            round,
+            active: true,
+            model: 'six-role',
+            note: 'Pre-Sale and MICE share one ManagementPool, so receipts cannot be attributed to a single sale. Roles are fixed in the contract and each role wallet claims its own balance; there is no weekly maxout on this pool.',
+            ...pool,
+          },
+        })
+      } catch (e: any) {
+        app.log.error({ err: e?.message }, `funds-distribution/${round} on-chain read failed`)
+        return reply.status(503).send({ error: 'CHAIN_READ_FAILED', message: 'Could not read ManagementPool' })
+      }
+    }
+
+  app.get('/funds-distribution/presale', { preHandler: [app.authenticate] }, managementPoolHandler('PRE_SALE'))
+  app.get('/funds-distribution/mice', { preHandler: [app.authenticate] }, managementPoolHandler('MICE'))
 
   // ─── GET /governance/funds-distribution/seed/claim-info ────────────────
   // Returns the on-chain contract + ABI + amount info needed for FE to
@@ -197,7 +265,7 @@ export const governanceRoutes: FastifyPluginAsync = async (app) => {
     let amount = body.amountUsdt ?? 0
     try {
       const { ethers } = await import('ethers')
-      const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/')
+      const provider = buildProvider()
       const tx = await provider.getTransaction(body.txHash)
       const receipt = await provider.getTransactionReceipt(body.txHash)
       if (!tx || !receipt || receipt.status !== 1) {
@@ -300,8 +368,20 @@ export const governanceRoutes: FastifyPluginAsync = async (app) => {
             totalClaimed:   slots.reserved.totalReleased,
             balance:        slots.reserved.balance,
           },
-          presale:             { active: false, status: 'phase-2c' },
-          mice:                { active: false, status: 'phase-2c' },
+          /*
+           * The Pre-Sale and MICE share does not pass through SeedBudgetV5c at all — it goes
+           * to ManagementPool, a separate contract. Reporting it as an inactive "phase 2c"
+           * item hid a pool that has been taking receipts since the sales opened, which is
+           * why the treasury summary appeared to be SEED-only.
+           */
+          managementOps: await readManagementPool()
+            .then((p) => ({
+              active: true,
+              totalReceived: p.totalReceived,
+              bonusPending: p.bonusPending,
+              contract: p.contract,
+            }))
+            .catch(() => ({ active: false, totalReceived: 0, bonusPending: 0, contract: null })),
         },
       })
     } catch (e: any) {

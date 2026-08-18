@@ -67,9 +67,9 @@ export default function DevicePreview() {
         aria-label="Display mode"
         style={{
           position: 'fixed', top: 8, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 2147483000, display: 'flex', alignItems: 'center', gap: 2,
-          padding: 4, borderRadius: 999,
-          background: 'rgba(18,18,28,.92)', border: '1px solid rgba(255,255,255,.12)',
+          zIndex: 2147483000, display: 'flex', alignItems: 'center', gap: 1,
+          padding: 2, borderRadius: 999,
+          background: 'rgba(14,33,72,.92)', border: '1px solid rgba(212,166,60,.28)',
           backdropFilter: 'blur(8px)', boxShadow: '0 6px 24px rgba(0,0,0,.35)',
           fontFamily: 'system-ui, sans-serif',
         }}
@@ -84,21 +84,21 @@ export default function DevicePreview() {
               aria-pressed={on}
               title={m.label}
               style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 999, cursor: 'pointer',
-                fontSize: 12.5, fontWeight: 600, lineHeight: 1,
+                display: 'flex', alignItems: 'center', gap: 3,
+                padding: '3px 7px', borderRadius: 999, cursor: 'pointer',
+                fontSize: 9, fontWeight: 600, lineHeight: 1,
                 border: 'none',
                 background: on ? 'rgba(255,255,255,.16)' : 'transparent',
                 color: on ? '#fff' : 'rgba(255,255,255,.6)',
               }}
             >
-              <span style={{ fontSize: 14 }}>{m.icon}</span>
+              <span style={{ fontSize: 10 }}>{m.icon}</span>
               <span>{m.label}</span>
             </button>
           )
         })}
         {mode !== 'laptop' && (
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,.45)', padding: '0 8px 0 4px' }}>
+          <span style={{ fontSize: 8, color: 'rgba(255,255,255,.45)', padding: '0 8px 0 4px' }}>
             {active.w}px
           </span>
         )}
@@ -108,7 +108,7 @@ export default function DevicePreview() {
         <div
           style={{
             position: 'fixed', inset: 0, zIndex: 2147482000,
-            background: '#0a0a12', display: 'flex', justifyContent: 'center',
+            background: '#091530', display: 'flex', justifyContent: 'center',
             alignItems: 'flex-start', overflow: 'auto', padding: '52px 16px 16px',
           }}
         >

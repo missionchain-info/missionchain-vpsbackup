@@ -7,6 +7,7 @@ import {
   MockUSDT,
   ReferralRegistry,
   RevenueRouter,
+  MockRewardReceiver,
 } from "../../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
@@ -17,24 +18,42 @@ const PER_ROUND    = 20_000n;
 const DURATION     = 360n * 24n * 3600n; // 360 days in seconds
 
 // Round prices (USDT 6 decimals)
-const ROUND_PRICES = [
-  100n * 1_000_000n,  // Round 1: $100
-  200n * 1_000_000n,  // Round 2: $200
-  300n * 1_000_000n,  // Round 3: $300
-  400n * 1_000_000n,  // Round 4: $400
-  500n * 1_000_000n,  // Round 5: $500
-];
+/**
+ * Round prices as dollars, converted here rather than copied from the contract.
+ *
+ * These used to read `100n * 1_000_000n` — the contract's own (wrong) 6-decimal literal
+ * restated in the test. Comparing a contract against a copy of itself proves the two
+ * agree and nothing else, which is why 37 green tests sat on top of a price of
+ * $0.0000000001 per licence. Say what a licence should cost in dollars and let
+ * `parseEther` do the conversion; then a wrong scale in the contract fails here.
+ */
+const ROUND_PRICE_USD = [100, 200, 300, 400, 500];
+const ROUND_PRICES = ROUND_PRICE_USD.map((d) => ethers.parseEther(String(d)));
 
-// Fixed MIC price for testnet: $0.01 per MIC = 10000 (scale: 1e6 per $1 → 10000 = $0.01 in 1e6)
-// micPriceUSDT = 10000 means $0.01 = 10000 units (with USDT having 6 decimals, $1 = 1e6)
-// So $0.01 = 10000 (in 1e6 scale: 0.01 * 1e6 = 10000)
-const MIC_PRICE_USDT = 10_000n; // $0.01 per MIC in USDT units (6 decimals: 0.01 * 1e6 = 10000)
+/**
+ * The MIC reference price the mock pool publishes: $0.01 per MIC.
+ *
+ * `LiquidityPoolV6.spotPrice()` returns `effectiveUsdt * 1e18 / reserveMic` — USDT wei
+ * per 1e18 MIC — so with 18-decimal BSC-USD the price is 18-decimal too. Written as
+ * `10_000n` (the 6-decimal form) it was a trillionth of a cent, and the burn came out
+ * 10^12 times too small.
+ */
+const MIC_PRICE_USDT = ethers.parseEther("0.01");
 
-// For $100 USDT price: 50% USDT = $50, 50% MIC burned
-// MIC amount = usdtHalf * 1e12 / micPriceUSDT
-// = 50e6 * 1e12 / 10000 = 50e6 * 1e12 / 1e4 = 50 * 1e14 = 5e15 = 5_000_000 MIC
+/**
+ * MIC a buyer must burn for a given USDT half.
+ *
+ * Stated from the economics, not lifted from the contract: at $0.01 per MIC, a $50 half
+ * has to burn 5,000 MIC. `expectedMicFor` below asserts exactly that in plain numbers, so
+ * a scale error in either the contract or this helper is visible rather than cancelled.
+ */
 function calcMicBurn(usdtHalf: bigint): bigint {
-  return (usdtHalf * BigInt(1e12)) / MIC_PRICE_USDT;
+  return (usdtHalf * 10n ** 18n) / MIC_PRICE_USDT;
+}
+
+/** $50 at $0.01/MIC = 5,000 MIC — the sanity anchor for every burn assertion. */
+function expectedMicFor(usdDollars: number, micPriceUsd: number): bigint {
+  return ethers.parseEther(String(usdDollars / micPriceUsd));
 }
 
 // ─── Fixture ─────────────────────────────────────────────────────────────────
@@ -50,18 +69,19 @@ interface Fixture {
   buyer2:          SignerWithAddress;
   referrer:        SignerWithAddress;
   referrer2:       SignerWithAddress;
-  // RevenueRouter recipient wallets
-  marketing:       SignerWithAddress;
-  management:      SignerWithAddress;
-  treasury:        SignerWithAddress;
-  staking:         SignerWithAddress;
-  liquidity:       SignerWithAddress;
+  // RevenueRouter sinks — CONTRACTS (the router calls receiveAndDistribute()/receiveUSDT())
+  marketing:       MockRewardReceiver;
+  management:      MockRewardReceiver;
+  treasury:        MockRewardReceiver;
+  staking:         MockRewardReceiver;
+  liquidity:       MockRewardReceiver;
+  miPool:          MockRewardReceiver;
+  pool:            any;
 }
 
 async function deployFixture(): Promise<Fixture> {
   const [
     admin, buyer, buyer2, referrer, referrer2,
-    marketing, management, treasury, staking, liquidity,
   ] = await ethers.getSigners();
 
   // MockUSDT
@@ -79,19 +99,36 @@ async function deployFixture(): Promise<Fixture> {
     admin.address,
   ) as unknown as ReferralRegistry;
 
-  // RevenueRouter
+  // Router sinks (contracts — the router CALLS them) + M&I overflow sink
+  const MRFactory = await ethers.getContractFactory("MockRewardReceiver");
+  const newSink = async () =>
+    await MRFactory.deploy(await usdt.getAddress()) as unknown as MockRewardReceiver;
+  const marketing  = await newSink();
+  const management = await newSink();
+  const treasury   = await newSink();
+  const staking    = await newSink();
+  const liquidity  = await newSink();
+  const miPool     = await newSink();
+
+  // RevenueRouter — 8 args, referral slice → ReferralRegistry
   const RRFactory = await ethers.getContractFactory("RevenueRouter");
   const revenueRouter = await RRFactory.deploy(
     await usdt.getAddress(),
-    marketing.address,
-    management.address,
-    treasury.address,
-    staking.address,
-    liquidity.address,
+    await referralRegistry.getAddress(),
+    await marketing.getAddress(),
+    await management.getAddress(),
+    await treasury.getAddress(),
+    await staking.getAddress(),
+    await liquidity.getAddress(),
     admin.address,
   ) as unknown as RevenueRouter;
+  await referralRegistry.connect(admin).setIncentivePool(await miPool.getAddress());
 
   // MICELicense
+  // Mock pool: MICE reads min(spot, twap7d) from it. Both set to $0.01 here.
+  const pool = await (await ethers.getContractFactory("MockLiquidityPoolV6")).deploy();
+  await (pool as any).setPrices(MIC_PRICE_USDT, MIC_PRICE_USDT, MIC_PRICE_USDT);
+
   const MICEFactory = await ethers.getContractFactory("MICELicense");
   const mice = await MICEFactory.deploy(
     await usdt.getAddress(),
@@ -99,6 +136,7 @@ async function deployFixture(): Promise<Fixture> {
     await referralRegistry.getAddress(),
     await revenueRouter.getAddress(),
     admin.address,
+    await pool.getAddress(),
     MIC_PRICE_USDT,
   ) as unknown as MICELicense;
 
@@ -111,7 +149,10 @@ async function deployFixture(): Promise<Fixture> {
   await revenueRouter.connect(admin).grantRole(DIST_ROLE, await mice.getAddress());
 
   // Mint USDT to buyers (enough for multiple rounds)
-  const USDT_AMOUNT = 10_000_000n * 1_000_000n; // $10M
+  // $10M in 18-decimal USDT. Written as `10_000_000n * 1_000_000n` this funded each
+  // buyer with $0.00001 — enough only because the licence prices were wrong by the
+  // same factor, so the two errors cancelled and the suite stayed green.
+  const USDT_AMOUNT = ethers.parseEther("10000000"); // $10M
   await (usdt as any).mint(buyer.address, USDT_AMOUNT);
   await (usdt as any).mint(buyer2.address, USDT_AMOUNT);
   await (usdt as any).mint(referrer.address, USDT_AMOUNT);
@@ -138,7 +179,7 @@ async function deployFixture(): Promise<Fixture> {
   return {
     mice, mic, usdt, referralRegistry, revenueRouter,
     admin, buyer, buyer2, referrer, referrer2,
-    marketing, management, treasury, staking, liquidity,
+    marketing, management, treasury, staking, liquidity, miPool, pool,
   };
 }
 
@@ -150,6 +191,16 @@ function usdtHalf(roundPrice: bigint): bigint {
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
+
+/** A licence must cost real money. This is the assertion the old suite never made. */
+function expectDollars(actual: bigint, dollars: number, label: string) {
+  const expected = ethers.parseEther(String(dollars));
+  expect(actual, `${label}: expected $${dollars}`).to.equal(expected);
+  // A 6-decimal literal would land a trillion times low; catch that shape explicitly.
+  expect(actual, `${label}: looks like a 6-decimal amount`).to.be.greaterThan(
+    ethers.parseEther("0.01"),
+  );
+}
 
 describe("MICELicense", () => {
   let f: Fixture;
@@ -234,15 +285,46 @@ describe("MICELicense", () => {
       expect(await f.mice.balanceOf(f.buyer.address, licenseId)).to.equal(1n);
     });
 
-    it("records correct mint and expiry times", async () => {
+    it("the 360-day term starts at ACTIVATION, not at purchase", async () => {
       const tx = await f.mice.connect(f.buyer).buyLicense(1n);
       const receipt = await tx.wait();
       const block = await ethers.provider.getBlock(receipt!.blockNumber);
       const mintTime = BigInt(block!.timestamp);
 
-      const info = await f.mice.licenses(0n);
+      let info = await f.mice.licenses(0n);
       expect(info.mintTime).to.equal(mintTime);
-      expect(info.expiryTime).to.equal(mintTime + DURATION);
+      // Not yet activated: no clock is running, so the 72h wait costs the buyer nothing.
+      expect(info.activatedAt).to.equal(0n);
+      expect(info.expiryTime).to.equal(0n);
+
+      await time.increase(72 * 3600 + 1);
+      await (f.mice as any).activate(0n);
+      info = await f.mice.licenses(0n);
+      expect(info.activatedAt).to.be.gt(0n);
+      expect(info.expiryTime).to.equal(info.activatedAt + DURATION);
+    });
+
+    it("can be activated the moment it is bought", async () => {
+      // The 72-hour wait was removed: the 360-day term already starts at activation, so
+      // all the delay achieved was postponing the buyer's first day of rewards.
+      await f.mice.connect(f.buyer).buyLicense(1n);
+      expect(await (f.mice as any).isActivatable(0n)).to.be.true;
+      await (f.mice as any).activate(0n);
+      expect(await (f.mice as any).activeLicenses()).to.equal(1n);
+    });
+
+    it("refuses to activate the same licence twice", async () => {
+      await f.mice.connect(f.buyer).buyLicense(1n);
+      await (f.mice as any).activate(0n);
+      await expect((f.mice as any).activate(0n)).to.be.revertedWith("MICE: not activatable");
+    });
+
+    it("activeLicenses only counts activated licences", async () => {
+      await f.mice.connect(f.buyer).buyLicense(3n);
+      expect(await (f.mice as any).activeLicenses()).to.equal(0n);
+      await time.increase(72 * 3600 + 1);
+      await (f.mice as any).activateBatch([0n, 1n]);
+      expect(await (f.mice as any).activeLicenses()).to.equal(2n);
     });
 
     it("increments totalMinted", async () => {
@@ -250,29 +332,31 @@ describe("MICELicense", () => {
       expect(await f.mice.totalMinted()).to.equal(1n);
     });
 
-    it("USDT half (net after referral=0) goes to RevenueRouter", async () => {
+    it("the full USDT half is routed 6 ways on GROSS (no referrer → 10% to M&I)", async () => {
       const half = usdtHalf(ROUND_PRICES[0]);
-      const routerBefore = await f.usdt.balanceOf(await f.revenueRouter.getAddress());
-      // RevenueRouter distributes immediately, so check downstream recipients
-      // Actually revenueRouter pulls and distributes in one tx — router balance should be 0 after
       await f.mice.connect(f.buyer).buyLicense(1n);
 
       // Router should have 0 balance after distribution
       expect(await f.usdt.balanceOf(await f.revenueRouter.getAddress())).to.equal(0n);
 
-      // Downstream recipients should have received their share
-      // Marketing = 35%, Management = 7.5%, Treasury = 12.5%, Staking = 5%, Liquidity = 40%
-      const toMarketing  = (half * 3500n) / 10000n;
+      // Model V2: Referral 10% · Marketing 25% · Mgmt 7.5% · Treasury 12.5% · Staking 5% · Liquidity 40%
+      const toReferral   = (half * 1000n) / 10000n;
+      const toMarketing  = (half * 2500n) / 10000n;
       const toManagement = (half * 750n)  / 10000n;
       const toTreasury   = (half * 1250n) / 10000n;
       const toStaking    = (half * 500n)  / 10000n;
-      const toLiquidity  = half - toMarketing - toManagement - toTreasury - toStaking;
+      const toLiquidity  = half - toReferral - toMarketing - toManagement - toTreasury - toStaking;
 
-      expect(await f.usdt.balanceOf(f.marketing.address)).to.equal(toMarketing);
-      expect(await f.usdt.balanceOf(f.management.address)).to.equal(toManagement);
-      expect(await f.usdt.balanceOf(f.treasury.address)).to.equal(toTreasury);
-      expect(await f.usdt.balanceOf(f.staking.address)).to.equal(toStaking);
-      expect(await f.usdt.balanceOf(f.liquidity.address)).to.equal(toLiquidity);
+      expect(await f.marketing.received()).to.equal(toMarketing);
+      expect(await f.management.received()).to.equal(toManagement);
+      expect(await f.treasury.received()).to.equal(toTreasury);
+      expect(await f.staking.received()).to.equal(toStaking);
+      expect(await f.liquidity.received()).to.equal(toLiquidity);
+
+      // This buyer has no referrer → the whole 10% overflows to Milestones & Incentives,
+      // and nothing is stranded in the registry.
+      expect(await f.miPool.received()).to.equal(toReferral);
+      expect(await f.usdt.balanceOf(await f.referralRegistry.getAddress())).to.equal(0n);
     });
 
     it("emits LicensePurchased event", async () => {
@@ -292,35 +376,25 @@ describe("MICELicense", () => {
       // We need MICELicense to call setReferrer — do it via buyLicense with referrer param
     });
 
-    it("pays F1 7% and F2 3% on USDT half, net goes to RevenueRouter", async () => {
+    it("pays F1 7% of the USDT half; the unused F2 3% overflows to M&I", async () => {
       const price = ROUND_PRICES[0]; // $100
       const half  = usdtHalf(price);  // $50 USDT (6 dec) = 50_000_000
 
-      // Set up referral chain: buyer → referrer (F1) → referrer2 (F2)
-      // First, referrer buys to register themselves (no referrer for referrer)
-      // Actually we need to set referrer for buyer directly via buyLicense(qty, referrer)
-      // referrer2 must be registered first (no F2 if referrer has no referrer)
-
-      // Buy with referrer (sets referrer as F1 for buyer)
+      // Buy with referrer (sets referrer as F1 for buyer). `referrer` has no upline,
+      // so there is no F2 and that 3% share overflows to Milestones & Incentives.
       const f1BalBefore = await f.usdt.balanceOf(f.referrer.address);
       await f.mice.connect(f.buyer)["buyLicense(uint256,address)"](1n, f.referrer.address);
 
-      const f1BalAfter = await f.usdt.balanceOf(f.referrer.address);
-      const f1Received = f1BalAfter - f1BalBefore;
+      const f1Received = await f.usdt.balanceOf(f.referrer.address) - f1BalBefore;
 
-      // F1 should receive 7% of the USDT half
       const f1Expected = (half * 700n) / 10000n; // 7%
+      const f2Expected = (half * 300n) / 10000n; // 3% — nobody to pay
       expect(f1Received).to.equal(f1Expected);
+      expect(await f.miPool.received()).to.equal(f2Expected);
 
-      // Net to router = half - F1 - F2 (no F2 since referrer has no referrer)
-      const f2Expected = (half * 300n) / 10000n; // 3%
-      // F2 stays in referralRegistry (no F2 address set)
-      const routerExpectedNet = half - f1Expected - f2Expected;
-
-      // Downstream liquidity should reflect net
-      // Marketing gets 35% of net
-      const expectedMarketing = (routerExpectedNet * 3500n) / 10000n;
-      expect(await f.usdt.balanceOf(f.marketing.address)).to.equal(expectedMarketing);
+      // Marketing still gets 25% of GROSS — referral is not taken off the top.
+      expect(await f.marketing.received()).to.equal((half * 2500n) / 10000n);
+      expect(await f.usdt.balanceOf(await f.referralRegistry.getAddress())).to.equal(0n);
     });
 
     it("pays both F1 and F2 when referrer chain is 2 deep", async () => {
@@ -340,8 +414,8 @@ describe("MICELicense", () => {
       const f2BalBefore = await f.usdt.balanceOf(f.referrer2.address);
 
       // buyer2 also needs usdt and mic approved
-      await (f.usdt as any).mint(f.buyer2.address, 10_000_000n * 1_000_000n);
-      await f.usdt.connect(f.buyer2).approve(await f.mice.getAddress(), 10_000_000n * 1_000_000n);
+      await (f.usdt as any).mint(f.buyer2.address, ethers.parseEther("10000000"));
+      await f.usdt.connect(f.buyer2).approve(await f.mice.getAddress(), ethers.parseEther("10000000"));
       await f.mic.connect(f.admin).transfer(f.buyer2.address, 50_000_000n * 10n ** 18n);
       await f.mic.connect(f.buyer2).approve(await f.mice.getAddress(), 50_000_000n * 10n ** 18n);
 
@@ -433,8 +507,11 @@ describe("MICELicense", () => {
   // ── isActive ────────────────────────────────────────────────────────────────
 
   describe("isActive", () => {
-    it("returns true for a freshly minted license", async () => {
+    it("is false until activated, true after", async () => {
       await f.mice.connect(f.buyer).buyLicense(1n);
+      expect(await f.mice.isActive(0n)).to.be.false;   // bought, not mining yet
+      await time.increase(72 * 3600 + 1);
+      await (f.mice as any).activate(0n);
       expect(await f.mice.isActive(0n)).to.be.true;
     });
 
@@ -492,46 +569,67 @@ describe("MICELicense", () => {
   // ── Slot recycling ──────────────────────────────────────────────────────────
 
   describe("Slot recycling (expired license reuse)", () => {
-    it("expired license can be recycled — same ID re-used", async () => {
+    it("expired license can be recycled and the seat re-sold", async () => {
       await f.mice.connect(f.buyer).buyLicense(1n);
       const licenseId = 0n;
 
-      // Fast forward past expiry
+      await time.increase(72 * 3600 + 1);
+      await (f.mice as any).activate(licenseId);
+      expect(await (f.mice as any).activeLicenses()).to.equal(1n);
+
       await time.increase(Number(DURATION) + 1);
       expect(await f.mice.isActive(licenseId)).to.be.false;
 
-      // Recycle
       await f.mice.recycleLicense(licenseId);
+      expect(await f.mice.recycledCount()).to.equal(1n);
+      expect(await (f.mice as any).activeLicenses()).to.equal(0n);
 
-      // totalMinted should not increase (same slot reused)
-      // But buyer2 can buy a new one that takes the recycled slot
-      const totalMintedBefore = await f.mice.totalMinted();
+      // The freed seat is handed to the next buyer, and totalMinted does NOT grow —
+      // that is exactly what makes renewals possible once 100,000 are minted.
+      const before = await f.mice.totalMinted();
       await f.mice.connect(f.buyer2).buyLicense(1n);
-      // totalMinted does NOT increase for recycled slots
-      // Implementation: recycled IDs go into a free-list
-      // The recycled slot (ID 0) is now re-used if free-list logic is in place
-      // OR new licenses always increment — spec says "slot recycling — same ID can be re-sold"
-      // Verify the recycled slot is now active again for buyer2
-      const newInfo = await f.mice.licenses(licenseId);
-      // The license was recycled and re-minted — check it's active
-      // (Implementation detail: depends on whether recycled IDs are returned)
-      // At minimum, verify buyer2 received a license
-      expect(await f.mice.totalMinted()).to.be.gte(totalMintedBefore);
+      expect(await f.mice.totalMinted()).to.equal(before);
+      expect(await f.mice.recycledCount()).to.equal(0n);
+      expect((await f.mice.licenses(licenseId)).owner).to.equal(f.buyer2.address);
     });
   });
 
   // ── Admin ────────────────────────────────────────────────────────────────────
 
-  describe("Admin", () => {
-    it("non-admin cannot call admin functions", async () => {
-      await expect(
-        (f.mice.connect(f.buyer) as any).setMicPriceUSDT(20_000n)
-      ).to.be.reverted;
+  describe("Pricing comes from the pool, not from an admin", () => {
+    it("there is no admin price setter at all", async () => {
+      expect((f.mice as any).setMicPriceUSDT).to.equal(undefined);
+      expect((f.mice as any).micPriceUSDT).to.equal(undefined);
     });
 
-    it("admin can update MIC price", async () => {
-      await f.mice.connect(f.admin).setMicPriceUSDT(20_000n);
-      expect(await f.mice.micPriceUSDT()).to.equal(20_000n);
+    it("burns the economically correct amount: $50 at $0.01 = 5,000 MIC", async () => {
+      const half = ROUND_PRICES[0] / 2n;                 // $50
+      const before = await f.mic.balanceOf(f.buyer.address);
+      await (f.mice.connect(f.buyer) as any)["buyLicense(uint256)"](1);
+      const burned = before - (await f.mic.balanceOf(f.buyer.address));
+      // Independent of the contract's own formula: $50 / $0.01 = 5,000 MIC
+      expect(burned).to.equal(ethers.parseEther("5000"));
+      expect(burned).to.equal(calcMicBurn(half));
+    });
+
+    it("quoteMicRequired matches what is actually pulled", async () => {
+      const quoted = await (f.mice as any).quoteMicRequired(2);
+      const before = await f.mic.balanceOf(f.buyer.address);
+      await (f.mice.connect(f.buyer) as any)["buyLicense(uint256)"](2);
+      expect(before - (await f.mic.balanceOf(f.buyer.address))).to.equal(quoted);
+    });
+
+    it("uses the LOWER of spot and 7-day average, so pumping spot does not help", async () => {
+      // Spot pumped 10x; the quote must still use the unchanged average.
+      await (f.pool as any).setPrices(MIC_PRICE_USDT * 10n, MIC_PRICE_USDT, MIC_PRICE_USDT);
+      const quoted = await (f.mice as any).quoteMicRequired(1);
+      expect(quoted).to.equal(calcMicBurn(ROUND_PRICES[0] / 2n));
+    });
+
+    it("a depressed spot makes the buyer owe MORE, not less", async () => {
+      const atPar = await (f.mice as any).quoteMicRequired(1);
+      await (f.pool as any).setPrices(MIC_PRICE_USDT / 2n, MIC_PRICE_USDT, MIC_PRICE_USDT);
+      expect(await (f.mice as any).quoteMicRequired(1)).to.equal(atPar * 2n);
     });
   });
 });

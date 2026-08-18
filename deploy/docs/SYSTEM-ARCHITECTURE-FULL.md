@@ -446,7 +446,7 @@ Oracle checks MFPNFT first, then CommunityNFT → setUserTier()
 │                                                                     │
 │  MODULE 4: EMISSION & MINING                                        │
 │  ├── Emission Dashboard                                             │
-│  │   ├── Today's E(t) = E_base × D(t) × R(t) × W(t)              │
+│  │   ├── E(t) = E_base × D(t) × L(H) × W(t) × A(N)               │
 │  │   ├── Cumulative Emitted / Remaining                             │
 │  │   ├── Split Ratio Adjustment (±10%) ← RED NOTE                 │
 │  │   │   └── Miners/Staking/DAO/Burn sliders (total must = 100%)  │
@@ -628,7 +628,7 @@ DISPLAYS:
   • Round progress indicator (20K per round)
   • Active licenses / 100,000 max
   • User's licenses with expiry countdown
-  • Payment: 50% USDT + 50% MIC (burned). USDT portion → RevenueRouter (35% Marketing / 7.5% Mgmt / 12.5% Treasury + 5% Reserved Staking / 40% Liquidity)
+  • Payment: 50% USDT + 50% MIC (burned). USDT portion → RevenueRouter (35% Marketing / 7.5% Mgmt / 12.5% Treasury + 5% Listing Reserve / 40% Liquidity)
   • Referral: F1:7% + F2:3% on USDT portion only
   • "Purchase" + "Renew" buttons
 ```
@@ -657,7 +657,7 @@ DISPLAYS:
   • Live emission counter (animated, updates every 5s)
     "Total Mined: 1,234,567,890 MIC" with number rolling animation
   • Split visualization:
-    60% Miners | 20% Staking | 15% DAO | 5% Burn
+    59% Miners | 25% Staking | 10% DAO | 5% Community NFT | 1% MFP-NFT
     (each with running counter)
   • Personal mining rewards (pending + claimed)
   • Hindex score breakdown
@@ -715,9 +715,10 @@ DISPLAYS:
   • Time-Lock Options (no NFT involvement):
     | Lock Period | Multiplier |
     | 30 days     | ×1.0       |
-    | 90 days     | ×1.25      |
-    | 180 days    | ×1.5       |
-    | 360 days    | ×2.0       |
+    | 90 days     | ×1.6       |
+    | 180 days    | ×2.6       |
+    | 360 days    | ×5.0       |
+    (steepened 2026-08-05 — long locks are what actually removes sell pressure)
   • Stake form: amount + lock period selector
   • Active stakes list with unlock countdown
   • Pending rewards per stake
@@ -729,7 +730,7 @@ DISPLAYS:
 Vesting-locked MIC (via LockManager) **can be staked** under these conditions:
   • **Full Multiplier**: Locked MIC earns at full time-lock multiplier (no reduction)
   • **Rewards Immediately Unlocked**: Staking rewards are freely transferable, not subject to vesting
-  • **Minimum 360-Day Staking Lock**: Locked MIC must be staked with 360-day minimum lock period (achieves ×2.0 multiplier)
+  • **Minimum 360-Day Staking Lock**: Locked MIC must be staked with 360-day minimum lock period (achieves ×5.0 multiplier)
   • **No Staking Caps**: Pure MIC staking has unlimited per-address staking
   • **DAO Voting**: Only unlocked MIC counts toward voting weight
 
@@ -993,15 +994,16 @@ Phase 10: Role Finalization
 REVENUE SOURCE              DISTRIBUTION                    CONTRACT
 ═══════════════════════════════════════════════════════════════════════
 SEED Round ($568.75K)    →  100% SeedBudget               → SeedBudget (50% Operational / 50% Net Capital)
-Pre-Sale ($1.575M)       →  F1:7%+F2:3% instant           → ReferralRegistry
-                            90% net → RevenueRouter       → 35% RewardDistributor / 7.5% MgmtPool / 12.5% TreasuryDAO / 5% StakingFund / 40% LiquidityPool
-                            RewardDistributor (35%)       → ClaimRewards (21.5%) + PeriodicRewards (10%) + LuckyDraw (1%) + IncentivePool (2.5%)
-MICE License (USDT 50%)  →  F1:7%+F2:3% on USDT portion   → ReferralRegistry
-                            90% net → MICERevenueRouter   → 35% RewardDistributor / 7.5% MgmtPool / 12.5% TreasuryDAO / 5% StakingFund / 40% LiquidityPool
-                            RewardDistributor (35%)       → ClaimRewards (21.5%) + PeriodicRewards (10%) + LuckyDraw (1%) + IncentivePool (2.5%)
-MICE License (MIC 50%)   →  100% BURNED (0xdead)           → Deflationary
+Pre-Sale ($1.575M)       →  100% GROSS → RevenueRouter   → 6-way split, all % of gross
+                            Referral 10% / Marketing 25% / Mgmt 7.5% / DAO 12.5% / Staking 5% / Liquidity 40%
+                            ReferralRegistry pays F1 7% + F2 3% OUT OF the router's referral slice
+                            Marketing 25% → RewardDistributorV2 → GV 9% / M&I 1.5% / Weekly 5.5% / Monthly 8% / Lucky 1%
+MICE License (USDT 50%)  →  100% of the USDT half → RevenueRouter, same 6-way split as Pre-Sale
+                            Group Volume and rank accrue in the SAME ReferralRegistry ledger as Pre-Sale
+MICE License (MIC 50%)   →  buyer supplies the MIC, contract BURNS it → Deflationary
+                            amount = usdtHalf / min(spot, TWAP7d) read from LiquidityPoolV6
 
-Daily Emission (85%)     →  60% MiningPool                → MiningPool
+Daily Emission (85%)     →  59% MiningPool                → MiningPool
                             20% NFTStaking                → NFTStaking
                             15% DAO Treasury              → TreasuryManager
                              5% Burn (0xdEaD)             → BuybackBurn       ← NEW

@@ -157,14 +157,14 @@ export default function MfpMintedPage() {
   const isLight = mode === 'light'
   const theme = {
     bg: isLight
-      ? 'radial-gradient(ellipse at top, #FAF6EA 0%, #EFE4CC 70%), #EFE4CC'
-      : 'radial-gradient(ellipse at top, #1a0b2e 0%, #050210 70%), #050210',
-    tagline: isLight ? '#8A6B17' : '#F5D56E',
-    subtitle: isLight ? '#7A5A14' : '#D4A017',
-    btnBg: isLight ? 'rgba(212,160,23,0.08)' : 'rgba(212,160,23,0.0)',
-    btnBgActive: isLight ? 'rgba(212,160,23,0.25)' : 'rgba(212,160,23,0.2)',
-    btnBorder: isLight ? '#A87F12' : '#D4A017',
-    btnText: isLight ? '#7A5A14' : '#F5D56E',
+      ? 'radial-gradient(ellipse at top, #FAF5EA 0%, #EFE4CC 70%), #EFE4CC'
+      : 'radial-gradient(ellipse at top, #142A57 0%, #091530 70%), #091530',
+    tagline: isLight ? '#8A6717' : '#F5CC6E',
+    subtitle: isLight ? '#7A5B14' : '#D49B17',
+    btnBg: isLight ? 'rgba(212,155,23,0.08)' : 'rgba(212,155,23,0.0)',
+    btnBgActive: isLight ? 'rgba(212,155,23,0.25)' : 'rgba(212,155,23,0.2)',
+    btnBorder: isLight ? '#A87B12' : '#D49B17',
+    btnText: isLight ? '#7A5B14' : '#F5CC6E',
   }
 
   return (
@@ -176,7 +176,7 @@ export default function MfpMintedPage() {
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',
         background: theme.bg,
-        color: isLight ? '#3A2A14' : '#E8D8B8',
+        color: isLight ? '#3A2F14' : '#E8D9B8',
         transition: 'background 0.4s ease, color 0.4s ease',
       }}
     >
@@ -199,8 +199,8 @@ export default function MfpMintedPage() {
               display: 'inline-block',
               color: 'transparent',
               backgroundImage: isLight
-                ? 'linear-gradient(90deg, #5B2D9E, #6B1428, #9A7B2E)'
-                : 'linear-gradient(90deg, #7B2D8B, #6B1428, #C9A84C)',
+                ? 'linear-gradient(90deg, #2D529E, #6B141F, #9A792E)'
+                : 'linear-gradient(90deg, #2D4C8B, #6B141F, #C9A34C)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -219,7 +219,7 @@ export default function MfpMintedPage() {
               padding: '0 12px',
             }}
           >
-            &ldquo;Inspired by Faith. Built for People.&rdquo;
+            &ldquo;Born of Faith. Built for People.&rdquo;
           </p>
           <p
             style={{
@@ -246,7 +246,7 @@ export default function MfpMintedPage() {
                 alignItems: 'center',
                 gap: 12,
                 padding: '8px 14px',
-                background: isLight ? 'rgba(212,160,23,0.10)' : 'rgba(212,160,23,0.12)',
+                background: isLight ? 'rgba(212,155,23,0.10)' : 'rgba(212,155,23,0.12)',
                 border: `1px solid ${theme.btnBorder}`,
                 borderRadius: 100,
                 fontSize: 12,
@@ -383,7 +383,7 @@ export default function MfpMintedPage() {
           </div>
         )}
         {error && (
-          <div style={{ textAlign: 'center', padding: 40, color: '#E53935' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: '#E5354B' }}>
             Error: {error}
           </div>
         )}

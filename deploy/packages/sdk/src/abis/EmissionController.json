@@ -8,11 +8,6 @@
       },
       {
         "internalType": "address",
-        "name": "_miceLicense",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_miningPool",
         "type": "address"
       },
@@ -29,6 +24,11 @@
       {
         "internalType": "address",
         "name": "_communityNFTPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_mfpRewardPool",
         "type": "address"
       },
       {
@@ -78,6 +78,18 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "activeLicences",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "elapsed",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "totalMinted",
         "type": "uint256"
       },
@@ -104,6 +116,12 @@
         "internalType": "uint256",
         "name": "toCommunityNFT",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toMFPReward",
+        "type": "uint256"
       }
     ],
     "name": "DailyDistributed",
@@ -114,12 +132,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "breached",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "oldBps",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newBps",
+        "type": "uint256"
       }
     ],
-    "name": "PriceFloorToggled",
+    "name": "DamperUpdated",
     "type": "event"
   },
   {
@@ -128,17 +152,49 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "oldROI",
+        "name": "avg7d",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmissionReportFailed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "what",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      }
+    ],
+    "name": "PoolAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldRate",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "newROI",
+        "name": "newRate",
         "type": "uint256"
       }
     ],
-    "name": "ROIUpdated",
+    "name": "RateUpdated",
     "type": "event"
   },
   {
@@ -242,10 +298,55 @@
         "internalType": "uint256",
         "name": "communityNFT",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "mfpReward",
+        "type": "uint256"
       }
     ],
     "name": "SplitRatiosUpdated",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "BOOST_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BOOST_DAYS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DAMPER_MIN_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -262,20 +363,7 @@
   },
   {
     "inputs": [],
-    "name": "E0",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "HALF_LIFE",
+    "name": "MAX_CATCHUP",
     "outputs": [
       {
         "internalType": "uint256",
@@ -314,19 +402,6 @@
   },
   {
     "inputs": [],
-    "name": "ORACLE_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "ORIG_COMMUNITY_NFT",
     "outputs": [
       {
@@ -341,6 +416,19 @@
   {
     "inputs": [],
     "name": "ORIG_DAO",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ORIG_MFP_REWARD",
     "outputs": [
       {
         "internalType": "uint256",
@@ -379,6 +467,58 @@
   },
   {
     "inputs": [],
+    "name": "RATE_MAX",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "RATE_MIN",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "activeLicences",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "avgDailyEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "communityNFTBps",
     "outputs": [
       {
@@ -405,7 +545,7 @@
   },
   {
     "inputs": [],
-    "name": "currentROI",
+    "name": "currentMinerBps",
     "outputs": [
       {
         "internalType": "uint256",
@@ -419,6 +559,19 @@
   {
     "inputs": [],
     "name": "dailyEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "damperBps",
     "outputs": [
       {
         "internalType": "uint256",
@@ -457,19 +610,6 @@
   },
   {
     "inputs": [],
-    "name": "demandFactor",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "deployTime",
     "outputs": [
       {
@@ -489,8 +629,58 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "n",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "elapsed",
+        "type": "uint256"
+      }
+    ],
+    "name": "emissionFor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "eBase",
+    "name": "emissionIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emissionReportTarget",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emissionSamples",
     "outputs": [
       {
         "internalType": "uint256",
@@ -577,10 +767,23 @@
   },
   {
     "inputs": [],
-    "name": "micToken",
+    "name": "mfpRewardBps",
     "outputs": [
       {
-        "internalType": "contract IMICToken",
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mfpRewardPool",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -590,12 +793,49 @@
   },
   {
     "inputs": [],
-    "name": "miceLicense",
+    "name": "micPerLicencePerDay",
     "outputs": [
       {
-        "internalType": "contract IMICELicenseReader",
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "micToken",
+    "outputs": [
+      {
+        "internalType": "contract IMICTokenV2",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "n",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "elapsed",
+        "type": "uint256"
+      }
+    ],
+    "name": "minerAmountFor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -619,7 +859,7 @@
     "name": "miningPool",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IMiningPoolV2",
         "name": "",
         "type": "address"
       }
@@ -629,12 +869,44 @@
   },
   {
     "inputs": [],
-    "name": "priceFloorBreached",
+    "name": "pendingElapsed",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "uint256",
         "name": "",
-        "type": "bool"
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pendingEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "recentEmissions",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -677,23 +949,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "roiFactor",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "p",
         "type": "address"
       }
     ],
@@ -705,8 +964,21 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "bps",
+        "type": "uint256"
+      }
+    ],
+    "name": "setDamperBps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
-        "name": "_dao",
+        "name": "p",
         "type": "address"
       }
     ],
@@ -719,11 +991,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "t",
         "type": "address"
       }
     ],
-    "name": "setMiningPool",
+    "name": "setEmissionReportTarget",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -731,12 +1003,12 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "breached",
-        "type": "bool"
+        "internalType": "address",
+        "name": "p",
+        "type": "address"
       }
     ],
-    "name": "setPriceFloorBreached",
+    "name": "setMfpRewardPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -745,11 +1017,24 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "roiBps",
+        "name": "rate",
         "type": "uint256"
       }
     ],
-    "name": "setROI",
+    "name": "setMicPerLicencePerDay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "p",
+        "type": "address"
+      }
+    ],
+    "name": "setMiningPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -775,6 +1060,11 @@
         "internalType": "uint256",
         "name": "_communityNFT",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_mfpReward",
+        "type": "uint256"
       }
     ],
     "name": "setSplitRatios",
@@ -786,7 +1076,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "p",
         "type": "address"
       }
     ],
@@ -855,7 +1145,7 @@
   },
   {
     "inputs": [],
-    "name": "warmUpFactor",
+    "name": "totalToMiners",
     "outputs": [
       {
         "internalType": "uint256",

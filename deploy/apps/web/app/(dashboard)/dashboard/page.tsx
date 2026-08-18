@@ -236,17 +236,15 @@ export default function DashboardPage() {
           </div>
           <div className="scroll-stat-info">
             {/*
-              Headline is the genesis pre-issue, 1.05B. It once read "1.05B of 7.00B
-              total" — two numbers each true of a different thing, sitting side by side as
-              if they were one ratio, so the 7.00B design cap was dropped.
-
-              The sub-line carries what survives the pre-issue: 31.5M was burned on
-              2026-08-05 and cannot come back, so the figure that exists now is stated
-              beside the one that was issued, each labelled as what it is.
+              This read "1.05B of 7.00B total" — two numbers that are each true of a
+              different thing, sitting side by side as if they were one ratio. 1.05B is
+              what was issued at genesis, of which 31.5M has since been burned; 7.00B is
+              the design cap once all mining has happened, which is not supply that exists.
+              Showing what exists now is the figure a member is actually asking for.
             */}
-            <div className="scroll-stat-label">Pre-Issued Supply</div>
-            <div className="scroll-stat-value">{fmt(d.preIssued ?? 1_050_000_000, '-')}</div>
-            <div className="scroll-stat-sub">{fmt(d.currentSupply ?? d.preIssuedNow, '-')} now &mdash; {fmt(d.totalBurned, '-')} burned</div>
+            <div className="scroll-stat-label">Supply Now</div>
+            <div className="scroll-stat-value">{fmt(d.currentSupply ?? d.preIssuedNow, '-')}</div>
+            <div className="scroll-stat-sub">max {fmt(d.maxSupply ?? d.totalSupply, '-')} when fully mined</div>
           </div>
         </div>
         <div className="scroll-stat cyan">
@@ -402,7 +400,7 @@ export default function DashboardPage() {
             <span className="wci-mic-total-hint">on your wallet</span>
           </div>
           <div className="wci-mic-total-logo">
-            <img src="/images/mission-chain-logo-clear.png" alt="MIC" width="36" height="36" />
+            <img src="/images/mission-chain-logo-clear.png?v=brand20260818c" alt="MIC" width="36" height="36" />
           </div>
         </div>
 

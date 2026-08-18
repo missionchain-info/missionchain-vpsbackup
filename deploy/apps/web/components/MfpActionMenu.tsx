@@ -46,9 +46,13 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
   const elementUrl = isMainnet
     ? `https://element.market/collections/${CONTRACTS.mfpNft}?chain=bsc`
     : null
-  const magicEdenUrl = isMainnet
-    ? `https://magiceden.io/collections/bsc/${CONTRACTS.mfpNft}`
-    : null
+  /*
+   * OKX indexes BNB Chain collections under a *slug*, not a contract address: the
+   * contract-address path returns 404 (checked). MFP-NFT has no slug there yet, so the
+   * only honest link is the BNB Chain marketplace itself — the member searches from there.
+   * Swap this for the slug URL the day the collection is indexed.
+   */
+  const okxUrl = isMainnet ? 'https://web3.okx.com/nft' : null
 
   const handleTransfer = async () => {
     setError('')
@@ -108,20 +112,20 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
-          border: '1px solid rgba(201,168,76,0.3)',
+          background: 'linear-gradient(145deg, #142A57, #142A57)',
+          border: '1px solid rgba(201,163,76,0.3)',
           borderRadius: 20, padding: '28px 26px', maxWidth: 420, width: '90%',
           textAlign: 'center', position: 'relative',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.15)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,163,76,0.15)',
         }}
       >
         {/* Header */}
         <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: '0.65rem', color: '#B8A894', letterSpacing: '0.1em', marginBottom: 4 }}>
+          <div style={{ fontSize: '0.65rem', color: '#B8AD94', letterSpacing: '0.1em', marginBottom: 4 }}>
             MFP-NFT #{String(tokenId).padStart(5, '0')}
           </div>
           <div style={{
-            fontSize: '1.2rem', fontWeight: 800, color: '#F5D56E',
+            fontSize: '1.2rem', fontWeight: 800, color: '#F5CC6E',
             fontFamily: 'var(--font-d)', letterSpacing: '0.03em',
           }}>
             {mode === 'menu' && 'Choose Action'}
@@ -144,12 +148,12 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
             <ActionButton
               icon={'\u{1F4B0}'}
               title="Sell on P2P"
-              desc="List internally (5% royalty enforced)"
+              desc="Set your price and listing duration (5% royalty enforced)"
               onClick={() => router.push(`/p2p?action=sell&tokenId=${tokenId}`)}
             />
             <ActionButton
               icon={'\u{1F30A}'}
-              title="List on Element"
+              title="List on Element Market"
               desc={isMainnet
                 ? 'BSC-native marketplace, ERC-2981 royalty'
                 : 'BSC mainnet only — not available on testnet'}
@@ -159,13 +163,13 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
               badge={!isMainnet ? 'Mainnet only' : undefined}
             />
             <ActionButton
-              icon={'\u{1F52E}'}
-              title="List on Magic Eden"
+              icon={'\u{1F310}'}
+              title="List on OKX NFT"
               desc={isMainnet
-                ? 'Multi-chain marketplace, growing BSC'
+                ? 'Multi-chain marketplace — search for the collection there'
                 : 'BSC mainnet only — not available on testnet'}
               external={isMainnet}
-              href={magicEdenUrl ?? undefined}
+              href={okxUrl ?? undefined}
               disabled={!isMainnet}
               badge={!isMainnet ? 'Mainnet only' : undefined}
             />
@@ -189,7 +193,7 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
           <div>
             <div style={{ textAlign: 'left', marginBottom: 16 }}>
               <label style={{
-                display: 'block', fontSize: '0.66rem', color: '#D4C098',
+                display: 'block', fontSize: '0.66rem', color: '#D4C298',
                 marginBottom: 6, letterSpacing: '0.05em',
               }}>
                 RECIPIENT WALLET
@@ -202,13 +206,13 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
                 style={{
                   width: '100%', padding: '12px 14px',
                   background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(201,168,76,0.20)', borderRadius: 8,
-                  color: '#F5E8CC', fontSize: '0.85rem',
+                  border: '1px solid rgba(201,163,76,0.20)', borderRadius: 8,
+                  color: '#F5E9CC', fontSize: '0.85rem',
                   fontFamily: 'var(--font-m)', outline: 'none',
                 }}
               />
               {error && (
-                <div style={{ marginTop: 8, fontSize: '0.7rem', color: '#EF5350' }}>
+                <div style={{ marginTop: 8, fontSize: '0.7rem', color: '#EF5064' }}>
                   {error}
                 </div>
               )}
@@ -216,9 +220,9 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
 
             <div style={{
               padding: '12px 14px', marginBottom: 16,
-              background: 'rgba(239,83,80,0.08)',
-              border: '1px solid rgba(239,83,80,0.25)', borderRadius: 8,
-              fontSize: '0.7rem', color: '#F5E8CC', textAlign: 'left', lineHeight: 1.5,
+              background: 'rgba(239,80,100,0.08)',
+              border: '1px solid rgba(239,80,100,0.25)', borderRadius: 8,
+              fontSize: '0.7rem', color: '#F5E9CC', textAlign: 'left', lineHeight: 1.5,
             }}>
               ⚠ Transfer is <strong>irreversible</strong>. Verify recipient address carefully. DAO voting power transfers immediately.
             </div>
@@ -228,8 +232,8 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
                 onClick={() => setMode('menu')}
                 style={{
                   flex: 1, padding: '12px 0',
-                  background: 'transparent', color: '#D4C098',
-                  border: '1px solid rgba(201,168,76,0.30)', borderRadius: 10,
+                  background: 'transparent', color: '#D4C298',
+                  border: '1px solid rgba(201,163,76,0.30)', borderRadius: 10,
                   fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
                   fontFamily: 'var(--font-d)',
                 }}
@@ -241,8 +245,8 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
                 disabled={!recipient}
                 style={{
                   flex: 2, padding: '12px 0',
-                  background: recipient ? 'linear-gradient(135deg, var(--gold), #b8942f)' : 'rgba(201,168,76,0.20)',
-                  color: recipient ? '#000' : '#B8A894',
+                  background: recipient ? 'linear-gradient(135deg, var(--gold), #B88F2F)' : 'rgba(201,163,76,0.20)',
+                  color: recipient ? '#000' : '#B8AD94',
                   border: 'none', borderRadius: 10,
                   fontWeight: 700, fontSize: '0.85rem', cursor: recipient ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--font-d)', letterSpacing: '0.04em',
@@ -259,14 +263,14 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
           <div style={{ padding: '20px 0' }}>
             <div style={{
               width: 48, height: 48, margin: '0 auto 16px',
-              border: '3px solid rgba(245,213,110,0.20)',
-              borderTopColor: '#F5D56E', borderRadius: '50%',
+              border: '3px solid rgba(245,204,110,0.20)',
+              borderTopColor: '#F5CC6E', borderRadius: '50%',
               animation: 'spin 1s linear infinite',
             }} />
-            <div style={{ fontSize: '0.78rem', color: '#F5E8CC' }}>
+            <div style={{ fontSize: '0.78rem', color: '#F5E9CC' }}>
               Confirm in your wallet…
             </div>
-            <div style={{ fontSize: '0.66rem', color: '#B8A894', marginTop: 6 }}>
+            <div style={{ fontSize: '0.66rem', color: '#B8AD94', marginTop: 6 }}>
               Do not close this dialog
             </div>
             <style jsx>{`
@@ -288,7 +292,7 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
             }}>
               ✓
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#F5E8CC', marginBottom: 14 }}>
+            <div style={{ fontSize: '0.85rem', color: '#F5E9CC', marginBottom: 14 }}>
               MFP-NFT #{String(tokenId).padStart(5, '0')} sent successfully.
             </div>
             <a
@@ -296,11 +300,11 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
               target="_blank" rel="noopener noreferrer"
               style={{
                 display: 'block', padding: '8px 0', marginBottom: 14,
-                color: '#F5D56E', fontSize: '0.74rem', textDecoration: 'none',
+                color: '#F5CC6E', fontSize: '0.74rem', textDecoration: 'none',
               }}
             >
               View on BSCScan ↗
-              <div style={{ fontSize: '0.66rem', color: '#B8A894', marginTop: 2 }}>
+              <div style={{ fontSize: '0.66rem', color: '#B8AD94', marginTop: 2 }}>
                 {txHash.slice(0, 16)}...{txHash.slice(-8)}
               </div>
             </a>
@@ -308,7 +312,7 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
               onClick={onClose}
               style={{
                 width: '100%', padding: '12px 0',
-                background: 'linear-gradient(135deg, var(--gold), #b8942f)',
+                background: 'linear-gradient(135deg, var(--gold), #B88F2F)',
                 color: '#000', border: 'none', borderRadius: 10,
                 fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
                 fontFamily: 'var(--font-d)', letterSpacing: '0.04em',
@@ -325,15 +329,15 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
             <div style={{
               width: 64, height: 64, margin: '0 auto 12px',
               borderRadius: '50%',
-              background: 'rgba(239,83,80,0.15)',
-              border: '1px solid rgba(239,83,80,0.40)',
+              background: 'rgba(239,80,100,0.15)',
+              border: '1px solid rgba(239,80,100,0.40)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 32, color: '#EF5350',
+              fontSize: 32, color: '#EF5064',
             }}>
               ⚠
             </div>
             <div style={{
-              fontSize: '0.78rem', color: '#F5E8CC', marginBottom: 16,
+              fontSize: '0.78rem', color: '#F5E9CC', marginBottom: 16,
               padding: '0 8px', lineHeight: 1.5,
             }}>
               {error}
@@ -343,8 +347,8 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
                 onClick={() => setMode('transfer')}
                 style={{
                   flex: 1, padding: '12px 0',
-                  background: 'transparent', color: '#F5D56E',
-                  border: '1px solid rgba(201,168,76,0.30)', borderRadius: 10,
+                  background: 'transparent', color: '#F5CC6E',
+                  border: '1px solid rgba(201,163,76,0.30)', borderRadius: 10,
                   fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
                   fontFamily: 'var(--font-d)',
                 }}
@@ -355,8 +359,8 @@ export default function MfpActionMenu({ open, tokenId, ownerAddress, onClose, on
                 onClick={onClose}
                 style={{
                   flex: 1, padding: '12px 0',
-                  background: 'rgba(239,83,80,0.15)', color: '#EF5350',
-                  border: '1px solid rgba(239,83,80,0.30)', borderRadius: 10,
+                  background: 'rgba(239,80,100,0.15)', color: '#EF5064',
+                  border: '1px solid rgba(239,80,100,0.30)', borderRadius: 10,
                   fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
                   fontFamily: 'var(--font-d)',
                 }}
@@ -387,8 +391,8 @@ function ActionButton({ icon, title, desc, onClick, href, external, disabled, ba
     <div
       style={{
         display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
-        background: disabled ? 'rgba(255,255,255,0.02)' : 'rgba(201,168,76,0.06)',
-        border: `1px solid ${disabled ? 'rgba(255,255,255,0.08)' : 'rgba(201,168,76,0.20)'}`,
+        background: disabled ? 'rgba(255,255,255,0.02)' : 'rgba(201,163,76,0.06)',
+        border: `1px solid ${disabled ? 'rgba(255,255,255,0.08)' : 'rgba(201,163,76,0.20)'}`,
         borderRadius: 10,
         cursor: disabled ? 'not-allowed' : 'pointer',
         textAlign: 'left',
@@ -398,10 +402,10 @@ function ActionButton({ icon, title, desc, onClick, href, external, disabled, ba
         color: 'inherit',
       }}
       onMouseEnter={(e) => {
-        if (!disabled) e.currentTarget.style.background = 'rgba(201,168,76,0.12)'
+        if (!disabled) e.currentTarget.style.background = 'rgba(201,163,76,0.12)'
       }}
       onMouseLeave={(e) => {
-        if (!disabled) e.currentTarget.style.background = 'rgba(201,168,76,0.06)'
+        if (!disabled) e.currentTarget.style.background = 'rgba(201,163,76,0.06)'
       }}
     >
       <div style={{
@@ -414,23 +418,23 @@ function ActionButton({ icon, title, desc, onClick, href, external, disabled, ba
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#F5D56E' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#F5CC6E' }}>
             {title}
           </div>
           {badge && (
             <span style={{
               fontSize: '0.55rem', padding: '2px 6px',
-              background: 'rgba(255,255,255,0.08)', color: '#B8A894',
+              background: 'rgba(255,255,255,0.08)', color: '#B8AD94',
               borderRadius: 4, letterSpacing: '0.05em', textTransform: 'uppercase',
             }}>
               {badge}
             </span>
           )}
           {external && (
-            <span style={{ fontSize: '0.7rem', color: '#B8A894' }}>↗</span>
+            <span style={{ fontSize: '0.7rem', color: '#B8AD94' }}>↗</span>
           )}
         </div>
-        <div style={{ fontSize: '0.68rem', color: '#B8A894', marginTop: 2, lineHeight: 1.4 }}>
+        <div style={{ fontSize: '0.68rem', color: '#B8AD94', marginTop: 2, lineHeight: 1.4 }}>
           {desc}
         </div>
       </div>

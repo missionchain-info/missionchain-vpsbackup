@@ -9,9 +9,11 @@
  * Polls every 15 seconds. Gracefully handles RPC errors and DB outages.
  */
 
-import { Contract, Log, EventLog, Interface, formatUnits, JsonRpcProvider } from 'ethers'
+import { Contract, Log, EventLog, Interface, formatUnits, JsonRpcProvider, id, Provider } from 'ethers'
 import type { PrismaClient } from '@missionchain/db'
 import { BlockchainService } from './blockchain'
+import { getActiveAddresses, USDT_DECIMALS, seedPackageName, preSalePackageName } from '@missionchain/sdk';
+import { buildArchiveProvider } from './blockchain.js'
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -41,7 +43,7 @@ export class EventIndexer {
   private readonly blockchain: BlockchainService
   private readonly pollIntervalMs: number
   private readonly batchSize: number
-  private readonly logsProvider: JsonRpcProvider | null
+  private readonly logsProvider: Provider | null
   private timer: ReturnType<typeof setInterval> | null = null
   private running = false
   private processing = false
@@ -55,7 +57,7 @@ export class EventIndexer {
     // eth_getLogs ("archive required"). INDEXER_RPC_URL points to a getLogs-capable
     // endpoint (e.g. 1rpc.io/bnb). Falls back to the shared provider when unset.
     const indexerRpc = process.env.INDEXER_RPC_URL
-    this.logsProvider = indexerRpc ? new JsonRpcProvider(indexerRpc) : null
+    this.logsProvider = indexerRpc ? buildArchiveProvider() : null
     if (indexerRpc) console.log(`[Indexer] getLogs via dedicated RPC: ${indexerRpc}`)
   }
 
@@ -400,11 +402,15 @@ export class EventIndexer {
       create: {
         wallet,
         type: 'SEED',
-        packageName: args.packageName ?? null,
-        usdtAmount: formatUnits(args.usdtAmount ?? 0n, 6),
+        // SeedPurchase emits `packageIndex`, never a name, and the USDT field is called
+        // `priceUsdt` — reading `packageName`/`usdtAmount` off it produced a nameless
+        // purchase recorded as $0.
+        packageName: seedPackageName(Number(args.packageIndex ?? -1)),
+        usdtAmount: formatUnits(args.priceUsdt ?? args.usdtAmount ?? 0n, USDT_DECIMALS),
         micAmount: formatUnits(args.micAmount ?? 0n, 18),
         txHash: log.transactionHash,
         blockNumber: log.blockNumber,
+        referrerWallet: await this.referrerOf(wallet),
       },
       update: {},
     })
@@ -424,12 +430,15 @@ export class EventIndexer {
       create: {
         wallet,
         type: 'PRESALE',
-        packageName: args.packageName ?? null,
-        usdtAmount: formatUnits(args.usdtAmount ?? 0n, 6),
+        // PreSalePurchase emits `packageIndex` and carries no referrer at all, so the
+        // name is mapped here and the upline is read from the buyer's own record — the
+        // same source the referral contract used when it paid F1/F2.
+        packageName: preSalePackageName(Number(args.packageIndex ?? -1)),
+        usdtAmount: formatUnits(args.usdtAmount ?? 0n, USDT_DECIMALS),
         micAmount: formatUnits(args.micAmount ?? 0n, 18),
         txHash: log.transactionHash,
         blockNumber: log.blockNumber,
-        referrerWallet: args.referrer ? (args.referrer as string).toLowerCase() : null,
+        referrerWallet: await this.referrerOf(wallet),
       },
       update: {},
     })
@@ -440,21 +449,82 @@ export class EventIndexer {
     })
   }
 
+  /**
+   * Record a MICE licence purchase.
+   *
+   * Two things were wrong here, and both showed up as MICE revenue being zero forever.
+   *
+   * **The event has no such fields.** This read `args.usdtPaid` and `args.micBurned`,
+   * but `LicensePurchased(buyer, licenseId, price)` carries neither — so both fell
+   * through to `?? 0n` and every MICE row was written with zero on both sides. Nothing
+   * failed; the numbers were simply never there, and `totalRaised` across the platform
+   * was short by the whole MICE programme.
+   *
+   * **A batch minted one row.** `buyLicense(quantity)` emits one event per licence, and
+   * the upsert is keyed on `txHash` with `update: {}` — so buying three licences kept the
+   * first event and silently discarded the other two. Amounts now accumulate.
+   *
+   * `price` is the FULL licence price. Half is paid in USDT and routed to RevenueRouter;
+   * the other half is paid in MIC and burned. Only the USDT half is revenue.
+   */
   private async handleMICEPurchase(args: Record<string, any>, log: Log | EventLog): Promise<void> {
     const wallet = (args.buyer as string).toLowerCase()
     await this.ensureUser(wallet)
 
-    await this.prisma.purchase.upsert({
+    const price: bigint = (args.price as bigint) ?? 0n
+    const usdtHalf = price / 2n
+
+    const existing = await this.prisma.purchase.findUnique({
       where: { txHash: log.transactionHash },
-      create: {
+      select: { usdtAmount: true, micAmount: true },
+    })
+
+    if (existing) {
+      // Another licence from the same transaction. Add its USDT half; the MIC burn was
+      // a single transfer covering the whole batch and is already recorded.
+      await this.prisma.purchase.update({
+        where: { txHash: log.transactionHash },
+        data: {
+          usdtAmount: (
+            Number(existing.usdtAmount) + Number(formatUnits(usdtHalf, USDT_DECIMALS))
+          ).toString(),
+        },
+      })
+      return
+    }
+
+    // The MIC that was burned is not in the event either, but it is in the same
+    // transaction: MICELicense pulls it from the buyer before burning it. Read it from
+    // the receipt rather than leaving a zero that looks like a verified figure.
+    let micBurned = '0'
+    try {
+      const receipt = await this.blockchain.provider.getTransactionReceipt(log.transactionHash)
+      const transferTopic = id('Transfer(address,address,uint256)')
+      const micAddr = (getActiveAddresses() as Record<string, string>).MICToken?.toLowerCase()
+      const miceAddr = (getActiveAddresses() as Record<string, string>).MICELicense?.toLowerCase()
+      let total = 0n
+      for (const l of receipt?.logs ?? []) {
+        if (l.address.toLowerCase() !== micAddr) continue
+        if (l.topics[0] !== transferTopic) continue
+        const to = '0x' + l.topics[2].slice(26)
+        if (to.toLowerCase() !== miceAddr) continue
+        total += BigInt(l.data)
+      }
+      micBurned = formatUnits(total, 18)
+    } catch {
+      // Leave it at zero rather than failing the whole record — the USDT side, which is
+      // what revenue is measured on, is already correct.
+    }
+
+    await this.prisma.purchase.create({
+      data: {
         wallet,
         type: 'MICE',
-        usdtAmount: formatUnits(args.usdtPaid ?? 0n, 6),
-        micAmount: formatUnits(args.micBurned ?? 0n, 18),
+        usdtAmount: formatUnits(usdtHalf, USDT_DECIMALS),
+        micAmount: micBurned,
         txHash: log.transactionHash,
         blockNumber: log.blockNumber,
       },
-      update: {},
     })
   }
 
@@ -694,7 +764,7 @@ export class EventIndexer {
       create: {
         wallet,
         type: 'REFERRAL_RESERVE',
-        amount: formatUnits(args.amount ?? 0n, 6), // USDT
+        amount: formatUnits(args.amount ?? 0n, USDT_DECIMALS), // USDT
         txHash: log.transactionHash,
         claimedAt: new Date(),
       },
@@ -739,6 +809,12 @@ export class EventIndexer {
   }
 
   // ── Utility: Ensure User Exists ────────────────────────────────
+
+  /** The buyer's upline, as recorded at registration — events carry no referrer. */
+  private async referrerOf(wallet: string): Promise<string | null> {
+    const u = await this.prisma.user.findUnique({ where: { wallet }, select: { referrer: true } })
+    return u?.referrer ?? null
+  }
 
   private async ensureUser(wallet: string): Promise<void> {
     const existing = await this.prisma.user.findUnique({ where: { wallet } })

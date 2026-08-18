@@ -30,6 +30,11 @@ const USDT_ABI = [
 const SEED_BUDGET_V5C = '0x33ec0A97029adde1A7e0f78E3B8f414Ec56527ef';
 const SEED_BUDGET_ABI = [
   'function release(uint8 slot, address recipient, uint256 amount) external',
+  // Without these, a permission failure decodes to nothing and ethers reports
+  // "could not coalesce error" — which tells the operator nothing about the fact that
+  // they are simply connected with the wrong wallet.
+  'error AccessControlUnauthorizedAccount(address account, bytes32 neededRole)',
+  'error AccessControlBadConfirmation()',
   'function setFee(uint16 bps, address receiver) external',
   'function feeBps() view returns (uint16)',
   'function feeReceiver() view returns (address)',
@@ -195,9 +200,11 @@ export default function PaymentRequestsPage() {
   useEffect(() => { loadAll(); }, [loadAll]);
 
   const handleSaveConfig = async () => {
+    // `feeBpsInput` is basis points — the input row divides by 100 to show a percentage
+    // and multiplies back on change. Do not convert again here.
     const fee = parseFloat(feeBpsInput);
     if (isNaN(fee) || fee < 0 || fee > 1000) {
-      mcUi.toast({ type: 'error', message: 'Fee must be 0–1000 BPS (0%–10%)' });
+      mcUi.toast({ type: 'error', message: 'Fee must be between 0% and 10%' });
       return;
     }
     // Fall back to current value if user didn't change the receiver field — we
@@ -220,6 +227,19 @@ export default function PaymentRequestsPage() {
         const browser = new BrowserProvider(provider);
         const signer = await browser.getSigner();
         const sb = new Contract(SEED_BUDGET_V5C, SEED_BUDGET_ABI, signer);
+
+        // Ask the chain first. A wallet without the role produces a signature prompt that
+        // can only fail, and the failure comes back as an undecodable custom error.
+        try {
+          await sb.setFee.staticCall(Math.round(fee), finalReceiver);
+        } catch (probe: any) {
+          const me = await signer.getAddress();
+          if (probe?.revert?.name === 'AccessControlUnauthorizedAccount') {
+            throw new Error(`${me.slice(0, 10)}… is not allowed to change the fee — connect the Owner wallet`);
+          }
+          throw new Error(probe?.reason || probe?.shortMessage || 'setFee would revert');
+        }
+
         const tx = await sb.setFee(Math.round(fee), finalReceiver);
         const r = await tx.wait(1);
         if (!r || r.status !== 1) throw new Error('setFee tx reverted');
@@ -232,9 +252,14 @@ export default function PaymentRequestsPage() {
         : 'Payout config saved (DB only — on-chain skipped, no valid receiver)' });
     } catch (err: any) {
       const code = err?.code;
-      const friendly = code === 4001 || code === 'ACTION_REJECTED'
-        ? 'Transaction rejected in wallet'
-        : err?.shortMessage || err?.message || 'Unknown error';
+      let friendly: string;
+      if (code === 4001 || code === 'ACTION_REJECTED') {
+        friendly = 'Transaction rejected in wallet';
+      } else if (err?.revert?.name === 'AccessControlUnauthorizedAccount') {
+        friendly = 'This wallet is not allowed to change the fee — connect the Owner wallet';
+      } else {
+        friendly = err?.reason || err?.shortMessage || err?.message || 'Unknown error';
+      }
       mcUi.toast({ type: 'error', message: 'Save failed: ' + friendly });
     } finally {
       setSavingConfig(false);
@@ -403,7 +428,13 @@ export default function PaymentRequestsPage() {
               <input
                 type="number" min="0" max="10" step="0.1"
                 value={(parseFloat(feeBpsInput || '0') / 100).toFixed(1)}
-                onChange={(e) => setFeeBpsInput(String(Math.round(parseFloat(e.target.value || '0') * 100)))}
+                onChange={(e) => {
+                  // A comma is how a decimal is written on most of the keyboards this
+                  // console is used from, and `parseFloat('5,0')` stops at the comma —
+                  // silently turning five per cent into five.
+                  const pct = parseFloat((e.target.value || '0').replace(',', '.'));
+                  setFeeBpsInput(isNaN(pct) ? '0' : String(Math.round(pct * 100)));
+                }}
                 style={{
                   width: '100%', padding: '8px 10px',
                   background: 'var(--card-2)',
@@ -519,7 +550,7 @@ export default function PaymentRequestsPage() {
                             disabled={actionLoading === r.id}
                             style={{
                               ...btnSmall,
-                              background: '#EF5350', color: '#fff', borderColor: '#EF5350',
+                              background: '#EF5064', color: '#fff', borderColor: '#EF5064',
                             }}>
                             Reject
                           </button>
@@ -582,8 +613,8 @@ export default function PaymentRequestsPage() {
                     r.requestedAt;
                   const dt = new Date(finalAt);
                   const dtFmt = `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                  const statusColor = r.status === 'PAID' ? '#66BB6A' : '#EF5350';
-                  const statusBg = r.status === 'PAID' ? 'rgba(102,187,106,0.12)' : 'rgba(239,83,80,0.12)';
+                  const statusColor = r.status === 'PAID' ? '#66BB6A' : '#EF5064';
+                  const statusBg = r.status === 'PAID' ? 'rgba(102,187,106,0.12)' : 'rgba(239,80,100,0.12)';
                   const feePct = r.feeBps > 0 ? `${(r.feeBps / 100).toFixed(1)}%` : '—';
                   return (
                     <tr key={r.id} style={{ borderTop: '1px solid var(--border)' }}>
@@ -592,7 +623,7 @@ export default function PaymentRequestsPage() {
                         {r.distributorWallet.slice(0, 8)}...{r.distributorWallet.slice(-6)}
                       </td>
                       <td style={tdStyle}>{fmtUsd(r.grossAmount)}</td>
-                      <td style={{ ...tdStyle, color: r.feeBps > 0 ? '#EF5350' : 'var(--gray2)' }}>
+                      <td style={{ ...tdStyle, color: r.feeBps > 0 ? '#EF5064' : 'var(--gray2)' }}>
                         {feePct}
                         {r.feeBps > 0 && r.feeAmount && (
                           <span style={{ fontSize: '0.55rem', color: 'var(--gray2)', marginLeft: 4 }}>
@@ -654,19 +685,19 @@ export default function PaymentRequestsPage() {
             onClick={(e) => e.stopPropagation()}
             style={{
               width: 'min(480px, 100%)',
-              background: 'linear-gradient(135deg, #1a0b2e 0%, #050210 100%)',
-              border: '1px solid rgba(212,160,23,0.35)',
+              background: 'linear-gradient(135deg, #142A57 0%, #091530 100%)',
+              border: '1px solid rgba(212,155,23,0.35)',
               borderRadius: 16,
               padding: 28,
-              boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,160,23,0.1) inset',
-              color: '#E8D8B8',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,155,23,0.1) inset',
+              color: '#E8D9B8',
             }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: '50%',
-                background: 'linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.05))',
-                border: '1px solid rgba(212,160,23,0.3)',
+                background: 'linear-gradient(135deg, rgba(212,155,23,0.2), rgba(212,155,23,0.05))',
+                border: '1px solid rgba(212,155,23,0.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 20,
               }}>{'\u{1F4B0}'}</div>
@@ -678,7 +709,7 @@ export default function PaymentRequestsPage() {
                 }}>Approve & Pay Payout</h2>
                 <p style={{
                   margin: '2px 0 0 0', fontSize: '0.7rem',
-                  color: '#A89878', fontStyle: 'italic',
+                  color: '#A89978', fontStyle: 'italic',
                 }}>Review the transfer details before signing</p>
               </div>
             </div>
@@ -693,21 +724,21 @@ export default function PaymentRequestsPage() {
               fontSize: '0.78rem',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#A89878' }}>Distributor</span>
-                <span style={{ fontFamily: 'var(--font-m)', color: '#D4C098' }}>
+                <span style={{ color: '#A89978' }}>Distributor</span>
+                <span style={{ fontFamily: 'var(--font-m)', color: '#D4C298' }}>
                   {confirmModal.request.distributorWallet.slice(0, 10)}...{confirmModal.request.distributorWallet.slice(-6)}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#A89878' }}>Gross</span>
+                <span style={{ color: '#A89978' }}>Gross</span>
                 <span style={{ fontWeight: 600 }}>{fmtUsd(confirmModal.gross)}</span>
               </div>
               {feeBps > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ color: '#A89878' }}>
+                  <span style={{ color: '#A89978' }}>
                     Fee {(feeBps / 100).toFixed(1)}%
                   </span>
-                  <span style={{ color: '#EF5350' }}>
+                  <span style={{ color: '#EF5064' }}>
                     −{fmtUsd(confirmModal.feeAmt)}
                   </span>
                 </div>
@@ -723,11 +754,11 @@ export default function PaymentRequestsPage() {
             {/* MetaMask hint */}
             <div style={{
               padding: '10px 12px',
-              background: 'rgba(91,45,158,0.12)',
-              border: '1px dashed rgba(155,114,207,0.3)',
+              background: 'rgba(45,82,158,0.12)',
+              border: '1px dashed rgba(114,144,207,0.3)',
               borderRadius: 8,
               fontSize: '0.7rem',
-              color: '#C8B4E8',
+              color: '#B4C5E8',
               lineHeight: 1.5,
               marginBottom: 20,
             }}>
@@ -751,7 +782,7 @@ export default function PaymentRequestsPage() {
                   padding: '10px 24px',
                   background: 'transparent',
                   border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#D4C098',
+                  color: '#D4C298',
                   borderRadius: 8,
                   fontWeight: 600, fontSize: '0.8rem',
                   cursor: 'pointer',
@@ -766,8 +797,8 @@ export default function PaymentRequestsPage() {
                 style={{
                   padding: '10px 28px',
                   background: executing
-                    ? 'rgba(212,160,23,0.4)'
-                    : 'linear-gradient(135deg, var(--gold), #b8942f)',
+                    ? 'rgba(212,155,23,0.4)'
+                    : 'linear-gradient(135deg, var(--gold), #B88F2F)',
                   border: 'none',
                   color: '#000',
                   borderRadius: 8,
@@ -775,7 +806,7 @@ export default function PaymentRequestsPage() {
                   cursor: executing ? 'wait' : 'pointer',
                   fontFamily: 'var(--font-d)',
                   letterSpacing: '0.04em',
-                  boxShadow: executing ? 'none' : '0 4px 14px rgba(212,160,23,0.3)',
+                  boxShadow: executing ? 'none' : '0 4px 14px rgba(212,155,23,0.3)',
                   transition: 'all 0.15s',
                 }}>
                 {executing ? 'Processing...' : '✦ Confirm & Pay'}

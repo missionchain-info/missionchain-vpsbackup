@@ -18,16 +18,30 @@ export const MINING_POOL   = 5_950_000_000n * 10n ** 18n;  // 85% progressive em
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const MIC_DECIMALS  = 18;
-export const USDT_DECIMALS = 6;
+
+/**
+ * BSC-USD (`0x55d398326f99059fF775485246999027B3197955`) is an **18-decimal** token.
+ *
+ * It is not the 6-decimal USDT familiar from Ethereum, and this constant said `6` until
+ * 2026-08-08. Everything downstream inherited the error: prices were built with
+ * `parseUnits(x, 6)`, so a $500 listing asked for 0.0000000005 USDT, and balances were
+ * read with `formatUnits(x, 6)`, so every dollar figure on the dashboard was off by a
+ * factor of a trillion. On-chain it was worse — `PreSale` would have sold its entire
+ * 315,000,000 MIC allocation for 0.000001575 USDT, and the live `SeedSaleV7` had to be
+ * halted on mainnet the same day.
+ *
+ * Always use this constant. Never write the digit.
+ */
+export const USDT_DECIMALS = 18;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sale Prices (USDT 6-dec units per 1 MIC)
+// Sale Prices — USDT units per 1 MIC, at USDT_DECIMALS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** $0.0025 per MIC — SEED Round price in USDT 6-dec units */
-export const SEED_PRICE    = 2500n;
-/** $0.005 per MIC — Pre-Sale price in USDT 6-dec units */
-export const PRESALE_PRICE = 5000n;
+/** $0.0025 per MIC — SEED Round price */
+export const SEED_PRICE    = 2_500_000_000_000_000n;
+/** $0.005 per MIC — Pre-Sale price */
+export const PRESALE_PRICE = 5_000_000_000_000_000n;
 /** $0.01 per MIC — DEX/CEX listing reference price in USDT 6-dec units */
 export const LISTING_PRICE = 10000n;
 
@@ -139,13 +153,8 @@ export const MICE_USDT_ROUTE_BPS = 5000; // 50%
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** @deprecated NFT multipliers no longer used in staking. Only for reward distribution. */
-export const NFT_MULTIPLIER = {
-  NONE:      5000,   // ×0.5 (DEPRECATED for staking — used only in reward distribution)
-  BUILDER:  10000,   // ×1.0 (DEPRECATED for staking — used only in reward distribution)
-  MAKER:    25000,   // ×2.5 (DEPRECATED for staking — used only in reward distribution)
-  LUMINARY: 50000,   // ×5.0 (DEPRECATED for staking — used only in reward distribution)
-  MFP:     100000,   // ×10.0 (DEPRECATED for staking — used in DAO voting weight + reward distribution)
-} as const;
+// NFT_MULTIPLIER was removed in 2026-08 — deprecated, no importers, and no
+// on-chain code applies an NFT multiplier.
 
 /** @deprecated Staking caps no longer enforced. MICStaking has no tier-based caps. */
 export const NFT_STAKING_CAP = {
@@ -231,3 +240,46 @@ export const TOKENOMICS = {
   HALF_LIFE_DAYS:     180,
   E0_DAILY:           22_907_500,
 } as const;
+
+/**
+ * MIC price shown across the apps while no market price exists yet.
+ *
+ * PreSale went live on mainnet 2026-08-08 at 200 MIC per USDT, so the current round
+ * prices MIC at $0.005 — SEED's $0.0025 is the previous round and no longer the headline
+ * figure. Before this constant existed the number lived in five places at three different
+ * values (0.0025, 0.005, 0.0085), so the dashboard, the rounds API and the admin stats
+ * page each quoted a different price for the same token. Import this; do not retype it.
+ *
+ * Replace with a real market read once SWAP is live.
+ */
+export const MIC_DISPLAY_PRICE_USD = 0.005;
+export const MIC_DISPLAY_PRICE_SOURCE = "Pre-Sale Round";
+
+/**
+ * Package tables — the canonical mapping from the on-chain `packageIndex` to a name.
+ *
+ * The sale contracts emit an index, not a name, so anything rebuilding a purchase from
+ * chain events has to map it back. Keeping one table here stops the API and the indexer
+ * from disagreeing about what "package 2" was called.
+ */
+export const SEED_PACKAGE_NAMES = [
+  "EARLY BIRD",
+  "FOUNDING PARTNER I",
+  "FOUNDING PARTNER II",
+  "FOUNDING PARTNER III",
+] as const;
+
+export const PRESALE_PACKAGE_NAMES = [
+  "Minimum",
+  "Package Builder",
+  "Package Maker",
+  "Package Luminary",
+] as const;
+
+export function seedPackageName(index: number): string {
+  return SEED_PACKAGE_NAMES[index] ?? `Package ${index}`;
+}
+
+export function preSalePackageName(index: number): string {
+  return PRESALE_PACKAGE_NAMES[index] ?? `Package ${index}`;
+}

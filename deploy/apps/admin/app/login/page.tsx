@@ -30,8 +30,8 @@ export default function LoginPage() {
 
   return (
     <div className="login-screen">
-      <div className="login-orb" style={{ width: 600, height: 500, background: 'rgba(59,20,100,.25)', top: -150, left: -150 }} />
-      <div className="login-orb" style={{ width: 400, height: 400, background: 'rgba(107,20,40,.18)', bottom: -100, right: '5%' }} />
+      <div className="login-orb" style={{ width: 600, height: 500, background: 'rgba(14,33,72,.22)', top: -150, left: -150 }} />
+      <div className="login-orb" style={{ width: 400, height: 400, background: 'rgba(110,18,32,.16)', bottom: -100, right: '5%' }} />
 
       <div className="login-box">
         <img src="/images/mission-chain-logo-clear.png" alt="Mission Chain"

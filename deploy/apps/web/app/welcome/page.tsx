@@ -16,7 +16,7 @@ function launchConfetti(canvas: HTMLCanvasElement) {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
 
-  const colors = ['#C9A84C', '#E8C96A', '#7B2D8B', '#C084D4', '#6B1428', '#9B2C42', '#00BCD4', '#F0E6D3', '#4CAF50', '#FF9800']
+  const colors = ['#C9A34C', '#E8C26A', '#2D4C8B', '#849ED4', '#6B141F', '#9B2C3A', '#72ABE8', '#F0E7D3', '#4CAF50', '#FFB200']
 
   interface Particle {
     x: number; y: number; vx: number; vy: number

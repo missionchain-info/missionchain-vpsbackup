@@ -289,7 +289,14 @@ async function main() {
   const communityNFTRewardPool = await deployContract("CommunityNFTRewardPool", [micAddr, admin]);
   const communityNFTRewardPoolAddr = await communityNFTRewardPool.getAddress();
 
+  // 25b. MFPRewardPool — receives 1% of daily MIC emission (Deck p.7 "MFP-NFT Reward").
+  //      Same generic hold-and-batch-distribute contract as the Community NFT pool;
+  //      the off-chain service computes per-MFP-holder shares.
+  const mfpRewardPool = await deployContract("CommunityNFTRewardPool", [micAddr, admin]);
+  const mfpRewardPoolAddr = await mfpRewardPool.getAddress();
+
   // 22. EmissionController — needs MICE, MiningPool, NFTStaking, CommunityNFTRewardPool
+  //     Split 59 / 25 / 10 / 5 / 1 (miners / staking / DAO / Community NFT / MFP-NFT)
   const emissionController = await deployContract("EmissionController", [
     micAddr,
     miceLicenseAddr,
@@ -297,6 +304,7 @@ async function main() {
     nftStakingAddr,
     daoGovernorAddr,              // daoTreasury — receives 10% DAO portion of emissions
     communityNFTRewardPoolAddr,   // communityNFTPool — receives 5% Community NFT Reward
+    mfpRewardPoolAddr,            // mfpRewardPool — receives 1% MFP-NFT Reward
     admin,
   ]);
   const emissionControllerAddr = await emissionController.getAddress();

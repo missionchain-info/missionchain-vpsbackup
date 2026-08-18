@@ -92,7 +92,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <div className="topbar-wallet-value">{micAvailable}</div>
             </div>
             <div className="topbar-wallet-info">
-              <div className="topbar-wallet-label" style={{ color: 'var(--error, #e05555)' }}>Locked</div>
+              <div className="topbar-wallet-label" style={{ color: 'var(--error, #E05567)' }}>Locked</div>
               <div className="topbar-wallet-value">{micLocked}</div>
             </div>
           </div>

@@ -9,10 +9,11 @@ const WARMUP_DAYS = 30            // WarmUp period
 
 // Emission split (BPS)
 const EMISSION_SPLIT = {
-  miners: 60,    // 60% to MiningPool
+  miners: 59,    // 59% to MiningPool
   staking: 25,   // 25% to Staking
   dao: 10,       // 10% to DAO Treasury
   communityNftReward: 5,    //  5% to Community NFT Reward
+  mfpReward: 1,             //  1% to MFP-NFT Reward
 }
 
 /**
@@ -53,11 +54,15 @@ export const miningRoutes: FastifyPluginAsync = async (app) => {
     const eBase = calculateEBase(daysSinceLaunch)
     const W = calculateW(daysSinceLaunch)
 
-    // D(t) and R(t) would come from on-chain; provide placeholders
+    // The ROI regulator R(t) was removed from EmissionController on 2026-08-05 and
+    // replaced by the coverage regulator L(H), the trend damper G and the adoption
+    // factor A(N). This endpoint reads the database, not the chain, so it can only
+    // apply the factors it can compute — A(N) from the active licence count. L(H) and
+    // G need pool state; `/mining/network` reads those from the contract.
     const D = activeMice > 0 ? 0.5 + (activeMice / 100_000) : 0.5
-    const R = 1.0 // Default ROI regulator
+    const A = activeMice > 0 ? Math.min(1, Math.sqrt(activeMice / 10_000)) : 0
 
-    const dailyEmission = activeMice > 0 ? eBase * D * R * W : 0
+    const dailyEmission = activeMice > 0 ? eBase * D * A * W : 0
     const poolRemaining = MINING_POOL - totalEmitted
 
     return {
@@ -66,17 +71,19 @@ export const miningRoutes: FastifyPluginAsync = async (app) => {
         miningPool: MINING_POOL,
         poolRemaining: Math.max(0, poolRemaining).toFixed(0),
         poolUsedPct: ((totalEmitted / MINING_POOL) * 100).toFixed(4),
+        // Flagged so a caller never mistakes this for the on-chain number.
+        estimateExcludes: ['L(H)', 'G'],
         dailyEmission: dailyEmission.toFixed(0),
         daysSinceLaunch,
         activeMICE: activeMice,
         factors: {
           E_base: eBase.toFixed(2),
           D: D.toFixed(4),
-          R: R.toFixed(4),
+          A: A.toFixed(4),
           W: W.toFixed(4),
         },
         emissionSplit: EMISSION_SPLIT,
-        formula: 'E(t) = E_base(t) x D(t) x R(t) x W(t)',
+        formula: 'E(t) = E_base(t) x D(t) x L(H) x G x W(t) x A(N)',
       },
     }
   })

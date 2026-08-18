@@ -26,15 +26,15 @@ const FALLBACK_ITEMS: MenuItem[] = [
   { id: 'profile', icon: '👤', label: 'Profile', href: '/profile', group: 'Overview', status: 'enabled', mandatory: true, order: 1 },
   { id: 'steward-council', icon: '◆', label: 'Steward Council', href: '/dao/council', group: 'DAO Governance', status: 'enabled', mandatory: false, order: 90 },
   { id: 'dao-management',  icon: '🏛', label: 'DAO Management', href: '/dao/management', group: 'DAO Governance', status: 'disabled', mandatory: false, order: 91 },
-  { id: 'seed', icon: '🌱', label: 'SEED Sale', href: '/seed', group: 'Token Sales', status: 'enabled', mandatory: false, order: 3, badge: 'HOT', roundType: 'SEED' },
+  { id: 'seed', icon: '🌱', label: 'SEED Sale', href: '/seed', group: 'Token Sales', status: 'enabled', mandatory: false, order: 3, roundType: 'SEED' },
   { id: 'presale', icon: '💰', label: 'Pre-Sale', href: '/presale', group: 'Token Sales', status: 'enabled', mandatory: false, order: 4, roundType: 'PRESALE' },
-  { id: 'mice', icon: '🪪', label: 'MICE License', href: '/mice', group: 'Token Sales', status: 'enabled', mandatory: false, order: 5, roundType: 'MICE' },
+  { id: 'mice', icon: '🪪', label: 'MICE License', href: '/mice', group: 'Token Sales', status: 'enabled', mandatory: false, order: 5, badge: 'HOT', roundType: 'MICE' },
   { id: 'mining', icon: '💎', label: 'Mining', href: '/mining', group: 'Earn', status: 'disabled', mandatory: false, order: 6 },
   { id: 'staking', icon: '📈', label: 'Staking', href: '/staking', group: 'Earn', status: 'disabled', mandatory: false, order: 7 },
   { id: 'network', icon: '🌐', label: 'Building', href: '/network', group: 'Earn', status: 'enabled', mandatory: false, order: 8 },
   { id: 'nft', icon: '🎨', label: 'NFT', href: '/nft', group: 'Earn', status: 'disabled', mandatory: false, order: 9 },
   { id: 'vesting', icon: '🔒', label: 'Vesting', href: '/vesting', group: 'Earn', status: 'disabled', mandatory: false, order: 10 },
-  { id: 'p2p', icon: '🔀', label: 'P2P Exchange', href: '/p2p', group: 'Explore', status: 'disabled', mandatory: false, order: 11 },
+  { id: 'p2p', icon: '🔀', label: 'P2P Exchange', href: '/p2p', group: 'Explore', status: 'enabled', mandatory: false, order: 11 },
   { id: 'swap', icon: '🔄', label: 'Swap', href: '/swap', group: 'Explore', status: 'disabled', mandatory: false, order: 12 },
   { id: 'info', icon: 'ℹ️', label: 'Infos', href: '/info', group: 'Explore', status: 'disabled', mandatory: false, order: 13 },
   { id: 'nira', icon: '🤖', label: 'NIRA AI', href: '/nira', group: 'Explore', status: 'disabled', mandatory: false, order: 14, badge: 'AI' },
@@ -116,7 +116,7 @@ export default function Sidebar() {
           <div className="sb-orbit-ring sb-orbit-ring-1"><div className="sb-orbit-dot" /></div>
           <div className="sb-orbit-ring sb-orbit-ring-2"><div className="sb-orbit-dot" /><div className="sb-orbit-dot sb-orbit-dot-opposite" /></div>
           <div className="sb-orbit-ring sb-orbit-ring-3"><div className="sb-orbit-dot" /></div>
-          <img src="/images/mission-chain-logo-clear.png" alt="MC" className="sb-logo-center" />
+          <img src="/images/mission-chain-logo-clear.png?v=brand20260818c" alt="MC" className="sb-logo-center" />
         </div>
         <div className="sb-brand-name">MISSION CHAIN</div>
         <div className="sb-brand-sub">Membership Dashboard</div>

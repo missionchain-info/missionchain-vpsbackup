@@ -6,9 +6,8 @@
  * callers never have to worry about transient network failures.
  */
 
-import { JsonRpcProvider, Contract, formatUnits } from 'ethers'
-import {
-  ADDRESSES,
+import { FallbackProvider, FetchRequest, JsonRpcProvider, Contract, formatUnits } from 'ethers'
+import { ADDRESSES,
   MICTokenABI,
   LockManagerABI,
   NFTStakingABI,
@@ -24,15 +23,151 @@ import {
   RevenueRouterABI,
   MICE_MAX_SUPPLY,
   MICE_ROUND_PRICES_USD,
-  MICE_PER_ROUND,
-} from '@missionchain/sdk'
+  MICE_PER_ROUND, USDT_DECIMALS } from '@missionchain/sdk'
 
 // ─── Configuration (mainnet-only as of 2026-05-06) ───────────────────
 
 const BSC_MAINNET_RPC = 'https://bsc-dataseed.binance.org/'
 
-function getRpcUrl(): string {
-  return process.env.BSC_RPC_URL || BSC_MAINNET_RPC
+/**
+ * Every endpoint this service may read through, best first.
+ *
+ * This used to be `INDEXER_RPC_URL || BSC_RPC_URL || dataseed`, which reads as a fallback
+ * chain and is not one: `||` picks on whether the variable is SET, once, at startup.
+ * INDEXER_RPC_URL is always set, so the other two were unreachable, and when that key hit
+ * its monthly cap on 2026-08-12 this service had nowhere to go.
+ *
+ * The failure was worse than an error. ethers retries a 429 with backoff, so calls did not
+ * reject — they hung. `/health` wraps its chain read in try/catch, but a promise that never
+ * settles never reaches the catch, so the endpoint stopped answering entirely, Docker
+ * marked the container unhealthy, and `/dashboard/overview` sat on a spinner after every
+ * wallet connect.
+ *
+ * The original comment here was right that a throttled public endpoint can stall a
+ * `Promise.all`. The answer to that is several endpoints and a timeout, not one endpoint
+ * and hope.
+ */
+export function rpcEndpoints(): string[] {
+  // Public dataseeds FIRST, deliberately.
+  //
+  // Everything this service does is a plain `eth_call` against current state, which any
+  // BSC node serves as well as a paid one. The paid key's value is archive access —
+  // `eth_getLogs` over history — which belongs to the indexers, not here. Spending it on
+  // dashboard reads is what drained it, and putting it first meant a drained key was also
+  // the first thing every request waited on.
+  return [
+    BSC_MAINNET_RPC,
+    'https://bsc-dataseed1.binance.org/',
+    process.env.BSC_RPC_URL,
+    process.env.INDEXER_RPC_URL,
+  ].filter((u): u is string => Boolean(u))
+}
+
+/**
+ * A provider that cannot hang.
+ *
+ * ethers retries an HTTP error inside the sub-provider before surfacing it, so a host
+ * answering 429 immediately still occupies the call for many seconds — long enough that
+ * FallbackProvider's stallTimeout never gets to race the next endpoint, and long enough
+ * that `/health` stopped answering at all while its own try/catch waited on a promise that
+ * never settled. A hard per-attempt timeout is what makes failover actually happen.
+ */
+export function boundedProvider(url: string, timeoutMs = 4_000): JsonRpcProvider {
+  const req = new FetchRequest(url)
+  // 4s suits a state read. A log scan is legitimately slower — a wide `eth_getLogs` can
+  // take tens of seconds on a healthy archive node — so callers that scan pass their own
+  // budget. Applying the read timeout to everything turned working scans into
+  // "request timeout" the moment this bounding was introduced.
+  req.timeout = timeoutMs
+  // One attempt per endpoint. Retrying here would re-introduce exactly the delay the
+  // FallbackProvider exists to avoid — the retry is moving to the next host, not asking
+  // the same dead one again.
+  req.retryFunc = async () => false
+  return new JsonRpcProvider(req, 56, { staticNetwork: true, batchMaxCount: 1 })
+}
+
+/**
+ * `quorum: 1` — the first usable answer wins, and an endpoint that errors or stalls is
+ * simply not the one that answered. `stallTimeout` is what stops a hung host from holding
+ * the whole request: after 2s the next endpoint is raced rather than waited on.
+ */
+export function buildProvider(): FallbackProvider {
+  return new FallbackProvider(
+    rpcEndpoints().map((url, i) => ({
+      provider: boundedProvider(url),
+      priority: i + 1,
+      stallTimeout: 2_000,
+      weight: 1,
+    })),
+    56,
+    { quorum: 1 },
+  )
+}
+
+/**
+ * Endpoints that will actually answer `eth_getLogs`.
+ *
+ * Deliberately NOT the same list as `rpcEndpoints()`. BSC's public endpoints have
+ * eth_getLogs disabled — publicnode answers "Archive requests require a personal token"
+ * and the dataseeds refuse outright — so handing an indexer the read-optimised list would
+ * make every scan fail. Only archive-capable hosts belong here.
+ *
+ * `ARCHIVE_RPC_URL` is first so a second provider can be added without touching code: set
+ * it in the environment and the indexers stop depending on a single key. On 2026-08-12 the
+ * one archive key hit its monthly cap and every log scan stopped, with nowhere to fail over
+ * to.
+ */
+export function archiveEndpoints(): string[] {
+  return [
+    process.env.ARCHIVE_RPC_URL,
+    process.env.INDEXER_RPC_URL,
+    // Last resort. It refuses wide ranges but does serve recent ones, which is enough for
+    // an indexer that is merely catching up a few thousand blocks.
+    'https://bsc-rpc.publicnode.com',
+  ].filter((u): u is string => Boolean(u))
+}
+
+/** Provider for log scans. Same failover discipline, archive-capable hosts only. */
+export function buildArchiveProvider(): FallbackProvider {
+  return new FallbackProvider(
+    archiveEndpoints().map((url, i) => ({
+      provider: boundedProvider(url, 30_000),
+      priority: i + 1,
+      // Log queries are legitimately slower than a state read, so a scan is not treated as
+      // stalled until well past what a healthy node takes.
+      stallTimeout: 10_000,
+      weight: 1,
+    })),
+    56,
+    { quorum: 1 },
+  )
+}
+
+/**
+ * Provider for a wallet that SENDS transactions.
+ *
+ * A single endpoint on purpose. A FallbackProvider can answer `getTransactionCount` from
+ * one host and broadcast to another, and those two disagreeing is how a keeper builds two
+ * transactions with the same nonce — one of them silently replacing the other. Reads may
+ * be raced; a nonce may not.
+ *
+ * What it does take from the rest of this file is the bounded fetch: a keeper that hangs
+ * on a dead endpoint stops crediting rewards until someone notices, which is exactly what
+ * the retry-with-backoff default caused on 2026-08-12.
+ */
+export function buildSignerProvider(): JsonRpcProvider {
+  // Preference order is the opposite of the read path, on purpose. miningKeeper's own note
+  // explains why: the public endpoints broadcast fine but are unreliable on the read side,
+  // so `tx.wait()` throws for transactions that were mined perfectly well and the keeper
+  // records a successful write as a failure. Receipt quality matters more here than latency.
+  //
+  // `SIGNER_RPC_URL` is the escape hatch: repoint the keepers at a healthy endpoint without
+  // a code change, which is exactly what was missing when the archive key capped out.
+  const url = process.env.SIGNER_RPC_URL
+    || process.env.INDEXER_RPC_URL
+    || process.env.BSC_RPC_URL
+    || BSC_MAINNET_RPC
+  return boundedProvider(url)
 }
 
 function getAddresses() {
@@ -135,7 +270,7 @@ function gvRankFromTotal(totalUsd: number): string {
 // ─── Service Class ───────────────────────────────────────────────────
 
 export class BlockchainService {
-  public readonly provider: JsonRpcProvider
+  public readonly provider: FallbackProvider
   public readonly addr = getAddresses()
 
   // Contract instances (lazy-initialized)
@@ -154,7 +289,7 @@ export class BlockchainService {
   public readonly revenueRouter: Contract
 
   constructor() {
-    this.provider = new JsonRpcProvider(getRpcUrl())
+    this.provider = buildProvider()
 
     this.micToken = new Contract(this.addr.MICToken, MICTokenABI, this.provider)
     this.lockManager = new Contract(this.addr.LockManager, LockManagerABI, this.provider)
@@ -220,9 +355,11 @@ export class BlockchainService {
 
   async getMiningInfo(wallet: string): Promise<MiningInfo> {
     try {
-      const [dailyEmission, totalMinted, currentEpochRaw] = await Promise.all([
+      const [dailyEmission, activeLicenses, currentEpochRaw] = await Promise.all([
         this.emissionController.dailyEmission() as Promise<bigint>,
-        this.miceLicense.totalMinted() as Promise<bigint>,
+        // activeLicenses, not totalMinted: a licence that expired or was recycled is still
+        // counted in totalMinted, so the emission denominator would drift upward forever.
+        this.miceLicense.activeLicenses() as Promise<bigint>,
         this.miningPool.currentEpoch().catch(() => 0n) as Promise<bigint>,
       ])
 
@@ -248,7 +385,7 @@ export class BlockchainService {
         pending: formatUnits(pendingTotal, 18),
         hindex: hindex.toString(),
         dailyEmission: formatUnits(dailyEmission, 18),
-        activeMice: Number(totalMinted),
+        activeMice: Number(activeLicenses),
       }
     } catch (err) {
       console.error('[BlockchainService] getMiningInfo error:', err)
@@ -264,7 +401,7 @@ export class BlockchainService {
       const gvRaw = await this.referralRegistry.groupVolume(wallet) as bigint
 
       // Group volume is in USDT (6 decimals)
-      const gvFloat = parseFloat(formatUnits(gvRaw, 6))
+      const gvFloat = parseFloat(formatUnits(gvRaw, USDT_DECIMALS))
       const rank = gvRankFromTotal(gvFloat)
 
       // F1/F2 counts are not directly stored on ReferralRegistry in this design;
@@ -273,7 +410,7 @@ export class BlockchainService {
         referrer: referrer === '0x0000000000000000000000000000000000000000' ? null : referrer,
         f1Count: 0,
         f2Count: 0,
-        gvTotal: formatUnits(gvRaw, 6),
+        gvTotal: formatUnits(gvRaw, USDT_DECIMALS),
         gvRank: rank,
       }
     } catch (err) {
@@ -395,7 +532,7 @@ export class BlockchainService {
           remaining: formatUnits(seedRemaining > 0n ? seedRemaining : 0n, 18),
         },
         preSale: {
-          raised: formatUnits(preSaleRaised, 6), // USDT 6 decimals
+          raised: formatUnits(preSaleRaised, USDT_DECIMALS), // USDT, 18 decimals (BSC-USD)
           remaining: formatUnits(preSaleRemaining > 0n ? preSaleRemaining : 0n, 18),
         },
       }
