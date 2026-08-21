@@ -173,11 +173,16 @@ export const dashboardRoutes: FastifyPluginAsync = async (app) => {
       getConfigNum(app.prisma, 'mining_pool', 5_950_000_000),
       getConfigNum(app.prisma, 'mfp_total', 2_500),
       getConfigNum(app.prisma, 'mice_max_supply', 100_000),
-      getConfigNum(app.prisma, 'emission_miners_pct', 60),
+      // 59, not 60. The published split is 59/25/10/5/1; deck p.11 carried 60 and it
+      // propagated here. Only used when SystemConfig has no value.
+      getConfigNum(app.prisma, 'emission_miners_pct', 59),
       getConfigNum(app.prisma, 'emission_staking_pct', 25),
       getConfigNum(app.prisma, 'emission_dao_pct', 10),
       getConfigNum(app.prisma, 'emission_community_nft_pct', 5),
-      getConfigNum(app.prisma, 'daily_output', 22_907_500),
+      // EmissionControllerV2 has no fixed daily output — issuance is N x r / minerShare,
+      // so it moves with the miner count. 22,907,500 was V1's E0, itself recalibrated away
+      // on 2026-08-05. Zero here means "ask the chain", and the caller does.
+      getConfigNum(app.prisma, 'daily_output', 0),
     ])
 
     // Resolved through the shared helper, so this screen cannot drift from the others.

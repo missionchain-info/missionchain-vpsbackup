@@ -98,12 +98,33 @@ MICE     $100/200/300/400/500 × 20,000 · 360 days every round · activates aft
 SWAP     P₀ $0.01 · M₀ 50,000,000 MIC · virtual reserve $500,000, retires at U/2
          sells open day 30 · 5%/day quota · 1% of reserve per trade
          buy fee 0.3% · sell fee 0.3%–10% (MAX_FEE_BPS = 1000, hard constant)
-MINING   E₀ 750,000 MIC/day · half-life 8 years
-         E = E_base × D(t) × L(H) × W(t) × A(N)
-         H* = 110 days · L = clamp(H/110, 0.02, 2.0), ±10%/day
-         G = clamp(TWAP7d/TWAP30d, 0.25, 1.0) — price brake, damps only, never boosts
-         split 59 / 25 / 10 / 5 / 1 (miners / staking / DAO / Community NFT / MFP-NFT)
+MINING   ⛔ SUPERSEDED — this block describes EmissionController **v1**, which is deployed,
+         has been stripped of its role, and has never paid anything. Do not quote it.
+         v1: E₀ 750,000 MIC/day · HALF_LIFE = 2922 days · E = E_base × D(t) × L(H) × W(t) × A(N)
 ```
+
+**The live emitter is `EmissionControllerV2` `0x3CEaeB22B262a61B1f974D90E247B8E3e8e7Ddd1`,
+and it has no decay of any kind** — no half-life, no `D(t)`, no `L(H)`, no adoption ramp,
+no `E₀`. Every active licence is issued the **same flat amount**:
+
+```
+micPerLicencePerDay  83.333333333333333333 MIC   settable in [1, 500], DEFAULT_ADMIN_ROLE
+damperBps            10000 = inert, floor 2500   the only discretionary brake
+split                59 / 25 / 10 / 5 / 1        ±10% deviation allowed
+Early Staking Boost  first 90 days moves 1000 bps miners → staking
+dailyEmission        n × micPerLicencePerDay ÷ currentMinerBps, capped by remainingMiningPool
+```
+
+`currentMinerBps` is **4900**, not 5900, while the 90-day boost runs. Deriving a
+per-licence figure by dividing `dailyEmission` by `ORIG_MINERS` gives the wrong answer;
+read `micPerLicencePerDay` directly.
+
+**The two schedules are not close.** v1 capped a day at `2 × E₀` = 1.5M MIC. v2 at 100,000
+licences would issue **14.1M MIC/day** — 9.4× that cap — and would drain the 85% mining
+pool in roughly 420 days. At one full round (20,000 licences) it is 2.82M/day, about 5.8
+years. Anything quoting "750,000/day" or "8-year half-life" as current is wrong.
+
+Canonical: **`MISSIONCHAIN_SPEC_EMISSION_V2.md`** in the repo root. Read it, not this block.
 
 **`H` is a liquidity-coverage measure, not a price measure.** It is "how many days of new emission the pool's USDT could absorb". It moves the *wrong way* when price crashes (lower price → each day's emission is worth less → H rises), so `G` and the emergency brake at 50% of P₀ are mandatory from day one, not a later phase.
 

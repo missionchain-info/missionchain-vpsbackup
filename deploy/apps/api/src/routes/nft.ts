@@ -845,13 +845,24 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
     const usdSplitReliable = weeklyLedger !== null && monthlyLedger !== null
 
     const ledgers = {
+      // A missing MIC ledger used to collapse to {0,0,0}, which reported a wallet holding
+      // 1.0119 MIC as holding nothing. The ledger needs eth_getLogs — for accumulated and
+      // claimed, which are history — but UNCLAIMED is current state and was already read
+      // straight from the pool a few lines above. So the history is reported as unknown
+      // and the balance is reported as what it is.
       community: {
         usd: addLedgers(weeklyLedger?.community, monthlyLedger?.community),
-        mic: communityMicLedger ?? { accumulated: '0', claimed: '0', unclaimed: '0' },
+        mic: communityMicLedger ?? {
+          accumulated: null, claimed: null, unclaimed: mining?.claimable ?? '0',
+        },
+        micHistoryKnown: communityMicLedger !== null,
       },
       mfp: {
         usd: addLedgers(weeklyLedger?.mfp, monthlyLedger?.mfp),
-        mic: mfpMicLedger ?? { accumulated: '0', claimed: '0', unclaimed: '0' },
+        mic: mfpMicLedger ?? {
+          accumulated: null, claimed: null, unclaimed: mfpMining?.claimable ?? '0',
+        },
+        micHistoryKnown: mfpMicLedger !== null,
       },
       usdSplitReliable,
       // Where each Claim button must send its transaction.
@@ -863,13 +874,19 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
       },
     }
 
-    let luckyDraw: { address: string; claimable: string; currency: string } | null = null
+    let luckyDraw: { address: string; claimable: string; prizePool: string | null; currency: string } | null = null
     if (live(A.LuckyDraw)) {
       try {
         const c = new ethers.Contract(A.LuckyDraw, drawAbi, p)
+        // `claimable` is this wallet's share; the page also shows the week's prize pool,
+        // which is simply what the contract holds. Without it the pool rendered as "-"
+        // while $1.25 sat in the contract.
+        const balAbi = ['function currentBalance() view returns (uint256)']
+        const pool = await new ethers.Contract(A.LuckyDraw, balAbi, p).currentBalance().catch(() => null)
         luckyDraw = {
           address: A.LuckyDraw,
           claimable: fmt(await c.claimable(wallet)),
+          prizePool: pool === null ? null : fmt(pool),
           currency: 'USDT',
         }
       } catch { /* the draw contract predates this getter on some deploys */ }
@@ -897,6 +914,129 @@ export const nftRoutes: FastifyPluginAsync = async (app) => {
             ? 'Nothing is claimable yet. Weekly and monthly rewards become claimable once the period closes and the pool is credited; mining rewards accrue every second you hold an active NFT.'
             : null,
       },
+    }
+  })
+
+  // ─── GET /nft/enrollable?wallet=0x… ────────────────────────────────
+  /**
+   * Which of this wallet's NFTs are earning, and which are not yet.
+   *
+   * Holding the NFT is not enough. NftRewardPoolV2 pays by `weightOf[holder]`, and that
+   * only becomes non-zero once `enroll(tokenId)` has been called — the pool cannot observe
+   * a mint or a transfer on its own. A wallet can therefore sit on funded NFTs earning
+   * exactly nothing, which is what happened here: the Community pool held 16.99 MIC
+   * streaming to a single enrolled holder while others saw zero and assumed a bug.
+   */
+  app.get('/enrollable', async (req, reply) => {
+    const { wallet } = req.query as { wallet?: string }
+    if (!wallet) return reply.status(400).send({ error: 'MISSING_WALLET' })
+    const who = wallet   // narrowed once, so the closures below do not each re-check it
+
+    const { ethers } = await import('ethers')
+    const { getActiveAddresses } = await import('@missionchain/sdk')
+    const A = getActiveAddresses() as Record<string, string>
+    const ZERO = '0x0000000000000000000000000000000000000000'
+    const live = (a?: string) => !!a && a !== ZERO
+    const p = buildProvider()
+
+    const POOL_ABI = [
+      'function nft() view returns (address)',
+      'function tokenWeight(uint256) view returns (uint256)',
+      'function tokenHolder(uint256) view returns (address)',
+    ]
+    // MFPNFT is ERC721Enumerable; CommunityNFTv2 is not, so its ids are found by scanning
+    // ownerOf across a supply that is small and capped. Scanning an unbounded collection
+    // would not be acceptable — this one is.
+    const NFT_ABI = [
+      'function balanceOf(address) view returns (uint256)',
+      'function totalSupply() view returns (uint256)',
+      'function ownerOf(uint256) view returns (address)',
+      'function tokenOfOwnerByIndex(address,uint256) view returns (uint256)',
+    ]
+
+    async function idsOwnedBy(nftAddr: string): Promise<number[]> {
+      // `pool.nft()` may be a read-only shim rather than the collection itself. MFPNftAdapter
+      // supplies the tier, multiplier and expiry that NftRewardPoolV2 demands and MFPNFT does
+      // not have — but it forwards only `ownerOf`, so enumerating against it returns nothing
+      // and every holder reads as owning zero. Unwrap it to the real collection first.
+      let addr = nftAddr
+      const under = await new ethers.Contract(addr, ['function mfp() view returns (address)'], p)
+        .mfp().catch(() => null)
+      if (under && under !== ZERO) addr = under
+
+      const c = new ethers.Contract(addr, NFT_ABI, p)
+      const bal = Number(await c.balanceOf(who).catch(() => 0n))
+      if (bal === 0) return []
+      const out: number[] = []
+      // Enumerable path first — one call per token, no scan.
+      try {
+        for (let i = 0; i < bal; i++) out.push(Number(await c.tokenOfOwnerByIndex(who, i)))
+        return out
+      } catch { /* not enumerable — fall through */ }
+      const supply = Number(await c.totalSupply().catch(() => 0n))
+      const SCAN_CAP = 2_500          // MFP hard cap; Community is smaller still
+      for (let id = 1; id <= Math.min(supply, SCAN_CAP) && out.length < bal; id++) {
+        try {
+          if ((await c.ownerOf(id)).toLowerCase() === who.toLowerCase()) out.push(id)
+        } catch { /* burned or never minted */ }
+      }
+      return out
+    }
+
+    async function readPool(poolAddr?: string, label = '') {
+      if (!live(poolAddr)) return { pool: null, nft: null, wired: false, reason: 'pool not deployed', tokens: [] }
+      const pool = new ethers.Contract(poolAddr!, POOL_ABI, p)
+      const nftAddr: string = await pool.nft().catch(() => ZERO)
+      if (!live(nftAddr)) {
+        // NOT a misconfiguration. NftRewardPoolV2 has two modes, and its constructor accepts
+        // either: an NFT pool with tiers and expiries, where holders call enroll(), or a
+        // FLAT-WEIGHT pool with no NFT set, where an operator calls setWeight(holder, passes).
+        // `setWeight` even refuses to run once an NFT is set. The MFP pool is deliberately
+        // the second kind — Mission Founding Passes are undifferentiated and never expire —
+        // so there is no enrolment for a holder to perform, and offering one would be wrong.
+        const flat = await new ethers.Contract(poolAddr!, ['function flatWeight() view returns (uint256)'], p)
+          .flatWeight().catch(() => 0n)
+        return {
+          pool: poolAddr, nft: null, wired: false,
+          mode: flat > 0n ? 'flat-weight' : 'unconfigured',
+          flatWeight: flat.toString(),
+          reason: flat > 0n
+            ? 'flat-weight pool — weight is assigned by the operator, not enrolled by holders'
+            : 'reward pool has neither an NFT contract nor a flat weight',
+          tokens: [],
+        }
+      }
+      const ids = await idsOwnedBy(nftAddr)
+      const tokens = await Promise.all(ids.map(async (id) => {
+        const w = await pool.tokenWeight(id).catch(() => 0n)
+        const holder = w > 0n ? await pool.tokenHolder(id).catch(() => ZERO) : ZERO
+        return {
+          id,
+          enrolled: w > 0n,
+          // Enrolled to a previous owner: the weight is still credited to them until
+          // someone calls resync. The buyer needs to be told, not left wondering.
+          staleHolder: w > 0n && holder.toLowerCase() !== who.toLowerCase(),
+        }
+      }))
+      return { pool: poolAddr, nft: nftAddr, wired: true, reason: null, tokens }
+    }
+
+    try {
+      const [community, mfp] = await Promise.all([
+        readPool(A.CommunityNFTRewardPool, 'community'),
+        readPool(A.MFPRewardPool, 'mfp'),
+      ])
+      const shape = (r: any) => ({
+        ...r,
+        owned: r.tokens.length,
+        enrolled: r.tokens.filter((t: any) => t.enrolled && !t.staleHolder).length,
+        enrollable: r.tokens.filter((t: any) => !t.enrolled).map((t: any) => t.id),
+        needsResync: r.tokens.filter((t: any) => t.staleHolder).map((t: any) => t.id),
+      })
+      return { data: { wallet, community: shape(community), mfp: shape(mfp) } }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, stack: err?.stack }, '[nft/enrollable] failed')
+      return reply.status(500).send({ error: 'READ_FAILED' })
     }
   })
 

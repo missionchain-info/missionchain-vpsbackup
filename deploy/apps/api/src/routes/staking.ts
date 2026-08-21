@@ -21,12 +21,37 @@ export const stakingRoutes: FastifyPluginAsync = async (app) => {
     const totalStaked = Number(stats._sum.amount ?? 0)
     const totalWeighted = Number(stats._sum.weightedAmount ?? 0)
 
-    // APY estimate: based on emission split (20% to staking) and total weighted
-    // This is a simplified placeholder — real APY comes from EmissionController
-    const stakingEmissionPct = 20
-    const dailyEmissionBase = 22_907_500 // E0
-    const stakingDailyEmission = dailyEmissionBase * (stakingEmissionPct / 100)
-    const apyEstimate = totalStaked > 0
+    // APY from what the chain is actually issuing.
+    //
+    // This used to be `22,907,500 x 20%`. Both numbers were dead: E0 was recalibrated to
+    // 750,000 on 2026-08-05 and removed outright with EmissionControllerV2 on 08-18, and
+    // staking's share is 25%, not 20. The APY it produced was fiction — a fixed, enormous
+    // number bearing no relation to any MIC that had ever been minted.
+    //
+    // V2 issues N x r / minerShare per day and staking takes stakingBps of it. Both come
+    // off the contract.
+    let stakingEmissionPct = 25
+    let stakingDailyEmission = 0
+    let emissionKnown = false
+    try {
+      const { formatUnits } = await import('ethers')
+      const ec = app.blockchain.emissionController
+      const [daily, stakingBps, minersBps, minerNow] = await Promise.all([
+        ec.dailyEmission() as Promise<bigint>,
+        ec.stakingBps() as Promise<bigint>,
+        ec.minersBps() as Promise<bigint>,
+        ec.currentMinerBps() as Promise<bigint>,
+      ])
+      // While the 90-day Early Staking Boost runs, staking receives what miners give up.
+      const liveStakingBps = Number(stakingBps) + (Number(minersBps) - Number(minerNow))
+      stakingEmissionPct = liveStakingBps / 100
+      stakingDailyEmission = Number(formatUnits(daily, 18)) * (liveStakingBps / 10_000)
+      emissionKnown = true
+    } catch (e: any) {
+      app.log.warn({ err: e?.shortMessage || e?.message }, '[staking] emission read failed')
+    }
+
+    const apyEstimate = emissionKnown && totalStaked > 0
       ? ((stakingDailyEmission * 365) / totalStaked) * 100
       : 0
 
@@ -36,7 +61,11 @@ export const stakingRoutes: FastifyPluginAsync = async (app) => {
         totalWeightedStaked: totalWeighted.toFixed(0),
         activePositions: stats._count,
         stakingEmissionPct,
-        estimatedAPY: Math.min(apyEstimate, 999).toFixed(2), // cap display at 999%
+        stakingDailyEmission: emissionKnown ? stakingDailyEmission.toFixed(4) : null,
+        // Null, not zero, when the chain could not be read — and null when nothing is
+        // staked, because an APY on a zero denominator is not 0%, it is undefined.
+        estimatedAPY: emissionKnown && totalStaked > 0 ? Math.min(apyEstimate, 999).toFixed(2) : null,
+        apyKnown: emissionKnown && totalStaked > 0,
       },
     }
   })

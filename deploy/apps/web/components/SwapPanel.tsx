@@ -12,7 +12,8 @@ const ACTIVE_CHAIN = getActiveChain()
 const MAX_SLIPPAGE_PCT = 15
 
 /**
- * Swap USDT ↔ MIC against LiquidityPoolV6.
+ * Swap USDT ↔ MIC against LiquidityPoolV7 (`CONTRACTS.swapPool`). Not V6 — that pool is
+ * parked and unlisted; see the note on `liquidityPoolV6` in lib/contracts.ts.
  *
  * Shared by the `/swap` page and the pop-up on the MICE page, because a buyer who is
  * short of MIC should not have to leave the purchase to fix it.
@@ -20,9 +21,10 @@ const MAX_SLIPPAGE_PCT = 15
  * ## Everything here is gated by the pool's own state, not by a flag we keep
  *
  * The pool is deployed but dormant until it is seeded with MIC, and its sell side stays
- * shut for 30 days after that. Both facts are read from the contract on every load, so
- * this panel opens the moment the pool goes live without anyone editing code — and it
- * cannot show an open market that isn't there.
+ * shut until the pool has taken in `sellGateUsdt` of real USDT — a reserve condition, not
+ * the 30-day timer V6 used. Both facts are read from the contract on every load, so this
+ * panel opens the moment the pool goes live without anyone editing code — and it cannot
+ * show an open market that isn't there.
  *
  * ## Why the quote is not a promise
  *
@@ -44,7 +46,11 @@ const POOL_ABI = [
   'function sellFeeBps() view returns (uint256)',
   'function reserveMic() view returns (uint256)',
   'function reserveUsdt() view returns (uint256)',
+  'function reserveUsdtHighWater() view returns (uint256)',
+  'function sellGateUsdt() view returns (uint256)',
+  'function backingBps() view returns (uint256)',
   'function remainingDailyOut() view returns (uint256)',
+  'function DAILY_OUT_BPS() view returns (uint256)',
   'function swapUsdtToMic(uint256 usdtIn, uint256 minMicOut) returns (uint256)',
   'function swapMicToUsdt(uint256 micIn, uint256 minUsdtOut) returns (uint256)',
   'function BUY_FEE_BPS() view returns (uint256)',
@@ -66,6 +72,17 @@ type PoolState = {
   maxTradeMic: number
   remainingOutUsdt: number
   sellOpenDay: number
+  /**
+   * The sell gate. V6 opened selling on a calendar day; V7 opens it when the pool actually
+   * holds `sellGateUsdt` of real USDT, measured at its high-water mark so a sale cannot
+   * close the gate behind it. `SELL_OPEN_DAY` survives in the ABI but gates nothing — read
+   * these three instead, or the panel will promise a date the contract does not honour.
+   */
+  gateUsdt: number
+  highWaterUsdt: number
+  reserveUsdt: number
+  backingBps: number
+  dailyOutBps: number
 }
 
 const fmt = (n: number, dp = 4) =>
@@ -132,13 +149,17 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
   const load = useCallback(async () => {
     if (!live) return
     try {
-      const [seeded, phase, ageDays, spot, sellFee, buyFee, maxBps, reserveMic, remOut, openDay] =
+      const [seeded, phase, ageDays, spot, sellFee, buyFee, maxBps, reserveMic, remOut, openDay,
+             gate, highWater, resUsdt, backing, dailyBps] =
         await readWithFallback((p) => {
           const c = new ethers.Contract(poolAddr, POOL_ABI, p)
           return Promise.all([
             c.isSeeded(), c.phase(), c.poolAgeDays(), c.spotPrice(),
             c.sellFeeBps().catch(() => 30n), c.BUY_FEE_BPS(), c.MAX_TRADE_BPS(),
             c.reserveMic(), c.remainingDailyOut().catch(() => 0n), c.SELL_OPEN_DAY(),
+            c.sellGateUsdt().catch(() => 0n), c.reserveUsdtHighWater().catch(() => 0n),
+            c.reserveUsdt().catch(() => 0n), c.backingBps().catch(() => 0n),
+            c.DAILY_OUT_BPS().catch(() => 500n),
           ])
         })
 
@@ -153,6 +174,11 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
         maxTradeMic: (Number(ethers.formatUnits(reserveMic, 18)) * Number(maxBps)) / 10_000,
         remainingOutUsdt: Number(ethers.formatUnits(remOut, 18)),
         sellOpenDay: Number(openDay),
+        gateUsdt: Number(ethers.formatUnits(gate, 18)),
+        highWaterUsdt: Number(ethers.formatUnits(highWater, 18)),
+        reserveUsdt: Number(ethers.formatUnits(resUsdt, 18)),
+        backingBps: Number(backing),
+        dailyOutBps: Number(dailyBps),
       })
 
       if (address) {
@@ -284,17 +310,20 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
   /**
    * When selling opens, said as precisely as the chain allows.
    *
-   * Before the pool is seeded there is no start date to count from — claiming one would
-   * be inventing it. Once it is running, the remaining days are arithmetic.
+   * There is no date to give. `advancePhase()` opens the sell side on
+   * `reserveUsdtHighWater >= sellGateUsdt` and on nothing else, so the honest answer is a
+   * dollar figure and how far along it is. The old copy here promised "30 days after the
+   * pool went live" — true of V6, and V6's own source now says that timer "cannot know
+   * whether the money arrived". Quoting a countdown against V7 would be inventing one.
    */
+  const gateLeft = Math.max(0, (pool?.gateUsdt ?? 0) - (pool?.highWaterUsdt ?? 0))
+  const gatePct = pool && pool.gateUsdt > 0
+    ? Math.min(100, (pool.highWaterUsdt / pool.gateUsdt) * 100)
+    : 0
+
   const sellNotice = !pool?.seeded
-    ? 'MIC → USDT opens 30 days after the liquidity pool is funded. The pool has not been funded yet, so that countdown has not started.'
-    : (() => {
-        const left = Math.max(0, pool.sellOpenDay - pool.ageDays)
-        const when = new Date(Date.now() + left * 86400_000)
-          .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-        return `MIC → USDT opens ${pool.sellOpenDay} days after the pool went live — ${left} day${left === 1 ? '' : 's'} to go, around ${when}. Buying is open now.`
-      })()
+    ? 'MIC → USDT opens once the pool holds enough real USDT to honour a sale. The pool has not been funded with MIC yet, so it is not yet taking either side.'
+    : `MIC → USDT opens when the pool has taken in $${fmt(pool.gateUsdt, 0)} of real USDT — $${fmt(pool.highWaterUsdt, 2)} so far, $${fmt(gateLeft, 2)} to go. It fills from 40% of every Pre-Sale and MICE purchase, so there is no fixed date. Buying is open now.`
   const n = parseFloat(amount) || 0
   const haveIn = dir === 'buy' ? (bal?.usdt ?? 0) : (bal?.micFree ?? 0)
   const overBalance = n > haveIn
@@ -353,9 +382,9 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
           title={pool?.seeded ? 'Buy MIC with USDT' : 'Opens when the pool is funded with MIC'}
         >USDT → MIC</button>
 
-        {/* Selling is genuinely shut for the first 30 days, so the button is dimmed
+        {/* Selling is genuinely shut until the pool is backed, so the button is dimmed
             rather than hidden — a control that vanishes reads as a missing feature,
-            one that explains itself reads as a schedule. */}
+            one that explains itself reads as a condition. */}
         <button
           className={'swap-dir-btn' + (dir === 'sell' ? ' active' : '') + (sellsOpen ? '' : ' dim')}
           onClick={() => {
@@ -365,6 +394,53 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
           title={sellsOpen ? 'Sell MIC for USDT' : sellNotice}
         >MIC → USDT</button>
       </div>
+
+      {/* Sell-side limits, shown before selling opens rather than after.
+          Every one of these reverts a transaction that looked fine in the form, and the
+          revert strings ("LP7: over daily limit") are not written for a member. The daily
+          cap in particular is shared across everyone and consumed only by sales, so a
+          seller can be inside every personal limit and still be turned away by strangers.
+          Better to read the ceiling than to discover it. */}
+      {pool?.seeded && (
+        <div className="swap-limits">
+          <div className="swap-limits-h">
+            {sellsOpen ? 'Sell limits' : 'Sell side — not open yet'}
+          </div>
+
+          {!sellsOpen && pool.gateUsdt > 0 && (
+            <>
+              <div className="swap-limits-bar">
+                <span style={{ width: `${gatePct}%` }} />
+              </div>
+              <div className="swap-limits-row">
+                <span>Backing collected</span>
+                <b>${fmt(pool.highWaterUsdt, 2)} / ${fmt(pool.gateUsdt, 0)}</b>
+              </div>
+            </>
+          )}
+
+          <div className="swap-limits-row">
+            <span>Most one trade can sell</span>
+            <b>{fmt(pool.maxTradeMic, 0)} MIC</b>
+          </div>
+          <div className="swap-limits-row">
+            <span>Left to pay out today {'·'} shared</span>
+            <b>${fmt(pool.remainingOutUsdt, 2)}</b>
+          </div>
+          <div className="swap-limits-row">
+            <span>Sell fee at today{'’'}s backing</span>
+            <b>{(pool.sellFeeBps / 100).toFixed(2)}%</b>
+          </div>
+
+          <div className="swap-limits-note">
+            The daily payout ceiling is {pool.dailyOutBps / 100}% of the USDT the pool
+            actually holds, and everyone selling draws on the same one. The fee falls
+            towards 0% as real USDT replaces the pool{'’'}s opening reserve
+            {pool.backingBps > 0 && ` — ${(pool.backingBps / 100).toFixed(2)}% of the way there`}.
+            One trade per wallet per block.
+          </div>
+        </div>
+      )}
 
       {blocked && <div className="swap-blocked">{blocked}</div>}
 

@@ -51,6 +51,33 @@ const PRIZE_COUNT = 18
 /** Least time between sealing a draw and opening it, so the commitment is observable. */
 const MIN_REVEAL_GAP = 3600
 
+/**
+ * Smallest pot worth drawing, in USDT. Below this the week rolls over.
+ *
+ * The contract has no such floor — `WEEKLY_CAP` is a ceiling — so without one the keeper
+ * would happily split whatever had arrived across 18 prizes. At the $1.25 the pool held on
+ * 2026-08-21 that is a first prize of 37 cents and a consolation of three, which costs more
+ * in gas than it pays and makes the draw look like a joke rather than a prize.
+ *
+ * Rolling over loses nothing: the USDT stays in the contract and joins next week's pot.
+ *
+ * Adjustable at runtime through SystemConfig `lucky_draw_min_usdt` — the Owner can lower
+ * it for a test week or raise it later without a deploy.
+ */
+const DEFAULT_MIN_POOL_USDT = 500
+
+async function minPoolUsdt(app: FastifyInstance): Promise<number> {
+  try {
+    const row = await (app as any).prisma.systemConfig.findUnique({
+      where: { key: 'lucky_draw_min_usdt' },
+    })
+    const v = Number(row?.value)
+    return Number.isFinite(v) && v >= 0 ? v : DEFAULT_MIN_POOL_USDT
+  } catch {
+    return DEFAULT_MIN_POOL_USDT
+  }
+}
+
 /** Where the pending seed lives between the two steps. */
 const STATE_KEY = 'luckydraw_pending'
 
@@ -189,6 +216,17 @@ export async function runLuckyDrawTick(app: FastifyInstance, signer: Wallet): Pr
   // ── step 1: seal a draw for the week that has closed ──
   const balance: bigint = await draw.currentBalance()
   if (balance === 0n) return
+
+  // Too small to be worth drawing — roll it into next week rather than split it 18 ways.
+  const min = await minPoolUsdt(app)
+  const poolUsdt = Number(formatUnits(balance, 18))
+  if (poolUsdt < min) {
+    app.log.info(
+      { pool: poolUsdt.toFixed(2), min },
+      'luckyDraw: pot below the minimum, carrying over to next week',
+    )
+    return
+  }
 
   const thisWeek = weekStart(now)
   const lastWeek = thisWeek - 7 * DAY

@@ -355,35 +355,33 @@ export class BlockchainService {
 
   async getMiningInfo(wallet: string): Promise<MiningInfo> {
     try {
-      const [dailyEmission, activeLicenses, currentEpochRaw] = await Promise.all([
+      const [dailyEmission, activeLicenses] = await Promise.all([
         this.emissionController.dailyEmission() as Promise<bigint>,
         // activeLicenses, not totalMinted: a licence that expired or was recycled is still
         // counted in totalMinted, so the emission denominator would drift upward forever.
         this.miceLicense.activeLicenses() as Promise<bigint>,
-        this.miningPool.currentEpoch().catch(() => 0n) as Promise<bigint>,
       ])
 
-      const currentEpoch = Number(currentEpochRaw)
+      // What used to stand here walked seven epochs calling currentEpoch, pendingReward,
+      // claimed and getScore. The deployed MiningPool has none of them — it is a
+      // continuous accumulator, and those names belong to an epoch-era contract that was
+      // replaced. Every call threw, every throw was swallowed, and this returned zeros.
+      //
+      // `claimableOf` is the real question: banked earnings plus the live accrual of each
+      // licence still running.
       let pendingTotal = 0n
-      let hindex = 0n
-      for (let epoch = Math.max(1, currentEpoch - 6); epoch <= currentEpoch; epoch++) {
-        try {
-          const [pending, alreadyClaimed] = await Promise.all([
-            this.miningPool.pendingReward(epoch, wallet) as Promise<bigint>,
-            this.miningPool.claimed(epoch, wallet) as Promise<boolean>,
-          ])
-          if (!alreadyClaimed) pendingTotal += pending
-          if (epoch === currentEpoch) {
-            hindex = await this.miningPool.getScore(epoch, wallet) as bigint
-          }
-        } catch {
-          // Ignore epochs that are not ready or absent.
-        }
+      try {
+        const ids = await this.miceLicense.getUserLicenses(wallet) as bigint[]
+        pendingTotal = await this.miningPool.claimableOf(wallet, ids) as bigint
+      } catch {
+        // A wallet with no licences simply has nothing to claim.
       }
 
       return {
         pending: formatUnits(pendingTotal, 18),
-        hindex: hindex.toString(),
+        // The H-index scoring model went with the epochs. EmissionControllerV2 pays a flat
+        // rate per licence, so there is no score to report.
+        hindex: '0',
         dailyEmission: formatUnits(dailyEmission, 18),
         activeMice: Number(activeLicenses),
       }

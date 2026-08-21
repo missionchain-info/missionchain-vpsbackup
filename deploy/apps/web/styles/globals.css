@@ -13182,6 +13182,36 @@ body.light {
   border-color: rgba(240, 190, 74,0.55); background: rgba(240, 190, 74,0.12); color: #F5CC6E;
 }
 
+/* Sell-side ceilings, read from the pool. Quiet by design — this is reference a member
+   consults before committing, not an alert, so it sits below the direction switch at the
+   same weight as the rest of the card. */
+.swap-limits {
+  padding: 12px 14px; border-radius: 10px; margin-bottom: 14px;
+  border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.025);
+}
+.swap-limits-h {
+  font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+  opacity: 0.62; margin-bottom: 9px;
+}
+.swap-limits-bar {
+  height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 9px;
+  background: rgba(255,255,255,0.09);
+}
+.swap-limits-bar > span {
+  display: block; height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, rgba(240,190,74,0.55), rgba(240,190,74,0.95));
+}
+.swap-limits-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  font-size: 0.76rem; line-height: 1.9;
+}
+.swap-limits-row > span { opacity: 0.72; }
+.swap-limits-row > b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.swap-limits-note {
+  margin-top: 8px; padding-top: 8px; font-size: 0.7rem; line-height: 1.65; opacity: 0.6;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
 /* The pool decides what is possible; this is where it says so. */
 .swap-blocked {
   padding: 12px 14px; border-radius: 9px; margin-bottom: 14px; font-size: 0.78rem;

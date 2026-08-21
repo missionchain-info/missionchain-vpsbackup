@@ -13,12 +13,19 @@
  */
 'use client'
 
-type Ledger = { accumulated: string; claimed: string; unclaimed: string }
+// `accumulated` and `claimed` are history and come from event logs, which no reachable RPC
+// currently serves; `unclaimed` is current state and is always available. Null means
+// unknown — rendered as an em dash, never as a zero, because zero is a claim of its own.
+type Ledger = {
+  accumulated: string | null
+  claimed: string | null
+  unclaimed: string | null
+}
 
-const money = (v?: string) =>
+const money = (v?: string | null) =>
   Number(v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const mic = (v?: string) =>
+const mic = (v?: string | null) =>
   Number(v ?? 0).toLocaleString('en-US', { maximumFractionDigits: 4 })
 
 function Row({
@@ -26,12 +33,13 @@ function Row({
 }: {
   currency: string
   ledger?: Ledger
-  format: (v?: string) => string
+  format: (v?: string | null) => string
   prefix?: string
   suffix?: string
   footnote?: string
 }) {
-  const wrap = (v?: string) => `${prefix ?? ''}${format(v)}${suffix ?? ''}`
+  const wrap = (v?: string | null) =>
+    v === null || v === undefined ? '\u2014' : `${prefix ?? ''}${format(v)}${suffix ?? ''}`
   const unclaimed = Number(ledger?.unclaimed ?? 0)
   return (
     <div className="nft-ledger-row">
@@ -50,6 +58,13 @@ function Row({
           <strong className={unclaimed > 0 ? 'net-stat-gold' : undefined}>{wrap(ledger?.unclaimed)}</strong>
         </div>
       </div>
+      {ledger && ledger.accumulated === null && ledger.unclaimed !== null && (
+        <div className="nft-ledger-foot">
+          Unclaimed is read live from the pool and is exact. Total and claimed need the
+          withdrawal history, which is unavailable right now, so they are shown as unknown
+          rather than as zero.
+        </div>
+      )}
       {footnote ? <div className="nft-ledger-foot">{footnote}</div> : null}
     </div>
   )

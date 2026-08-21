@@ -68,7 +68,13 @@ const USDT_POOL_ABI = [
   'function poolName() view returns (string)',
 ] as const
 
-const MIC_POOL_ABI = ['function notifyReward(uint256 amount)'] as const
+const MIC_POOL_ABI = [
+  'function notifyReward(uint256 amount)',
+  'function totalNotified() view returns (uint256)',
+  'function totalClaimed() view returns (uint256)',
+] as const
+
+const ERC20_BAL_ABI = ['function balanceOf(address) view returns (uint256)'] as const
 
 const EMISSION_ABI = [
   'function lastDistribution() view returns (uint256)',
@@ -186,32 +192,50 @@ async function creditInBatches(
 export async function notifyMicPools(app: FastifyInstance, signer: Wallet, A: Record<string, string>) {
   if (!A.EmissionController || A.EmissionController === ZERO) return
 
-  const emission = new Contract(A.EmissionController, EMISSION_ABI, signer)
-  const last = Number(await emission.lastDistribution())
-  if (last === 0) return
+  // WHAT THIS NO LONGER DOES, AND WHY.
+  //
+  // This used to read the last `DailyDistributed` event over a 40,000-block window and
+  // take `toCommunityNFT` / `toMFPReward` from its args. That needs `eth_getLogs`, and no
+  // reachable endpoint serves it: the BSC dataseeds refuse the method outright — even for
+  // a ten-block range — publicnode answers "Archive requests require a personal token",
+  // and the Alchemy key is over its monthly cap. So the call returned nothing, the
+  // function returned early, and both pools sat on MIC that was never announced to them.
+  //
+  // The amount does not need an event. `notifyReward` itself defines it:
+  //
+  //     require(balanceOf(pool) >= (totalNotified - totalClaimed) + amount)
+  //
+  // so the largest notifiable amount IS the balance minus what is already owed. Three
+  // plain `eth_call`s, which every endpoint serves. It is also self-correcting: whatever
+  // accumulated while this was broken gets picked up on the next run, and a distribution
+  // missed for any other reason settles the same way.
 
-  // Only the most recent distribution matters — earlier ones were notified on their day.
-  const provider = signer.provider as JsonRpcProvider
-  const head = await provider.getBlockNumber()
-  const logs = await emission.queryFilter('DailyDistributed', head - 40_000, head).catch(() => [])
-  if (logs.length === 0) return
+  const micAddr = A.MICToken
+  if (!micAddr || micAddr === ZERO) return
+  const mic = new Contract(micAddr, ERC20_BAL_ABI, signer)
 
-  const latest: any = logs[logs.length - 1]
-  const toCommunity: bigint = latest.args?.toCommunityNFT ?? 0n
-  const toMfp: bigint = latest.args?.toMFPReward ?? 0n
-
-  for (const [name, addr, amount] of [
-    ['Community', A.CommunityNFTRewardPool, toCommunity],
-    ['MFP', A.MFPRewardPool, toMfp],
+  for (const [name, addr] of [
+    ['Community', A.CommunityNFTRewardPool],
+    ['MFP', A.MFPRewardPool],
   ] as const) {
-    if (!addr || addr === ZERO || amount === 0n) continue
+    if (!addr || addr === ZERO) continue
     try {
       const pool = new Contract(addr, MIC_POOL_ABI, signer)
+      const [bal, notified, claimed] = await Promise.all([
+        mic.balanceOf(addr) as Promise<bigint>,
+        pool.totalNotified() as Promise<bigint>,
+        pool.totalClaimed() as Promise<bigint>,
+      ])
+      const owed = notified - claimed
+      const amount = bal > owed ? bal - owed : 0n
+      if (amount === 0n) continue
+
       const tx = await pool.notifyReward(amount)
       await tx.wait()
       app.log.info({ pool: name, amount: formatUnits(amount, 18) }, 'rewardKeeper: MIC pool notified')
     } catch (e: any) {
-      // "reward not funded" simply means this distribution was already notified.
+      // "reward not funded" would now mean the balance moved between the read and the
+      // send — harmless, the next tick recomputes.
       const msg = e?.shortMessage || e?.message || ''
       if (!/not funded/i.test(msg)) {
         app.log.warn({ pool: name, err: msg }, 'rewardKeeper: notify failed')

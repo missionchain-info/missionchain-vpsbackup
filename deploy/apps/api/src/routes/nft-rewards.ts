@@ -368,6 +368,80 @@ export const nftRewardsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    // ── Ownership drift ──
+    //
+    // The check above counts MINT records, which is not the same question. An MFP pass is
+    // a transferable ERC-721: a wallet that bought one second-hand never appears in the
+    // mint table, and a wallet that sold one still does. Weight written by `setWeight`
+    // does not move with the token — the pool keeps paying the seller until an operator
+    // rewrites it.
+    //
+    // So the only honest source is current ownership, read from the collection itself and
+    // compared against the weight actually registered. Anything that disagrees is a wallet
+    // being paid the wrong amount right now.
+    const drift: Array<{
+      wallet: string
+      passes: number
+      registeredPasses: number
+      delta: number
+      kind: 'unregistered' | 'stale-holder' | 'wrong-count'
+    }> = []
+    let driftError: string | null = null
+
+    try {
+      // Only meaningful while the pool is in FLAT-WEIGHT mode, where an operator writes
+      // weight and it cannot follow a transfer. Since 2026-08-19 the MFP pool runs in NFT
+      // mode: `enroll` and `resync` are permissionless, holders keep their own weight
+      // current, and weight is denominated by the adapter (10,000/pass) rather than by
+      // `flatWeight` (100,000). Dividing by flatWeight there would report every wallet as
+      // unregistered — a false alarm, which is worse than no alarm.
+      const nftSet = (await mfp.nft().catch(() => ZERO)) !== ZERO
+      const flat = BigInt(await mfp.flatWeight())
+      if (!nftSet && flat > 0n) {
+        const nftAddr = (A as Record<string, string>).MFPNFT
+        if (nftAddr && nftAddr !== ZERO) {
+          const col = new ethers.Contract(nftAddr, [
+            'function totalSupply() view returns (uint256)',
+            'function ownerOf(uint256) view returns (address)',
+          ], p)
+          const supply = Number(await col.totalSupply())
+          const HARD_CAP = 2_500                      // MFP's own cap; never scan past it
+          const owned = new Map<string, number>()
+          for (let id = 1; id <= Math.min(supply, HARD_CAP); id++) {
+            try {
+              const owner = ethers.getAddress(await col.ownerOf(id))
+              owned.set(owner, (owned.get(owner) ?? 0) + 1)
+            } catch { /* burned or never minted */ }
+          }
+
+          // Every wallet that holds passes, plus every wallet that carries weight — the
+          // second set catches sellers still being paid for tokens they no longer own.
+          const candidates = new Set<string>([
+            ...owned.keys(),
+            ...holders.filter(h => h.pool === 'mfp').map(h => ethers.getAddress(h.wallet)),
+          ])
+
+          for (const w of candidates) {
+            const passes = owned.get(w) ?? 0
+            const weight = BigInt(await mfp.weightOf(w).catch(() => 0n))
+            const registered = Number(weight / flat)
+            if (registered === passes) continue
+            drift.push({
+              wallet: w,
+              passes,
+              registeredPasses: registered,
+              delta: passes - registered,
+              kind: passes === 0 ? 'stale-holder' : registered === 0 ? 'unregistered' : 'wrong-count',
+            })
+          }
+          drift.sort((a2, b2) => Math.abs(b2.delta) - Math.abs(a2.delta))
+        }
+      }
+    } catch (e: any) {
+      driftError = e?.shortMessage || e?.message || 'ownership drift check failed'
+      app.log.warn({ err: driftError }, 'nft-rewards: MFP ownership drift check failed')
+    }
+
     // Anything that would otherwise be read as a failure, said out loud.
     const notes: string[] = []
     if (holders.length === 0) {
@@ -383,6 +457,30 @@ export const nftRewardsRoutes: FastifyPluginAsync = async (app) => {
         `${mfpUnregistered === 1 ? '' : 'es'} but ${mfpUnregistered === 1 ? 'has' : 'have'} ` +
         'zero weight in the MFP pool — setWeight has not been called for them, so they are ' +
         'earning nothing.',
+      )
+    }
+    if (drift.length > 0) {
+      const stale = drift.filter(d => d.kind === 'stale-holder').length
+      const short = drift.filter(d => d.delta > 0).length
+      notes.push(
+        `⚠ MFP weight is out of date for ${drift.length} wallet${drift.length === 1 ? '' : 's'}. ` +
+        (stale > 0
+          ? `${stale} no longer hold${stale === 1 ? 's' : ''} any pass but still carry weight — ` +
+            'the pool is paying for tokens they have sold. '
+          : '') +
+        (short > 0
+          ? `${short} hold${short === 1 ? 's' : ''} more passes than registered and ` +
+            `${short === 1 ? 'is' : 'are'} underpaid. `
+          : '') +
+        'This pool is in flat-weight mode, where weight does not follow a transfer and only ' +
+        'an operator can correct it: run scripts/set-mfp-weights.ts (EXECUTE=1). In NFT mode ' +
+        'holders fix their own weight with resync() and this warning cannot arise.',
+      )
+    }
+    if (driftError) {
+      notes.push(
+        'The MFP ownership check could not run, so weight drift is unknown rather than ' +
+        `absent: ${driftError}`,
       )
     }
     if (cPool.pendingExpiries && cPool.pendingExpiries > 0) {

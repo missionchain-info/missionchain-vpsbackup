@@ -3,7 +3,7 @@
  * Reads directly from on-chain contracts for real-time data.
  */
 import { FastifyPluginAsync } from 'fastify'
-import { formatUnits } from 'ethers'
+import { formatUnits, id as ethersId } from 'ethers'
 
 export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
 
@@ -65,7 +65,10 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
         bc.emissionController.communityNFTBps().catch(() => 500n),
         bc.emissionController.mfpRewardBps().catch(() => 100n),
         bc.emissionController.lastDistribution().catch(() => 0n),
-        bc.miningPool.currentEpoch().catch(() => 0n),
+        // MiningPool has no epochs — it runs a continuous accumulator. Calling a name the
+        // ABI does not carry throws SYNCHRONOUSLY, before the .catch() can attach, so this
+        // one line took the whole handler into its outer catch and served zeros.
+        Promise.resolve(0n),
       ])
 
       const nowUtc = Math.floor(Date.now() / 1000)
@@ -233,7 +236,9 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
           const active = status === 'ACTIVE'
           return {
             id: Number(id),
-            round: round + 1,
+            // getRoundForToken returns 1..5 already. The + 1 that used to sit here
+            // reported every round-1 licence as Round 2, price and all.
+            round,
             mintTime,
             activatedAt,
             expiryTime,
@@ -253,26 +258,38 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
       const pendingLicenses = licenses.filter(l => l.status === 'PENDING')
       const expiredLicenses = licenses.filter(l => l.status === 'EXPIRED')
 
-      // Get pending rewards across recent epochs
-      const currentEpoch = Number(await bc.miningPool.currentEpoch().catch(() => 0n))
+      // The deployed MiningPool has no epochs. It runs a continuous accumulator:
+      // `claimableOf(account, licenceIds)` returns `accrued[account]` — earnings banked
+      // when a licence expired or changed hands — plus the live `pendingOf` of each
+      // licence still running.
+      //
+      // What stood here called currentEpoch/pendingReward/claimed, none of which exist on
+      // this contract. Every call threw, every throw was swallowed by its own catch, and
+      // the page showed a flat 0 for mined and claimable while the chain was streaming
+      // 83.33 MIC a day. The SDK ABI was the epoch-era one, so nothing flagged it.
+      const licenceIds = licenses.map(l => BigInt(l.id))
       let totalPending = 0
-      // Check last 7 epochs for unclaimed rewards
-      for (let e = Math.max(0, currentEpoch - 7); e <= currentEpoch; e++) {
-        try {
-          const reward = await bc.miningPool.pendingReward(e, wallet)
-          const claimed = await bc.miningPool.claimed(e, wallet)
-          if (!claimed) {
-            totalPending += parseFloat(formatUnits(reward, 18))
-          }
-        } catch { /* epoch may not exist */ }
+      try {
+        const claimable = await bc.miningPool.claimableOf(wallet, licenceIds)
+        totalPending = parseFloat(formatUnits(claimable, 18))
+      } catch (e: any) {
+        app.log.warn({ err: e?.shortMessage || e?.message, wallet }, '[mining/my-mice] claimableOf failed')
       }
 
-      // Get total claimed from DB
+      // What a wallet has withdrawn is recorded by POST /mining/record-claim, which takes
+      // the amount from the transaction receipt rather than from the client. Before that
+      // route existed the page called it, got a 404, and swallowed the error — so nothing
+      // earlier than 2026-08-20 was ever recorded and this total starts there.
+      //
+      // It is NOT derived from rate x time-since-activation. That was tried and shipped
+      // briefly and was wrong: it assumes the pool paid from the second of activation,
+      // while the first distribution ran a day later, and it reported one wallet as having
+      // taken out 112.79 MIC when the whole system had paid 23.93.
       const dbRewards = await app.prisma.miningReward.aggregate({
         where: { wallet: wallet.toLowerCase() },
         _sum: { amount: true },
-      })
-      const totalClaimed = Number(dbRewards._sum.amount ?? 0)
+      }).catch(() => null)
+      const totalClaimed = Number(dbRewards?._sum.amount ?? 0)
 
       return {
         data: {
@@ -286,13 +303,21 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
           activatableMice: licenses.filter(l => l.activatable).length,
           expiredMice: expiredLicenses.length,
           claimableMic: totalPending.toFixed(4),
+          claimedMic: totalClaimed.toFixed(4),
+          // Recording began on 2026-08-20; anything withdrawn before that is not in this
+          // figure, and the UI says so rather than presenting it as a lifetime total.
+          claimedKnown: true,
+          claimedSince: '2026-08-20',
           totalMined: (totalClaimed + totalPending).toFixed(4),
-          currentEpoch,
+          // Kept in the response shape for older clients. This pool has no epochs.
+          currentEpoch: 0,
           licenses,
         },
       }
     } catch (err: any) {
-      app.log.error('[mining/my-mice] Error:', err.message)
+      // pino takes the context object first; err.message as the second argument is
+      // dropped, which is how this route logged failures as a bare label for weeks.
+      app.log.error({ err: err?.message, stack: err?.stack }, '[mining/my-mice] failed')
       return {
         data: {
           totalMice: 0, activeMice: 0, inMining: 0, idle: 0, expiredMice: 0,
@@ -301,4 +326,86 @@ export const miningNetworkRoutes: FastifyPluginAsync = async (app) => {
       }
     }
   })
+  // ─── POST /mining/record-claim ─────────────────────────────────────
+  /**
+   * Record a withdrawal that has already happened on chain.
+   *
+   * MiningPool keeps no per-wallet claimed total — only a global one — so what a given
+   * wallet has taken out lives in `Claimed` events, and reading those needs `eth_getLogs`,
+   * which no reachable endpoint serves. This is the other half: the client reports the
+   * transaction, and the amount is taken from the RECEIPT, not from the client.
+   *
+   * `eth_getTransactionReceipt` is a plain call every RPC answers, so this works with the
+   * endpoints already configured. Nothing the caller sends is trusted except the hash.
+   *
+   * The page used to call a route of this name that did not exist; it 404'd and the
+   * frontend's `.catch` hid it, which is why CLAIMED read zero however often anyone
+   * withdrew.
+   */
+  app.post('/record-claim', async (req, reply) => {
+    const { txHash } = (req.body ?? {}) as { txHash?: string }
+    if (!txHash || !/^0x[0-9a-fA-F]{64}$/.test(txHash)) {
+      return reply.status(400).send({ error: 'BAD_TX_HASH' })
+    }
+
+    const bc = app.blockchain
+    try {
+      const rc = await bc.provider.getTransactionReceipt(txHash)
+      if (!rc) return reply.status(404).send({ error: 'TX_NOT_FOUND' })
+      if (rc.status !== 1) return reply.status(400).send({ error: 'TX_REVERTED' })
+
+      const pool = bc.addr.MiningPool.toLowerCase()
+      const mic = bc.addr.MICToken.toLowerCase()
+      const TRANSFER = ethersId('Transfer(address,address,uint256)')
+
+      // Sum every MIC that moved OUT of the pool in this transaction, and to whom. Taking
+      // the amount from the receipt is what makes this safe to expose without auth.
+      let recipient: string | null = null
+      let total = 0n
+      for (const log of rc.logs) {
+        if (log.address.toLowerCase() !== mic) continue
+        if (log.topics[0] !== TRANSFER || log.topics.length < 3) continue
+        const from = '0x' + log.topics[1].slice(26)
+        const to = '0x' + log.topics[2].slice(26)
+        if (from.toLowerCase() !== pool) continue
+        recipient = to
+        total += BigInt(log.data)
+      }
+
+      if (!recipient || total === 0n) {
+        return reply.status(400).send({ error: 'NOT_A_MINING_CLAIM' })
+      }
+
+      const wallet = recipient.toLowerCase()
+      const amount = Number(formatUnits(total, 18))
+      const block = await bc.provider.getBlock(rc.blockNumber)
+      const day = Math.floor(Number(block?.timestamp ?? Date.now() / 1000) / 86_400)
+
+      // One row per wallet per day, accumulating — a holder may claim more than once.
+      const existing = await app.prisma.miningReward.findUnique({
+        where: { wallet_day: { wallet, day } },
+      }).catch(() => null)
+
+      if (existing?.txHash === txHash) {
+        return { data: { recorded: false, reason: 'already recorded', wallet, amount } }
+      }
+
+      await app.prisma.miningReward.upsert({
+        where: { wallet_day: { wallet, day } },
+        create: {
+          wallet, day, amount, txHash,
+          // Legacy columns from the epoch-era schema. They are not read anywhere.
+          miceTokenId: '', hindex: 0, poolShare: 0,
+        },
+        update: { amount: { increment: amount }, txHash },
+      })
+
+      app.log.info({ wallet, amount, txHash }, 'mining: claim recorded')
+      return { data: { recorded: true, wallet, amount, day } }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, stack: err?.stack, txHash }, '[mining/record-claim] failed')
+      return reply.status(500).send({ error: 'RECORD_FAILED' })
+    }
+  })
+
 }

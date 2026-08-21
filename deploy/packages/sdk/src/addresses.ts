@@ -110,6 +110,12 @@ export const ADDRESSES = {
     // pull their own MIC; the old pair held nothing and is now unreferenced.
     CommunityNFTRewardPool: "0xae26BA0f1c639beA93e5a4dD9313F5765A29Ee5a",
     MFPRewardPool:          "0xFb79deC4F0CDe13A667018e567dD636255D61d6d",
+    // Read-only shim so MFPRewardPool can run in NFT mode. NftRewardPoolV2 asks an NFT for
+    // a tier, a multiplier and an expiry; MFPNFT carries none of them, so the pool had to
+    // run flat-weight, where only an admin could write weight and it did not follow a
+    // transfer. With this in place `enroll` and `resync` are permissionless and a holder
+    // keeps their own weight current. Deployed and verified 2026-08-19.
+    MFPNftAdapter:          "0xADF25b45d369Ef6d6f42268233F41F9A18b653da",
     /**
      * ⛔ NOT PUBLIC. Superseded by LiquidityPoolV7 on 2026-08-24.
      *

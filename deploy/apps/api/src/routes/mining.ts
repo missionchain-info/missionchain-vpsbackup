@@ -1,94 +1,67 @@
 import { FastifyPluginAsync } from 'fastify'
 
-// ─── Emission Engine Constants ────────────────────────────────────────────
+// ─── Emission constants ───────────────────────────────────────────────────
+//
+// What stood here simulated EmissionControllerV1 from constants that were already wrong:
+// E0_DAILY 22,907,500 was recalibrated to 750,000 on 2026-08-05, and HALF_LIFE_DAYS was
+// 180 against the contract's 2,922. It then reported `dailyEmission: 0` while the chain
+// was issuing 339 MIC/day, and `daysSinceLaunch: 20685` — fifty-six years.
+//
+// EmissionControllerV2 has no base rate, no decay curve and no factors. Every active
+// licence earns a flat rate; issuance is that rate times the number of miners. These
+// endpoints therefore read the chain instead of modelling a machine that no longer exists.
 
-const E0_DAILY = 22_907_500       // Initial daily emission (MIC)
-const HALF_LIFE_DAYS = 180        // Half-life in days
-const MINING_POOL = 5_950_000_000 // Total mining pool (MIC)
-const WARMUP_DAYS = 30            // WarmUp period
-
-// Emission split (BPS)
-const EMISSION_SPLIT = {
-  miners: 59,    // 59% to MiningPool
-  staking: 25,   // 25% to Staking
-  dao: 10,       // 10% to DAO Treasury
-  communityNftReward: 5,    //  5% to Community NFT Reward
-  mfpReward: 1,             //  1% to MFP-NFT Reward
-}
-
-/**
- * Calculate E_base(t) = E0 * e^(-lambda*t)
- * where lambda = ln(2) / T_half
- */
-function calculateEBase(daysSinceLaunch: number): number {
-  const lambda = Math.LN2 / HALF_LIFE_DAYS
-  return E0_DAILY * Math.exp(-lambda * daysSinceLaunch)
-}
-
-/**
- * Calculate W(t) = min(1.0, t / 30) — WarmUp factor
- */
-function calculateW(daysSinceLaunch: number): number {
-  return Math.min(1.0, daysSinceLaunch / WARMUP_DAYS)
-}
+const MINING_POOL = 5_950_000_000
+const MAX_MICE = 100_000
+const TERM_DAYS = 360
 
 export const miningRoutes: FastifyPluginAsync = async (app) => {
   // ─── GET /mining/info — Global mining stats ────────────────────
+  // ─── GET /mining/info — emission state, read from the chain ────
   app.get('/info', async (req, reply) => {
-    // Count total mining rewards emitted
-    const rewardStats = await app.prisma.miningReward.aggregate({
-      _sum: { amount: true },
-      _max: { day: true },
-    })
+    const bc = app.blockchain
+    try {
+      const { formatUnits } = await import('ethers')
+      const ec = bc.emissionController
+      const [emitted, daily, rate, minerBps, damper, remaining, active] = await Promise.all([
+        ec.totalEmitted() as Promise<bigint>,
+        ec.dailyEmission() as Promise<bigint>,
+        ec.micPerLicencePerDay() as Promise<bigint>,
+        ec.currentMinerBps() as Promise<bigint>,
+        ec.damperBps() as Promise<bigint>,
+        bc.micToken.remainingMiningPool() as Promise<bigint>,
+        ec.activeLicences() as Promise<bigint>,
+      ])
 
-    const totalEmitted = Number(rewardStats._sum.amount ?? 0)
-    const latestDay = rewardStats._max.day ?? 0
+      const n = Number(active)
+      const num = (v: bigint) => Number(formatUnits(v, 18))
+      const perLicence = num(rate)
 
-    // Count active MICE licenses
-    const activeMice = await app.prisma.purchase.count({
-      where: { type: 'MICE' },
-    })
-
-    // Calculate current emission factors
-    const daysSinceLaunch = latestDay > 0 ? latestDay : 0
-    const eBase = calculateEBase(daysSinceLaunch)
-    const W = calculateW(daysSinceLaunch)
-
-    // The ROI regulator R(t) was removed from EmissionController on 2026-08-05 and
-    // replaced by the coverage regulator L(H), the trend damper G and the adoption
-    // factor A(N). This endpoint reads the database, not the chain, so it can only
-    // apply the factors it can compute — A(N) from the active licence count. L(H) and
-    // G need pool state; `/mining/network` reads those from the contract.
-    const D = activeMice > 0 ? 0.5 + (activeMice / 100_000) : 0.5
-    const A = activeMice > 0 ? Math.min(1, Math.sqrt(activeMice / 10_000)) : 0
-
-    const dailyEmission = activeMice > 0 ? eBase * D * A * W : 0
-    const poolRemaining = MINING_POOL - totalEmitted
-
-    return {
-      data: {
-        totalEmitted: totalEmitted.toFixed(0),
-        miningPool: MINING_POOL,
-        poolRemaining: Math.max(0, poolRemaining).toFixed(0),
-        poolUsedPct: ((totalEmitted / MINING_POOL) * 100).toFixed(4),
-        // Flagged so a caller never mistakes this for the on-chain number.
-        estimateExcludes: ['L(H)', 'G'],
-        dailyEmission: dailyEmission.toFixed(0),
-        daysSinceLaunch,
-        activeMICE: activeMice,
-        factors: {
-          E_base: eBase.toFixed(2),
-          D: D.toFixed(4),
-          A: A.toFixed(4),
-          W: W.toFixed(4),
+      return {
+        data: {
+          formula: 'E = N x r / minerShare x damper',
+          activeLicences: n,
+          maxMice: MAX_MICE,
+          micPerLicencePerDay: perLicence.toFixed(4),
+          minerSharePct: Number(minerBps) / 100,
+          damper: Number(damper) / 10_000,
+          dailyEmission: num(daily).toFixed(4),
+          totalEmitted: num(emitted).toFixed(4),
+          miningPool: MINING_POOL,
+          poolRemaining: num(remaining).toFixed(0),
+          poolUsedPct: ((num(emitted) / MINING_POOL) * 100).toFixed(6),
+          // What one licence is worth over its whole term, which is also the ceiling on
+          // what it can ever earn — V2 has no separate lifetime cap.
+          perLicenceLifetime: (perLicence * TERM_DAYS).toFixed(0),
+          termDays: TERM_DAYS,
         },
-        emissionSplit: EMISSION_SPLIT,
-        formula: 'E(t) = E_base(t) x D(t) x L(H) x G x W(t) x A(N)',
-      },
+      }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, stack: err?.stack }, '[mining/info] failed')
+      return reply.status(503).send({ error: 'CHAIN_READ_FAILED', message: err?.shortMessage || err?.message })
     }
   })
 
-  // ─── GET /mining/rewards — User mining rewards (auth) ──────────
   app.get('/rewards', {
     preHandler: [app.authenticate],
   }, async (req, reply) => {
@@ -141,36 +114,62 @@ export const miningRoutes: FastifyPluginAsync = async (app) => {
   })
 
   // ─── GET /mining/emission — Emission curve data (for charts) ───
+  // ─── GET /mining/emission — issuance projection ────────────────
+  /**
+   * V1 served an exponential decay curve off E_base and a half-life. V2 has neither: what
+   * is issued on a day is decided by how many licences are mining that day, and a licence
+   * earns a flat rate for its own 360-day term and then stops. So the honest projection is
+   * a function of the miner count, not of the calendar.
+   */
   app.get('/emission', async (req, reply) => {
-    const { days: daysStr } = req.query as { days?: string }
-    const days = Math.min(1095, Math.max(1, parseInt(daysStr ?? '365', 10) || 365)) // max 3 years
+    const { licences: lStr } = req.query as { licences?: string }
+    const bc = app.blockchain
+    try {
+      const { formatUnits } = await import('ethers')
+      const ec = bc.emissionController
+      const [rate, minerBps, activeRaw] = await Promise.all([
+        ec.micPerLicencePerDay() as Promise<bigint>,
+        ec.currentMinerBps() as Promise<bigint>,
+        ec.activeLicences() as Promise<bigint>,
+      ])
 
-    const curve: Array<{ day: number; eBase: number; cumulative: number }> = []
-    let cumulative = 0
+      const perLicence = Number(formatUnits(rate, 18))
+      const minerShare = Number(minerBps) / 10_000
+      const active = Number(activeRaw)
+      const asked = lStr ? Math.min(MAX_MICE, Math.max(0, parseInt(lStr, 10) || 0)) : active
 
-    for (let d = 0; d <= days; d++) {
-      const eBase = calculateEBase(d)
-      cumulative += eBase
-      // Only include every Nth day to keep response size reasonable
-      if (d % Math.max(1, Math.floor(days / 365)) === 0 || d === days) {
-        curve.push({
-          day: d,
-          eBase: Math.round(eBase),
-          cumulative: Math.round(Math.min(cumulative, MINING_POOL)),
-        })
+      // `share` defaults to what is running now, but a full-adoption projection must use
+      // the STEADY-STATE share: the 90-day Early Staking Boost inflates issuance, and
+      // projecting it across 360 days reported 6.08B against a 5.95B pool — a breach that
+      // does not exist. At 59% the same projection is 5.08B.
+      const steadyShare = Number(await ec.minersBps()) / 10_000
+      const project = (n: number, share = minerShare) => {
+        const toMiners = n * perLicence
+        const issued = share > 0 ? toMiners / share : 0
+        return {
+          licences: n,
+          toMinersPerDay: toMiners.toFixed(4),
+          issuedPerDay: issued.toFixed(4),
+          overFullTerm: (issued * TERM_DAYS).toFixed(0),
+          fitsPool: issued * TERM_DAYS <= MINING_POOL,
+        }
       }
-    }
 
-    return {
-      data: {
-        curve,
-        parameters: {
-          E0_daily: E0_DAILY,
-          halfLifeDays: HALF_LIFE_DAYS,
-          warmupDays: WARMUP_DAYS,
+      return {
+        data: {
+          basis: 'E = N x r / minerShare — no decay curve, no base rate',
+          micPerLicencePerDay: perLicence.toFixed(4),
+          minerSharePct: minerShare * 100,
+          now: project(active),
+          requested: project(asked),
+          // The scale the design is sized for, so the pool constraint is checkable.
+          atFullAdoption: { ...project(MAX_MICE, steadyShare), basis: 'steady-state miner share, boost expired' },
           miningPool: MINING_POOL,
         },
-      },
+      }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, stack: err?.stack }, '[mining/emission] failed')
+      return reply.status(503).send({ error: 'CHAIN_READ_FAILED', message: err?.shortMessage || err?.message })
     }
   })
 }

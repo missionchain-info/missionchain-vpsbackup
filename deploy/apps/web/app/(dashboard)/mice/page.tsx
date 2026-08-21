@@ -105,7 +105,10 @@ export default function MiceLicensesPage() {
         const micC = new ethers.Contract(CONTRACTS.mic, USDT_ABI, prov)
         const miceC = new ethers.Contract(CONTRACTS.mice, MICE_ABI, prov)
         const lockC = new ethers.Contract(CONTRACTS.lockManager, LOCK_MANAGER_ABI, prov)
-        const poolC = new ethers.Contract(CONTRACTS.liquidityPoolV6,
+        // The public swap pool, which is V7 — not V6. V6 was seeded long ago and answers
+        // `isSeeded()` with true forever, so asking it here lit the "swap is open" path
+        // while the pool people would actually be sent to still held no MIC at all.
+        const poolC = new ethers.Contract(CONTRACTS.swapPool,
           ['function isSeeded() view returns (bool)'], prov)
 
         const [u, m, b, locked, seeded] = await Promise.all([

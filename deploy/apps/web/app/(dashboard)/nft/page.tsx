@@ -9,6 +9,7 @@ import { api } from '@/lib/api'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import MfpMintCard from '@/components/MfpMintCard'
 import RankBonusClaimPanel from '@/components/RankBonusClaimPanel'
+import EnrollPanel from '@/components/EnrollPanel'
 import CommunityNftTable from '@/components/CommunityNftTable'
 import { CONTRACTS, MFPNFT_ABI, COMMUNITY_NFT_ABI } from '@/lib/contracts'
 import { getActiveChain } from '@missionchain/sdk'
@@ -386,6 +387,10 @@ export default function NftPage() {
           {/* Mint card (allowance + mint + reveal + Your Collection grid) */}
           <MfpMintCard />
 
+          {/* An NFT earns nothing until it is enrolled — this sits above the ledger
+              so the zero below it always has an explanation next to it. */}
+          <EnrollPanel wallet={address} kind="mfp" onDone={() => location.reload()} />
+
           <RewardLedger
             title="My NFT Rewards — MFP-NFTs"
             usd={rewards?.ledgers?.mfp?.usd}
@@ -643,6 +648,10 @@ export default function NftPage() {
             </div>
           )}
 
+          {/* An NFT earns nothing until it is enrolled — this sits above the ledger
+              so the zero below it always has an explanation next to it. */}
+          <EnrollPanel wallet={address} kind="community" onDone={() => location.reload()} />
+
           <RewardLedger
             title="My NFT Rewards — Community NFTs"
             usd={rewards?.ledgers?.community?.usd}
@@ -753,7 +762,15 @@ export default function NftPage() {
             <div className="nft-rp-stats-grid">
               <div className="nft-rp-stat-box nft-rp-stat-gold">
                 <div className="nft-rp-stat-label">This Week Prize Pool</div>
-                <div className="nft-rp-stat-value nft-rp-val-gold">-</div>
+                {/* Was a hard-coded dash. The LuckyDraw contract holds the week's pot and
+                    reports it through `currentBalance()`; the API has carried it as
+                    `luckyDraw.prizePool` since 2026-08-19 and nothing read it, so a real
+                    $1.25 showed as nothing. */}
+                <div className="nft-rp-stat-value nft-rp-val-gold">
+                  {rewards?.luckyDraw?.prizePool != null
+                    ? `$${Number(rewards.luckyDraw.prizePool).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                    : '-'}
+                </div>
               </div>
               <div className="nft-rp-stat-box" style={{ background: 'rgba(45,76,139,.06)', border: '1px solid rgba(45,76,139,.12)' }}>
                 <div className="nft-rp-stat-label">Weekly CAP</div>

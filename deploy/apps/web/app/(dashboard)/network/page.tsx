@@ -174,6 +174,8 @@ interface NetworkData {
     f2Members?: number
     f2Volume?: string
     groupVolume?: string
+    /** This member's own purchases plus the whole downline, every level. */
+    teamSales?: string
     totalTeam?: number
   }
   income?: {
@@ -290,8 +292,16 @@ export default function NetworkPage() {
         <div className="net-stat-chip net-stat-chip-highlight">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <div className="net-stat-chip-info">
-            <span className="net-stat-chip-value net-stat-gold">{Number(d.income?.total) ? d.income?.total : '-'}</span>
-            <span className="net-stat-chip-label">Earned</span>
+            {/* Was "Earned" showing commission income, which duplicated the My Earnings
+                block below it. The figure the rank actually turns on is sales volume, so
+                this now shows the team's — the member's own purchases plus every purchase
+                beneath them, to any depth. */}
+            <span className="net-stat-chip-value net-stat-gold">
+              {Number(d.teamStats?.teamSales)
+                ? `$${Number(d.teamStats!.teamSales).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                : '-'}
+            </span>
+            <span className="net-stat-chip-label">Team Sales</span>
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import SubNav, { EXPLORE_TABS } from '@/components/layout/SubNav'
 /**
  * SWAP — the pool's own market, not a router into someone else's.
  *
- * Everything about what is tradeable right now is read from LiquidityPoolV6 by the panel
+ * Everything about what is tradeable right now is read from LiquidityPoolV7 by the panel
  * itself: whether the pool has been seeded, whether the sell side has opened, the fee,
  * the per-trade cap. Nothing here is gated by a flag we maintain, so the page cannot show
  * an open market that is not open.

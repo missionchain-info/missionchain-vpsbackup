@@ -129,9 +129,37 @@ export const networkRoutes: FastifyPluginAsync = async (app) => {
 
     const f1Volume = (f1Vol._sum.usdtAmount ?? 0).toString()
     const f2Volume = (f2Vol._sum.usdtAmount ?? 0).toString()
+    // Two different numbers, and the page used to show only the shallow one.
+    //
+    // `groupVolume` here is F1 + F2 and nothing else: it stops at the second level and
+    // leaves out the member's own purchases entirely. Kept because the F1/F2 breakdown
+    // beside it is measured the same way.
     const groupVolume = (
       Number(f1Volume) + Number(f2Volume)
     ).toString()
+
+    // Team sales as the Owner defines it: this member's own purchases plus every purchase
+    // beneath them, to any depth. Prisma cannot walk a self-referencing tree, so this is a
+    // recursive CTE — seeded with the member THEMSELVES rather than with their referrals,
+    // which is the whole difference from the per-child query further down.
+    type TeamRow = { total: string | number }
+    let teamSales = '0'
+    try {
+      const rows = await app.prisma.$queryRaw<TeamRow[]>`
+        WITH RECURSIVE team AS (
+          SELECT wallet FROM "User" WHERE wallet = ${targetWallet}
+          UNION ALL
+          SELECT u.wallet FROM "User" u
+            INNER JOIN team t ON u.referrer = t.wallet
+        )
+        SELECT COALESCE(SUM(p."usdtAmount"), 0)::text AS total
+        FROM "Purchase" p
+        WHERE p.wallet IN (SELECT wallet FROM team)
+      `
+      teamSales = String(rows[0]?.total ?? '0')
+    } catch (e: any) {
+      app.log.warn({ err: e?.message, wallet: targetWallet }, 'network: team sales query failed')
+    }
 
     // Income breakdown from RewardClaim (REFERRAL_RESERVE + GV bonuses)
     const claims = await app.prisma.rewardClaim.groupBy({
@@ -207,6 +235,8 @@ export const networkRoutes: FastifyPluginAsync = async (app) => {
         f2Members: f2Wallets.length,
         f2Volume,
         groupVolume,
+        // Own purchases + the entire downline, every level.
+        teamSales,
         totalTeam: f1Wallets.length + f2Wallets.length,
       },
       income: {

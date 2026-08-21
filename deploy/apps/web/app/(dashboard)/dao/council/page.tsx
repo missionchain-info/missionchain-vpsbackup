@@ -1041,6 +1041,18 @@ function UnifiedProposals({ myWallet, setToast, restrictTo, poolBalance }: {
     chainWrite(`Executed #${row.id}`, row.address,
       ['function executeOrder(uint256 id)'], (c) => c.executeOrder(row.id))
 
+  // Withdrawing your own proposal. The contract already allows it — cancelOrder checks
+  // `msg.sender == owner || msg.sender == o.proposer` and refuses once the order is
+  // executed or already cancelled — so this needed no contract change, only a button.
+  const cancel = async (row: any) =>
+    chainWrite(`Cancelled #${row.id}`, row.address,
+      ['function cancelOrder(uint256 id)'], (c) => c.cancelOrder(row.id))
+
+  // Whether THIS wallet raised THIS proposal. Compared lowercase because the contract
+  // returns a checksummed address and the session wallet may not be.
+  const isMine = (row: any) =>
+    !!myWallet && !!row.proposer && String(row.proposer).toLowerCase() === String(myWallet).toLowerCase()
+
   const canAct = me?.canVote === true
   const box = {
     padding: '9px 12px', fontSize: '0.68rem', width: '100%', borderRadius: 8,
@@ -1180,6 +1192,21 @@ function UnifiedProposals({ myWallet, setToast, restrictTo, poolBalance }: {
                       EXECUTE
                     </button>
                   )}
+                </div>
+              )}
+
+              {/* Withdrawing your own proposal, whether or not you may vote. Shown only to
+                  the wallet that raised it, only while it is still open, and only for
+                  on-chain funds — an app-enforced proposal has no contract to cancel and
+                  no endpoint for it yet. Once approvals have carried it the contract still
+                  permits this, so the label says what is being given up. */}
+              {r.kind === 'chain' && r.status === 'OPEN' && isMine(r) && (
+                <div style={{ marginTop: 8 }}>
+                  <button onClick={() => cancel(r)} disabled={!!busy}
+                    style={{ ...box, width: 'auto', padding: '4px 14px', fontSize: '0.58rem',
+                      cursor: 'pointer', borderColor: 'var(--error)', color: 'var(--error)' }}>
+                    {met ? 'Cancel — discards the approvals it already has' : 'Cancel my proposal'}
+                  </button>
                 </div>
               )}
             </div>
