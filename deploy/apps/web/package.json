@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3003",
-    "build": "next build",
+    "build": "node scripts/check-help-content.mjs && next build",
     "start": "next start -p 3003",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:help": "node scripts/check-help-content.mjs"
   },
   "dependencies": {
     "@missionchain/sdk": "file:../../packages/sdk",
