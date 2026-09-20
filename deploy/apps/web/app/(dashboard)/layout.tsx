@@ -8,6 +8,8 @@ import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 import BottomNav from '@/components/layout/BottomNav'
 import DevicePreview from '@/components/DevicePreview'
+import { HelpProvider } from '@/components/help/HelpContext'
+import HelpPanel from '@/components/help/HelpPanel'
 
 // Decode JWT payload (no verify — just read wallet field)
 function getJwtWallet(): string | null {
@@ -106,18 +108,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="screen-dashboard" style={{ display: 'flex' }}>
-      <Sidebar />
-      <div className="dashboard-container">
-        <Topbar />
-        <div className="content-area">
-          <div className="page-enter">
-            {children}
+    <HelpProvider>
+      <div className="screen-dashboard" style={{ display: 'flex' }}>
+        <Sidebar />
+        <div className="dashboard-container">
+          <Topbar />
+          <div className="content-area">
+            <div className="page-enter">
+              {children}
+            </div>
           </div>
         </div>
+        <BottomNav />
+        <DevicePreview />
+        <HelpPanel />
       </div>
-      <BottomNav />
-      <DevicePreview />
-    </div>
+    </HelpProvider>
   )
 }

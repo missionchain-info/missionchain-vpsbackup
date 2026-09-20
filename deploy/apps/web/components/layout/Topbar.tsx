@@ -5,6 +5,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { useTheme } from '@/hooks/useTheme'
 import { useApi } from '@/hooks/useApi'
 import Link from 'next/link'
+import HelpButton from '@/components/help/HelpButton'
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -68,6 +69,7 @@ export default function Topbar() {
             <span className="price-ticker-value">${micPrice}</span>
           </div>
         </div>
+        <HelpButton />
         <button className="topbar-btn" aria-label="Notifications">🔔</button>
         <button className="topbar-btn" onClick={toggleTheme} aria-label="Toggle theme" title={`Theme: ${theme}`}>
           {theme === 'dark' ? '🌙' : theme === 'light' ? '☀' : '✦'}
