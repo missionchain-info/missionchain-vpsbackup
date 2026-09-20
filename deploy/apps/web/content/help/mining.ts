@@ -13,7 +13,7 @@ export const mining: Guide = {
   howItWorks: [
     'Every active licence earns the same amount per day. The round it was bought in, the price it cost and the number of other licences running make no difference to your per-licence rate.',
     'There is no decay curve of any kind. Issuance is not a base rate that halves over the years — it is simply the number of active licences multiplied by the per-licence rate. When licences expire, total issuance falls with them.',
-    'That miners’ amount is grossed up so the other four pools are funded out of the same mint, then multiplied by the damper. Nobody’s share is diluted when a new licence joins: more is issued instead.',
+    'That figure — active licences multiplied by the per-licence rate — is the miners’ amount. It is grossed up so the other four pools are funded out of the same mint, then multiplied by the damper. Nobody’s share is diluted when a new licence joins: more is issued instead.',
     'The mint splits five ways — miners, staking, DAO treasury, the Community NFT pool and the MFP-NFT pool. Governance may move any leg, but only within 10 percentage points of its published value, and the five must always total 100%.',
     'Early Staking Boost: for the first 90 days of the emission contract, up to 10 percentage points of the miners’ published share is lent to staking, tapering to nothing by day 90. Miners are not paid less — they still receive exactly the same MIC per licence, and more is issued to cover the larger staking slice.',
     'The damper is an emergency brake and the only discretionary input in the whole path. It ships fully disengaged and can never be set below one quarter of normal issuance.',

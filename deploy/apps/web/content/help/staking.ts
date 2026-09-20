@@ -12,7 +12,7 @@ export const staking: Guide = {
     'your share is not the amount you staked but your weight — the amount multiplied by the term ' +
     'you picked.',
   howItWorks: [
-    'Staking is pure MIC. No NFT is involved, there are no tier caps and no minimum: any wallet may stake any amount. An MFP-NFT changes DAO voting eligibility, not staking rewards.',
+    'Staking is pure MIC. No NFT is involved, there are no tier caps and no minimum: any wallet may stake any amount. An MFP-NFT does not change what you earn here, and it does not give you a vote either — governance membership is a separate registry of wallets, and no contract reads an NFT balance.',
     'Weight = amount × the multiplier of the term. Rewards are shared in proportion to weight, so the same MIC on a longer term draws a larger share of every distribution.',
     'There are four terms — 30, 90, 180 and 360 days — with multipliers of 1×, 1.6×, 2.6× and 5×. These were steepened in August 2026. Anything still showing 1 / 1.25 / 1.5 / 2 is out of date.',
     'Each stake is its own position with its own term, unlock time and weight. Staking again opens a second position; it does not extend or top up the first, and it does not re-price the first at the new term.',

@@ -19,7 +19,7 @@ export const nft: Guide = {
     'A token earns nothing until it is enrolled in its reward pool. Enrolment is a separate transaction, it is open to anyone, and until it happens the pool counts your token as weight zero no matter how long you have held it.',
     'In the Mission Founding Partner pool every enrolled token carries exactly the same weight. There is no multiplier: your share is your enrolled count over everyone\'s enrolled count, and nothing else.',
     'In the Community pool weight follows the tier, so a higher tier is a larger slice of the same pool rather than a separate pool.',
-    'Rewards accrue continuously and are pulled, not pushed: the pool holds your balance until you claim it from your own wallet. The separate weekly and monthly US dollar pools work the same way — each is claimed on its own button.',
+    'Rewards accrue continuously and are pulled, not pushed: the pool holds your balance until you claim it from your own wallet. The separate weekly and monthly USDT pools work the same way — each is claimed on its own button.',
     'After a transfer the new holder has to resync the token so its weight follows the owner. Resync is open to anyone, so a holder is never waiting on an operator to be credited.',
   ],
   tips: [
