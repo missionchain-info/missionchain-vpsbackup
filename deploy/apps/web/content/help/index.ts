@@ -1,6 +1,11 @@
 import type { Guide } from './types'
+import { dao } from './dao'
+import { daoCouncil } from './dao-council'
+import { daoManagement } from './dao-management'
 import { mice } from './mice'
 import { mining } from './mining'
+import { nft } from './nft'
+import { p2p } from './p2p'
 import { presale } from './presale'
 import { seed } from './seed'
 import { staking } from './staking'
@@ -18,8 +23,13 @@ import { vesting } from './vesting'
  * means deciding to relax that check, not routing around it here.
  */
 export const GUIDES: Record<string, Guide> = {
+  '/dao': dao,
+  '/dao/council': daoCouncil,
+  '/dao/management': daoManagement,
   '/mice': mice,
   '/mining': mining,
+  '/nft': nft,
+  '/p2p': p2p,
   '/presale': presale,
   '/seed': seed,
   '/staking': staking,
