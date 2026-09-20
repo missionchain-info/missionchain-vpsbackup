@@ -2266,21 +2266,28 @@ body.light .welcome-ref-url {
 .sb-brand-name {
   position: relative; z-index: 1;
   font-family: var(--font-d);
-  font-size: 20px;
+  /* x1,2 theo yeu cau Owner 21/08 (20 -> 24). Con mot lenh de 17px trong
+     @media(max-width:1200px) da nhan theo, neu khong man hep se khong doi. */
+  font-size: 21px;
   font-weight: 900;
   letter-spacing: .03em;
-  background: linear-gradient(90deg, #2A406E, #6C1823, #C9A552);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Bo gradient (24/08), dong bo voi admin. Dai mau chay #2A406E -> #6C1823 -> #C9A552
+     lam "MISSION" chim vao nen con "CHAIN" moi sang, doc ra thanh hai chu khac mau.
+     PHAI dat lai -webkit-text-fill-color: de transparent thi color khong hien ra gi. */
+  color: var(--gold);
+  -webkit-text-fill-color: var(--gold);
+  background: none;
   line-height: 1.2;
 }
 
 .sb-brand-sub {
   position: relative; z-index: 1;
   font-family: var(--font-m);
-  font-size: 10px;
-  letter-spacing: .22em;
+  font-size: 10.5px;
+  /* .22em o co 12px lam pill rong 223px trong cot 264px (khả dung 224) — du 1px.
+     Do rong text phu thuoc font he thong, 1px la se tran o may khac. Ha xuong .16em
+     de co khoang an toan that; nhin gan nhu khong khac. */
+  letter-spacing: .16em;
   text-transform: uppercase;
   margin-top: 5px;
   padding: 3px 14px;
@@ -2312,7 +2319,7 @@ body.light .welcome-ref-url {
 .sidebar-section-title {
   padding: 10px 20px 4px;
   font-family: var(--font-m);
-  font-size: 9px;
+  font-size: 9.6px;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--gray2);
@@ -2322,7 +2329,7 @@ body.light .welcome-ref-url {
 }
 
 .sidebar-section-emoji {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   line-height: 1;
 }
 
@@ -2360,13 +2367,18 @@ body.light .welcome-ref-url {
 
 .nav-link-icon {
   flex-shrink: 0;
-  width: 18px;
-  font-size: 14px;
+  width: 20px;
+  font-size: 15px;
   text-align: center;
 }
 
 .nav-link-label {
   flex: 1;
+  /* 12,5px x 1,2 — chi phong to chu ten muc, khong dung toi icon va badge
+     (chung co font-size rieng nen khong bi keo theo). Truoc de 1,35 (16,875px)
+     — Owner bao to qua, ha xuong 19/08. Giu bang admin .nav-item. */
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .nav-link:hover {
@@ -2389,7 +2401,7 @@ body.light .welcome-ref-url {
   margin-left: auto;
   background: linear-gradient(135deg, var(--purple), #6C1823);
   color: #fff;
-  font-size: 9px;
+  font-size: 9.6px;
   font-weight: 800;
   padding: 1px 6px;
   border-radius: 10px;
@@ -3763,6 +3775,63 @@ body.light .mobile-nav::before {
   object-fit: contain;
 }
 
+/* ── Hai nut duoi MIC Balance: xem hop dong / them token vao vi ──
+   Dat ngay duoi banner nen dung margin am cua banner (banner co margin-bottom 4px). */
+.wci-mic-actions {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.wci-act {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(212,166,60,.08);
+  border: 1px solid rgba(212,166,60,.34);
+  color: var(--gold2);
+  transition: var(--transition);
+}
+
+.wci-act svg { flex-shrink: 0; }
+
+.wci-act:hover {
+  background: rgba(212,166,60,.16);
+  border-color: rgba(212,166,60,.55);
+}
+
+.wci-act-primary {
+  background: rgba(140,21,36,.16);
+  border-color: rgba(192,90,102,.45);
+  color: #E7A7AE;
+}
+
+.wci-act-primary:hover {
+  background: rgba(140,21,36,.26);
+  border-color: rgba(192,90,102,.7);
+  color: #F2C3C8;
+}
+
+@media (max-width: 560px) {
+  .wci-mic-actions { flex-direction: column; }
+}
+
 /* ── 3-column grid for MIC breakdown ── */
 .wallet-card-grid-3 {
   grid-template-columns: repeat(3, 1fr);
@@ -3820,6 +3889,18 @@ body.light .wci-mic-total {
 body.light .wci-mic-total-label { color: #585F6C; }
 body.light .wci-mic-total-value { color: #7A5E1D; text-shadow: none; }
 body.light .wci-mic-total-hint { color: #767E8E; }
+body.light .wci-act {
+  background: rgba(154,121,46,.09);
+  border-color: rgba(154,121,46,.42);
+  color: #5C4512;   /* dam hon #6E5417: chu 11.5px in dam bi khu rang cua an mat do dam */
+}
+body.light .wci-act:hover { background: rgba(154,121,46,.17); border-color: rgba(154,121,46,.62); }
+body.light .wci-act-primary {
+  background: rgba(140,21,36,.09);
+  border-color: rgba(140,21,36,.38);
+  color: #8C1524;
+}
+body.light .wci-act-primary:hover { background: rgba(140,21,36,.16); border-color: rgba(140,21,36,.6); color: #6E1220; }
 
 /* ── Emission Card ── */
 .dash-emission {
@@ -4687,8 +4768,8 @@ body.light .net-rev-total { background: rgba(154, 121, 46,.06); }
   .sb-orbit-ring-1 { width: 56px; height: 56px; margin-left: -28px; margin-top: -28px; }
   .sb-orbit-ring-2 { width: 66px; height: 66px; margin-left: -33px; margin-top: -33px; }
   .sb-orbit-ring-3 { width: 78px; height: 78px; margin-left: -39px; margin-top: -39px; }
-  .sb-brand-name { font-size: 17px; }
-  .sb-brand-sub { font-size: 9px; }
+  .sb-brand-name { font-size: 18px; }
+  .sb-brand-sub { font-size: 9.6px; }
   .content-area { padding: 24px; }
 }
 
@@ -13182,6 +13263,140 @@ body.light {
   border-color: rgba(240, 190, 74,0.55); background: rgba(240, 190, 74,0.12); color: #F5CC6E;
 }
 
+
+
+/* ── Supply partition ───────────────────────────────────────────────────────
+   Replaces eight equal cards that gave no clue which figure was part of which.
+   Bar 1 is true-scale against the cap; bar 2 expands the issued slice. Segment
+   widths come from the data, so nothing here needs touching when the numbers move. */
+.supply-viz {
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.025);
+  border-radius: 14px; padding: 16px 18px 14px; margin-bottom: 16px;
+}
+.sv-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.sv-title { font-family: var(--font-b), sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--white); }
+.sv-cap { font-family: var(--font-m), monospace; font-size: 0.7rem; color: var(--gray2); }
+
+.sv-bar {
+  display: flex; width: 100%; border-radius: 6px; overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+.sv-bar-cap    { height: 22px; }
+.sv-bar-issued { height: 30px; }
+
+/* Grow once on mount. A width transition from 0 makes the proportion land; without it
+   the reader sees a finished picture and never registers the ratio. */
+.sv-seg { transition: width 620ms cubic-bezier(.16,1,.3,1); min-width: 0; }
+.sv-seg:first-child { border-radius: 6px 0 0 6px; }
+.sv-seg:last-child  { border-radius: 0 6px 6px 0; }
+
+.sv-issued      { background: linear-gradient(90deg, #C9A34C, #E8C168); }
+.sv-unmined     { background: repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 6px, rgba(255,255,255,.02) 6px 12px); }
+.sv-reserves    { background: #4E6FA8; }
+.sv-vesting     { background: #6FA88C; }
+.sv-staked      { background: #849ED4; }
+.sv-circulating { background: linear-gradient(90deg, #C9A34C, #E8C168); }
+/* Burned sits in the bar because those tokens WERE issued. Hatched, not solid, so it
+   reads as absence rather than as another holding. */
+.sv-burned {
+  background: repeating-linear-gradient(45deg, rgba(217,79,96,.55) 0 5px, rgba(217,79,96,.18) 5px 10px);
+}
+
+.sv-key { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; flex: 0 0 auto; }
+
+.sv-axis {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-top: 7px; font-family: var(--font-m), monospace;
+  font-size: 0.66rem; color: var(--gray2);
+}
+.sv-axis span { display: flex; align-items: center; }
+
+.sv-zoom-label {
+  display: flex; align-items: center; gap: 7px; margin: 14px 0 7px;
+  font-family: var(--font-m), monospace; font-size: 0.66rem;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--gray2);
+}
+.sv-zoom-caret {
+  width: 0; height: 0; flex: 0 0 auto;
+  border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid rgba(201,163,76,.8);
+}
+
+.sv-legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 18px; margin-top: 9px; }
+.sv-legend-row { display: flex; align-items: center; gap: 0; font-size: 0.72rem; }
+.sv-legend-l { flex: 1; color: var(--gray); }
+.sv-legend-v {
+  font-family: var(--font-m), monospace; color: var(--white);
+  font-variant-numeric: tabular-nums; margin-right: 8px;
+}
+.sv-legend-p {
+  font-family: var(--font-m), monospace; color: var(--gray2);
+  font-size: 0.66rem; min-width: 42px; text-align: right;
+}
+
+.sv-notes { margin-top: 13px; padding-top: 11px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; gap: 7px; }
+.sv-note { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 0.72rem; }
+.sv-note-k { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; align-self: center; }
+.sv-burned-dot { background: #D94F60; }
+.sv-mined-dot  { background: rgba(255,255,255,.25); }
+.sv-note-l { color: var(--gray); min-width: 78px; }
+.sv-note-v { font-family: var(--font-m), monospace; color: var(--white); font-variant-numeric: tabular-nums; }
+.sv-note-s { color: var(--gray2); font-size: 0.68rem; opacity: .85; }
+
+/* Tablet — legend to one column before the value/percent columns start colliding. */
+@media (max-width: 820px) {
+  .sv-legend { grid-template-columns: 1fr; gap: 5px; }
+}
+
+/* Phone — the note rows are the first thing to break, so let each wrap onto its own
+   line and drop the label's fixed width, which was forcing a horizontal overflow. */
+@media (max-width: 480px) {
+  .supply-viz { padding: 13px 13px 11px; border-radius: 12px; }
+  .sv-head { flex-direction: column; gap: 2px; }
+  .sv-bar-cap { height: 18px; }
+  .sv-bar-issued { height: 26px; }
+  .sv-axis { flex-direction: column; gap: 4px; }
+  .sv-note { gap: 6px; }
+  .sv-note-l { min-width: 0; }
+  .sv-note-s { flex-basis: 100%; padding-left: 17px; }
+  .sv-legend-p { min-width: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-seg { transition: none; }
+}
+
+/* Emission split ring. Replaces five side-by-side bars whose heights were scaled against
+   the miners' share, so the 1% slice rendered as a hairline and read as missing data. */
+.em-ring-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 26px; flex-wrap: wrap; padding: 14px 0 4px;
+}
+.em-ring { width: 132px; height: 132px; flex: 0 0 auto; }
+.em-ring-c1 {
+  fill: var(--white); font-size: 13px; font-weight: 700;
+  font-family: var(--font-b), sans-serif;
+}
+.em-ring-c2 { fill: var(--gray2); font-size: 7.5px; font-family: var(--font-m), monospace; }
+.em-legend { display: flex; flex-direction: column; gap: 7px; }
+.em-legend-row { display: flex; align-items: center; gap: 9px; }
+.em-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+.em-legend-txt {
+  font-family: var(--font-m), monospace; font-size: 0.72rem;
+  color: var(--gray); font-variant-numeric: tabular-nums;
+}
+.em-ring-note {
+  margin: 6px 4px 2px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.7rem; line-height: 1.65; color: var(--gray2); opacity: .8;
+}
+@media (max-width: 420px) {
+  .em-ring-row { gap: 16px; }
+  .em-ring { width: 108px; height: 108px; }
+  .em-legend-txt { font-size: 0.66rem; }
+}
+
 /* Sell-side ceilings, read from the pool. Quiet by design — this is reference a member
    consults before committing, not an alert, so it sits below the direction switch at the
    same weight as the rest of the card. */
@@ -13667,6 +13882,367 @@ body.light .p2p-form .nft-claim-btn:disabled {
 /* Bang P2P: cung ly do — vien hang ke bang trang mo nen khong thay duoc */
 body.light .p2p-row { border-bottom-color: rgba(14, 33, 72, .10); }
 body.light .p2p-head { color: rgba(14, 33, 72, .55); }
+
+/* ── Supply Lock Gauge ────────────────────────────────────────────────
+   Cung 270°: phan nhin thay = 0,75 chu vi, xoay 135° de khe ho nam duoi day.
+   Cung ky thuat voi .em-ring trong file nay — khong them thu vien. */
+.sg-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 30px; flex-wrap: wrap; padding: 6px 0 2px;
+}
+
+.sg { width: 260px; height: 260px; flex: 0 0 auto; overflow: visible; }
+
+.sg-track {
+  fill: none; stroke: rgba(255,255,255,.06); stroke-width: 13; stroke-linecap: round;
+}
+.sg-val {
+  fill: none; stroke-width: 13; stroke-linecap: round;
+  transition: stroke-dasharray .9s cubic-bezier(.22,1,.36,1), opacity .2s;
+}
+.sg-ring, .sg-core { cursor: pointer; }
+.sg-dim { opacity: .28; }
+.sg-ring .sg-val, .sg-core { transition: stroke-dasharray .9s cubic-bezier(.22,1,.36,1), opacity .2s; }
+
+/* Ngoai cung: chua ton tai -> ke soc mo, khong dac */
+.sg-unmined .sg-val { stroke: rgba(146,166,200,.42); }
+.sg-unmined .sg-track { stroke: rgba(255,255,255,.05); }
+/* Vong 2: khoa trong contract -> dac */
+.sg-locked .sg-val { stroke: #4E6FA8; }
+/* Vong 3: da huy -> do */
+.sg-burned .sg-val { stroke: rgba(217,79,96,.85); }
+
+.sg-core {
+  fill: url(#sgCore);
+  filter: drop-shadow(0 0 14px rgba(201,163,76,.45));
+  animation: sgPulse 3s ease-in-out infinite;
+}
+@keyframes sgPulse { 0%,100% { opacity: .85 } 50% { opacity: 1 } }
+
+.sg-core-v {
+  fill: #241708; font-family: var(--font-d), sans-serif;
+  font-size: 17px; font-weight: 800; letter-spacing: -.01em;
+}
+.sg-core-u {
+  fill: rgba(36,23,8,.72); font-family: var(--font-m), monospace;
+  font-size: 6.4px; letter-spacing: .13em;
+}
+.sg-core-m {
+  fill: rgba(36,23,8,.9); font-family: var(--font-m), monospace;
+  font-size: 9px; font-weight: 700;
+}
+.sg-core-v, .sg-core-u, .sg-core-m { pointer-events: none; }
+
+.sg-legend { display: flex; flex-direction: column; gap: 6px; min-width: 236px; }
+
+.sg-leg {
+  display: grid;
+  grid-template-columns: 11px minmax(0,1fr) auto 52px;
+  grid-template-areas: 'k l v p' '. s s s';
+  align-items: center; gap: 2px 9px;
+  padding: 6px 9px; border-radius: 9px;
+  background: none; border: 1px solid transparent;
+  text-align: left; cursor: pointer; width: 100%;
+  transition: background .18s, border-color .18s;
+}
+.sg-leg.on { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.09); }
+.sg-key { grid-area: k; width: 11px; height: 11px; border-radius: 3px; }
+.sg-key-unmined     { background: rgba(146,166,200,.42); }
+.sg-key-locked      { background: #4E6FA8; }
+.sg-key-burned      { background: rgba(217,79,96,.85); }
+.sg-key-circulating { background: linear-gradient(135deg,#C9A34C,#E8C168); }
+.sg-leg-l { grid-area: l; font-size: .78rem; font-weight: 600; color: var(--gray); }
+.sg-leg-v {
+  grid-area: v; font-family: var(--font-m), monospace; font-size: .74rem;
+  color: var(--white); font-variant-numeric: tabular-nums;
+}
+.sg-leg-p {
+  grid-area: p; font-family: var(--font-m), monospace; font-size: .7rem;
+  color: var(--gray2); text-align: right; font-variant-numeric: tabular-nums;
+}
+.sg-leg-s { grid-area: s; font-size: .66rem; color: var(--gray2); opacity: .78; line-height: 1.45; }
+
+.sg-foot {
+  margin: 8px 4px 0; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  font-size: .68rem; line-height: 1.65; color: var(--gray2); opacity: .8;
+}
+
+body.light .sg-track { stroke: rgba(14,33,72,.07); }
+body.light .sg-unmined .sg-val { stroke: rgba(78,111,168,.34); }
+body.light .sg-key-unmined { background: rgba(78,111,168,.34); }
+body.light .sg-leg.on { background: rgba(14,33,72,.045); border-color: rgba(14,33,72,.09); }
+body.light .sg-leg-v { color: #1A2438; }
+body.light .sg-leg-l { color: #3A4256; }
+body.light .sg-leg-p, body.light .sg-leg-s, body.light .sg-foot { color: #5D6478; }
+
+@media (max-width: 820px) {
+  .sg { width: 220px; height: 220px; }
+  .sg-wrap { gap: 22px; }
+}
+@media (max-width: 480px) {
+  .sg { width: 180px; height: 180px; }
+  .sg-wrap { flex-direction: column; gap: 14px; }
+  .sg-legend {
+    display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 6px 10px; min-width: 0; width: 100%;
+  }
+  .sg-leg { grid-template-columns: 11px minmax(0,1fr); grid-template-areas: 'k l' '. v' '. p'; }
+  .sg-leg-p { text-align: left; }
+  .sg-leg-s { display: none; }
+}
+
+/* Tat het chuyen dong khi he dieu hanh yeu cau */
+@media (prefers-reduced-motion: reduce) {
+  .sg-val { transition: none !important; }
+  .sg-core { animation: none !important; opacity: 1 !important; }
+}
+
+/* ── P2P MIC panel — thiet ke lai 19/08 ───────────────────────────── */
+.p2p-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 14px; }
+.p2p-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 999px;
+  font-size: .7rem; font-weight: 600; letter-spacing: .01em;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+  color: var(--gray);
+}
+.p2p-chip-lock { color: var(--gold2); border-color: rgba(212,166,60,.3); background: rgba(212,166,60,.08); }
+
+/* Tang 1 — hanh dong */
+.p2p-switch {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;
+}
+.p2p-switch-btn {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  padding: 11px 15px; border-radius: 13px; cursor: pointer; text-align: left;
+  background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08);
+  transition: background .18s, border-color .18s, transform .18s;
+}
+.p2p-switch-btn:hover { background: rgba(255,255,255,.06); transform: translateY(-1px); }
+.p2p-switch-btn.on {
+  background: linear-gradient(135deg, rgba(212,166,60,.2), rgba(212,166,60,.09));
+  border-color: rgba(212,166,60,.55);
+  box-shadow: 0 0 0 1px rgba(212,166,60,.16) inset;
+}
+.p2p-switch-l { font-size: .92rem; font-weight: 700; color: var(--gray); }
+.p2p-switch-btn.on .p2p-switch-l { color: var(--gold2); }
+.p2p-switch-s { font-size: .66rem; color: var(--gray2); opacity: .82; }
+
+/* Tang 2 — ho so cua toi */
+.p2p-mine-strip {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  padding: 0 0 14px; margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.p2p-mine-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 8px; cursor: pointer;
+  background: none; border: 1px solid transparent;
+  font-size: .72rem; font-weight: 600; color: var(--gray2);
+  transition: color .15s, background .15s, border-color .15s;
+}
+.p2p-mine-btn:hover { color: var(--gray); background: rgba(255,255,255,.04); }
+.p2p-mine-btn.on { color: var(--gold2); background: rgba(212,166,60,.1); border-color: rgba(212,166,60,.3); }
+.p2p-mine-n {
+  min-width: 17px; padding: 0 5px; border-radius: 999px;
+  background: rgba(212,166,60,.9); color: #241708;
+  font-size: .62rem; font-weight: 800; text-align: center; line-height: 16px;
+}
+.p2p-mine-back {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  font-size: .7rem; color: var(--gray2); padding: 4px 2px;
+}
+.p2p-mine-back:hover { color: var(--gold2); }
+
+/* Don vi nam trong o nhap, de nhan khong bi cat */
+.p2p-input-unit { position: relative; display: block; }
+.p2p-input-unit input { width: 100%; padding-right: 46px !important; }
+.p2p-input-unit b {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-m), monospace; font-size: .64rem; font-weight: 700;
+  color: var(--gray2); pointer-events: none; letter-spacing: .04em;
+}
+
+/* Thanh kha dung */
+.p2p-avail { margin: 12px 0 4px; }
+.p2p-avail-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.p2p-avail-k { font-size: .7rem; color: var(--gray2); }
+.p2p-avail-v { font-family: var(--font-m), monospace; font-size: .82rem; color: var(--white); }
+.p2p-avail-bar {
+  height: 6px; border-radius: 999px; margin: 7px 0 6px;
+  background: rgba(255,255,255,.07); overflow: hidden;
+}
+.p2p-avail-bar i {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #C9A34C, #E8C168);
+  transition: width .5s cubic-bezier(.22,1,.36,1);
+}
+.p2p-avail-foot { font-size: .66rem; color: var(--gray2); opacity: .82; line-height: 1.55; }
+.p2p-avail-foot b { color: var(--gray); font-weight: 700; }
+.p2p-avail-msg { font-size: .72rem; color: var(--gray2); }
+
+/* Hoa don */
+.p2p-bill {
+  margin: 14px 0 6px; padding: 13px 15px; border-radius: 13px;
+  background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08);
+}
+.p2p-bill-idle { font-size: .72rem; color: var(--gray2); opacity: .75; line-height: 1.6; }
+.p2p-bill-r {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+  font-size: .76rem; color: var(--gray); padding: 3px 0;
+}
+.p2p-bill-v { font-family: var(--font-m), monospace; font-variant-numeric: tabular-nums; color: var(--white); }
+.p2p-bill-fee { color: var(--gray2); }
+.p2p-bill-fee .p2p-bill-v { color: #E7A7AE; }
+.p2p-bill-out {
+  margin-top: 8px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1);
+  font-size: .8rem; font-weight: 700; color: var(--gray);
+}
+.p2p-bill-out .p2p-bill-v { font-size: 1.15rem; font-weight: 800; color: var(--gold2); }
+.p2p-bill-out em { font-style: normal; font-size: .68rem; color: var(--gray2); margin-left: 3px; }
+.p2p-bill-note { margin-top: 7px; font-size: .66rem; color: var(--gray2); opacity: .8; }
+.p2p-bill-warn { margin-top: 7px; font-size: .68rem; color: #FF8F9D; line-height: 1.55; }
+
+/* Trang thai rong */
+.p2p-empty {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
+  padding: 18px 16px; border-radius: 13px;
+  background: rgba(255,255,255,.025);
+  border: 1px dashed rgba(255,255,255,.12);
+}
+.p2p-empty-t { font-size: .82rem; font-weight: 700; color: var(--gray); }
+.p2p-empty-s { font-size: .7rem; color: var(--gray2); }
+.p2p-empty-b {
+  margin-top: 6px; padding: 7px 15px; border-radius: 9px; cursor: pointer;
+  background: rgba(212,166,60,.14); border: 1px solid rgba(212,166,60,.45);
+  color: var(--gold2); font-size: .73rem; font-weight: 700;
+  transition: background .18s;
+}
+.p2p-empty-b:hover { background: rgba(212,166,60,.24); }
+
+body.light .p2p-chip { background: rgba(14,33,72,.045); border-color: rgba(14,33,72,.1); color: #4A5265; }
+body.light .p2p-chip-lock { color: #6E5417; background: rgba(154,121,46,.09); border-color: rgba(154,121,46,.32); }
+body.light .p2p-switch-btn { background: rgba(14,33,72,.035); border-color: rgba(14,33,72,.09); }
+body.light .p2p-switch-btn.on { background: linear-gradient(135deg, rgba(154,121,46,.15), rgba(154,121,46,.06)); border-color: rgba(154,121,46,.5); }
+body.light .p2p-switch-l { color: #3A4256; }
+body.light .p2p-switch-btn.on .p2p-switch-l { color: #6E5417; }
+body.light .p2p-switch-s, body.light .p2p-avail-k, body.light .p2p-avail-foot,
+body.light .p2p-empty-s, body.light .p2p-bill-note { color: #5D6478; }
+body.light .p2p-mine-btn.on { color: #6E5417; background: rgba(154,121,46,.12); border-color: rgba(154,121,46,.34); }
+body.light .p2p-bill { background: rgba(14,33,72,.03); border-color: rgba(14,33,72,.09); }
+body.light .p2p-bill-r { color: #3A4256; }
+body.light .p2p-bill-v, body.light .p2p-avail-v { color: #1A2438; }
+body.light .p2p-bill-fee .p2p-bill-v { color: #8C1524; }
+body.light .p2p-bill-out .p2p-bill-v { color: #6E5417; }
+body.light .p2p-bill-warn { color: #8C1524; }
+body.light .p2p-empty { background: rgba(14,33,72,.02); border-color: rgba(14,33,72,.14); }
+body.light .p2p-empty-t { color: #1A2438; }
+body.light .p2p-empty-b { background: rgba(154,121,46,.1); border-color: rgba(154,121,46,.45); color: #6E5417; }
+body.light .p2p-avail-bar { background: rgba(14,33,72,.08); }
+
+@media (max-width: 560px) {
+  .p2p-switch { grid-template-columns: 1fr; }
+  .p2p-bill-out .p2p-bill-v { font-size: 1.02rem; }
+}
+
+/* ── Building: My Earnings / Volume+Income / Referral — dung lai 19/08 ── */
+.net-src-list { margin-top: 10px; display: flex; flex-direction: column; }
+.net-src {
+  /* Cot dau tu 9px (vua cham tron) len 18px: bon hang nay gio dung icon 17px.
+     De 9px thi icon tran ra ngoai cot va DE LEN chu — build van xanh, harness tinh moi thay. */
+  display: grid; grid-template-columns: 18px minmax(0,1fr) auto auto;
+  align-items: center; gap: 10px; padding: 11px 2px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.net-src:last-child { border-bottom: none; }
+.net-src-l { font-size: .82rem; font-weight: 600; color: var(--gray); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.net-src-n { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; min-width: 74px; }
+.net-src-k { font-size: .56rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--gray2); opacity: .7; }
+.net-src-v { font-family: var(--font-m), monospace; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.net-src-earned { color: #2E9E6B; }
+.net-src-unc { color: var(--gold2); }
+
+.net-vi { margin-top: 10px; }
+.net-vi-head, .net-vi-row {
+  display: grid; grid-template-columns: minmax(0,1.2fr) 1fr 1fr; gap: 10px; align-items: center;
+}
+.net-vi-head {
+  font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--gray2); opacity: .75; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.net-vi-head span:not(:first-child), .net-vi-row span:not(:first-child) { text-align: right; }
+.net-vi-row { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.net-vi-row:last-child { border-bottom: none; }
+.net-vi-l { display: flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 700; color: var(--gray); }
+.net-vi-rate {
+  font-style: normal; font-size: .6rem; font-weight: 700; padding: 1px 6px; border-radius: 999px;
+  background: rgba(212,166,60,.14); color: var(--gold2); letter-spacing: .02em;
+}
+.net-vi-v { font-family: var(--font-m), monospace; font-size: .84rem; color: var(--white);
+  font-variant-numeric: tabular-nums; }
+.net-vi-inc { color: var(--gold2); font-weight: 700; }
+
+.net-rate-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.net-rate {
+  display: flex; flex-direction: column; gap: 3px; padding: 14px 15px; border-radius: 14px;
+  background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08);
+}
+.net-rate-pct { font-family: var(--font-d), sans-serif; font-size: 1.85rem; font-weight: 800; line-height: 1; }
+.net-rate-l { display: flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 600;
+  color: var(--gray); margin-top: 4px; }
+.net-rate-s { font-size: .62rem; color: var(--gray2); opacity: .78; }
+
+body.light .net-src { border-bottom-color: rgba(14,33,72,.08); }
+body.light .net-src-l { color: #3A4256; }
+body.light .net-src-k, body.light .net-vi-head, body.light .net-rate-s { color: #5D6478; }
+body.light .net-src-earned { color: #1E7A4F; }
+body.light .net-src-unc, body.light .net-vi-inc { color: #6E5417; }
+body.light .net-vi-head, body.light .net-vi-row { border-bottom-color: rgba(14,33,72,.08); }
+body.light .net-vi-v { color: #1A2438; }
+body.light .net-vi-l, body.light .net-rate-l { color: #3A4256; }
+body.light .net-vi-rate { background: rgba(154,121,46,.13); color: #6E5417; }
+body.light .net-rate { background: rgba(14,33,72,.03); border-color: rgba(14,33,72,.09); }
+
+@media (max-width: 560px) {
+  /* Hai so ve CUNG mot dong: moi nguon 2 dong thay vi 3. */
+  .net-src { grid-template-columns: 9px minmax(0,1fr) minmax(0,1fr); gap: 5px 9px; padding: 10px 2px; }
+  .net-src-l { grid-column: 2 / span 2; }
+  .net-src-n { flex-direction: row; align-items: baseline; gap: 6px; min-width: 0; }
+  /* KHONG dung :nth-of-type — moi con o day deu la <span>, nen no dem ca .net-dot
+     va .net-src-l, khong khop cai nao. Dung bo chon anh-em cho chac. */
+  .net-src-l + .net-src-n { grid-column: 2; justify-content: flex-start; }
+  .net-src-n + .net-src-n { grid-column: 3; justify-content: flex-end; }
+  .net-src-k { opacity: .85; }
+  .net-vi-head, .net-vi-row { grid-template-columns: minmax(0,1fr) 1fr 1fr; gap: 6px; }
+  .net-rate-pct { font-size: 1.5rem; }
+  .net-rate { padding: 12px 12px; }
+}
+
+
+/* ── P2P: How It Works gap mo (21/08) ──
+   Truoc la khoi luon mo o cuoi trang, chiem gan mot man hinh. Nguoi da giao dich roi
+   khong doc lai bao gio, nhung van phai cuon qua no. */
+.p2p-how {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg2);
+}
+.p2p-how > summary {
+  padding: 13px 16px;
+  cursor: pointer;
+  font-size: .84rem;
+  color: var(--gray2);
+  list-style: none;
+}
+.p2p-how > summary::-webkit-details-marker { display: none; }
+.p2p-how > summary::before { content: "▸ "; color: var(--gold); }
+.p2p-how[open] > summary::before { content: "▾ "; }
+.p2p-how[open] > summary { border-bottom: 1px solid var(--border); }
 
 /* ── Contextual help panel ───────────────────────────────────────── */
 /* z-index: above .mobile-nav (9000) so the bottom bar does not cover the panel on a

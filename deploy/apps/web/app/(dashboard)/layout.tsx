@@ -50,16 +50,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // ~1.5s later (checked via a ref holding the latest status).
   const statusRef = useRef(status)
   statusRef.current = status
+
+  /*
+   * "Not connected yet" is not "the user disconnected".
+   *
+   * Inside a mobile wallet's in-app browser the page is commonly rebuilt after the
+   * signature — the wallet hands control back and the WebView reloads. wagmi then starts
+   * from scratch and reports 'disconnected' until the injected connector reconnects,
+   * which on a phone over 4G routinely takes longer than the 1.5s this used to allow.
+   * The timer fired, the JWT was deleted, and the user was thrown back to Connect Wallet
+   * with a working session destroyed. On 2026-09-02 one wallet signed in twelve times in
+   * six hours for that reason.
+   *
+   * So two guards. First, only a session that was actually seen connected can be treated
+   * as disconnected — a page that never connected has not lost anything. Second, give a
+   * phone real time to reconnect, not a desktop's.
+   */
+  const hasBeenConnected = useRef(false)
+  useEffect(() => {
+    if (status === 'connected') hasBeenConnected.current = true
+  }, [status])
+
   useEffect(() => {
     if (status !== 'disconnected') return
     if (typeof window === 'undefined') return
+    if (!hasBeenConnected.current) return // never connected in this mount — nothing was lost
     const t = setTimeout(() => {
       if (statusRef.current !== 'disconnected') return // recovered (e.g. chain switch) — keep session
       localStorage.removeItem('mc-jwt')
       localStorage.removeItem('mc-userId')
       localStorage.removeItem('mc-wallet')
       router.replace('/')
-    }, 1500)
+    }, 8000)
     return () => clearTimeout(t)
   }, [status, router])
 
