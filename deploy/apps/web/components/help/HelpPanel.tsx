@@ -29,8 +29,16 @@ export default function HelpPanel() {
       if (focusable.length === 0) return
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+      const active = document.activeElement
+      if (e.shiftKey && (active === first || active === panelRef.current)) {
+        e.preventDefault(); last.focus()
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault(); first.focus()
+      } else if (!panelRef.current.contains(active)) {
+        // Focus got out by some route we did not anticipate — pull it back rather than
+        // letting the user tab through a page that aria-modal has declared inert.
+        e.preventDefault(); first.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)

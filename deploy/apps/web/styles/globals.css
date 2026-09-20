@@ -13698,3 +13698,10 @@ body.light .p2p-head { color: rgba(14, 33, 72, .55); }
 @media (max-width:768px){
   .help-panel{width:100vw;border-left:none}
 }
+body.light .help-panel,
+body.light .help-head,
+body.light .help-foot,
+body.light .help-close,
+body.light .help-step-n { border-color: rgba(154,121,46,.3); }
+body.light .help-close  { background: rgba(154,121,46,.10); color: var(--gold); }
+body.light .help-step-n { background: rgba(154,121,46,.08); }
