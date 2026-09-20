@@ -1,5 +1,11 @@
 import type { Guide } from './types'
+import { mice } from './mice'
+import { mining } from './mining'
+import { presale } from './presale'
+import { seed } from './seed'
+import { staking } from './staking'
 import { swap } from './swap'
+import { vesting } from './vesting'
 
 /**
  * Route path exactly as it appears in the URL, without a trailing slash.
@@ -12,7 +18,13 @@ import { swap } from './swap'
  * means deciding to relax that check, not routing around it here.
  */
 export const GUIDES: Record<string, Guide> = {
+  '/mice': mice,
+  '/mining': mining,
+  '/presale': presale,
+  '/seed': seed,
+  '/staking': staking,
   '/swap': swap,
+  '/vesting': vesting,
 }
 
 /**
