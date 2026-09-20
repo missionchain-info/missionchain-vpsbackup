@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { useHelp } from './HelpContext'
 
 export default function HelpPanel() {
@@ -83,10 +82,6 @@ export default function HelpPanel() {
               </ul>
             </>
           )}
-        </div>
-
-        <div className="help-foot">
-          <Link href="/nira" onClick={closeHelp}>Still stuck? Ask NIRA</Link>
         </div>
       </div>
     </>

@@ -13692,15 +13692,11 @@ body.light .p2p-head { color: rgba(14, 33, 72, .55); }
   border:1px solid var(--border);display:grid;place-items:center;font-size:.75rem;font-weight:700}
 .help-tips{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;
   color:var(--muted);line-height:1.55;font-size:.92rem}
-.help-foot{padding:14px 20px;border-top:1px solid var(--border);font-size:.88rem}
-.help-foot a{color:var(--gold);text-decoration:none}
-.help-foot a:hover{text-decoration:underline}
 @media (max-width:768px){
   .help-panel{width:100vw;border-left:none}
 }
 body.light .help-panel,
 body.light .help-head,
-body.light .help-foot,
 body.light .help-close,
 body.light .help-step-n { border-color: rgba(154,121,46,.3); }
 body.light .help-close  { background: rgba(154,121,46,.10); color: var(--gold); }
