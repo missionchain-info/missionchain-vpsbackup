@@ -2,11 +2,16 @@ import type { Guide } from './types'
 import { dao } from './dao'
 import { daoCouncil } from './dao-council'
 import { daoManagement } from './dao-management'
+import { dashboard } from './dashboard'
+import { info } from './info'
 import { mice } from './mice'
 import { mining } from './mining'
+import { network } from './network'
 import { nft } from './nft'
+import { nira } from './nira'
 import { p2p } from './p2p'
 import { presale } from './presale'
+import { profile } from './profile'
 import { seed } from './seed'
 import { staking } from './staking'
 import { swap } from './swap'
@@ -26,11 +31,16 @@ export const GUIDES: Record<string, Guide> = {
   '/dao': dao,
   '/dao/council': daoCouncil,
   '/dao/management': daoManagement,
+  '/dashboard': dashboard,
+  '/info': info,
   '/mice': mice,
   '/mining': mining,
+  '/network': network,
   '/nft': nft,
+  '/nira': nira,
   '/p2p': p2p,
   '/presale': presale,
+  '/profile': profile,
   '/seed': seed,
   '/staking': staking,
   '/swap': swap,
