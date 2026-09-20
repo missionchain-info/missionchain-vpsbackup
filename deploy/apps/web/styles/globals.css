@@ -13667,3 +13667,30 @@ body.light .p2p-form .nft-claim-btn:disabled {
 /* Bang P2P: cung ly do — vien hang ke bang trang mo nen khong thay duoc */
 body.light .p2p-row { border-bottom-color: rgba(14, 33, 72, .10); }
 body.light .p2p-head { color: rgba(14, 33, 72, .55); }
+
+/* ── Contextual help panel ───────────────────────────────────────── */
+.help-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1200}
+.help-panel{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;z-index:1201;
+  background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;
+  outline:none;animation:help-in .18s ease-out}
+@keyframes help-in{from{transform:translateX(16px);opacity:.6}to{transform:none;opacity:1}}
+.help-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:18px 20px;border-bottom:1px solid var(--border)}
+.help-eyebrow{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.help-title{margin:2px 0 0;font-size:1.15rem}
+.help-close{background:none;border:1px solid var(--border);border-radius:8px;width:30px;height:30px;
+  cursor:pointer;color:var(--muted);line-height:1}
+.help-body{padding:18px 20px;overflow-y:auto;flex:1}
+.help-intro{margin:0 0 20px;color:var(--cream);line-height:1.6}
+.help-section-label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 10px}
+.help-steps{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:10px}
+.help-steps li{display:flex;gap:11px;align-items:flex-start;line-height:1.55}
+.help-step-n{flex:0 0 22px;height:22px;border-radius:50%;background:var(--bg);
+  border:1px solid var(--border);display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.help-tips{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;
+  color:var(--muted);line-height:1.55;font-size:.92rem}
+.help-foot{padding:14px 20px;border-top:1px solid var(--border);font-size:.88rem}
+@media (max-width:768px){
+  .help-panel{width:100vw;border-left:none}
+}
