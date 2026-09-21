@@ -8,7 +8,7 @@ import { useApi } from '@/hooks/useApi'
 import { api, authApi } from '@/lib/api'
 import { fmtCompact, fmtUsd } from '@missionchain/sdk'
 import MobileWalletSheet from '@/components/wallet/MobileWalletSheet'
-import { isMobileDevice, hasInjectedProvider } from '@/lib/wallet'
+import { isMobileDevice, hasInjectedProvider, pickInjectedConnector } from '@/lib/wallet'
 
 interface DashboardOverview {
   data: {
@@ -99,7 +99,7 @@ export default function LandingPage() {
     }
     // Pick connector: injected only when a wallet is actually present (desktop extension /
     // wallet in-app browser).
-    const injectedC = connectors.find(c => c.id === 'injected')
+    const injectedC = pickInjectedConnector(connectors)
     const wcC = connectors.find(c => c.id === 'walletConnect')
     const hasInjected = typeof window !== 'undefined' && !!(window as any).ethereum
     const connector = (hasInjected && injectedC) ? injectedC : (wcC || injectedC || connectors[0])
@@ -240,7 +240,8 @@ export default function LandingPage() {
             }}
           >
             <a
-              href={`https://bscscan.com/address/0xf27ec0c311728b923b22828002c992c799326182`}
+              /* #code mo thang tab ma nguon da verify */
+              href={`https://bscscan.com/address/0xf27ec0c311728b923b22828002c992c799326182#code`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -268,6 +269,44 @@ export default function LandingPage() {
                 const eth = (typeof window !== 'undefined' && (window as any).ethereum) || null
                 if (!eth) { alert('No wallet detected. Please install MetaMask or compatible wallet.'); return }
                 try {
+                  /*
+                   * Put the wallet on BSC before adding the token.
+                   *
+                   * `wallet_watchAsset` takes no chain parameter — it adds the address to
+                   * whatever network the wallet happens to be showing. A wallet sitting on
+                   * Ethereum therefore imported 0xf27e… as an Ethereum token: a contract that
+                   * does not exist there, so the name came back blank and the entry was
+                   * meaningless. Switching first is the only way to aim it.
+                   */
+                  const BSC_HEX = '0x38'
+                  const current = await eth.request({ method: 'eth_chainId' })
+                  if (current !== BSC_HEX) {
+                    try {
+                      await eth.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: BSC_HEX }],
+                      })
+                    } catch (switchErr: any) {
+                      // 4902 = the wallet does not know this chain yet; offer to add it.
+                      if (switchErr?.code === 4902) {
+                        await eth.request({
+                          method: 'wallet_addEthereumChain',
+                          params: [{
+                            chainId: BSC_HEX,
+                            chainName: 'BNB Smart Chain',
+                            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                            rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                            blockExplorerUrls: ['https://bscscan.com'],
+                          }],
+                        })
+                      } else if (switchErr?.code === 4001) {
+                        return   // the member declined; adding on the wrong chain helps nobody
+                      } else {
+                        throw switchErr
+                      }
+                    }
+                  }
+
                   await eth.request({
                     method: 'wallet_watchAsset',
                     params: {
@@ -276,7 +315,9 @@ export default function LandingPage() {
                         address: '0xf27ec0c311728b923b22828002c992c799326182',
                         symbol: 'MIC',
                         decimals: 18,
-                        image: 'https://app.missionchain.io/icon.png',
+                        // /icon.png tra ve HTTP 200 nhung KHONG phai anh (catch-all cua
+                        // Next), nen vi khong hien duoc logo. Day la file anh that.
+                        image: 'https://app.missionchain.io/images/mic-token-256.png',
                       },
                     },
                   })

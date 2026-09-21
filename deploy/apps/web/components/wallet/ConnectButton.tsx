@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useAccount, useDisconnect, useConnect } from 'wagmi'
 import { Copy, ExternalLink, LogOut, ChevronDown, Check, Wallet } from 'lucide-react'
 import MobileWalletSheet from './MobileWalletSheet'
-import { isMobileDevice, hasInjectedProvider } from '@/lib/wallet'
+import { isMobileDevice, hasInjectedProvider, pickInjectedConnector } from '@/lib/wallet'
 
 interface ConnectButtonProps {
   className?: string
@@ -48,7 +48,7 @@ export default function ConnectButton({ className = '' }: ConnectButtonProps) {
       setShowSheet(true)
       return
     }
-    const injectedC = connectors.find(c => c.id === 'injected')
+    const injectedC = pickInjectedConnector(connectors)
     const wcC = connectors.find(c => c.id === 'walletConnect')
     const hasInjected = hasInjectedProvider()
     const connector = (hasInjected && injectedC) ? injectedC : (wcC || injectedC || connectors[0])

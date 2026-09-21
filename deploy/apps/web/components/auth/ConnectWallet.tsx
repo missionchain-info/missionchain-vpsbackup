@@ -1,6 +1,7 @@
 'use client'
 
 import { useConnect, useAccount } from 'wagmi'
+import { pickInjectedConnector } from '@/lib/wallet'
 
 export default function ConnectWallet() {
   const { connect, connectors, isPending } = useConnect()
@@ -8,7 +9,7 @@ export default function ConnectWallet() {
 
   const handleConnect = () => {
     // Use the injected connector — triggers native wallet popup
-    const injected = connectors.find(c => c.id === 'injected') || connectors[0]
+    const injected = pickInjectedConnector(connectors) || connectors[0]
     if (injected) {
       connect({ connector: injected })
     }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { pickInjectedConnector } from '@/lib/wallet'
 import { useRouter } from 'next/navigation'
 import { useRoundConfig } from '@/hooks/useRoundConfig'
 
@@ -87,7 +88,7 @@ export default function Sidebar() {
   }, [pathname])
 
   const handleConnect = () => {
-    const connector = connectors[0]
+    const connector = pickInjectedConnector(connectors) ?? connectors[0]
     if (connector) {
       connect({ connector })
     }
@@ -116,7 +117,10 @@ export default function Sidebar() {
           <div className="sb-orbit-ring sb-orbit-ring-1"><div className="sb-orbit-dot" /></div>
           <div className="sb-orbit-ring sb-orbit-ring-2"><div className="sb-orbit-dot" /><div className="sb-orbit-dot sb-orbit-dot-opposite" /></div>
           <div className="sb-orbit-ring sb-orbit-ring-3"><div className="sb-orbit-dot" /></div>
-          <img src="/images/mission-chain-logo-clear.png?v=brand20260818c" alt="MC" className="sb-logo-center" />
+          {/* Logo navy tu brand-kit. .sb-logo-center bo tron 50%% nen o day no la hinh
+              TRON navy chu MIC — hop voi ba vong quy dao bao quanh. Gach vang nam trong
+              duong tron noi tiep nen khong bi cat. 402 byte thay cho anh 1,7 MB. */}
+          <img src="/images/mic-monogram-navy.svg?v=navy20260824" alt="MIC" className="sb-logo-center" />
         </div>
         <div className="sb-brand-name">MISSION CHAIN</div>
         <div className="sb-brand-sub">Membership Dashboard</div>

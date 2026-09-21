@@ -1,3 +1,36 @@
+import type { Connector } from 'wagmi'
+
+/**
+ * Pick which injected wallet to connect through.
+ *
+ * wagmi discovers wallets over EIP-6963 and gives each its own connector, keyed by the
+ * wallet's rdns — `io.metamask`, `com.trustwallet.app`, and so on. Alongside those it
+ * keeps one generic `injected` connector that talks to the bare `window.ethereum` global.
+ *
+ * Always prefer a discovered one. When two extensions are installed they both claim that
+ * global and the loser inserts an arbiter: with TronLink beside MetaMask, a "Select
+ * Extension" dialog appeared every time anything touched it — on 2026-09-21 that meant a
+ * popup on every page change. Addressing the wallet's own provider object sidesteps the
+ * contested global completely, and the dialog stops.
+ *
+ * Returns undefined when nothing injected is available, so callers can fall through to
+ * WalletConnect.
+ */
+export function pickInjectedConnector(connectors: readonly Connector[]): Connector | undefined {
+  const discovered = connectors.filter((c) => c.type === 'injected' && c.id !== 'injected')
+  if (discovered.length > 0) {
+    // This dapp is BSC-only. When several wallets announce themselves, prefer an EVM one
+    // rather than whichever happened to answer first — TronLink is a Tron wallet and
+    // cannot serve a BSC session at all.
+    return (
+      discovered.find((c) => c.id === 'io.metamask') ??
+      discovered.find((c) => /metamask/i.test(c.name)) ??
+      discovered[0]
+    )
+  }
+  return connectors.find((c) => c.id === 'injected')
+}
+
 // Mobile wallet helpers — reliable connect UX on phones / installed PWA.
 // On mobile there is usually no injected provider (no window.ethereum) and the
 // WalletConnect deep-link round-trip is unreliable inside an iOS standalone PWA,
