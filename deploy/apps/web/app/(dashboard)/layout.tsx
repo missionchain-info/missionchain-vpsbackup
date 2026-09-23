@@ -7,7 +7,6 @@ import { api, authApi } from '@/lib/api'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 import BottomNav from '@/components/layout/BottomNav'
-import DevicePreview from '@/components/DevicePreview'
 import { HelpProvider } from '@/components/help/HelpContext'
 import HelpPanel from '@/components/help/HelpPanel'
 
@@ -142,7 +141,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
         <BottomNav />
-        <DevicePreview />
         <HelpPanel />
       </div>
     </HelpProvider>

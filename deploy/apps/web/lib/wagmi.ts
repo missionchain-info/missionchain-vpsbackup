@@ -8,10 +8,13 @@ const chain = bsc
 
 const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID || ''
 
-// The device-preview overlay renders the app inside an iframe (?_vp=1). Initializing
-// WalletConnect a SECOND time in that iframe disrupts the main window's wallet session
-// (WalletConnect Core is a singleton). So inside the preview iframe we use an
-// injected-only connector set. The MAIN window config is unchanged.
+// Initializing WalletConnect a SECOND time inside an iframe disrupts the main window's
+// wallet session, because WalletConnect Core is a singleton. So when this app is framed
+// we use an injected-only connector set; the MAIN window config is unchanged.
+//
+// The `?_vp=1` half of this check is a leftover: it was set by the device-preview overlay,
+// which was removed on 2026-09-23. Nothing sets it now. The `window.self !== window.top`
+// half still earns its place — it guards any embedding, not just that one.
 const isPreview =
   typeof window !== 'undefined' &&
   (new URLSearchParams(window.location.search).has('_vp') || window.self !== window.top)
