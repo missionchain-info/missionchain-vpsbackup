@@ -847,19 +847,7 @@ body.light .dash-hero {
 }
 body.light .dash-hero-shine { background: linear-gradient(90deg, transparent, rgba(154, 121, 46,.08), transparent); }
 
-body.light .dash-hero-chip {
-  background: rgba(255,255,255,.8);
-  border-color: rgba(154, 121, 46,.2);
-  color: #585F6C;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04);
-}
-body.light .dash-hero-chip:hover {
-  background: rgba(255,255,255,.95);
-  border-color: rgba(154, 121, 46,.35);
-  box-shadow: 0 4px 12px rgba(0,0,0,.06);
-}
-
-/* ── Dashboard wallet card ── */
+body.light /* ── Dashboard wallet card ── */
 body.light .dash-wallet-card {
   background: linear-gradient(145deg, #ffffff 0%, #FDFCF9 100%);
   border-color: rgba(154, 121, 46,.25);
@@ -3387,38 +3375,6 @@ body.light .mobile-nav::before {
   opacity: 0.6;
 }
 
-.dash-hero-meta {
-  display: flex;
-  gap: 10px;
-}
-
-.dash-hero-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 10px 16px;
-  background: rgba(22, 37, 68,.65);
-  border-radius: 12px;
-  border: 1px solid rgba(201, 163, 76,.18);
-  backdrop-filter: blur(12px);
-  transition: border-color .3s ease, background .3s ease;
-  min-width: 72px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
-}
-
-.dash-hero-chip:hover {
-  border-color: rgba(201, 163, 76,.25);
-  background: rgba(16, 25, 44,.7);
-}
-
-.chip-icon {
-  color: var(--gold);
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-}
-
 .chip-label {
   font-size: 0.55rem;
   color: var(--gray2);
@@ -4883,9 +4839,7 @@ body.light .net-rev-total { background: rgba(154, 121, 46,.06); }
   .dash-hero-content { flex-direction: row; align-items: center; }
   .dash-hero-value { font-size: 1.8rem; }
   .dash-hero-dollar { font-size: 1.1rem; }
-  .dash-hero-chip { padding: 8px 12px; min-width: 64px; }
   .chip-value { font-size: 0.9rem; }
-  .chip-icon svg { width: 12px; height: 12px; }
 
   .dash-scroll-stats {
     gap: 10px;
@@ -5034,13 +4988,9 @@ body.light .net-rev-total { background: rgba(154, 121, 46,.06); }
   .dash-hero-value { font-size: 1.5rem; }
   .dash-hero-dollar { font-size: 1rem; }
   .dash-hero-label { font-size: 0.62rem; letter-spacing: 0.1em; }
-  .dash-hero-chip { padding: 6px 10px; min-width: 56px; gap: 2px; }
   .chip-label { font-size: 0.5rem; }
   .chip-value { font-size: 0.82rem; }
-  .chip-icon svg { width: 10px; height: 10px; }
-  .dash-hero-meta { gap: 6px; }
-
-  .dash-scroll-stats { gap: 8px; }
+    .dash-scroll-stats { gap: 8px; }
   .scroll-stat { min-width: 130px; padding: 12px 12px; border-radius: 12px; gap: 10px; }
   .scroll-stat-icon-wrap { width: 32px; height: 32px; border-radius: 8px; }
   .scroll-stat-icon-wrap svg { width: 14px; height: 14px; }
@@ -12189,12 +12139,6 @@ body.royal .dash-bg-glow-1 {
 }
 body.royal .dash-hero-bg {
   background: linear-gradient(135deg, rgba(22, 64, 110,.35) 0%, rgba(15, 44, 75,.95) 40%, rgba(108, 24, 35,.2) 70%, rgba(201, 163, 76,.15) 100%) !important;
-}
-body.royal .dash-hero-chip {
-  background: rgba(14, 40, 68,.65) !important;
-}
-body.royal .dash-hero-chip:hover {
-  background: rgba(9, 26, 44,.7) !important;
 }
 body.royal .scroll-stat.purple {
   background: linear-gradient(145deg, rgba(22, 64, 110,.25) 0%, rgba(12, 35, 60,.85) 100%) !important;
