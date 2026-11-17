@@ -14,7 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <title>Mission Chain &mdash; Admin Console</title>
         <meta name="description" content="Mission Chain Admin Console - Governing Board Only" />
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        {/* Monogram MIC do. ?v= vi Cloudflare cache anh lau; them favicon.ico vi
+            Chrome tu do /favicon.ico khi the tren khong dung duoc. */}
+        <link rel="icon" href="/favicon.ico?v=brand20260818d" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=brand20260818d" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

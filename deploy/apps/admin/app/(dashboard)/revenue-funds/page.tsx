@@ -337,9 +337,9 @@ const SEED_SPLIT = [
   /* Named for what it pays, not for the department. It shared "Management & Ops" with the
      Pre-Sale/MICE ManagementPool, and the two are different money under different rules:
      this one pays Council salaries by share and weekly maxout. */
-  { slot: 1, label: 'Steward Salaries',         pct: 20, note: 'Steward Council salaries via OperationalSalaryPoolV3 — % share + weekly maxout' },
-  { slot: 2, label: 'Management Bonus',         pct: 10, note: 'Council-created bonus orders via ManagementBonusPoolV3, 75% approval threshold' },
-  { slot: 3, label: 'Contingency Reserve',      pct: 50, note: 'DAO-decided expenses via ReservedExpensesPoolV3 — no UI wired yet' },
+  { slot: 1, label: 'Steward Salaries',         pct: 20, note: 'Steward Council salaries via OperationalSalaryPoolV4 — % share + weekly maxout' },
+  { slot: 2, label: 'Management Bonus',         pct: 10, note: 'Council-created bonus orders via ManagementBonusPoolV4, 75% approval threshold' },
+  { slot: 3, label: 'Contingency Reserve',      pct: 50, note: 'DAO-decided expenses via ReservedExpensesPoolV4 — no UI wired yet' },
 ] as const;
 
 function SeedSaleTab() {
@@ -1090,7 +1090,7 @@ function FundsManagementTab({ isOwner }: { isOwner: boolean }) {
       {fundTab === 'salaries' && (
         <FundBlock
           title="Steward Salaries"
-          subtitle="Steward Council salaries, funded by the SEED sale and paid through OperationalSalaryPoolV3 on a percentage share with a weekly maxout. Each member claims their own accrual."
+          subtitle="Steward Council salaries, funded by the SEED sale and paid through OperationalSalaryPoolV4 on a percentage share with a weekly maxout. Each member claims their own accrual."
           sources={[
             {
               label: 'SEED SALE — Operational',
@@ -1186,7 +1186,7 @@ function FundsManagementTab({ isOwner }: { isOwner: boolean }) {
       {fundTab === 'seedbonus' && (
         <FundBlock
           title="Management Bonus"
-          subtitle="Council-created bonus orders funded by the SEED sale, held by ManagementBonusPoolV3. Each order is voted on inside the contract, so both the vote and the cancellation live on chain."
+          subtitle="Council-created bonus orders funded by the SEED sale, held by ManagementBonusPoolV4. Each order is voted on inside the contract, so both the vote and the cancellation live on chain."
           sources={[
             {
               label: 'SEED SALE — Management Bonus',
@@ -1210,7 +1210,7 @@ function FundsManagementTab({ isOwner }: { isOwner: boolean }) {
       {fundTab === 'contingency' && (
         <FundBlock
           title="Contingency Reserve"
-          subtitle="DAO-decided expenses funded by the SEED sale, held by ReservedExpensesPoolV3. This is an expense reserve, not a staking reserve and not the Reserved Listing fund — those are different contracts with different money."
+          subtitle="DAO-decided expenses funded by the SEED sale, held by ReservedExpensesPoolV4. This is an expense reserve, not a staking reserve and not the Reserved Listing fund — those are different contracts with different money."
           sources={[
             {
               label: 'SEED SALE — Reserved',
@@ -1396,7 +1396,14 @@ async function readProvider() {
   const { JsonRpcProvider } = await import('ethers');
   const { getActiveChain } = await import('@missionchain/sdk');
   const chain = getActiveChain();
-  return new JsonRpcProvider(chain.rpcUrls[0], chain.chainId, { staticNetwork: true });
+  return new JsonRpcProvider(chain.rpcUrls[0], chain.chainId, {
+    staticNetwork: true,
+    /* Load-bearing. ethers batches concurrent reads into one JSON-RPC request by
+       default and BSC dataseeds reject batched requests, so every Promise.all on
+       this page — threshold + nextOrderId + council is three at once — fails or
+       hangs together. */
+    batchMaxCount: 1,
+  });
 }
 
 /** The connected wallet, on the right chain, ready to sign. */
@@ -2299,10 +2306,10 @@ function ProposalsHistory({
 /**
  * Shapes verified against the deployed sources, not against the spec.
  *
- *   ManagementBonusPoolV3.orders  → (id, recipient, amount, content, requester, createdAt,
+ *   ManagementBonusPoolV4.orders  → (id, recipient, amount, content, requester, createdAt,
  *                                    status, executedAt) · status 0 PENDING 1 EXECUTED 2 CANCELLED
- *                                  · cancelOrder is onlyOwner
- *   ReservedExpensesPoolV3.orders → (proposer, recipient, amount, content, approvalCount,
+ *                                  · cancelOrder: administrator OR the requester (V4)
+ *   ReservedExpensesPoolV4.orders → (proposer, recipient, amount, content, approvalCount,
  *                                    executed, cancelled) · no timestamp at all
  *                                  · cancelOrder allows owner OR the proposer
  *
@@ -2311,14 +2318,14 @@ function ProposalsHistory({
  */
 const ON_CHAIN_POOLS = {
   MGMT_BONUS: {
-    addrKey: 'ManagementBonusPoolV3',
+    addrKey: 'ManagementBonusPoolV4',
     thresholdFn: 'thresholdBps',
     ordersAbi: 'function orders(uint256) view returns (uint256 id, address recipient, uint256 amount, string content, address requester, uint64 createdAt, uint8 status, uint64 executedAt)',
     extraAbi: ['function approvalsCount(uint256) view returns (uint256)'],
-    cancelRule: 'the Owner only — the contract marks cancelOrder onlyOwner.',
+    cancelRule: 'the administrator, or the member who raised the order — V4 accepts either.',
   },
   CONTINGENCY: {
-    addrKey: 'ReservedExpensesPoolV3',
+    addrKey: 'ReservedExpensesPoolV4',
     thresholdFn: 'threshold',
     ordersAbi: 'function orders(uint256) view returns (address proposer, address recipient, uint256 amount, string content, uint256 approvalCount, bool executed, bool cancelled)',
     extraAbi: [] as string[],
@@ -2414,21 +2421,41 @@ function OnChainProposalsHistory({ pool, isOwner }: { pool: keyof typeof ON_CHAI
     if (!ok || !addr) return;
     setBusy(true);
     try {
+      mcUi.toast({ type: 'info', message: 'Opening your wallet…' });
       const { Contract } = await import('ethers');
-      const c = new Contract(addr, ['function cancelOrder(uint256 id)'], await walletSigner());
+      const signer = await walletSigner();
+      const net = await signer.provider!.getNetwork();
+      if (Number(net.chainId) !== 56) {
+        throw new Error(`Wallet is on chain ${net.chainId}, not BSC (56). Switch network and try again.`);
+      }
+      const c = new Contract(addr, ['function cancelOrder(uint256 id)'], signer);
+
+      /* Simulate against the read provider first, so a refusal arrives with its reason
+         attached. Sending blind leaves the estimate to the wallet's own RPC, which drops
+         revert data: on 2026-10-20 that surfaced as "missing revert data", which names
+         nothing. The real cause was that the page was still pointed at the superseded V3
+         pool, whose owner is immutable and unreachable. */
+      const sim = new Contract(addr, ['function cancelOrder(uint256 id)'], await readProvider());
+      await sim.cancelOrder.staticCall(r.id, { from: await signer.getAddress() });
+
+      mcUi.toast({ type: 'info', message: 'Confirm in your wallet…' });
       const tx = await c.cancelOrder(r.id);
-      mcUi.toast({ type: 'info', message: 'Waiting for confirmation…' });
+      mcUi.toast({ type: 'info', message: `Sent ${tx.hash.slice(0, 10)}… waiting for the block` });
       const receipt = await tx.wait(1);
       if (!receipt || receipt.status !== 1) throw new Error('Transaction reverted');
       mcUi.toast({ type: 'success', message: `Cancelled · ${tx.hash.slice(0, 10)}…` });
+      setBusy(false);   // unlock before refreshing — a slow reload must not freeze the section
       await load();
     } catch (e: any) {
-      mcUi.toast({
-        type: 'error',
-        message: e?.code === 4001 || e?.code === 'ACTION_REJECTED'
-          ? 'Transaction rejected in wallet'
-          : 'Cancel failed: ' + (e?.shortMessage || e?.message || 'Unknown error'),
-      });
+      const raw = e?.shortMessage || e?.reason || e?.message || 'Unknown error';
+      const msg = e?.code === 4001 || e?.code === 'ACTION_REJECTED'
+        ? 'Rejected in wallet'
+        : /missing revert data|CALL_EXCEPTION/i.test(String(raw))
+          ? 'The contract refused without a reason. Usually the connected wallet is neither this pool’s administrator nor the member who raised the order.'
+          : raw;
+      mcUi.toast({ type: 'error', message: `Cancel failed: ${msg}` });
+      // eslint-disable-next-line no-console
+      console.error('[cancelOrder]', e);
     } finally {
       setBusy(false);
     }
@@ -2885,8 +2912,10 @@ function OperationalPoolPanel({ isOwner }: { isOwner: boolean }) {
     setLoadErr(null);
     try {
       const [opRes, cRes] = await Promise.all([fetchOperationalPool(), fetchStewardCouncil()]);
-      setOpPool(opRes.data);
-      setCouncil(cRes.data || []);
+      // safeRead resolves to null instead of rejecting, so one dead endpoint no longer
+      // blanks the other card. Guard each independently.
+      if (opRes) setOpPool(opRes.data);
+      setCouncil(cRes?.data || []);
     } catch (err: any) {
       console.error('Failed to load Op pool', err);
       // Say what actually failed. This blamed the contract for every failure, including
@@ -2978,7 +3007,7 @@ function OperationalPoolPanel({ isOwner }: { isOwner: boolean }) {
           Funded by the <strong>SEED Operational slot (20%)</strong> only. Each member draws
           <code> share % × slot lifetime receipts − already claimed</code>, capped by their weekly
           maxout; the remainder rolls over. Adding, editing and removing writes to{' '}
-          <code>OperationalSalaryPoolV3</code> on-chain first and mirrors to the database second.
+          <code>OperationalSalaryPoolV4</code> on-chain first and mirrors to the database second.
           Members claim themselves from their own wallet — the admin cannot claim on their behalf.
         </div>
       </div>
@@ -3193,7 +3222,7 @@ function GovernancePanel() {
       const lr = new Contract(A.ListingReserve, [
         'function pending() view returns (address to, uint256 amount, uint64 unlockTime, bool active)',
         'function balance() view returns (uint256)',
-      ], new JsonRpcProvider(chain.rpcUrls[0], chain.chainId, { staticNetwork: true }));
+      ], new JsonRpcProvider(chain.rpcUrls[0], chain.chainId, { staticNetwork: true, batchMaxCount: 1 }));
       const [pRaw, bal] = await Promise.all([lr.pending(), lr.balance()]);
       setPending({
         active: Boolean(pRaw[3]),

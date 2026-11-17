@@ -36,8 +36,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* PWA — installable on Android & iOS */}
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#0E2148" />
-        <link rel="icon" href="/icons/icon-32.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/icons/apple-touch-180.png" />
+        {/* Bieu tuong tab: monogram MIC do. Co ?v= vi Cloudflare cache anh 30 ngay —
+            thay file tren dia khong du, phai doi URL. Them ca favicon.ico vi Chrome
+            van tu do /favicon.ico khi cac the tren khong dung duoc. */}
+        <link rel="icon" href="/favicon.ico?v=brand20260818d" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=brand20260818d" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=brand20260818d" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-180.png?v=brand20260818d" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

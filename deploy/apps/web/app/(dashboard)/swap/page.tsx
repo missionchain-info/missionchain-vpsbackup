@@ -6,7 +6,7 @@ import SubNav, { EXPLORE_TABS } from '@/components/layout/SubNav'
 /**
  * SWAP — the pool's own market, not a router into someone else's.
  *
- * Everything about what is tradeable right now is read from LiquidityPoolV7 by the panel
+ * Everything about what is tradeable right now is read from LiquidityPoolV6 by the panel
  * itself: whether the pool has been seeded, whether the sell side has opened, the fee,
  * the per-trade cap. Nothing here is gated by a flag we maintain, so the page cannot show
  * an open market that is not open.
@@ -41,9 +41,17 @@ export default function SwapPage() {
           it was bare text on the page background, which is why it read as flat next to
           P2P's panels. */}
       <div className="nft-section-card">
+        {/*
+          V6 opened the sell side on a calendar day. V7 does not: SELL_OPEN_DAY is still in
+          the contract but marked legacy there, and the gate it actually reads is
+          sellGateUsdt — $25,000 of REAL reserves. Telling members "30 days" would have them
+          waiting on a date that decides nothing. Corrected 2026-09-07 after reading the
+          deployed contract.
+        */}
         <div className="nft-pool-note" style={{ marginBottom: 16 }}>
-          Buying is open from the moment the pool is funded; selling opens 30 days later, so
-          the pool has time to build depth before it has to absorb outflow.
+          Buying is open from the moment the pool is funded. Selling opens once the pool
+          holds $25,000 of real USDT {'—'} depth it earns from trading, not a date on a
+          calendar {'—'} so it can absorb outflow before it has to.
         </div>
         <SwapPanel />
       </div>

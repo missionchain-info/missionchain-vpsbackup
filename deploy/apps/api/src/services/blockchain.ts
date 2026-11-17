@@ -571,6 +571,52 @@ export class BlockchainService {
     }
   }
 
+  /**
+   * The five-way split as the contract is paying it TODAY, in percent.
+   *
+   * Not the ORIG_* constants: `currentMinerBps` moves during the Early Staking Boost —
+   * miners start at 49% and ramp to 59% over the first 90 days, and the difference goes
+   * to staking. Reading `minersBps` alone would show 59% while the chain paid 49.12%.
+   * Mirrors `distributeDaily`: staking = stakingBps + (minersBps - currentMinerBps), and
+   * Community NFT takes the remainder so the five always sum to 100.
+   *
+   * Returns null when the chain cannot be read, which is the signal the route uses to
+   * fall back to its configured values and to flag the figure as not-from-chain.
+   */
+  async getEmissionSplit(): Promise<{
+    miners: number; staking: number; dao: number; communityNft: number; mfpReward: number
+  } | null> {
+    try {
+      const [curMiners, origMiners, staking, dao, mfp] = await Promise.all([
+        this.emissionController.currentMinerBps() as Promise<bigint>,
+        this.emissionController.minersBps() as Promise<bigint>,
+        this.emissionController.stakingBps() as Promise<bigint>,
+        this.emissionController.daoBps() as Promise<bigint>,
+        this.emissionController.mfpRewardBps() as Promise<bigint>,
+      ])
+
+      const minersBps  = Number(curMiners)
+      const stakingBps = Number(staking) + (Number(origMiners) - minersBps)
+      const daoBps     = Number(dao)
+      const mfpBps     = Number(mfp)
+      const communityBps = 10_000 - minersBps - stakingBps - daoBps - mfpBps
+
+      // A negative remainder would mean the getters disagree — better no figure than a
+      // split that does not add up.
+      if (communityBps < 0) return null
+
+      return {
+        miners:       minersBps / 100,
+        staking:      stakingBps / 100,
+        dao:          daoBps / 100,
+        communityNft: communityBps / 100,
+        mfpReward:    mfpBps / 100,
+      }
+    } catch {
+      return null
+    }
+  }
+
   // ── Current Block ────────────────────────────────────────────────
 
   async getCurrentBlock(): Promise<number> {

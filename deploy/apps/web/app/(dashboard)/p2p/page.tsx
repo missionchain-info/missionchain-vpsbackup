@@ -182,6 +182,16 @@ export default function P2pPage() {
   const { address: connectedAddr } = useAccount()
   const [tradeAction, setTradeAction] = useState<TradeAction>('buy')
   const [selectedAsset, setSelectedAsset] = useState<AssetType>('MFP')
+  /**
+   * Which trading surface is on screen. The page used to render BOTH: the MIC panel
+   * in full, and immediately beneath it a near-identical NFT interface with its own
+   * Buy/Sell toggle, fee notice, order book and My Orders. Four of the five controls
+   * were duplicated, and a member scrolled past a complete market to reach another one.
+   *
+   * `selectedAsset` still means only "which NFT tier", so every NFT code path below is
+   * untouched. This picks which of the two surfaces is mounted at all.
+   */
+  const [surface, setSurface] = useState<'MIC' | 'NFT'>('MIC')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedTokenId, setSelectedTokenId] = useState<string>('')
   const [p2pEnabled, setP2pEnabled] = useState(false)
@@ -335,13 +345,9 @@ export default function P2pPage() {
       <SubNav items={EXPLORE_TABS} />
       <div className="p2p-page">
 
-        {/* MIC ⇄ USDT — the live market, and the only one that can currently take a
-            trade. It sits above the NFT tab strip because that strip runs on
-            P2PEscrowMFP, whose $0.000001 price ceiling is a `constant` and rejects every
-            real listing until it is redeployed. */}
-        <MicP2PPanel address={connectedAddr} />
-
-        {/* ── Hero ── */}
+        {/* ── Mot hang tai san duy nhat: MIC dung ngang hang voi NFT ──
+            Truoc day MIC nam ngoai day tab, nen trang co hai "cho chon" tach roi va hai
+            giao dien xep chong. Gio chon o day, va CHI mot be mat duoc mount ben duoi. */}
         <div className="p2p-hero">
           <div className="p2p-hero-bg" />
           <div className="p2p-hero-content">
@@ -350,18 +356,28 @@ export default function P2pPage() {
             </div>
             <div>
               <div className="p2p-hero-label">P2P Exchange</div>
-              <div className="p2p-hero-sub">Trade MIC & NFTs directly with other members via Escrow</div>
+              <div className="p2p-hero-sub">
+                Trade directly with other members. Assets stay in escrow until the order is filled.
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── Asset Type Tabs ── */}
         <div className="p2p-asset-tabs">
+          <button
+            className={`p2p-asset-tab ${surface === 'MIC' ? 'p2p-asset-tab-active' : ''}`}
+            onClick={() => setSurface('MIC')}
+            style={{ '--tab-color': 'var(--gold)' } as React.CSSProperties}
+            title="MIC ⇄ USDT — open"
+          >
+            <span className="p2p-asset-tab-icon">🪙</span>
+            <span className="p2p-asset-tab-label">MIC</span>
+          </button>
           {ASSET_CONFIGS.map(asset => (
             <button
               key={asset.id}
-              className={`p2p-asset-tab ${selectedAsset === asset.id ? 'p2p-asset-tab-active' : ''} ${!assetOpen[asset.id] ? 'p2p-asset-tab-disabled' : ''}`}
-              onClick={() => { if (assetOpen[asset.id]) setSelectedAsset(asset.id) }}
+              className={`p2p-asset-tab ${surface === 'NFT' && selectedAsset === asset.id ? 'p2p-asset-tab-active' : ''} ${!assetOpen[asset.id] ? 'p2p-asset-tab-disabled' : ''}`}
+              onClick={() => { if (assetOpen[asset.id]) { setSelectedAsset(asset.id); setSurface('NFT') } }}
               disabled={!assetOpen[asset.id]}
               style={{ '--tab-color': asset.color } as React.CSSProperties}
               title={!assetOpen[asset.id] ? (asset.reason || 'Not available') : asset.label}
@@ -377,18 +393,16 @@ export default function P2pPage() {
           ))}
         </div>
 
-        {/* Why a tab is closed, in the member's terms.
-            `nft-pool-note` is the same quiet note style the MIC panel above uses, so this
-            reads as guidance rather than shouting. The engineering reason — a 6-decimal
-            price ceiling written as a constant — belongs in the admin console, not here:
-            a member cannot act on it, and it only makes a safe situation sound alarming. */}
-        {assetClosed && (
+        {surface === 'MIC' && <MicP2PPanel address={connectedAddr} />}
+
+        {surface === 'NFT' && assetClosed && (
           <div className="nft-pool-note">
             {assetConfig.label} trading is closed right now. Your {assetConfig.label}s are
-            safe and untouched. MIC ⇄ USDT trading is open in the panel above.
+            safe and untouched. MIC ⇄ USDT trading is open — pick MIC above.
           </div>
         )}
 
+        {surface === 'NFT' && (<>
         {/* ── Asset Info Bar ── */}
         <div className="p2p-asset-info">
           <div className="p2p-asset-info-left">
@@ -418,23 +432,26 @@ export default function P2pPage() {
           </button>
         </div>
 
-        {/* ── Market Info ── */}
-        <div className="p2p-market-row">
-          <div className="p2p-market-item">
-            <div className="p2p-market-label">{isNFT ? 'Floor Price' : 'MIC Price'}</div>
-            <div className="p2p-market-value p2p-val-gold">
-              {isNFT ? '-' : (micPrice > 0 ? `$${micPrice.toFixed(4)}` : '-')}
+        {/* ── Market Info ──
+            Chi hien o NAO CO SO. Voi NFT ca ba deu la dau "-", va ba o rong canh nhau lam
+            san trong nhu da chet. Khong co so nao thi khong ve thanh nay. */}
+        {(() => {
+          const cells = [
+            stats.volume24h > 0 && { k: '24h Volume', v: `$${stats.volume24h.toLocaleString()}`, gold: false },
+            stats.activeOrders > 0 && { k: 'Active Orders', v: String(stats.activeOrders), gold: false },
+          ].filter(Boolean) as Array<{ k: string; v: string; gold: boolean }>
+          if (cells.length === 0) return null
+          return (
+            <div className="p2p-market-row">
+              {cells.map(c => (
+                <div className="p2p-market-item" key={c.k}>
+                  <div className="p2p-market-label">{c.k}</div>
+                  <div className={`p2p-market-value${c.gold ? ' p2p-val-gold' : ''}`}>{c.v}</div>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="p2p-market-item">
-            <div className="p2p-market-label">24h Volume</div>
-            <div className="p2p-market-value">{stats.volume24h > 0 ? `$${stats.volume24h.toLocaleString()}` : '-'}</div>
-          </div>
-          <div className="p2p-market-item">
-            <div className="p2p-market-label">Active Orders</div>
-            <div className="p2p-market-value">{stats.activeOrders > 0 ? stats.activeOrders : '-'}</div>
-          </div>
-        </div>
+          )
+        })()}
 
         {/* ── Fee Notice ── */}
         <div className="p2p-fee-notice">
@@ -516,8 +533,18 @@ export default function P2pPage() {
           </div>
         )}
 
-        {/* ── How It Works ── */}
-        <HowItWorks isNFT={isNFT} assetLabel={assetConfig.label} platformFee={platformFee} />
+        </>)}
+
+        {/* Truoc la mot khoi giai thich luon mo, chiem gan mot man hinh o cuoi trang ma
+            nguoi da giao dich roi khong bao gio doc lai. Gio la mot dong gap mo. */}
+        <details className="p2p-how">
+          <summary>How P2P trading works</summary>
+          <HowItWorks
+            isNFT={surface === 'NFT'}
+            assetLabel={surface === 'MIC' ? 'MIC' : assetConfig.label}
+            platformFee={surface === 'MIC' ? 2.5 : platformFee}
+          />
+        </details>
       </div>
 
       {/* ── Create Order Modal ── */}
@@ -1050,7 +1077,7 @@ function CreateOrderModal({ tradeAction, asset, assetConfig, isNFT, micPrice, pl
     ;(async () => {
       try {
         const { JsonRpcProvider, Contract: C } = await import('ethers')
-        const provider = new JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0], ACTIVE_CHAIN.chainId, { staticNetwork: true })
+        const provider = new JsonRpcProvider(ACTIVE_CHAIN.rpcUrls[0], ACTIVE_CHAIN.chainId, { staticNetwork: true, batchMaxCount: 1 })
         const c = new C(MFP_ADDR, [
           'function balanceOf(address) view returns (uint256)',
           'function tokenOfOwnerByIndex(address,uint256) view returns (uint256)',

@@ -46,7 +46,7 @@ async function fetchJson(path: string) {
 
 /* ── Formatting helpers ── */
 function fmt(n: number | undefined | null): string {
-  if (n === undefined || n === null || isNaN(n as number) || n === 0) return '-';
+  if (n === undefined || n === null || isNaN(n as number)) return '-';
   return n.toLocaleString();
 }
 

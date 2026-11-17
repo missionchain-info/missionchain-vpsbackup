@@ -106,7 +106,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-head-v2">
-        <img src="/images/mission-chain-logo-clear.png" alt="MC" className="sb-logo-center" />
+        {/* Logo navy tu brand-kit (svg/monogram-navy.svg): nen #0E2148, chu MIC trang,
+            gach vang #D4A63C. Thay cho anh triện tròn 1,7 MB — file nay 402 byte va
+            net o moi do phan giai. */}
+        <img src="/images/mic-monogram-navy.svg?v=navy20260824" alt="MIC" className="sb-logo-center" />
         <div className="sb-brand-name">MISSION CHAIN</div>
         <div className="sb-brand-sub">ADMIN CONSOLE</div>
       </div>

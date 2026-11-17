@@ -559,13 +559,38 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── GET /sales/mice/info ───────────────────────────────────────
   app.get('/mice/info', async (req, reply) => {
+    /*
+     * Licences sold comes from the chain, not from our Purchase table.
+     *
+     * It used to be \`prisma.purchase.count({ type: 'MICE' })\`, and nothing ever writes that
+     * row: the MICE page has no record-onchain call the way Pre-Sale and SEED do, and no
+     * indexer watches MICELicense. So real purchases minted on chain reported as zero sold
+     * and zero revenue, on both the public page and the finance console.
+     *
+     * \`totalMinted()\` is the licence count the contract itself keeps. The DB stays as a
+     * fallback for when the RPC is unreachable, so the endpoint degrades instead of failing.
+     */
     const miceStats = await app.prisma.purchase.aggregate({
       where: { type: 'MICE' },
       _sum: { usdtAmount: true },
       _count: true,
     })
 
-    const totalSold = miceStats._count
+    let totalSold = miceStats._count
+    let soldFromChain = false
+    try {
+      const { Contract } = await import('ethers')
+      const A = getActiveAddresses() as Record<string, string>
+      const lic = new Contract(
+        A.MICELicense,
+        ['function totalMinted() view returns (uint256)'],
+        buildProvider(),
+      )
+      totalSold = Number(await lic.totalMinted())
+      soldFromChain = true
+    } catch (e) {
+      app.log.warn({ err: e }, 'mice/info: totalMinted() unreadable, falling back to the DB count')
+    }
 
     // Determine current round based on total sold
     let currentRound = 1
@@ -584,7 +609,26 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const remainingInRound = currentRound * 20_000 - totalSold
-    const totalRevenue = Number(miceStats._sum.usdtAmount ?? 0)
+    /*
+     * Revenue is derived from the round ladder, because the chain keeps no USDT total: a
+     * licence is half MIC (burned) and half USDT, and only that USDT half ever reaches
+     * RevenueRouter. Summing per round matters once sales cross a boundary — the price
+     * steps from \$100 to \$500 across the five rounds.
+     */
+    const grossUsdt = (() => {
+      let total = 0
+      let counted = 0
+      for (const r of MICE_ROUNDS) {
+        if (counted >= totalSold) break
+        const inThisRound = Math.min(totalSold - counted, 20_000)
+        total += inThisRound * r.price
+        counted += inThisRound
+      }
+      return total
+    })()
+    const totalRevenue = soldFromChain
+      ? grossUsdt / 2
+      : Number(miceStats._sum.usdtAmount ?? 0)
 
     return {
       data: {
@@ -598,6 +642,8 @@ export const salesRoutes: FastifyPluginAsync = async (app) => {
         paymentSplit: { micBurnPct: 50, usdtPct: 50 },
         durationDays: 360,
         rounds: MICE_ROUNDS,
+        /** Where totalSold came from, so a stale figure is visible rather than silent. */
+        soldSource: soldFromChain ? 'chain' : 'database',
         referral: { f1: 7, f2: 3 },
       },
     }

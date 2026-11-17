@@ -295,14 +295,36 @@ export async function creditPeriod(
     return null
   }
 
+  // THE SPLIT HAS ALREADY HAPPENED ON CHAIN. Do not do it a second time.
+  //
+  // `NFTRewardPool.receiveUSDT` divides every inflow by `communityBps` the moment it lands
+  // and keeps the two halves in separate sub-ledgers. This used to add those sub-ledgers
+  // back together and hand the total to `planNftPool`, which divides by `communityBps`
+  // again — so the amounts it asked to credit matched neither ledger. Measured on chain
+  // 2026-08-21, after this had reverted every hour since 18/08:
+  //
+  //   Weekly   community 0      + mfp 0.49995 -> asked 0.45450 community -> insufficient community
+  //   Monthly  community 9.375  + mfp 0.5     -> asked 0.61719 mfp       -> insufficient mfp
+  //
+  // Worse than a stalled job: `creditCommunity` ran FIRST and SUCCEEDED before `creditMFP`
+  // reverted, so `credited.add(key)` never ran and each hourly retry credited ~90.91% of
+  // whatever was left. The Weekly pool took 19 geometrically decaying credits
+  // (1.13638636375 -> 0.10329752 -> 0.00938974 -> ... -> 2 wei) instead of one weekly
+  // settlement. The total was right; the split between wallets was not a weekly snapshot.
+  //
+  // Each side is now planned against its OWN ledger: bps 10000 sends the whole amount down
+  // the community branch, bps 0 sends the whole amount down the mfp branch.
+  const planC = planNftPool(communityBalance as bigint, 10_000, holders)
+  const planM = planNftPool(mfpBalance as bigint, 0, holders)
   const total = (communityBalance as bigint) + (mfpBalance as bigint)
-  const communityBps = Number(await pool.communityBps())
-  const plan = planNftPool(total, communityBps, holders)
 
-  const community = await creditInBatches(app, pool, 'creditCommunity',
-    plan.community.map((a) => ({ wallet: a.wallet, amount: a.amount })))
+  // MFP first, deliberately. With the split above neither call should revert, but if one
+  // ever does it must be the one that has not spent the larger ledger yet: a revert here
+  // leaves both sub-balances untouched for the next tick instead of half-spent.
   const mfp = await creditInBatches(app, pool, 'creditMFP',
-    plan.mfp.map((a) => ({ wallet: a.wallet, amount: a.amount })))
+    planM.mfp.map((a) => ({ wallet: a.wallet, amount: a.amount })))
+  const community = await creditInBatches(app, pool, 'creditCommunity',
+    planC.community.map((a) => ({ wallet: a.wallet, amount: a.amount })))
 
   app.log.info(
     { kind, label, community, mfp, total: formatUnits(total, 18) },

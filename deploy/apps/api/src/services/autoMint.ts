@@ -31,6 +31,7 @@ import {
   type SaleRow,
 } from './rewardEngine/milestones.js'
 import { gvRankFor } from './rewardEngine/tiers.js'
+import { buildArchiveProvider } from './blockchain.js'
 
 /**
  * RankBonusClaim — records that a wallet reached a rank. It mints nothing.
@@ -65,7 +66,21 @@ const CLAIM_ABI = [
 
 /** Minted per wallet, read from the contract that did the minting. */
 async function readAlreadyMinted(signer: Wallet, claimAddr: string) {
-  const provider = signer.provider!
+  // eth_getLogs must NOT go through the signer's provider. The signer deliberately talks to
+  // SIGNER_RPC_URL — a BSC dataseed, chosen because its receipts are reliable — and the
+  // dataseeds refuse eth_getLogs outright. ethers surfaces that refusal as the opaque
+  // "could not coalesce error", which on 2026-08-21 was read as RPC batching; it is not,
+  // `boundedProvider` has set batchMaxCount: 1 all along. Same call, batching off, measured
+  // that day:
+  //
+  //   bsc-dataseed.binance.org   -> could not coalesce error
+  //   bsc-rpc.publicnode.com     -> could not coalesce error
+  //   bnb-mainnet.g.alchemy.com  -> OK
+  //
+  // The keeper skipped the whole auto-mint step rather than risk a double mint, so
+  // milestone NFTs stopped being issued and nothing said so. There is no state to read
+  // instead: ClaimRewardsV2.mintMilestoneNFT only emits, it records no mapping.
+  const provider = buildArchiveProvider()
   const head = await provider.getBlockNumber()
 
   const milestoneTopic = id('MilestoneNFTMinted(address,uint256,uint256)')

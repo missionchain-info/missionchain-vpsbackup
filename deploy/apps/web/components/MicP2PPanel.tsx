@@ -487,35 +487,45 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
         <span className="nft-section-title">MIC ↔ USDT — Peer to Peer</span>
       </div>
-      <div className="nft-pool-note">
-        Trade MIC directly with another member at a price you both agree. The contract holds the
-        seller&apos;s MIC and settles both sides in one transaction, so neither side has to go first.
-        Fee {cfg.feePct}%, paid by the seller out of the sale.
+      {/* Ba dong van xuoi truoc day khong ai doc, va muc phi — thu quan trong nhat voi
+          nguoi ban — nam o cuoi cau thu ba. Gio no la mot chip ngay canh tieu de. */}
+      <div className="p2p-meta">
+        <span className="p2p-chip p2p-chip-lock">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Escrow settles both sides at once
+        </span>
+        <span className="p2p-chip">Fee {cfg.feePct}% &middot; paid by the seller</span>
       </div>
-      <div className="p2p-side">
-        {([
-          ['sell', 'I want to sell MIC'],
-          ['buy', 'I want to buy MIC'],
-          ['myOrders', `My Offers${myOrders.length ? ` (${myOrders.length})` : ''}`],
-          ['myBids', `My Bids${myOpenBids.length ? ` (${myOpenBids.length})` : ''}`],
-        ] as const).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            className={tab === key ? 'p2p-side-on' : ''}
-            onClick={() => setTab(key)}
-          >
-            {label}
+
+      {/* Hai tang: hang tren la HANH DONG, dai duoi la HO SO CUA TOI.
+          Truoc day bon pill cung mot hang nen khong phan biet duoc "lam gi" vs "xem gi". */}
+      <div className="p2p-switch" role="tablist" aria-label="Trade side">
+        {([['sell', 'Sell MIC', 'You give MIC, receive USDT'],
+           ['buy',  'Buy MIC',  'You give USDT, receive MIC']] as const).map(([key, label, sub]) => (
+          <button key={key} type="button" role="tab" aria-selected={tab === key}
+                  className={`p2p-switch-btn ${tab === key ? 'on' : ''}`}
+                  onClick={() => setTab(key)}>
+            <span className="p2p-switch-l">{label}</span>
+            <span className="p2p-switch-s">{sub}</span>
           </button>
         ))}
       </div>
-      {tab === 'sell' || tab === 'buy' ? (
-        <div className="nft-pool-note">
-          {side === 'sell'
-            ? 'Your MIC is held by the contract until someone buys it. Cancel any time and it comes straight back.'
-            : 'Your USDT is held by the contract until someone sells into your bid. Cancel any time and it comes straight back.'}
-        </div>
-      ) : null}
+
+      <div className="p2p-mine-strip">
+        {([['myOrders', 'My offers', myOrders.length],
+           ['myBids',   'My bids',   myOpenBids.length]] as const).map(([key, label, n]) => (
+          <button key={key} type="button"
+                  className={`p2p-mine-btn ${tab === key ? 'on' : ''}`}
+                  onClick={() => setTab(key)}>
+            {label}{n ? <b className="p2p-mine-n">{n}</b> : null}
+          </button>
+        ))}
+        {tab === 'myOrders' || tab === 'myBids' ? (
+          <button type="button" className="p2p-mine-back" onClick={() => setTab('sell')}>
+            &larr; Back to trading
+          </button>
+        ) : null}
+      </div>
 
       {cfg.paused ? (
         <div className="nft-pool-note" style={{ color: 'var(--gold)' }}>
@@ -557,13 +567,18 @@ export default function MicP2PPanel({ address }: { address?: string }) {
           />
         </label>
         <label>
-          <span>Price per MIC (USDT)</span>
-          <input
-            value={price}
-            onChange={(e) => onDecimal(e.target.value, setPrice)}
-            placeholder="0.008"
-            inputMode="decimal"
-          />
+          {/* Truoc la "Price per MIC (USDT)" — qua dai, bi cat thanh "PRICE PER MIC (U...".
+              Don vi chuyen vao trong o duoi dang hau to. */}
+          <span>Price per MIC</span>
+          <div className="p2p-input-unit">
+            <input
+              value={price}
+              onChange={(e) => onDecimal(e.target.value, setPrice)}
+              placeholder="0.008"
+              inputMode="decimal"
+            />
+            <b>USDT</b>
+          </div>
         </label>
         <label>
           <span>Expires in</span>
@@ -596,76 +611,96 @@ export default function MicP2PPanel({ address }: { address?: string }) {
       <>
       {/* Below the row, not inside a cell: a hint tucked into one label stretched that
           column and knocked the four fields out of alignment. */}
-      <div className="p2p-hint">
+      {/* So kha dung thanh mot THANH, khong phai cau trong ngoac. Phan bi khoa la ly do
+          so kha dung thap, nen no dung canh — khong phai chu thich phu. */}
+      <div className="p2p-avail">
         {!address ? (
-          side === 'sell'
-            ? 'Connect your wallet to see how much MIC you can sell'
-            : 'Connect your wallet to see how much USDT you can commit'
+          <span className="p2p-avail-msg">
+            Connect your wallet to see how much you can {side === 'sell' ? 'sell' : 'commit'}
+          </span>
         ) : side === 'sell' ? (
           tradable === null ? (
-            'Could not read your MIC balance — check that your wallet is connected to BSC'
-          ) : (
-            <>
-              Available to sell:{' '}
-              <button type="button" className="p2p-max" onClick={() => setAmount(tradable)}>
-                {num(tradable)} MIC
-              </button>
-              {Number(tradable) === 0
-                ? ' — nothing spendable in this wallet'
-                : Number(locked || 0) > 0
-                  ? ` (${num(locked!)} MIC is locked by vesting and cannot be sold)`
-                  : ''}
-            </>
-          )
+            <span className="p2p-avail-msg">Could not read your MIC balance — check the wallet is on BSC</span>
+          ) : (() => {
+            const av = Number(tradable), lk = Number(locked || 0), tot = av + lk
+            const pct = tot > 0 ? (av / tot) * 100 : 0
+            return (
+              <>
+                <div className="p2p-avail-top">
+                  <span className="p2p-avail-k">Available to sell</span>
+                  <button type="button" className="p2p-max" onClick={() => setAmount(tradable)}>
+                    {num(tradable, 0)} MIC
+                  </button>
+                </div>
+                <div className="p2p-avail-bar"><i style={{ width: `${pct}%` }} /></div>
+                <div className="p2p-avail-foot">
+                  {av === 0 ? 'Nothing spendable in this wallet' : `${pct.toFixed(0)}% of your balance is free to trade`}
+                  {lk > 0 ? <> &middot; <b>{num(String(lk), 0)} MIC</b> still locked by vesting</> : null}
+                </div>
+              </>
+            )
+          })()
         ) : usdtBal === null ? (
-          'Could not read your USDT balance — check that your wallet is connected to BSC'
+          <span className="p2p-avail-msg">Could not read your USDT balance — check the wallet is on BSC</span>
         ) : (
-          <>
-            Available to buy: <strong>{num(usdtBal, 2)} USDT</strong>
-            {Number(usdtBal) === 0 ? ' — nothing spendable in this wallet' : ' in this wallet'}
-          </>
+          <div className="p2p-avail-top">
+            <span className="p2p-avail-k">Available to spend</span>
+            <strong className="p2p-avail-v">{num(usdtBal, 2)} USDT</strong>
+          </div>
         )}
       </div>
 
+      {/* Hoa don song. Doi moi phim go. Day la con so duy nhat nguoi ban thuc su can,
+          truoc kia no nam lan trong mot cau van xuoi. */}
       {total > 0 ? (
-        <div className="nft-pool-note">
-          Total <strong>${num(String(total), 4)}</strong> for {num(amount)} MIC ·{' '}
-          {side === 'sell' ? (
-            <>you receive <strong>${num(String(net), 4)}</strong> after the {cfg.feePct}% fee (${num(String(fee), 4)}).</>
-          ) : (
-            <>you escrow the full <strong>${num(String(total), 4)}</strong>; the seller nets ${num(String(net), 4)} after the {cfg.feePct}% fee.</>
-          )}
+        <div className="p2p-bill">
+          <div className="p2p-bill-r">
+            <span>{num(amount, 0)} MIC &times; ${num(price || '0', 6)}</span>
+            <span className="p2p-bill-v">${num(String(total), 4)}</span>
+          </div>
+          <div className="p2p-bill-r p2p-bill-fee">
+            <span>Fee {cfg.feePct}%</span>
+            <span className="p2p-bill-v">&minus; ${num(String(fee), 4)}</span>
+          </div>
+          <div className="p2p-bill-r p2p-bill-out">
+            <span>{side === 'sell' ? 'Lands in your wallet' : 'You escrow now'}</span>
+            <span className="p2p-bill-v">
+              ${num(String(side === 'sell' ? net : total), 4)} <em>USDT</em>
+            </span>
+          </div>
+          {side === 'buy' ? (
+            <div className="p2p-bill-note">The seller nets ${num(String(net), 4)} after the fee.</div>
+          ) : null}
+
           {total < Number(cfg.minPriceUsdt) ? (
-            <> <span style={{ color: '#FF8F9D' }}>Below the ${cfg.minPriceUsdt} minimum for a listing.</span></>
+            <div className="p2p-bill-warn">Below the ${cfg.minPriceUsdt} minimum for a listing.</div>
           ) : null}
           {/*
             The amount bound was read from the contract and never checked against. A 5 MIC
             bid reverted with "P2P: amount out of range" and the screen showed
-            "missing revert data", so there was no way to learn that the floor is
-            {cfg.minAmountMic} MIC except by guessing.
+            "missing revert data", so there was no way to learn the floor except by guessing.
           */}
           {amountNum > 0 && amountNum < Number(cfg.minAmountMic) ? (
-            <> <span style={{ color: '#FF8F9D' }}>
-              Minimum is {num(cfg.minAmountMic, 0)} MIC per order.
-            </span></>
+            <div className="p2p-bill-warn">Minimum is {num(cfg.minAmountMic, 0)} MIC per order.</div>
           ) : null}
           {amountNum > Number(cfg.maxAmountMic) ? (
-            <> <span style={{ color: '#FF8F9D' }}>
-              Maximum is {num(cfg.maxAmountMic, 0)} MIC per order.
-            </span></>
+            <div className="p2p-bill-warn">Maximum is {num(cfg.maxAmountMic, 0)} MIC per order.</div>
           ) : null}
           {side === 'buy' && overUsdt ? (
-            <> <span style={{ color: '#FF8F9D' }}>
-              That is more than the {num(usdtBal!, 2)} USDT in your wallet.
-            </span></>
+            <div className="p2p-bill-warn">That is more than the {num(usdtBal!, 2)} USDT in your wallet.</div>
           ) : null}
           {side === 'sell' && overBalance ? (
-            <> <span style={{ color: '#FF8F9D' }}>
-              You only have {num(tradable!)} MIC available — the rest is locked by vesting and cannot be sold.
-            </span></>
+            <div className="p2p-bill-warn">
+              You only have {num(tradable!, 0)} MIC available — the rest is locked by vesting.
+            </div>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        <div className="p2p-bill p2p-bill-idle">
+          Enter an amount and a price — the exact USDT that
+          {side === 'sell' ? ' lands in your wallet' : ' you will escrow'} appears here.
+        </div>
+      )}
 
       </>
       ) : null}
@@ -683,7 +718,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         <span className="nft-section-title">Open offers — sellers you can buy from</span>
       </div>
       {othersOffers.length === 0 ? (
-        <div className="nft-pool-note">No offers from other members right now.</div>
+        <div className="p2p-empty">
+          <span className="p2p-empty-t">No one is selling right now</span>
+          <span className="p2p-empty-s">Post a bid at your price and sellers will see it.</span>
+          <button type="button" className="p2p-empty-b" onClick={() => setTab('buy')}>Post a bid</button>
+        </div>
       ) : (
         <div className="p2p-table">
           <div className="p2p-row p2p-head">
@@ -718,7 +757,11 @@ export default function MicP2PPanel({ address }: { address?: string }) {
         <span className="nft-section-title">Open bids — buyers you can sell to</span>
       </div>
       {othersBids.length === 0 ? (
-        <div className="nft-pool-note">No bids from other members right now.</div>
+        <div className="p2p-empty">
+          <span className="p2p-empty-t">Nobody is bidding yet</span>
+          <span className="p2p-empty-s">List your MIC and buyers will see your offer.</span>
+          <button type="button" className="p2p-empty-b" onClick={() => setTab('sell')}>List MIC for sale</button>
+        </div>
       ) : (
         <div className="p2p-table">
           <div className="p2p-row p2p-head">

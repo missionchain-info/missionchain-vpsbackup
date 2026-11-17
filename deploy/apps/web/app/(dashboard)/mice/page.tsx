@@ -165,7 +165,14 @@ export default function MiceLicensesPage() {
   /** Never claim a wallet cannot pay until both sides have actually been read. */
   const canBuy = funds !== null && needMic !== null && shortUsdt === 0 && shortMic === 0
 
-  const handleBuy = async (priceUsdt: number) => {
+  /**
+   * Mua MICE. `qty` mac dinh 1 cho cac nut goi san.
+   *
+   * Truoc day ham nay dong cung 1n o ca quoteMicRequired lan buyLicense, nen o nhap so luong
+   * khong the dung no — va nut BUY bi tro sang mot ham chi hien thong bao. Contract nhan
+   * buyLicense(uint256), nen chi can truyen so luong qua.
+   */
+  const handleBuy = async (priceUsdt: number, qty: number = 1) => {
     if (!address) {
       setBuyResult({ ok: false, msg: 'Connect your wallet first' })
       return
@@ -189,7 +196,8 @@ export default function MiceLicensesPage() {
       // The other half is paid in MIC, which the contract pulls and burns. Approving only
       // USDT left every purchase to fail at that transfer.
       const micC = new ethers.Contract(CONTRACTS.mic, USDT_ABI, signer)
-      const micNeed: bigint = await mice.quoteMicRequired(1n)
+      const qtyBn = BigInt(qty)
+      const micNeed: bigint = await mice.quoteMicRequired(qtyBn)
       const micBal: bigint = await micC.balanceOf(address)
       if (micBal < micNeed) {
         throw new Error(
@@ -202,9 +210,9 @@ export default function MiceLicensesPage() {
         await ap2.wait()
       }
 
-      const tx = await mice.buyLicense(1n)
+      const tx = await mice.buyLicense(qtyBn)
       const r = await tx.wait()
-      setBuyResult({ ok: true, msg: 'MICE License purchased. Tx: ' + r.hash.slice(0, 10) + '...', bought: 1 })
+      setBuyResult({ ok: true, msg: qty + ' MICE License(s) purchased. Tx: ' + r.hash.slice(0, 10) + '...', bought: qty })
     } catch (e: any) {
       setBuyResult({ ok: false, msg: e?.shortMessage || e?.message || 'Purchase failed' })
     } finally {
@@ -212,19 +220,12 @@ export default function MiceLicensesPage() {
     }
   }
 
-  const handleBuyCustom = async () => {
-    const qty = parseInt(customQty, 10)
-    if (!qty || qty < 1) {
-      setBuyResult({ ok: false, msg: 'Quantity must be ≥ 1 MICE' })
-      return
-    }
-    const totalUsdt = qty * curPrice
-    setBuyResult({
-      ok: true,
-      msg: 'Buying ' + qty + ' MICE License(s) at $' + curPrice + ' each = $' + totalUsdt.toLocaleString() + ' USDT' +
-        ' (50% MIC burned + 50% USDT to RevenueRouter) — full on-chain implementation pending.',
-    })
-  }
+  /*
+   * handleBuyCustom nam o day: no chi setBuyResult mot dong chu roi dung, khong signer,
+   * khong approve, khong buyLicense — chinh no tu khai "full on-chain implementation
+   * pending". Nut BUY tro vao no nen bam khong co gi xay ra, trong khi handleBuy ngay phia
+   * tren da lam du viec. Da xoa; nut goi thang handleBuy.
+   */
 
   if (loading) return <LoadingSpinner />
   const pct = (a: number, b: number) => (b > 0 ? (a / b) * 100 : 0)
@@ -328,18 +329,18 @@ export default function MiceLicensesPage() {
           background: 'rgba(240,190,74,.10)', border: '1px solid rgba(240,190,74,.32)',
         }}>
           <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--gold, #F0BE4A)', marginBottom: 6 }}>
-            Next step — activate to start earning
+            Next step — activate to start mining
           </div>
           <div style={{ fontSize: '0.7rem', lineHeight: 1.75, color: 'var(--gray, #B9BFC6)' }}>
             Your licence is not mining yet. Activation is a separate step, and you can
             take it <strong>right now</strong> — there is no waiting period.
             <br />
             Two things start at the moment you activate, not at the moment you bought:
-            your <strong>360-day term</strong>, and your <strong>daily MIC rewards</strong>.
-            Activate at 3pm and you earn from 3pm — rewards then accrue every second and
-            you can claim them to your wallet whenever you like. There is no daily window
-            to catch and nothing is lost by claiming late. Earning stops the second your
-            360 days are up, and anything earned by then stays claimable.
+            your <strong>360-day term</strong>, and your <strong>daily MIC output</strong>.
+            Activate at 3pm and output starts at 3pm — it then accrues every second and
+            you can claim it to your wallet whenever you like. There is no daily window
+            to catch and nothing is lost by claiming late. Output stops the second your
+            360 days are up, and anything accrued by then stays claimable.
           </div>
           <Link
             href="/mining"
@@ -434,7 +435,13 @@ export default function MiceLicensesPage() {
         </div>
 
         <button
-          onClick={handleBuyCustom}
+          onClick={() => {
+            if (!qtyNum || qtyNum < 1) {
+              setBuyResult({ ok: false, msg: 'Quantity must be at least 1 MICE.' })
+              return
+            }
+            handleBuy(curPrice * qtyNum, qtyNum)
+          }}
           disabled={buying || !canBuy}
           className="mice-round-btn"
           style={{ width: '100%', marginTop: 14 }}

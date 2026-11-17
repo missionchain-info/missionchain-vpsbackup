@@ -138,10 +138,22 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
    */
   const [showDailyCap, setShowDailyCap] = useState(false)
 
+  /*
+   * Whether to explain the three limits the pool enforces on every trade.
+   *
+   * A display switch the Owner controls; the limits themselves are constants inside
+   * LiquidityPoolV7 and apply whether or not this is on. Defaults to hidden, so a failed
+   * config fetch shows less rather than publishing something the Owner has not chosen to.
+   */
+  const [showGuardrails, setShowGuardrails] = useState(false)
+
   useEffect(() => {
     fetch(`${API_BASE}/rounds/system-info`)
       .then((r) => r.json())
-      .then((j) => setShowDailyCap(Boolean(j?.data?.swapShowDailyCap)))
+      .then((j) => {
+        setShowDailyCap(Boolean(j?.data?.swapShowDailyCap))
+        setShowGuardrails(Boolean(j?.data?.swapShowGuardrails))
+      })
       .catch(() => { /* stays hidden */ })
   }, [])
 
@@ -597,6 +609,35 @@ export default function SwapPanel({ onDone }: { onDone?: () => void }) {
         Price comes from the pool's own reserves and moves as you trade. The quote is an
         estimate; your transaction reverts rather than settling below the minimum above.
       </p>
+
+      {/*
+        Every figure here is read from the pool, not written into this file — the per-trade
+        cap is 1% of the reserve the contract holds right now, and the fee is the one it
+        would charge on the next sale. A number typed here would drift from the contract
+        the first time either moved, and a member would be told a limit that is not the
+        limit.
+      */}
+      {showGuardrails && pool && (
+        <div className="swap-note" style={{ marginTop: 10, lineHeight: 1.85 }}>
+          <div style={{ marginBottom: 6, opacity: 0.85 }}>
+            To limit slippage, keep the pool stable and protect every member, the protocol
+            applies three limits automatically:
+          </div>
+          <div>
+            <strong>1 · Per trade</strong> {'—'} at most <strong>1%</strong> of the MIC in
+            the pool, both ways{pool.maxTradeMic > 0 ? `, currently ${fmt(pool.maxTradeMic, 0)} MIC` : ''}.
+          </div>
+          <div>
+            <strong>2 · Per 24 hours</strong> {'—'} at most <strong>5%</strong> of the
+            pool's USDT may leave. Selling draws on it; buying does not.
+          </div>
+          <div>
+            <strong>3 · The fee adjusts itself</strong>, <strong>0%{'–'}15%</strong> on
+            selling {'—'} {fmt(pool.sellFeeBps / 100, 1)}% today, falling as real capital
+            replaces the virtual reserve. Buying is a flat 0.3%.
+          </div>
+        </div>
+      )}
     </div>
   )
 }

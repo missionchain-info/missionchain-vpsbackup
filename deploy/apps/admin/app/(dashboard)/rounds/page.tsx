@@ -75,21 +75,21 @@ const MICE_ROUNDS = [
 ];
 
 function fmt(n: number): string {
-  if (!n || isNaN(n)) return '-';
+  if (n === null || n === undefined || isNaN(n)) return '-';
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
   if (n >= 1_000) return Math.round(n / 1_000) + 'K';
   return Math.round(n).toLocaleString();
 }
 
-const fmtFull = (n: number): string => (!n || isNaN(n)) ? '-' : n.toLocaleString();
+const fmtFull = (n: number): string => (n === null || n === undefined || isNaN(n)) ? '-' : n.toLocaleString();
 
 function fmtUsd(n: number): string {
-  if (!n || isNaN(n)) return '-';
+  if (n === null || n === undefined || isNaN(n)) return '-';
   return '$' + Math.round(n).toLocaleString();
 }
 
 function fmtUsd2(n: number): string {
-  if (!n || isNaN(n)) return '-';
+  if (n === null || n === undefined || isNaN(n)) return '-';
   return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
